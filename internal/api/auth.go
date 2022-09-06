@@ -5,8 +5,7 @@ import (
 	"context"
 	"time"
 
-	extauthapi "wash-bonus/internal/authentication"
-
+	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 	oapierrors "github.com/go-openapi/errors"
 	"github.com/powerman/structlog"
 )

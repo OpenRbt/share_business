@@ -2,12 +2,12 @@
 package dal
 
 import (
+	"wash-bonus/internal/app"
+	"wash-bonus/internal/types"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
-	"wash-bonus/internal/app"
-	"wash-bonus/internal/types"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/google/uuid"

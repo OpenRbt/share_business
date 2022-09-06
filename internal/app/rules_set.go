@@ -4,43 +4,29 @@ package app
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 type RulesSet interface {
-	GetPermissionAccessManager(Profile) bool
-	AddPermissionAccessManager(Profile) bool
-	EditPermissionAccessManager(Profile) bool
-	DeletePermissionAccessManager(Profile) bool
-	ListPermissionAccessManager(Profile) bool
-
-	GetRoleAccessManager(Profile) bool
-	AddRoleAccessManager(Profile) bool
-	EditRoleAccessManager(Profile) bool
-	DeleteRoleAccessManager(Profile) bool
-	ListRoleAccessManager(Profile) bool
-
-	GetSessionAccessManager(Profile) bool
-	AddSessionAccessManager(Profile) bool
-	EditSessionAccessManager(Profile) bool
-	DeleteSessionAccessManager(Profile) bool
-	ListSessionAccessManager(Profile) bool
-
-	GetTokenAccessManager(Profile) bool
-	AddTokenAccessManager(Profile) bool
-	DeleteTokenAccessManager(Profile) bool
-
-	GetUserAccessManager(Profile) bool
-	AddUserAccessManager(Profile) bool
-	EditUserAccessManager(Profile) bool
-	DeleteUserAccessManager(Profile) bool
-	ListUserAccessManager(Profile) bool
-
-	GetWashServerAccessManager(Profile) bool
-	AddWashServerAccessManager(Profile) bool
-	EditWashServerAccessManager(Profile) bool
-	DeleteWashServerAccessManager(Profile) bool
-	ListWashServerAccessManager(Profile) bool
-
-	GetWashSessionAccessManager(Profile) bool
-	AddWashSessionAccessManager(Profile) bool
-	EditWashSessionAccessManager(Profile) bool
-	DeleteWashSessionAccessManager(Profile) bool
-	ListWashSessionAccessManager(Profile) bool
+	
+			GetPermissionAccessManager(Profile) bool
+			AddPermissionAccessManager(Profile) bool
+			EditPermissionAccessManager(Profile) bool
+			DeletePermissionAccessManager(Profile) bool
+			ListPermissionAccessManager(Profile) bool
+    
+			GetRoleAccessManager(Profile) bool
+			AddRoleAccessManager(Profile) bool
+			EditRoleAccessManager(Profile) bool
+			DeleteRoleAccessManager(Profile) bool
+			ListRoleAccessManager(Profile) bool
+    
+			GetUserAccessManager(Profile) bool
+			AddUserAccessManager(Profile) bool
+			EditUserAccessManager(Profile) bool
+			DeleteUserAccessManager(Profile) bool
+			ListUserAccessManager(Profile) bool
+    
+			GetWashServerAccessManager(Profile) bool
+			AddWashServerAccessManager(Profile) bool
+			EditWashServerAccessManager(Profile) bool
+			DeleteWashServerAccessManager(Profile) bool
+			ListWashServerAccessManager(Profile) bool
+    
 }
