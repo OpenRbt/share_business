@@ -7,7 +7,7 @@ require (
 	github.com/go-openapi/errors v0.20.3
 	github.com/go-openapi/loads v0.21.2
 	github.com/go-openapi/runtime v0.24.1
-	github.com/go-openapi/spec v0.20.7
+	github.com/go-openapi/spec v0.20.6
 	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-openapi/swag v0.22.3
 	github.com/go-openapi/validate v0.22.0
@@ -30,5 +30,5 @@ require (
 	github.com/rs/cors v1.8.2
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
 	github.com/shopspring/decimal v1.3.1
-	golang.org/x/net v0.0.0-20220923203811-8be639271d50
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 )

@@ -3,10 +3,9 @@ package api
 
 import (
 	"errors"
+	"github.com/go-openapi/swag"
 	"time"
 	"wash-bonus/internal/def"
-
-	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 	user "wash-bonus/internal/api/restapi/restapi/operations/user"
@@ -153,7 +152,9 @@ func apiUser(a *app.User) *models.User {
 		ID:         a.ID,
 		Active:     a.Active,
 		CreatedAt:  (*strfmt.DateTime)(a.CreatedAt),
-		FirebaseID: a.FirebaseId, ModifiedAt: (*strfmt.DateTime)(a.ModifiedAt),
+		FirebaseID: a.FirebaseId,
+		ModifiedAt: (*strfmt.DateTime)(a.ModifiedAt),
+		Role:       apiRole(a.Role),
 	}
 }
 
@@ -170,6 +171,9 @@ func appUser(a *models.User, withStructs bool) *app.User {
 		return nil
 	}
 	user := &app.User{}
+	if withStructs {
+		user.Role = appRole(a.Role, false)
+	}
 	user.ID = a.ID
 	user.Active = a.Active
 	user.CreatedAt = (*time.Time)(a.CreatedAt)
@@ -194,6 +198,9 @@ func appUserAdd(a *models.UserAdd) *app.User {
 	user := &app.User{}
 	user.Active = a.Active
 	user.FirebaseId = a.FirebaseID
+	if a.Role != "" {
+		user.Role = &app.Role{ID: a.Role}
+	}
 
 	return user
 }
