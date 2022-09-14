@@ -3,21 +3,22 @@ package api
 
 import (
 	"context"
+	"firebase.google.com/go/auth"
 	"net/http"
 	"path"
+	"wash-bonus/internal/firebase_service"
 
 	"wash-bonus/internal/api/restapi/restapi"
 	"wash-bonus/internal/api/restapi/restapi/operations"
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
 
+	"wash-bonus/internal/api/restapi/models"
 	user "wash-bonus/internal/api/restapi/restapi/operations/user"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 
 	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
-
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
@@ -44,14 +45,16 @@ type Config struct {
 }
 
 type service struct {
-	app     app.App
-	extAuth AuthSvc
+	app      app.App
+	extAuth  AuthSvc
+	firebase firebase_service.FirebaseService
 }
 
-func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, error) {
+func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_service.FirebaseService) (*restapi.Server, error) {
 	svc := &service{
-		app:     appl,
-		extAuth: extAuth,
+		app:      appl,
+		extAuth:  extAuth,
+		firebase: firebase,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
@@ -66,10 +69,11 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, erro
 	api := operations.NewWashBonusAPI(swaggerSpec)
 
 	api.Logger = structlog.New(structlog.KeyUnit, "swagger").Printf
-	api.AuthKeyAuth = svc.checkerAuth
+	api.AuthKeyAuth = svc.firebase.GetFirebaseProfile
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 	api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
+
 	api.UserGetUserHandler = user.GetUserHandlerFunc(svc.GetUser)
 	api.UserAddUserHandler = user.AddUserHandlerFunc(svc.AddUser)
 	api.UserEditUserHandler = user.EditUserHandlerFunc(svc.EditUser)
@@ -133,7 +137,7 @@ func healthCheck(params standard.HealthCheckParams, profile interface{}) middlew
 	return standard.NewHealthCheckOK().WithPayload(&standard.HealthCheckOKBody{Ok: true})
 }
 func (svc *service) addTestData(params standard.AddTestDataParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	err := svc.app.AddTestData(toAppProfile(prof))
 	switch {
 	default:

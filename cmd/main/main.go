@@ -7,10 +7,10 @@ import (
 	"flag"
 	"fmt"
 	"time"
+	"wash-bonus/internal/firebase_service"
 
 	"wash-bonus/internal/api"
 	"wash-bonus/internal/app"
-	"wash-bonus/internal/authorization"
 	"wash-bonus/internal/dal"
 	"wash-bonus/internal/def"
 
@@ -98,9 +98,7 @@ func connect() (app.App, *extauthapi.Client, error) {
 		return nil, nil, err
 	}
 
-	rulesSet := authorization.NewRulesSet()
-
-	app := app.New(r, rulesSet)
+	app := app.New(r)
 	return app, extAuthSvc, nil
 }
 
@@ -114,7 +112,9 @@ func runServe(errc chan<- error) {
 		return
 	}
 
-	srv, err := api.NewServer(appl, extAuthSvc, cfg.api)
+	firebase := firebase_service.New(def.FirebaseKeyFilePath)
+
+	srv, err := api.NewServer(appl, extAuthSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)
 		return

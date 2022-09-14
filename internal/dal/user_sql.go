@@ -142,13 +142,14 @@ type (
 		IsolatedEntityID string `db:"isolated_entity_id"`
 	}
 	argAddUser struct {
-		ID               string     `db:"id"`
-		Active           bool       `db:"active"`
-		CreatedAt        *time.Time `db:"created_at"`
-		FirebaseId       string     `db:"firebase_id"`
-		ModifiedAt       *time.Time `db:"modified_at"`
-		CreatedBy        string     `db:"created_by"`
-		IsolatedEntityID string     `db:"isolated_entity_id"`
+		ID               string      `db:"id"`
+		Active           bool        `db:"active"`
+		CreatedAt        *time.Time  `db:"created_at"`
+		FirebaseID       string      `db:"firebase_id"`
+		ModifiedAt       *time.Time  `db:"modified_at"`
+
+		CreatedBy        string      `db:"created_by"`
+		IsolatedEntityID string      `db:"isolated_entity_id"`
 	}
 	argBindUserToProfile struct {
 		ID               string `db:"id"`
@@ -156,12 +157,13 @@ type (
 		IsolatedEntityID string `db:"isolated_entity_id"`
 	}
 	argEditUser struct {
-		ID               string     `db:"id"`
-		Active           bool       `db:"active"`
-		CreatedAt        *time.Time `db:"created_at"`
-		FirebaseId       string     `db:"firebase_id"`
-		ModifiedAt       *time.Time `db:"modified_at"`
-		IsolatedEntityID string     `db:"isolated_entity_id"`
+		ID               string      `db:"id"`
+		Active           bool        `db:"active"`
+		CreatedAt        *time.Time  `db:"created_at"`
+		FirebaseID       string      `db:"firebase_id"`
+		ModifiedAt       *time.Time  `db:"modified_at"`
+
+		IsolatedEntityID string      `db:"isolated_entity_id"`
 	}
 	argDeleteUser struct {
 		ID               string     `db:"id"`

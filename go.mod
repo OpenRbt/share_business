@@ -3,6 +3,7 @@ module wash-bonus
 go 1.14
 
 require (
+	firebase.google.com/go v3.13.0+incompatible
 	github.com/felixge/httpsnoop v1.0.3
 	github.com/go-openapi/errors v0.20.3
 	github.com/go-openapi/loads v0.21.2
@@ -30,5 +31,6 @@ require (
 	github.com/rs/cors v1.8.2
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
 	github.com/shopspring/decimal v1.3.1
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
+	google.golang.org/api v0.95.0 // indirect
 )

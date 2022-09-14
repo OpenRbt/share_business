@@ -9,7 +9,6 @@ import (
 	"wash-bonus/internal/app"
 
 	"github.com/go-openapi/strfmt"
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
@@ -80,16 +79,12 @@ func toDatesArray(dates []*time.Time) (ds []*strfmt.Date) {
 	return
 }
 
-func toAppProfile(prof *extauthapi.Profile) app.Profile {
+func toAppProfile(userRecord *auth.UserRecord) app.Profile {
 	return app.Profile{
-		ID:    prof.ID.String(),
-		Authn: prof.Authn,
-		Authz: app.Authz{
-			User:    prof.Authz.User,
-			Manager: prof.Authz.Manager,
-			Admin:   prof.Authz.Admin,
-		},
-		IsolatedEntityID: prof.IsolatedEntityID.String(),
+		ID:               userRecord.UID,
+		Authn:            userRecord != nil,
+		Authz:            app.Authz{},
+		IsolatedEntityID: userRecord.Email,
 	}
 }
 

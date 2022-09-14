@@ -17,8 +17,9 @@ type User struct {
 	ID         uuid.UUID      `db:"id"`
 	Active     sql.NullBool   `db:"active"`
 	CreatedAt  *time.Time     `db:"created_at"`
-	FirebaseId sql.NullString `db:"firebase_id"`
+	FirebaseID sql.NullString `db:"firebase_id"`
 	ModifiedAt *time.Time     `db:"modified_at"`
+	
 }
 
 var UserProps = map[string]columnProps{
@@ -195,11 +196,13 @@ func (a *Repo) addUser(profileID string, isolatedEntityID string, m *app.User) (
 	UserID := uuid.New().String()
 	t := time.Now()
 	m.CreatedAt = &t
+
 	if err := a.db.NamedGet(&UserID, sqlAddUser, argAddUser{
 		ID:               UserID,
 		Active:           m.Active,
 		CreatedAt:        m.CreatedAt,
-		FirebaseId:       m.FirebaseId,
+		FirebaseID:       m.FirebaseID,
+
 		CreatedBy:        profileID,
 		IsolatedEntityID: isolatedEntityID,
 	}); err != nil {
@@ -249,8 +252,9 @@ func (a *Repo) editUser(id string, isolatedEntityID string, m *app.User) error {
 		ID:               id,
 		Active:           m.Active,
 		CreatedAt:        m.CreatedAt,
-		FirebaseId:       m.FirebaseId,
+		FirebaseID:       m.FirebaseID,
 		ModifiedAt:       m.ModifiedAt,
+
 		IsolatedEntityID: isolatedEntityID,
 	})
 	if err != nil {
@@ -296,7 +300,7 @@ func (m *User) Filter(key string, filter *app.Filter) (ok bool, err error) {
 	case "createdAt":
 		ok = compareTime(filter.Operator, *m.CreatedAt, filter.Value)
 	case "firebaseId":
-		ok = compareString(filter.Operator, filter.IgnoreCase, m.FirebaseId.String, filter.Value)
+		ok = compareString(filter.Operator, filter.IgnoreCase, m.FirebaseID.String, filter.Value)
 	case "modifiedAt":
 		ok = compareTime(filter.Operator, *m.ModifiedAt, filter.Value)
 	default:
@@ -313,7 +317,9 @@ func appUser(m User) *app.User {
 		ID:         m.ID.String(),
 		Active:     m.Active.Bool,
 		CreatedAt:  m.CreatedAt,
-		FirebaseId: m.FirebaseId.String, ModifiedAt: m.ModifiedAt,
+		FirebaseID: m.FirebaseID.String,
+		ModifiedAt: m.ModifiedAt,
+
 	}
 }
 

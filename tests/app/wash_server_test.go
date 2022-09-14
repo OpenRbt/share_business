@@ -17,9 +17,8 @@ func TestGetWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().GetWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().GetWashServer(gomock.Any(), gomock.Any()).Return(testWashServer1, nil)
@@ -35,9 +34,8 @@ func TestAddWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().AddWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().AddWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(testWashServer1, nil)
@@ -53,9 +51,8 @@ func TestEditWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().EditWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().EditWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
@@ -70,9 +67,8 @@ func TestDeleteWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().DeleteWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().DeleteWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
@@ -87,9 +83,8 @@ func TestListWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().ListWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().ListWashServer(gomock.Any(), gomock.Any()).Return(testWashServers, []string{}, nil)

@@ -3,6 +3,7 @@ package api
 
 import (
 	"errors"
+	"firebase.google.com/go/auth"
 	"github.com/go-openapi/swag"
 	"time"
 	"wash-bonus/internal/def"
@@ -13,12 +14,11 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 func (svc *service) GetUser(params user.GetUserParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	c, err := svc.app.GetUser(toAppProfile(prof), params.Body.ID)
 	switch {
 	default:
@@ -45,7 +45,7 @@ func (svc *service) GetUser(params user.GetUserParams, profile interface{}) midd
 	}
 }
 func (svc *service) AddUser(params user.AddUserParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	c, err := svc.app.AddUser(toAppProfile(prof), appUserAdd(params.Body))
 	switch {
 	default:
@@ -66,7 +66,7 @@ func (svc *service) AddUser(params user.AddUserParams, profile interface{}) midd
 	}
 }
 func (svc *service) EditUser(params user.EditUserParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	err := svc.app.EditUser(toAppProfile(prof), params.Body.ID, appUserAdd(params.Body.Data))
 	switch {
 	default:
@@ -93,7 +93,7 @@ func (svc *service) EditUser(params user.EditUserParams, profile interface{}) mi
 	}
 }
 func (svc *service) DeleteUser(params user.DeleteUserParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	err := svc.app.DeleteUser(toAppProfile(prof), params.Body.ID)
 	switch {
 	default:
@@ -120,7 +120,7 @@ func (svc *service) DeleteUser(params user.DeleteUserParams, profile interface{}
 	}
 }
 func (svc *service) ListUser(params user.ListUserParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	c, warnings, err := svc.app.ListUser(toAppProfile(prof), appListParams(params.Body))
 	switch {
 	default:
@@ -152,7 +152,7 @@ func apiUser(a *app.User) *models.User {
 		ID:         a.ID,
 		Active:     a.Active,
 		CreatedAt:  (*strfmt.DateTime)(a.CreatedAt),
-		FirebaseID: a.FirebaseId,
+		FirebaseID: a.FirebaseID,
 		ModifiedAt: (*strfmt.DateTime)(a.ModifiedAt),
 		Role:       apiRole(a.Role),
 	}
@@ -177,7 +177,7 @@ func appUser(a *models.User, withStructs bool) *app.User {
 	user.ID = a.ID
 	user.Active = a.Active
 	user.CreatedAt = (*time.Time)(a.CreatedAt)
-	user.FirebaseId = a.FirebaseID
+	user.FirebaseID = a.FirebaseID
 	user.ModifiedAt = (*time.Time)(a.ModifiedAt)
 
 	return user
@@ -197,7 +197,7 @@ func appUserAdd(a *models.UserAdd) *app.User {
 	}
 	user := &app.User{}
 	user.Active = a.Active
-	user.FirebaseId = a.FirebaseID
+	user.FirebaseID = a.FirebaseID
 	if a.Role != "" {
 		user.Role = &app.Role{ID: a.Role}
 	}

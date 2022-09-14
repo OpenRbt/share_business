@@ -15,14 +15,15 @@ var (
 	testUser1 = &app.User{
 		Active:     true,
 		CreatedAt:  mustParseTime("1923-06-18T23:02:58.680Z"),
-		FirebaseId: "a",
+		FirebaseID: "a",
 		ModifiedAt: mustParseTime("2002-08-09T19:21:15.435Z"),
 	}
 	testUser2 = &app.User{
 		Active:     false,
 		CreatedAt:  mustParseTime("1990-11-24T12:32:05.144Z"),
-		FirebaseId: "saepe",
+		FirebaseID: "saepe",
 		ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
+
 	}
 	testUsers       = []*app.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{

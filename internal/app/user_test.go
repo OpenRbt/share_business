@@ -17,11 +17,9 @@ func TestGetUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().GetUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().GetUser(gomock.Any(), gomock.Any()).Return(testUser1, nil)
 	b, err := a.GetUser(profile, testUser1.ID)
 	t.Nil(err)
@@ -35,11 +33,9 @@ func TestAddUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().AddUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().AddUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(testUser1, nil)
 	b, err := a.AddUser(profile, testUser1)
 	t.Nil(err)
@@ -53,11 +49,9 @@ func TestEditUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().EditUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().EditUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 	err := a.EditUser(profile, testUser1.ID, testUser1)
 	t.Nil(err)
@@ -70,11 +64,9 @@ func TestDeleteUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().DeleteUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().DeleteUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 	err := a.DeleteUser(profile, testUser1.ID)
 	t.Nil(err)
@@ -87,11 +79,9 @@ func TestListUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().ListUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().ListUser(gomock.Any(), gomock.Any()).Return(testUsers, []string{}, nil)
 	b, _, err := a.ListUser(profile, listParams)
 	t.Nil(err)

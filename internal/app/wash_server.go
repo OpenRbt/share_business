@@ -16,32 +16,17 @@ type WashServer struct {
 }
 
 func (a *app) GetWashServer(prof Profile, id string) (*WashServer, error) {
-	if !a.rulesSet.GetWashServerAccessManager(prof) {
-		return nil, ErrAccessDenied
-	}
 	return a.repo.GetWashServer(id, prof.IsolatedEntityID)
 }
 func (a *app) AddWashServer(prof Profile, m *WashServer) (*WashServer, error) {
-	if !a.rulesSet.AddWashServerAccessManager(prof) {
-		return nil, ErrAccessDenied
-	}
 	return a.repo.AddWashServer(prof.ID, prof.IsolatedEntityID, m)
 }
 func (a *app) EditWashServer(prof Profile, id string, m *WashServer) error {
-	if !a.rulesSet.EditWashServerAccessManager(prof) {
-		return ErrAccessDenied
-	}
 	return a.repo.EditWashServer(id, prof.IsolatedEntityID, m)
 }
 func (a *app) DeleteWashServer(prof Profile, id string) error {
-	if !a.rulesSet.DeleteWashServerAccessManager(prof) {
-		return ErrAccessDenied
-	}
 	return a.repo.DeleteWashServer(id, prof.ID, prof.IsolatedEntityID)
 }
 func (a *app) ListWashServer(prof Profile, params *ListParams) ([]*WashServer, []string, error) {
-	if !a.rulesSet.ListWashServerAccessManager(prof) {
-		return nil, nil, ErrAccessDenied
-	}
 	return a.repo.ListWashServer(prof.IsolatedEntityID, params)
 }

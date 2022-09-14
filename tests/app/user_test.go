@@ -17,9 +17,8 @@ func TestGetUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().GetUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().GetUser(gomock.Any(), gomock.Any()).Return(testUser1, nil)
@@ -35,9 +34,8 @@ func TestAddUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().AddUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().AddUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(testUser1, nil)
@@ -53,9 +51,8 @@ func TestEditUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().EditUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().EditUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
@@ -70,9 +67,8 @@ func TestDeleteUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().DeleteUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().DeleteUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
@@ -87,9 +83,8 @@ func TestListUser(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
 	rulesSet.EXPECT().ListUserAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().ListUser(gomock.Any(), gomock.Any()).Return(testUsers, []string{}, nil)

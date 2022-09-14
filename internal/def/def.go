@@ -57,6 +57,9 @@ var (
 	ExtauthEndpoint     = os.Getenv(ExtauthEndpointEnvName)
 	CORSAllowedOrigins  = os.Getenv("MSRV_CORS_ALLOWED_ORIGINS")
 	DisableCookieSecure = boolGetenv("MSRV_DISABLE_COOKIE_SECURE")
+
+	FirebaseKeyFilePath = strGetenv("FIREBASE_KEYFILE_PATH", "../../firebase.json")
+	FirebaseApiKey      = os.Getenv("FIREBASE_API_KEY")
 )
 
 func intGetenv(name string, def int) int {

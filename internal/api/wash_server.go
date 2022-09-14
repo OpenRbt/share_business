@@ -3,6 +3,8 @@ package api
 
 import (
 	"errors"
+	"firebase.google.com/go/auth"
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
 	"time"
 	"wash-bonus/internal/def"
@@ -11,14 +13,12 @@ import (
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 	"wash-bonus/internal/app"
 
-	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	c, err := svc.app.GetWashServer(toAppProfile(prof), params.Body.ID)
 	switch {
 	default:
@@ -45,7 +45,7 @@ func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile
 	}
 }
 func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	c, err := svc.app.AddWashServer(toAppProfile(prof), appWashServerAdd(params.Body))
 	switch {
 	default:
@@ -66,7 +66,7 @@ func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile
 	}
 }
 func (svc *service) EditWashServer(params washServer.EditWashServerParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	err := svc.app.EditWashServer(toAppProfile(prof), params.Body.ID, appWashServerAdd(params.Body.Data))
 	switch {
 	default:
@@ -93,7 +93,7 @@ func (svc *service) EditWashServer(params washServer.EditWashServerParams, profi
 	}
 }
 func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	err := svc.app.DeleteWashServer(toAppProfile(prof), params.Body.ID)
 	switch {
 	default:
@@ -120,7 +120,7 @@ func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, p
 	}
 }
 func (svc *service) ListWashServer(params washServer.ListWashServerParams, profile interface{}) middleware.Responder {
-	prof := profile.(*extauthapi.Profile)
+	prof := profile.(*auth.UserRecord)
 	c, warnings, err := svc.app.ListWashServer(toAppProfile(prof), appListParams(params.Body))
 	switch {
 	default:
