@@ -30,8 +30,6 @@ const (
 	LogUser       = "userID"
 	LogEvent      = "ev"
 	LogEventID    = "evID"
-
-	ExtauthEndpointEnvName = "MSRV_EXTAUTH_ENDPOINT"
 )
 
 var (
@@ -54,12 +52,10 @@ var (
 	APIHost             = strGetenv("MSRV_HOST", oapiHost)
 	APIPort             = intGetenv("MSRV_PORT", oapiPort)
 	APIBasePath         = strGetenv("MSRV_BASEPATH", oapiBasePath)
-	ExtauthEndpoint     = os.Getenv(ExtauthEndpointEnvName)
 	CORSAllowedOrigins  = os.Getenv("MSRV_CORS_ALLOWED_ORIGINS")
 	DisableCookieSecure = boolGetenv("MSRV_DISABLE_COOKIE_SECURE")
 
-	FirebaseKeyFilePath = strGetenv("FIREBASE_KEYFILE_PATH", "../../firebase.json")
-	FirebaseApiKey      = os.Getenv("FIREBASE_API_KEY")
+	FirebaseKeyFilePath = strGetenv("FIREBASE_KEYFILE_PATH", "~/firebase_keyfile.json")
 )
 
 func intGetenv(name string, def int) int {

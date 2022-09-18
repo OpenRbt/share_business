@@ -13,22 +13,24 @@ import (
 )
 
 type UID string
+type FirebaseProfile auth.UserRecord
 
 const authTimeout = time.Second
 
 var log = structlog.New()
 
-type FirebaseService interface {
+type Service interface {
 	AuthMiddleware(handler http.Handler) http.Handler
+	VerifyClaims(user FirebaseProfile, requiredClaims ...string) error
 	GetFirebaseProfile(token string) (interface{}, error)
 }
 
-type Service struct {
+type FirebaseService struct {
 	app  *firebase.App
 	auth *auth.Client
 }
 
-func New(keyfileLocation string) FirebaseService {
+func New(keyfileLocation string) Service {
 	keyFilePath, err := filepath.Abs(keyfileLocation)
 	if err != nil {
 		panic("Unable to load service key")
@@ -45,7 +47,7 @@ func New(keyfileLocation string) FirebaseService {
 		panic("Failed to load Firebase")
 	}
 
-	return &Service{
+	return &FirebaseService{
 		app:  app,
 		auth: auth,
 	}

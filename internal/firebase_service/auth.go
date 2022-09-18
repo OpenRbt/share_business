@@ -2,12 +2,14 @@ package firebase_service
 
 import (
 	"context"
+	"errors"
+
 	"net/http"
 	"strings"
 	"wash-bonus/internal/app"
 )
 
-func (svc *Service) AuthMiddleware(handler http.Handler) http.Handler {
+func (svc *FirebaseService) AuthMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(rw http.ResponseWriter, r *http.Request) {
 			authToken := r.Header.Get("Authorization")
@@ -30,7 +32,7 @@ func (svc *Service) AuthMiddleware(handler http.Handler) http.Handler {
 		})
 }
 
-func (svc *Service) GetFirebaseProfile(bearer string) (interface{}, error) {
+func (svc *FirebaseService) GetFirebaseProfile(bearer string) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), authTimeout)
 	defer cancel()
 
@@ -51,4 +53,14 @@ func (svc *Service) GetFirebaseProfile(bearer string) (interface{}, error) {
 	}
 
 	return user, nil
+}
+
+func (svc *FirebaseService) VerifyClaims(user FirebaseProfile, requiredClaims ...string) error {
+	userClaims := user.CustomClaims
+	for _, claim := range requiredClaims {
+		if _, ok := userClaims[claim]; !ok {
+			return errors.New("missing claims")
+		}
+	}
+	return nil
 }

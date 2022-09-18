@@ -21,7 +21,6 @@ services:
       - db
     environment:
       MSRV_PORT: ${MSRV_PORT:-9091}
-      MSRV_EXTAUTH_ENDPOINT: ${MSRV_EXTAUTH_ENDPOINT:-http://127.0.0.1:9090}
       MSRV_RESET_DB: ${MSRV_RESET_DB:-false}
       MSRV_DB_HOST: db
       MSRV_DB_PORT: "5432"
@@ -33,3 +32,4 @@ services:
       MSRV_MAILER_FROM: ${MSRV_MAILER_FROM}
       MSRV_MAILER_FROM_NAME: ${MSRV_MAILER_FROM_NAME}
       MSRV_MAILER_PASS: ${MSRV_MAILER_PASS}
+      FIREBASE_KEYFILE_PATH: ${FIREBASE_KEYFILE_PATH:-~/firebase_keyfile.json}

@@ -33,12 +33,11 @@ var (
 
 	log = structlog.New()
 	cfg struct {
-		logLevel        string
-		gooseDir        string
-		db              pqx.Config
-		api             api.Config
-		extauthEndpoint string
-		resetDB         bool
+		logLevel string
+		gooseDir string
+		db       pqx.Config
+		api      api.Config
+		resetDB  bool
 	}
 )
 
@@ -67,8 +66,6 @@ func init() {
 	flag.StringVar(&cfg.api.BasePath, "api.basepath", def.APIBasePath, "serve API on `path`")
 	flag.StringVar(&cfg.api.AllowedOrigins, "api.allow-origins", def.CORSAllowedOrigins, "frontend url")
 
-	flag.StringVar(&cfg.extauthEndpoint, ExtauthEndpointFlag, def.ExtauthEndpoint, "extauth service `endpoint`")
-
 }
 
 func main() {
@@ -88,9 +85,10 @@ func connect() (app.App, *extauthapi.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), connectTimeout)
 	defer cancel()
 
-	extAuthSvc, err := extauthapi.NewClient(cfg.extauthEndpoint, &tls.Config{InsecureSkipVerify: true}, false)
+	// TODO: remove extAuthSvc
+	extAuthSvc, err := extauthapi.NewClient("", &tls.Config{InsecureSkipVerify: true}, false)
 	if err != nil {
-		return nil, nil, fmt.Errorf("extauthapi: %v. Error can be if flag '%s' or environment variable '%s' is not set", err, ExtauthEndpointFlag, def.ExtauthEndpointEnvName)
+		return nil, nil, fmt.Errorf("extauthapi: %v. Error can be if flag '%s' or environment variable '%s' is not set", err, ExtauthEndpointFlag, "")
 	}
 
 	r, err := dal.New(ctx, cfg.db, cfg.gooseDir, cfg.resetDB)

@@ -47,10 +47,10 @@ type Config struct {
 type service struct {
 	app      app.App
 	extAuth  AuthSvc
-	firebase firebase_service.FirebaseService
+	firebase firebase_service.Service
 }
 
-func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_service.FirebaseService) (*restapi.Server, error) {
+func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_service.Service) (*restapi.Server, error) {
 	svc := &service{
 		app:      appl,
 		extAuth:  extAuth,
