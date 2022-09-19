@@ -35,10 +35,10 @@ func NewEditWashSession(ctx *middleware.Context, handler EditWashSessionHandler)
 	return &EditWashSession{Context: ctx, Handler: handler}
 }
 
-/* EditWashSession swagger:route PUT /washSession/edit WashSession editWashSession
+/*
+	EditWashSession swagger:route PUT /washSession/edit WashSession editWashSession
 
 EditWashSession edit wash session API
-
 */
 type EditWashSession struct {
 	Context *middleware.Context

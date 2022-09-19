@@ -16,7 +16,8 @@ import (
 // EditUserOKCode is the HTTP code returned for type EditUserOK
 const EditUserOKCode int = 200
 
-/*EditUserOK OK
+/*
+EditUserOK OK
 
 swagger:response editUserOK
 */
@@ -37,7 +38,8 @@ func (o *EditUserOK) WriteResponse(rw http.ResponseWriter, producer runtime.Prod
 	rw.WriteHeader(200)
 }
 
-/*EditUserDefault error
+/*
+EditUserDefault error
 
 swagger:response editUserDefault
 */

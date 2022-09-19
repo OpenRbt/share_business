@@ -16,7 +16,8 @@ import (
 // ListWashServerOKCode is the HTTP code returned for type ListWashServerOK
 const ListWashServerOKCode int = 200
 
-/*ListWashServerOK OK
+/*
+ListWashServerOK OK
 
 swagger:response listWashServerOK
 */
@@ -57,7 +58,8 @@ func (o *ListWashServerOK) WriteResponse(rw http.ResponseWriter, producer runtim
 	}
 }
 
-/*ListWashServerDefault error
+/*
+ListWashServerDefault error
 
 swagger:response listWashServerDefault
 */

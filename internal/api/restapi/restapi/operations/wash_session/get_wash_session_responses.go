@@ -16,7 +16,8 @@ import (
 // GetWashSessionOKCode is the HTTP code returned for type GetWashSessionOK
 const GetWashSessionOKCode int = 200
 
-/*GetWashSessionOK OK
+/*
+GetWashSessionOK OK
 
 swagger:response getWashSessionOK
 */
@@ -57,7 +58,8 @@ func (o *GetWashSessionOK) WriteResponse(rw http.ResponseWriter, producer runtim
 	}
 }
 
-/*GetWashSessionDefault error
+/*
+GetWashSessionDefault error
 
 swagger:response getWashSessionDefault
 */

@@ -50,7 +50,8 @@ func NewListWashSessionOK() *ListWashSessionOK {
 	return &ListWashSessionOK{}
 }
 
-/* ListWashSessionOK describes a response with status code 200, with default header values.
+/*
+ListWashSessionOK describes a response with status code 200, with default header values.
 
 OK
 */
@@ -58,9 +59,39 @@ type ListWashSessionOK struct {
 	Payload *ListWashSessionOKBody
 }
 
+// IsSuccess returns true when this list wash session o k response has a 2xx status code
+func (o *ListWashSessionOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this list wash session o k response has a 3xx status code
+func (o *ListWashSessionOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this list wash session o k response has a 4xx status code
+func (o *ListWashSessionOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this list wash session o k response has a 5xx status code
+func (o *ListWashSessionOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this list wash session o k response a status code equal to that given
+func (o *ListWashSessionOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ListWashSessionOK) Error() string {
 	return fmt.Sprintf("[POST /washSession/list][%d] listWashSessionOK  %+v", 200, o.Payload)
 }
+
+func (o *ListWashSessionOK) String() string {
+	return fmt.Sprintf("[POST /washSession/list][%d] listWashSessionOK  %+v", 200, o.Payload)
+}
+
 func (o *ListWashSessionOK) GetPayload() *ListWashSessionOKBody {
 	return o.Payload
 }
@@ -84,7 +115,8 @@ func NewListWashSessionDefault(code int) *ListWashSessionDefault {
 	}
 }
 
-/* ListWashSessionDefault describes a response with status code -1, with default header values.
+/*
+ListWashSessionDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -99,9 +131,39 @@ func (o *ListWashSessionDefault) Code() int {
 	return o._statusCode
 }
 
+// IsSuccess returns true when this list wash session default response has a 2xx status code
+func (o *ListWashSessionDefault) IsSuccess() bool {
+	return o._statusCode/100 == 2
+}
+
+// IsRedirect returns true when this list wash session default response has a 3xx status code
+func (o *ListWashSessionDefault) IsRedirect() bool {
+	return o._statusCode/100 == 3
+}
+
+// IsClientError returns true when this list wash session default response has a 4xx status code
+func (o *ListWashSessionDefault) IsClientError() bool {
+	return o._statusCode/100 == 4
+}
+
+// IsServerError returns true when this list wash session default response has a 5xx status code
+func (o *ListWashSessionDefault) IsServerError() bool {
+	return o._statusCode/100 == 5
+}
+
+// IsCode returns true when this list wash session default response a status code equal to that given
+func (o *ListWashSessionDefault) IsCode(code int) bool {
+	return o._statusCode == code
+}
+
 func (o *ListWashSessionDefault) Error() string {
 	return fmt.Sprintf("[POST /washSession/list][%d] listWashSession default  %+v", o._statusCode, o.Payload)
 }
+
+func (o *ListWashSessionDefault) String() string {
+	return fmt.Sprintf("[POST /washSession/list][%d] listWashSession default  %+v", o._statusCode, o.Payload)
+}
+
 func (o *ListWashSessionDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -118,7 +180,8 @@ func (o *ListWashSessionDefault) readResponse(response runtime.ClientResponse, c
 	return nil
 }
 
-/*ListWashSessionOKBody list wash session o k body
+/*
+ListWashSessionOKBody list wash session o k body
 swagger:model ListWashSessionOKBody
 */
 type ListWashSessionOKBody struct {

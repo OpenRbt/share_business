@@ -14,7 +14,8 @@ import (
 // HealthCheckOKCode is the HTTP code returned for type HealthCheckOK
 const HealthCheckOKCode int = 200
 
-/*HealthCheckOK OK
+/*
+HealthCheckOK OK
 
 swagger:response healthCheckOK
 */

@@ -52,10 +52,12 @@ func NewAddTestDataParamsWithHTTPClient(client *http.Client) *AddTestDataParams 
 	}
 }
 
-/* AddTestDataParams contains all the parameters to send to the API endpoint
-   for the add test data operation.
+/*
+AddTestDataParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the add test data operation.
+
+	Typically these are written to a http.Request.
 */
 type AddTestDataParams struct {
 	timeout    time.Duration

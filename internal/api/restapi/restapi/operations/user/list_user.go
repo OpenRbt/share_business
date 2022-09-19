@@ -36,10 +36,10 @@ func NewListUser(ctx *middleware.Context, handler ListUserHandler) *ListUser {
 	return &ListUser{Context: ctx, Handler: handler}
 }
 
-/* ListUser swagger:route POST /user/list User listUser
+/*
+	ListUser swagger:route POST /user/list User listUser
 
 ListUser list user API
-
 */
 type ListUser struct {
 	Context *middleware.Context

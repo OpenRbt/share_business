@@ -32,10 +32,10 @@ func NewGetWashServer(ctx *middleware.Context, handler GetWashServerHandler) *Ge
 	return &GetWashServer{Context: ctx, Handler: handler}
 }
 
-/* GetWashServer swagger:route POST /washServer/get WashServer getWashServer
+/*
+	GetWashServer swagger:route POST /washServer/get WashServer getWashServer
 
 GetWashServer get wash server API
-
 */
 type GetWashServer struct {
 	Context *middleware.Context

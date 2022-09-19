@@ -16,7 +16,8 @@ import (
 // AddTestDataOKCode is the HTTP code returned for type AddTestDataOK
 const AddTestDataOKCode int = 200
 
-/*AddTestDataOK OK
+/*
+AddTestDataOK OK
 
 swagger:response addTestDataOK
 */
@@ -37,7 +38,8 @@ func (o *AddTestDataOK) WriteResponse(rw http.ResponseWriter, producer runtime.P
 	rw.WriteHeader(200)
 }
 
-/*AddTestDataDefault error
+/*
+AddTestDataDefault error
 
 swagger:response addTestDataDefault
 */

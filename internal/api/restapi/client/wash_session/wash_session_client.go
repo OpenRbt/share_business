@@ -42,7 +42,7 @@ type ClientService interface {
 }
 
 /*
-  AddWashSession add wash session API
+AddWashSession add wash session API
 */
 func (a *Client) AddWashSession(params *AddWashSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddWashSessionCreated, error) {
 	// TODO: Validate the params before sending
@@ -80,7 +80,7 @@ func (a *Client) AddWashSession(params *AddWashSessionParams, authInfo runtime.C
 }
 
 /*
-  DeleteWashSession delete wash session API
+DeleteWashSession delete wash session API
 */
 func (a *Client) DeleteWashSession(params *DeleteWashSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteWashSessionNoContent, error) {
 	// TODO: Validate the params before sending
@@ -118,7 +118,7 @@ func (a *Client) DeleteWashSession(params *DeleteWashSessionParams, authInfo run
 }
 
 /*
-  EditWashSession edit wash session API
+EditWashSession edit wash session API
 */
 func (a *Client) EditWashSession(params *EditWashSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EditWashSessionOK, error) {
 	// TODO: Validate the params before sending
@@ -156,7 +156,7 @@ func (a *Client) EditWashSession(params *EditWashSessionParams, authInfo runtime
 }
 
 /*
-  GetWashSession get wash session API
+GetWashSession get wash session API
 */
 func (a *Client) GetWashSession(params *GetWashSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWashSessionOK, error) {
 	// TODO: Validate the params before sending
@@ -194,7 +194,7 @@ func (a *Client) GetWashSession(params *GetWashSessionParams, authInfo runtime.C
 }
 
 /*
-  ListWashSession list wash session API
+ListWashSession list wash session API
 */
 func (a *Client) ListWashSession(params *ListWashSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListWashSessionOK, error) {
 	// TODO: Validate the params before sending

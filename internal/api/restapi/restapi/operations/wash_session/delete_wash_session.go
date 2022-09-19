@@ -32,10 +32,10 @@ func NewDeleteWashSession(ctx *middleware.Context, handler DeleteWashSessionHand
 	return &DeleteWashSession{Context: ctx, Handler: handler}
 }
 
-/* DeleteWashSession swagger:route DELETE /washSession/delete WashSession deleteWashSession
+/*
+	DeleteWashSession swagger:route DELETE /washSession/delete WashSession deleteWashSession
 
 DeleteWashSession delete wash session API
-
 */
 type DeleteWashSession struct {
 	Context *middleware.Context

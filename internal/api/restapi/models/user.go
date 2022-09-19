@@ -32,9 +32,6 @@ type User struct {
 	// modified at
 	// Format: date-time
 	ModifiedAt *strfmt.DateTime `json:"modifiedAt,omitempty"`
-
-	// role
-	Role *Role `json:"role,omitempty"`
 }
 
 // Validate validates this user
@@ -46,10 +43,6 @@ func (m *User) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateModifiedAt(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateRole(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -83,52 +76,8 @@ func (m *User) validateModifiedAt(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *User) validateRole(formats strfmt.Registry) error {
-	if swag.IsZero(m.Role) { // not required
-		return nil
-	}
-
-	if m.Role != nil {
-		if err := m.Role.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("role")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("role")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ContextValidate validate this user based on the context it is used
+// ContextValidate validates this user based on context it is used
 func (m *User) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateRole(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *User) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Role != nil {
-		if err := m.Role.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("role")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("role")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 

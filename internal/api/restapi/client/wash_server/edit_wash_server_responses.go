@@ -49,14 +49,44 @@ func NewEditWashServerOK() *EditWashServerOK {
 	return &EditWashServerOK{}
 }
 
-/* EditWashServerOK describes a response with status code 200, with default header values.
+/*
+EditWashServerOK describes a response with status code 200, with default header values.
 
 OK
 */
 type EditWashServerOK struct {
 }
 
+// IsSuccess returns true when this edit wash server o k response has a 2xx status code
+func (o *EditWashServerOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this edit wash server o k response has a 3xx status code
+func (o *EditWashServerOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this edit wash server o k response has a 4xx status code
+func (o *EditWashServerOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this edit wash server o k response has a 5xx status code
+func (o *EditWashServerOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this edit wash server o k response a status code equal to that given
+func (o *EditWashServerOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *EditWashServerOK) Error() string {
+	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServerOK ", 200)
+}
+
+func (o *EditWashServerOK) String() string {
 	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServerOK ", 200)
 }
 
@@ -72,7 +102,8 @@ func NewEditWashServerDefault(code int) *EditWashServerDefault {
 	}
 }
 
-/* EditWashServerDefault describes a response with status code -1, with default header values.
+/*
+EditWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -87,9 +118,39 @@ func (o *EditWashServerDefault) Code() int {
 	return o._statusCode
 }
 
+// IsSuccess returns true when this edit wash server default response has a 2xx status code
+func (o *EditWashServerDefault) IsSuccess() bool {
+	return o._statusCode/100 == 2
+}
+
+// IsRedirect returns true when this edit wash server default response has a 3xx status code
+func (o *EditWashServerDefault) IsRedirect() bool {
+	return o._statusCode/100 == 3
+}
+
+// IsClientError returns true when this edit wash server default response has a 4xx status code
+func (o *EditWashServerDefault) IsClientError() bool {
+	return o._statusCode/100 == 4
+}
+
+// IsServerError returns true when this edit wash server default response has a 5xx status code
+func (o *EditWashServerDefault) IsServerError() bool {
+	return o._statusCode/100 == 5
+}
+
+// IsCode returns true when this edit wash server default response a status code equal to that given
+func (o *EditWashServerDefault) IsCode(code int) bool {
+	return o._statusCode == code
+}
+
 func (o *EditWashServerDefault) Error() string {
 	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServer default  %+v", o._statusCode, o.Payload)
 }
+
+func (o *EditWashServerDefault) String() string {
+	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServer default  %+v", o._statusCode, o.Payload)
+}
+
 func (o *EditWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -106,7 +167,8 @@ func (o *EditWashServerDefault) readResponse(response runtime.ClientResponse, co
 	return nil
 }
 
-/*EditWashServerBody edit wash server body
+/*
+EditWashServerBody edit wash server body
 swagger:model EditWashServerBody
 */
 type EditWashServerBody struct {

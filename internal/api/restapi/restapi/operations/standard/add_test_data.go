@@ -29,10 +29,10 @@ func NewAddTestData(ctx *middleware.Context, handler AddTestDataHandler) *AddTes
 	return &AddTestData{Context: ctx, Handler: handler}
 }
 
-/* AddTestData swagger:route POST /addTestData Standard addTestData
+/*
+	AddTestData swagger:route POST /addTestData Standard addTestData
 
 AddTestData add test data API
-
 */
 type AddTestData struct {
 	Context *middleware.Context

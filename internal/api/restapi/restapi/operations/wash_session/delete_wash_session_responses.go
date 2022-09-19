@@ -16,7 +16,8 @@ import (
 // DeleteWashSessionNoContentCode is the HTTP code returned for type DeleteWashSessionNoContent
 const DeleteWashSessionNoContentCode int = 204
 
-/*DeleteWashSessionNoContent Deleted
+/*
+DeleteWashSessionNoContent Deleted
 
 swagger:response deleteWashSessionNoContent
 */
@@ -37,7 +38,8 @@ func (o *DeleteWashSessionNoContent) WriteResponse(rw http.ResponseWriter, produ
 	rw.WriteHeader(204)
 }
 
-/*DeleteWashSessionDefault error
+/*
+DeleteWashSessionDefault error
 
 swagger:response deleteWashSessionDefault
 */

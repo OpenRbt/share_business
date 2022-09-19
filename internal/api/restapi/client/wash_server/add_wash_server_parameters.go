@@ -54,10 +54,12 @@ func NewAddWashServerParamsWithHTTPClient(client *http.Client) *AddWashServerPar
 	}
 }
 
-/* AddWashServerParams contains all the parameters to send to the API endpoint
-   for the add wash server operation.
+/*
+AddWashServerParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the add wash server operation.
+
+	Typically these are written to a http.Request.
 */
 type AddWashServerParams struct {
 

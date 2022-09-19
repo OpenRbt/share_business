@@ -16,7 +16,8 @@ import (
 // AddWashSessionCreatedCode is the HTTP code returned for type AddWashSessionCreated
 const AddWashSessionCreatedCode int = 201
 
-/*AddWashSessionCreated Created
+/*
+AddWashSessionCreated Created
 
 swagger:response addWashSessionCreated
 */
@@ -57,7 +58,8 @@ func (o *AddWashSessionCreated) WriteResponse(rw http.ResponseWriter, producer r
 	}
 }
 
-/*AddWashSessionDefault error
+/*
+AddWashSessionDefault error
 
 swagger:response addWashSessionDefault
 */

@@ -16,7 +16,8 @@ import (
 // AddWashServerCreatedCode is the HTTP code returned for type AddWashServerCreated
 const AddWashServerCreatedCode int = 201
 
-/*AddWashServerCreated Created
+/*
+AddWashServerCreated Created
 
 swagger:response addWashServerCreated
 */
@@ -57,7 +58,8 @@ func (o *AddWashServerCreated) WriteResponse(rw http.ResponseWriter, producer ru
 	}
 }
 
-/*AddWashServerDefault error
+/*
+AddWashServerDefault error
 
 swagger:response addWashServerDefault
 */

@@ -50,7 +50,8 @@ func NewListWashServerOK() *ListWashServerOK {
 	return &ListWashServerOK{}
 }
 
-/* ListWashServerOK describes a response with status code 200, with default header values.
+/*
+ListWashServerOK describes a response with status code 200, with default header values.
 
 OK
 */
@@ -58,9 +59,39 @@ type ListWashServerOK struct {
 	Payload *ListWashServerOKBody
 }
 
+// IsSuccess returns true when this list wash server o k response has a 2xx status code
+func (o *ListWashServerOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this list wash server o k response has a 3xx status code
+func (o *ListWashServerOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this list wash server o k response has a 4xx status code
+func (o *ListWashServerOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this list wash server o k response has a 5xx status code
+func (o *ListWashServerOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this list wash server o k response a status code equal to that given
+func (o *ListWashServerOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *ListWashServerOK) Error() string {
 	return fmt.Sprintf("[POST /washServer/list][%d] listWashServerOK  %+v", 200, o.Payload)
 }
+
+func (o *ListWashServerOK) String() string {
+	return fmt.Sprintf("[POST /washServer/list][%d] listWashServerOK  %+v", 200, o.Payload)
+}
+
 func (o *ListWashServerOK) GetPayload() *ListWashServerOKBody {
 	return o.Payload
 }
@@ -84,7 +115,8 @@ func NewListWashServerDefault(code int) *ListWashServerDefault {
 	}
 }
 
-/* ListWashServerDefault describes a response with status code -1, with default header values.
+/*
+ListWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -99,9 +131,39 @@ func (o *ListWashServerDefault) Code() int {
 	return o._statusCode
 }
 
+// IsSuccess returns true when this list wash server default response has a 2xx status code
+func (o *ListWashServerDefault) IsSuccess() bool {
+	return o._statusCode/100 == 2
+}
+
+// IsRedirect returns true when this list wash server default response has a 3xx status code
+func (o *ListWashServerDefault) IsRedirect() bool {
+	return o._statusCode/100 == 3
+}
+
+// IsClientError returns true when this list wash server default response has a 4xx status code
+func (o *ListWashServerDefault) IsClientError() bool {
+	return o._statusCode/100 == 4
+}
+
+// IsServerError returns true when this list wash server default response has a 5xx status code
+func (o *ListWashServerDefault) IsServerError() bool {
+	return o._statusCode/100 == 5
+}
+
+// IsCode returns true when this list wash server default response a status code equal to that given
+func (o *ListWashServerDefault) IsCode(code int) bool {
+	return o._statusCode == code
+}
+
 func (o *ListWashServerDefault) Error() string {
 	return fmt.Sprintf("[POST /washServer/list][%d] listWashServer default  %+v", o._statusCode, o.Payload)
 }
+
+func (o *ListWashServerDefault) String() string {
+	return fmt.Sprintf("[POST /washServer/list][%d] listWashServer default  %+v", o._statusCode, o.Payload)
+}
+
 func (o *ListWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -118,7 +180,8 @@ func (o *ListWashServerDefault) readResponse(response runtime.ClientResponse, co
 	return nil
 }
 
-/*ListWashServerOKBody list wash server o k body
+/*
+ListWashServerOKBody list wash server o k body
 swagger:model ListWashServerOKBody
 */
 type ListWashServerOKBody struct {

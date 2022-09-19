@@ -155,7 +155,6 @@ func apiUser(a *app.User) *models.User {
 		Active:     a.Active,
 		CreatedAt:  (*strfmt.DateTime)(a.CreatedAt),
 		ModifiedAt: (*strfmt.DateTime)(a.ModifiedAt),
-		Role:       apiRole(a.Role),
 	}
 }
 
@@ -172,9 +171,6 @@ func appUser(a *models.User, withStructs bool) *app.User {
 		return nil
 	}
 	user := &app.User{}
-	if withStructs {
-		user.Role = appRole(a.Role, false)
-	}
 	user.ID = a.ID
 	user.Active = a.Active
 	user.CreatedAt = (*time.Time)(a.CreatedAt)
@@ -197,10 +193,6 @@ func appUserAdd(a *models.UserAdd) *app.User {
 	}
 	user := &app.User{}
 	user.Active = a.Active
-	if a.Role != "" {
-		user.Role = &app.Role{ID: a.Role}
-	}
-
 	return user
 }
 

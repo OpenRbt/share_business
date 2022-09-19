@@ -52,10 +52,12 @@ func NewGetWashServerParamsWithHTTPClient(client *http.Client) *GetWashServerPar
 	}
 }
 
-/* GetWashServerParams contains all the parameters to send to the API endpoint
-   for the get wash server operation.
+/*
+GetWashServerParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the get wash server operation.
+
+	Typically these are written to a http.Request.
 */
 type GetWashServerParams struct {
 

@@ -42,7 +42,7 @@ type ClientService interface {
 }
 
 /*
-  AddUser add user API
+AddUser add user API
 */
 func (a *Client) AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddUserCreated, error) {
 	// TODO: Validate the params before sending
@@ -80,7 +80,7 @@ func (a *Client) AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoW
 }
 
 /*
-  DeleteUser delete user API
+DeleteUser delete user API
 */
 func (a *Client) DeleteUser(params *DeleteUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteUserNoContent, error) {
 	// TODO: Validate the params before sending
@@ -118,7 +118,7 @@ func (a *Client) DeleteUser(params *DeleteUserParams, authInfo runtime.ClientAut
 }
 
 /*
-  EditUser edit user API
+EditUser edit user API
 */
 func (a *Client) EditUser(params *EditUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EditUserOK, error) {
 	// TODO: Validate the params before sending
@@ -156,7 +156,7 @@ func (a *Client) EditUser(params *EditUserParams, authInfo runtime.ClientAuthInf
 }
 
 /*
-  GetUser get user API
+GetUser get user API
 */
 func (a *Client) GetUser(params *GetUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserOK, error) {
 	// TODO: Validate the params before sending
@@ -194,7 +194,7 @@ func (a *Client) GetUser(params *GetUserParams, authInfo runtime.ClientAuthInfoW
 }
 
 /*
-  ListUser list user API
+ListUser list user API
 */
 func (a *Client) ListUser(params *ListUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListUserOK, error) {
 	// TODO: Validate the params before sending

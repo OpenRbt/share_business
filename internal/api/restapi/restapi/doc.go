@@ -2,18 +2,18 @@
 
 // Package restapi wash-bonus
 //
-//  microservice for the bonus system of self-service car washes
-//  Schemes:
-//    http
-//  Host: localhost
-//  BasePath: /
-//  Version: 1.0.0
+//	microservice for the bonus system of self-service car washes
+//	Schemes:
+//	  http
+//	Host: localhost
+//	BasePath: /
+//	Version: 1.0.0
 //
-//  Consumes:
-//    - application/json
+//	Consumes:
+//	  - application/json
 //
-//  Produces:
-//    - application/json
+//	Produces:
+//	  - application/json
 //
 // swagger:meta
 package restapi

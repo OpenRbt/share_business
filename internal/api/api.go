@@ -11,8 +11,6 @@ import (
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
 
 	"wash-bonus/internal/api/restapi/models"
-	permission "wash-bonus/internal/api/restapi/restapi/operations/permission"
-	role "wash-bonus/internal/api/restapi/restapi/operations/role"
 	user "wash-bonus/internal/api/restapi/restapi/operations/user"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 	washSession "wash-bonus/internal/api/restapi/restapi/operations/wash_session"
@@ -72,18 +70,18 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, erro
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 	api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
-	api.PermissionGetPermissionHandler = permission.GetPermissionHandlerFunc(svc.GetPermission)
-	api.PermissionAddPermissionHandler = permission.AddPermissionHandlerFunc(svc.AddPermission)
-	api.PermissionEditPermissionHandler = permission.EditPermissionHandlerFunc(svc.EditPermission)
-	api.PermissionDeletePermissionHandler = permission.DeletePermissionHandlerFunc(svc.DeletePermission)
-	api.PermissionListPermissionHandler = permission.ListPermissionHandlerFunc(svc.ListPermission)
-	api.RoleGetRoleHandler = role.GetRoleHandlerFunc(svc.GetRole)
-	api.RoleAddRoleHandler = role.AddRoleHandlerFunc(svc.AddRole)
-	api.RoleEditRoleHandler = role.EditRoleHandlerFunc(svc.EditRole)
-	api.RoleDeleteRoleHandler = role.DeleteRoleHandlerFunc(svc.DeleteRole)
-	api.RoleListRoleHandler = role.ListRoleHandlerFunc(svc.ListRole)
-	api.RoleAddPermissionsRoleHandler = role.AddPermissionsRoleHandlerFunc(svc.AddPermissionsRole)
-	api.RoleDeletePermissionsRoleHandler = role.DeletePermissionsRoleHandlerFunc(svc.DeletePermissionsRole)
+	// api.PermissionGetPermissionHandler = permission.GetPermissionHandlerFunc(svc.GetPermission)
+	// api.PermissionAddPermissionHandler = permission.AddPermissionHandlerFunc(svc.AddPermission)
+	// api.PermissionEditPermissionHandler = permission.EditPermissionHandlerFunc(svc.EditPermission)
+	// api.PermissionDeletePermissionHandler = permission.DeletePermissionHandlerFunc(svc.DeletePermission)
+	// api.PermissionListPermissionHandler = permission.ListPermissionHandlerFunc(svc.ListPermission)
+	// api.RoleGetRoleHandler = role.GetRoleHandlerFunc(svc.GetRole)
+	// api.RoleAddRoleHandler = role.AddRoleHandlerFunc(svc.AddRole)
+	// api.RoleEditRoleHandler = role.EditRoleHandlerFunc(svc.EditRole)
+	// api.RoleDeleteRoleHandler = role.DeleteRoleHandlerFunc(svc.DeleteRole)
+	// api.RoleListRoleHandler = role.ListRoleHandlerFunc(svc.ListRole)
+	// api.RoleAddPermissionsRoleHandler = role.AddPermissionsRoleHandlerFunc(svc.AddPermissionsRole)
+	// api.RoleDeletePermissionsRoleHandler = role.DeletePermissionsRoleHandlerFunc(svc.DeletePermissionsRole)
 	api.UserGetUserHandler = user.GetUserHandlerFunc(svc.GetUser)
 	api.UserAddUserHandler = user.AddUserHandlerFunc(svc.AddUser)
 	api.UserEditUserHandler = user.EditUserHandlerFunc(svc.EditUser)

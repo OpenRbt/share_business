@@ -35,10 +35,10 @@ func NewEditWashServer(ctx *middleware.Context, handler EditWashServerHandler) *
 	return &EditWashServer{Context: ctx, Handler: handler}
 }
 
-/* EditWashServer swagger:route PUT /washServer/edit WashServer editWashServer
+/*
+	EditWashServer swagger:route PUT /washServer/edit WashServer editWashServer
 
 EditWashServer edit wash server API
-
 */
 type EditWashServer struct {
 	Context *middleware.Context

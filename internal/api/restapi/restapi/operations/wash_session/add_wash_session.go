@@ -29,10 +29,10 @@ func NewAddWashSession(ctx *middleware.Context, handler AddWashSessionHandler) *
 	return &AddWashSession{Context: ctx, Handler: handler}
 }
 
-/* AddWashSession swagger:route POST /washSession/add WashSession addWashSession
+/*
+	AddWashSession swagger:route POST /washSession/add WashSession addWashSession
 
 AddWashSession add wash session API
-
 */
 type AddWashSession struct {
 	Context *middleware.Context

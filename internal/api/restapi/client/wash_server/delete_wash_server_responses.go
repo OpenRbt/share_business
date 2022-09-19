@@ -48,14 +48,44 @@ func NewDeleteWashServerNoContent() *DeleteWashServerNoContent {
 	return &DeleteWashServerNoContent{}
 }
 
-/* DeleteWashServerNoContent describes a response with status code 204, with default header values.
+/*
+DeleteWashServerNoContent describes a response with status code 204, with default header values.
 
 Deleted
 */
 type DeleteWashServerNoContent struct {
 }
 
+// IsSuccess returns true when this delete wash server no content response has a 2xx status code
+func (o *DeleteWashServerNoContent) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this delete wash server no content response has a 3xx status code
+func (o *DeleteWashServerNoContent) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this delete wash server no content response has a 4xx status code
+func (o *DeleteWashServerNoContent) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this delete wash server no content response has a 5xx status code
+func (o *DeleteWashServerNoContent) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this delete wash server no content response a status code equal to that given
+func (o *DeleteWashServerNoContent) IsCode(code int) bool {
+	return code == 204
+}
+
 func (o *DeleteWashServerNoContent) Error() string {
+	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServerNoContent ", 204)
+}
+
+func (o *DeleteWashServerNoContent) String() string {
 	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServerNoContent ", 204)
 }
 
@@ -71,7 +101,8 @@ func NewDeleteWashServerDefault(code int) *DeleteWashServerDefault {
 	}
 }
 
-/* DeleteWashServerDefault describes a response with status code -1, with default header values.
+/*
+DeleteWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -86,9 +117,39 @@ func (o *DeleteWashServerDefault) Code() int {
 	return o._statusCode
 }
 
+// IsSuccess returns true when this delete wash server default response has a 2xx status code
+func (o *DeleteWashServerDefault) IsSuccess() bool {
+	return o._statusCode/100 == 2
+}
+
+// IsRedirect returns true when this delete wash server default response has a 3xx status code
+func (o *DeleteWashServerDefault) IsRedirect() bool {
+	return o._statusCode/100 == 3
+}
+
+// IsClientError returns true when this delete wash server default response has a 4xx status code
+func (o *DeleteWashServerDefault) IsClientError() bool {
+	return o._statusCode/100 == 4
+}
+
+// IsServerError returns true when this delete wash server default response has a 5xx status code
+func (o *DeleteWashServerDefault) IsServerError() bool {
+	return o._statusCode/100 == 5
+}
+
+// IsCode returns true when this delete wash server default response a status code equal to that given
+func (o *DeleteWashServerDefault) IsCode(code int) bool {
+	return o._statusCode == code
+}
+
 func (o *DeleteWashServerDefault) Error() string {
 	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServer default  %+v", o._statusCode, o.Payload)
 }
+
+func (o *DeleteWashServerDefault) String() string {
+	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServer default  %+v", o._statusCode, o.Payload)
+}
+
 func (o *DeleteWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -105,7 +166,8 @@ func (o *DeleteWashServerDefault) readResponse(response runtime.ClientResponse, 
 	return nil
 }
 
-/*DeleteWashServerBody delete wash server body
+/*
+DeleteWashServerBody delete wash server body
 swagger:model DeleteWashServerBody
 */
 type DeleteWashServerBody struct {

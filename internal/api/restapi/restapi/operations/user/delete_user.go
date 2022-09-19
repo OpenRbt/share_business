@@ -32,10 +32,10 @@ func NewDeleteUser(ctx *middleware.Context, handler DeleteUserHandler) *DeleteUs
 	return &DeleteUser{Context: ctx, Handler: handler}
 }
 
-/* DeleteUser swagger:route DELETE /user/delete User deleteUser
+/*
+	DeleteUser swagger:route DELETE /user/delete User deleteUser
 
 DeleteUser delete user API
-
 */
 type DeleteUser struct {
 	Context *middleware.Context

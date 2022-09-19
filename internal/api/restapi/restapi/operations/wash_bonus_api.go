@@ -19,8 +19,6 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"wash-bonus/internal/api/restapi/restapi/operations/permission"
-	"wash-bonus/internal/api/restapi/restapi/operations/role"
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
 	"wash-bonus/internal/api/restapi/restapi/operations/user"
 	"wash-bonus/internal/api/restapi/restapi/operations/wash_server"
@@ -49,15 +47,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		PermissionAddPermissionHandler: permission.AddPermissionHandlerFunc(func(params permission.AddPermissionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation permission.AddPermission has not yet been implemented")
-		}),
-		RoleAddPermissionsRoleHandler: role.AddPermissionsRoleHandlerFunc(func(params role.AddPermissionsRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.AddPermissionsRole has not yet been implemented")
-		}),
-		RoleAddRoleHandler: role.AddRoleHandlerFunc(func(params role.AddRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.AddRole has not yet been implemented")
-		}),
 		StandardAddTestDataHandler: standard.AddTestDataHandlerFunc(func(params standard.AddTestDataParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation standard.AddTestData has not yet been implemented")
 		}),
@@ -70,15 +59,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		WashSessionAddWashSessionHandler: wash_session.AddWashSessionHandlerFunc(func(params wash_session.AddWashSessionParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_session.AddWashSession has not yet been implemented")
 		}),
-		PermissionDeletePermissionHandler: permission.DeletePermissionHandlerFunc(func(params permission.DeletePermissionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation permission.DeletePermission has not yet been implemented")
-		}),
-		RoleDeletePermissionsRoleHandler: role.DeletePermissionsRoleHandlerFunc(func(params role.DeletePermissionsRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.DeletePermissionsRole has not yet been implemented")
-		}),
-		RoleDeleteRoleHandler: role.DeleteRoleHandlerFunc(func(params role.DeleteRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.DeleteRole has not yet been implemented")
-		}),
 		UserDeleteUserHandler: user.DeleteUserHandlerFunc(func(params user.DeleteUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.DeleteUser has not yet been implemented")
 		}),
@@ -88,12 +68,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		WashSessionDeleteWashSessionHandler: wash_session.DeleteWashSessionHandlerFunc(func(params wash_session.DeleteWashSessionParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_session.DeleteWashSession has not yet been implemented")
 		}),
-		PermissionEditPermissionHandler: permission.EditPermissionHandlerFunc(func(params permission.EditPermissionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation permission.EditPermission has not yet been implemented")
-		}),
-		RoleEditRoleHandler: role.EditRoleHandlerFunc(func(params role.EditRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.EditRole has not yet been implemented")
-		}),
 		UserEditUserHandler: user.EditUserHandlerFunc(func(params user.EditUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.EditUser has not yet been implemented")
 		}),
@@ -102,12 +76,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		}),
 		WashSessionEditWashSessionHandler: wash_session.EditWashSessionHandlerFunc(func(params wash_session.EditWashSessionParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_session.EditWashSession has not yet been implemented")
-		}),
-		PermissionGetPermissionHandler: permission.GetPermissionHandlerFunc(func(params permission.GetPermissionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation permission.GetPermission has not yet been implemented")
-		}),
-		RoleGetRoleHandler: role.GetRoleHandlerFunc(func(params role.GetRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.GetRole has not yet been implemented")
 		}),
 		UserGetUserHandler: user.GetUserHandlerFunc(func(params user.GetUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.GetUser has not yet been implemented")
@@ -120,12 +88,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		}),
 		StandardHealthCheckHandler: standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation standard.HealthCheck has not yet been implemented")
-		}),
-		PermissionListPermissionHandler: permission.ListPermissionHandlerFunc(func(params permission.ListPermissionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation permission.ListPermission has not yet been implemented")
-		}),
-		RoleListRoleHandler: role.ListRoleHandlerFunc(func(params role.ListRoleParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation role.ListRole has not yet been implemented")
 		}),
 		UserListUserHandler: user.ListUserHandlerFunc(func(params user.ListUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.ListUser has not yet been implemented")
@@ -186,12 +148,6 @@ type WashBonusAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// PermissionAddPermissionHandler sets the operation handler for the add permission operation
-	PermissionAddPermissionHandler permission.AddPermissionHandler
-	// RoleAddPermissionsRoleHandler sets the operation handler for the add permissions role operation
-	RoleAddPermissionsRoleHandler role.AddPermissionsRoleHandler
-	// RoleAddRoleHandler sets the operation handler for the add role operation
-	RoleAddRoleHandler role.AddRoleHandler
 	// StandardAddTestDataHandler sets the operation handler for the add test data operation
 	StandardAddTestDataHandler standard.AddTestDataHandler
 	// UserAddUserHandler sets the operation handler for the add user operation
@@ -200,32 +156,18 @@ type WashBonusAPI struct {
 	WashServerAddWashServerHandler wash_server.AddWashServerHandler
 	// WashSessionAddWashSessionHandler sets the operation handler for the add wash session operation
 	WashSessionAddWashSessionHandler wash_session.AddWashSessionHandler
-	// PermissionDeletePermissionHandler sets the operation handler for the delete permission operation
-	PermissionDeletePermissionHandler permission.DeletePermissionHandler
-	// RoleDeletePermissionsRoleHandler sets the operation handler for the delete permissions role operation
-	RoleDeletePermissionsRoleHandler role.DeletePermissionsRoleHandler
-	// RoleDeleteRoleHandler sets the operation handler for the delete role operation
-	RoleDeleteRoleHandler role.DeleteRoleHandler
 	// UserDeleteUserHandler sets the operation handler for the delete user operation
 	UserDeleteUserHandler user.DeleteUserHandler
 	// WashServerDeleteWashServerHandler sets the operation handler for the delete wash server operation
 	WashServerDeleteWashServerHandler wash_server.DeleteWashServerHandler
 	// WashSessionDeleteWashSessionHandler sets the operation handler for the delete wash session operation
 	WashSessionDeleteWashSessionHandler wash_session.DeleteWashSessionHandler
-	// PermissionEditPermissionHandler sets the operation handler for the edit permission operation
-	PermissionEditPermissionHandler permission.EditPermissionHandler
-	// RoleEditRoleHandler sets the operation handler for the edit role operation
-	RoleEditRoleHandler role.EditRoleHandler
 	// UserEditUserHandler sets the operation handler for the edit user operation
 	UserEditUserHandler user.EditUserHandler
 	// WashServerEditWashServerHandler sets the operation handler for the edit wash server operation
 	WashServerEditWashServerHandler wash_server.EditWashServerHandler
 	// WashSessionEditWashSessionHandler sets the operation handler for the edit wash session operation
 	WashSessionEditWashSessionHandler wash_session.EditWashSessionHandler
-	// PermissionGetPermissionHandler sets the operation handler for the get permission operation
-	PermissionGetPermissionHandler permission.GetPermissionHandler
-	// RoleGetRoleHandler sets the operation handler for the get role operation
-	RoleGetRoleHandler role.GetRoleHandler
 	// UserGetUserHandler sets the operation handler for the get user operation
 	UserGetUserHandler user.GetUserHandler
 	// WashServerGetWashServerHandler sets the operation handler for the get wash server operation
@@ -234,10 +176,6 @@ type WashBonusAPI struct {
 	WashSessionGetWashSessionHandler wash_session.GetWashSessionHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
 	StandardHealthCheckHandler standard.HealthCheckHandler
-	// PermissionListPermissionHandler sets the operation handler for the list permission operation
-	PermissionListPermissionHandler permission.ListPermissionHandler
-	// RoleListRoleHandler sets the operation handler for the list role operation
-	RoleListRoleHandler role.ListRoleHandler
 	// UserListUserHandler sets the operation handler for the list user operation
 	UserListUserHandler user.ListUserHandler
 	// WashServerListWashServerHandler sets the operation handler for the list wash server operation
@@ -325,15 +263,6 @@ func (o *WashBonusAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
-	if o.PermissionAddPermissionHandler == nil {
-		unregistered = append(unregistered, "permission.AddPermissionHandler")
-	}
-	if o.RoleAddPermissionsRoleHandler == nil {
-		unregistered = append(unregistered, "role.AddPermissionsRoleHandler")
-	}
-	if o.RoleAddRoleHandler == nil {
-		unregistered = append(unregistered, "role.AddRoleHandler")
-	}
 	if o.StandardAddTestDataHandler == nil {
 		unregistered = append(unregistered, "standard.AddTestDataHandler")
 	}
@@ -346,15 +275,6 @@ func (o *WashBonusAPI) Validate() error {
 	if o.WashSessionAddWashSessionHandler == nil {
 		unregistered = append(unregistered, "wash_session.AddWashSessionHandler")
 	}
-	if o.PermissionDeletePermissionHandler == nil {
-		unregistered = append(unregistered, "permission.DeletePermissionHandler")
-	}
-	if o.RoleDeletePermissionsRoleHandler == nil {
-		unregistered = append(unregistered, "role.DeletePermissionsRoleHandler")
-	}
-	if o.RoleDeleteRoleHandler == nil {
-		unregistered = append(unregistered, "role.DeleteRoleHandler")
-	}
 	if o.UserDeleteUserHandler == nil {
 		unregistered = append(unregistered, "user.DeleteUserHandler")
 	}
@@ -364,12 +284,6 @@ func (o *WashBonusAPI) Validate() error {
 	if o.WashSessionDeleteWashSessionHandler == nil {
 		unregistered = append(unregistered, "wash_session.DeleteWashSessionHandler")
 	}
-	if o.PermissionEditPermissionHandler == nil {
-		unregistered = append(unregistered, "permission.EditPermissionHandler")
-	}
-	if o.RoleEditRoleHandler == nil {
-		unregistered = append(unregistered, "role.EditRoleHandler")
-	}
 	if o.UserEditUserHandler == nil {
 		unregistered = append(unregistered, "user.EditUserHandler")
 	}
@@ -378,12 +292,6 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.WashSessionEditWashSessionHandler == nil {
 		unregistered = append(unregistered, "wash_session.EditWashSessionHandler")
-	}
-	if o.PermissionGetPermissionHandler == nil {
-		unregistered = append(unregistered, "permission.GetPermissionHandler")
-	}
-	if o.RoleGetRoleHandler == nil {
-		unregistered = append(unregistered, "role.GetRoleHandler")
 	}
 	if o.UserGetUserHandler == nil {
 		unregistered = append(unregistered, "user.GetUserHandler")
@@ -396,12 +304,6 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.StandardHealthCheckHandler == nil {
 		unregistered = append(unregistered, "standard.HealthCheckHandler")
-	}
-	if o.PermissionListPermissionHandler == nil {
-		unregistered = append(unregistered, "permission.ListPermissionHandler")
-	}
-	if o.RoleListRoleHandler == nil {
-		unregistered = append(unregistered, "role.ListRoleHandler")
 	}
 	if o.UserListUserHandler == nil {
 		unregistered = append(unregistered, "user.ListUserHandler")
@@ -512,18 +414,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/permission/add"] = permission.NewAddPermission(o.context, o.PermissionAddPermissionHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/role/addPermissions"] = role.NewAddPermissionsRole(o.context, o.RoleAddPermissionsRoleHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/role/add"] = role.NewAddRole(o.context, o.RoleAddRoleHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
 	o.handlers["POST"]["/addTestData"] = standard.NewAddTestData(o.context, o.StandardAddTestDataHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -540,18 +430,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/permission/delete"] = permission.NewDeletePermission(o.context, o.PermissionDeletePermissionHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/role/deletePermissions"] = role.NewDeletePermissionsRole(o.context, o.RoleDeletePermissionsRoleHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
-	o.handlers["DELETE"]["/role/delete"] = role.NewDeleteRole(o.context, o.RoleDeleteRoleHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
 	o.handlers["DELETE"]["/user/delete"] = user.NewDeleteUser(o.context, o.UserDeleteUserHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
@@ -564,14 +442,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/permission/edit"] = permission.NewEditPermission(o.context, o.PermissionEditPermissionHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/role/edit"] = role.NewEditRole(o.context, o.RoleEditRoleHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
 	o.handlers["PUT"]["/user/edit"] = user.NewEditUser(o.context, o.UserEditUserHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
@@ -581,14 +451,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/washSession/edit"] = wash_session.NewEditWashSession(o.context, o.WashSessionEditWashSessionHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/permission/get"] = permission.NewGetPermission(o.context, o.PermissionGetPermissionHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/role/get"] = role.NewGetRole(o.context, o.RoleGetRoleHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -605,14 +467,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/healthCheck"] = standard.NewHealthCheck(o.context, o.StandardHealthCheckHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/permission/list"] = permission.NewListPermission(o.context, o.PermissionListPermissionHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/role/list"] = role.NewListRole(o.context, o.RoleListRoleHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

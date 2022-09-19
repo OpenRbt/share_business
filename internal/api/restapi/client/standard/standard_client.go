@@ -38,7 +38,7 @@ type ClientService interface {
 }
 
 /*
-  AddTestData add test data API
+AddTestData add test data API
 */
 func (a *Client) AddTestData(params *AddTestDataParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddTestDataOK, error) {
 	// TODO: Validate the params before sending
@@ -76,7 +76,7 @@ func (a *Client) AddTestData(params *AddTestDataParams, authInfo runtime.ClientA
 }
 
 /*
-  HealthCheck health check API
+HealthCheck health check API
 */
 func (a *Client) HealthCheck(params *HealthCheckParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*HealthCheckOK, error) {
 	// TODO: Validate the params before sending

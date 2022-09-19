@@ -54,10 +54,12 @@ func NewAddWashSessionParamsWithHTTPClient(client *http.Client) *AddWashSessionP
 	}
 }
 
-/* AddWashSessionParams contains all the parameters to send to the API endpoint
-   for the add wash session operation.
+/*
+AddWashSessionParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the add wash session operation.
+
+	Typically these are written to a http.Request.
 */
 type AddWashSessionParams struct {
 

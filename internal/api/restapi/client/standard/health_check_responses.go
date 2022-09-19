@@ -39,7 +39,8 @@ func NewHealthCheckOK() *HealthCheckOK {
 	return &HealthCheckOK{}
 }
 
-/* HealthCheckOK describes a response with status code 200, with default header values.
+/*
+HealthCheckOK describes a response with status code 200, with default header values.
 
 OK
 */
@@ -47,9 +48,39 @@ type HealthCheckOK struct {
 	Payload *HealthCheckOKBody
 }
 
+// IsSuccess returns true when this health check o k response has a 2xx status code
+func (o *HealthCheckOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this health check o k response has a 3xx status code
+func (o *HealthCheckOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this health check o k response has a 4xx status code
+func (o *HealthCheckOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this health check o k response has a 5xx status code
+func (o *HealthCheckOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this health check o k response a status code equal to that given
+func (o *HealthCheckOK) IsCode(code int) bool {
+	return code == 200
+}
+
 func (o *HealthCheckOK) Error() string {
 	return fmt.Sprintf("[GET /healthCheck][%d] healthCheckOK  %+v", 200, o.Payload)
 }
+
+func (o *HealthCheckOK) String() string {
+	return fmt.Sprintf("[GET /healthCheck][%d] healthCheckOK  %+v", 200, o.Payload)
+}
+
 func (o *HealthCheckOK) GetPayload() *HealthCheckOKBody {
 	return o.Payload
 }
@@ -66,7 +97,8 @@ func (o *HealthCheckOK) readResponse(response runtime.ClientResponse, consumer r
 	return nil
 }
 
-/*HealthCheckOKBody health check o k body
+/*
+HealthCheckOKBody health check o k body
 swagger:model HealthCheckOKBody
 */
 type HealthCheckOKBody struct {

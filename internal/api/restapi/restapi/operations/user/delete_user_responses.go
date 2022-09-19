@@ -16,7 +16,8 @@ import (
 // DeleteUserNoContentCode is the HTTP code returned for type DeleteUserNoContent
 const DeleteUserNoContentCode int = 204
 
-/*DeleteUserNoContent Deleted
+/*
+DeleteUserNoContent Deleted
 
 swagger:response deleteUserNoContent
 */
@@ -37,7 +38,8 @@ func (o *DeleteUserNoContent) WriteResponse(rw http.ResponseWriter, producer run
 	rw.WriteHeader(204)
 }
 
-/*DeleteUserDefault error
+/*
+DeleteUserDefault error
 
 swagger:response deleteUserDefault
 */

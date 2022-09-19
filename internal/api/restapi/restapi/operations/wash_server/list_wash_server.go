@@ -36,10 +36,10 @@ func NewListWashServer(ctx *middleware.Context, handler ListWashServerHandler) *
 	return &ListWashServer{Context: ctx, Handler: handler}
 }
 
-/* ListWashServer swagger:route POST /washServer/list WashServer listWashServer
+/*
+	ListWashServer swagger:route POST /washServer/list WashServer listWashServer
 
 ListWashServer list wash server API
-
 */
 type ListWashServer struct {
 	Context *middleware.Context

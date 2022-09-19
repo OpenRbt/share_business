@@ -19,9 +19,6 @@ type UserAdd struct {
 
 	// active
 	Active bool `json:"active,omitempty"`
-
-	// role
-	Role string `json:"role,omitempty"`
 }
 
 // Validate validates this user add

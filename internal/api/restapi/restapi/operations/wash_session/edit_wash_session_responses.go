@@ -16,7 +16,8 @@ import (
 // EditWashSessionOKCode is the HTTP code returned for type EditWashSessionOK
 const EditWashSessionOKCode int = 200
 
-/*EditWashSessionOK OK
+/*
+EditWashSessionOK OK
 
 swagger:response editWashSessionOK
 */
@@ -37,7 +38,8 @@ func (o *EditWashSessionOK) WriteResponse(rw http.ResponseWriter, producer runti
 	rw.WriteHeader(200)
 }
 
-/*EditWashSessionDefault error
+/*
+EditWashSessionDefault error
 
 swagger:response editWashSessionDefault
 */

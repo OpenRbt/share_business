@@ -52,10 +52,12 @@ func NewDeleteWashServerParamsWithHTTPClient(client *http.Client) *DeleteWashSer
 	}
 }
 
-/* DeleteWashServerParams contains all the parameters to send to the API endpoint
-   for the delete wash server operation.
+/*
+DeleteWashServerParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the delete wash server operation.
+
+	Typically these are written to a http.Request.
 */
 type DeleteWashServerParams struct {
 

@@ -16,7 +16,8 @@ import (
 // ListWashSessionOKCode is the HTTP code returned for type ListWashSessionOK
 const ListWashSessionOKCode int = 200
 
-/*ListWashSessionOK OK
+/*
+ListWashSessionOK OK
 
 swagger:response listWashSessionOK
 */
@@ -57,7 +58,8 @@ func (o *ListWashSessionOK) WriteResponse(rw http.ResponseWriter, producer runti
 	}
 }
 
-/*ListWashSessionDefault error
+/*
+ListWashSessionDefault error
 
 swagger:response listWashSessionDefault
 */

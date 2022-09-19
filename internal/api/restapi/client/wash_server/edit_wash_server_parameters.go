@@ -52,10 +52,12 @@ func NewEditWashServerParamsWithHTTPClient(client *http.Client) *EditWashServerP
 	}
 }
 
-/* EditWashServerParams contains all the parameters to send to the API endpoint
-   for the edit wash server operation.
+/*
+EditWashServerParams contains all the parameters to send to the API endpoint
 
-   Typically these are written to a http.Request.
+	for the edit wash server operation.
+
+	Typically these are written to a http.Request.
 */
 type EditWashServerParams struct {
 
