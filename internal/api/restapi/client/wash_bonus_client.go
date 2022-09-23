@@ -10,6 +10,7 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
+	"wash-bonus/internal/api/restapi/client/bonus_balance"
 	"wash-bonus/internal/api/restapi/client/standard"
 	"wash-bonus/internal/api/restapi/client/user"
 	"wash-bonus/internal/api/restapi/client/wash_server"
@@ -57,6 +58,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *WashBonus 
 
 	cli := new(WashBonus)
 	cli.Transport = transport
+	cli.BonusBalance = bonus_balance.New(transport, formats)
 	cli.Standard = standard.New(transport, formats)
 	cli.User = user.New(transport, formats)
 	cli.WashServer = wash_server.New(transport, formats)
@@ -104,6 +106,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // WashBonus is a client for wash bonus
 type WashBonus struct {
+	BonusBalance bonus_balance.ClientService
+
 	Standard standard.ClientService
 
 	User user.ClientService
@@ -116,6 +120,7 @@ type WashBonus struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *WashBonus) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
+	c.BonusBalance.SetTransport(transport)
 	c.Standard.SetTransport(transport)
 	c.User.SetTransport(transport)
 	c.WashServer.SetTransport(transport)

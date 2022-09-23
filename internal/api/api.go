@@ -11,6 +11,7 @@ import (
 
 	"wash-bonus/internal/api/restapi/restapi"
 	"wash-bonus/internal/api/restapi/restapi/operations"
+	"wash-bonus/internal/api/restapi/restapi/operations/bonus_balance"
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
 
 	"wash-bonus/internal/api/restapi/models"
@@ -74,8 +75,21 @@ func NewServer(appl app.App, userSvc user2.UserSvc, cfg Config, firebase firebas
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 	api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
+<<<<<<< HEAD
 
 	setUserHandlers(api, svc)
+=======
+	api.UserGetUserHandler = user.GetUserHandlerFunc(svc.GetUser)
+	api.UserAddUserHandler = user.AddUserHandlerFunc(svc.AddUser)
+	api.UserEditUserHandler = user.EditUserHandlerFunc(svc.EditUser)
+	api.UserDeleteUserHandler = user.DeleteUserHandlerFunc(svc.DeleteUser)
+	api.UserListUserHandler = user.ListUserHandlerFunc(svc.ListUser)
+
+	api.BonusBalanceGetBonusBalanceHandler = bonus_balance.GetBonusBalanceHandlerFunc(svc.GetBonusBalance)
+	api.BonusBalanceAddBonusBalanceHandler = bonus_balance.AddBonusBalanceHandlerFunc(svc.AddBonusBalance)
+	api.BonusBalanceEditBonusBalanceHandler = bonus_balance.EditBonusBalanceHandlerFunc(svc.EditBonusBalance)
+	api.BonusBalanceDeleteBonusBalanceHandler = bonus_balance.DeleteBonusBalanceHandlerFunc(svc.DeleteBonusBalance)
+>>>>>>> Add swagger
 
 	api.WashServerGetWashServerHandler = washServer.GetWashServerHandlerFunc(svc.GetWashServer)
 	api.WashServerAddWashServerHandler = washServer.AddWashServerHandlerFunc(svc.AddWashServer)

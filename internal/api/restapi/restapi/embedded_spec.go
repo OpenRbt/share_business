@@ -53,6 +53,145 @@ func init() {
         }
       }
     },
+    "/balance/add": {
+      "post": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "addBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/balanceAdd"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/balance"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/balance/deleted": {
+      "delete": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "deleteBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/balance/edit": {
+      "put": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "editBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/balanceAdd"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/balance/get": {
+      "post": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "getBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/balance"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/healthCheck": {
       "get": {
         "security": [
@@ -446,6 +585,33 @@ func init() {
     }
   },
   "definitions": {
+    "balance": {
+      "description": "bonus object",
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "balanceAdd": {
+      "description": "bonus model for add and edit methods",
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -667,6 +833,145 @@ func init() {
         }
       }
     },
+    "/balance/add": {
+      "post": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "addBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/balanceAdd"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/balance"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/balance/deleted": {
+      "delete": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "deleteBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/balance/edit": {
+      "put": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "editBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/balanceAdd"
+                },
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/balance/get": {
+      "post": {
+        "tags": [
+          "BonusBalance"
+        ],
+        "operationId": "getBonusBalance",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/balance"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/healthCheck": {
       "get": {
         "security": [
@@ -1060,6 +1365,33 @@ func init() {
     }
   },
   "definitions": {
+    "balance": {
+      "description": "bonus object",
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "balanceAdd": {
+      "description": "bonus model for add and edit methods",
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [

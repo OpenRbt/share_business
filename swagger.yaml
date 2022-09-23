@@ -46,16 +46,89 @@ paths:
           schema:
             $ref: "#/definitions/error"
 
-  /user:
-    get:
+  /balance/get:    
+    post: 
       tags:
-        - User
-      operationId: getCurrentUser
+        - BonusBalance
+      operationId: getBonusBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                type: string 
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/user"
+            $ref: "#/definitions/balance"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+  /balance/add:
+    post: 
+      tags:
+        - BonusBalance
+      operationId: addBonusBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/balanceAdd" 
+      responses:
+        201:
+          description: Created 
+          schema:
+            $ref: "#/definitions/balance"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /balance/edit:
+    put: 
+      tags:
+        - BonusBalance
+      operationId: editBonusBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                 type: string
+              data:
+                $ref: "#/definitions/balanceAdd" 
+      responses:
+        200:
+          description: OK
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /balance/deleted:
+    delete: 
+      tags:
+        - BonusBalance
+      operationId: deleteBonusBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              user_id:
+                type: string 
+      responses:
+        204:
+          description: Deleted
         default:
           description: error
           schema:
@@ -305,8 +378,36 @@ definitions:
         type: string
         format: date-time
         x-nullable: true
+<<<<<<< HEAD
 
   userUpdate:
+=======
+      token:
+        type: string
+      type:
+        type: string
+  
+  balance:
+    type: object
+    description: "bonus object"
+    properties:
+      id:
+        type: string
+      user_id:
+        type: string
+      balance:
+        type: string
+  balanceAdd:
+    type: object
+    description: "bonus model for add and edit methods"
+    properties:
+      balance:
+        type: string
+      user_id:
+        type: string
+
+  user:
+>>>>>>> Add swagger
     type: object
     description: "user model for edit method"
     properties:

@@ -9,6 +9,30 @@ import (
 
 // App provides application features service.
 type App interface {
+<<<<<<< HEAD
+=======
+	GetSession(prof Profile, id string) (*Session, error)
+	AddSession(prof Profile, m *Session) (*Session, error)
+	EditSession(prof Profile, id string, m *Session) error
+	DeleteSession(prof Profile, id string) error
+	ListSession(prof Profile, params *ListParams) ([]*Session, []string, error)
+
+	GetToken(prof Profile, id string) (*Token, error)
+	AddToken(prof Profile, m *Token) (*Token, error)
+	DeleteToken(prof Profile, id string) error
+
+	GetUser(prof Profile, id string) (*User, error)
+	AddUser(prof Profile, m *User) (*User, error)
+	EditUser(prof Profile, id string, m *User) error
+	DeleteUser(prof Profile, id string) error
+	ListUser(prof Profile, params *ListParams) ([]*User, []string, error)
+
+	GetBonusBalance(id string) (*BonusBalance, error)
+	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
+	EditBonusBalance(id string, balance float64) error
+	DeleteBonusBalance(id string, userId string) error
+
+>>>>>>> Add swagger
 	GetWashServer(prof Profile, id string) (*WashServer, error)
 	AddWashServer(prof Profile, m *WashServer) (*WashServer, error)
 	EditWashServer(prof Profile, id string, m *WashServer) error
@@ -33,8 +57,9 @@ type Repo interface {
 	DeleteToken(id string, profileID string, isolatedEntityID string) error
 
 	GetBonusBalance(id string) (*BonusBalance, error)
-	AddBonusBalance(userId string, balance float64) (*BonusBalance, error)
+	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
 	EditBonusBalance(id string, balance float64) error
+	DeleteBonusBalance(id string, userId string) error
 
 	GetUser(id string, isolatedEntityID string) (*User, error)
 	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
