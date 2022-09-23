@@ -60,7 +60,7 @@ func (a *Repo) EditBonusBalance(id string, balance float64) error {
 	return nil
 }
 
-func (a *Repo) DeleteBonusBalance(id string, userId string, balance float64) error {
+func (a *Repo) DeleteBonusBalance(id string, userId string) error {
 	t := time.Now()
 	res, err := a.db.NamedExec(sqlDeleteBonusBalance, argDeleteBonusBalance{
 		ID:        id,

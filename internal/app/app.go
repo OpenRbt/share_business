@@ -21,6 +21,11 @@ type App interface {
 	DeleteUser(prof Profile, id string) error
 	ListUser(prof Profile, params *ListParams) ([]*User, []string, error)
 
+	GetBonusBalance(id string) (*BonusBalance, error)
+	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
+	EditBonusBalance(id string, balance float64) error
+	DeleteBonusBalance(id string, userId string) error
+
 	GetWashServer(prof Profile, id string) (*WashServer, error)
 	AddWashServer(prof Profile, m *WashServer) (*WashServer, error)
 	EditWashServer(prof Profile, id string, m *WashServer) error
@@ -49,8 +54,9 @@ type Repo interface {
 	DeleteToken(id string, profileID string, isolatedEntityID string) error
 
 	GetBonusBalance(id string) (*BonusBalance, error)
-	AddBonusBalance(userId string, balance float64) (*BonusBalance, error)
+	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
 	EditBonusBalance(id string, balance float64) error
+	DeleteBonusBalance(id string, userId string) error
 
 	GetUser(id string, isolatedEntityID string) (*User, error)
 	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
