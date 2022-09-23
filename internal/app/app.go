@@ -20,6 +20,29 @@ type App interface {
 
 // Repo interface for data user
 type Repo interface {
+<<<<<<< HEAD
+=======
+	GetSession(id string, isolatedEntityID string) (*Session, error)
+	AddSession(profileID string, isolatedEntityID string, m *Session) (*Session, error)
+	EditSession(id string, isolatedEntityID string, m *Session) error
+	DeleteSession(id string, profileID string, isolatedEntityID string) error
+	ListSession(isolatedEntityID string, params *ListParams) ([]*Session, []string, error)
+
+	GetToken(id string, isolatedEntityID string) (*Token, error)
+	AddToken(profileID string, isolatedEntityID string, m *Token) (*Token, error)
+	DeleteToken(id string, profileID string, isolatedEntityID string) error
+
+	GetBonusBalance(id string) (*BonusBalance, error)
+	AddBonusBalance(userId string, balance float64) (*BonusBalance, error)
+	EditBonusBalance(id string, balance float64) error
+
+	GetUser(id string, isolatedEntityID string) (*User, error)
+	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
+	EditUser(id string, isolatedEntityID string, m *User) error
+	DeleteUser(id string, profileID string, isolatedEntityID string) error
+	ListUser(isolatedEntityID string, params *ListParams) ([]*User, []string, error)
+
+>>>>>>> Add BonusBalance
 	GetWashServer(id string, isolatedEntityID string) (*WashServer, error)
 	AddWashServer(profileID string, isolatedEntityID string, m *WashServer) (*WashServer, error)
 	EditWashServer(id string, isolatedEntityID string, m *WashServer) error
