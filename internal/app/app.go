@@ -48,6 +48,10 @@ type Repo interface {
 	AddToken(profileID string, isolatedEntityID string, m *Token) (*Token, error)
 	DeleteToken(id string, profileID string, isolatedEntityID string) error
 
+	GetBonusBalance(id string) (*BonusBalance, error)
+	AddBonusBalance(userId string, balance float64) (*BonusBalance, error)
+	EditBonusBalance(id string, balance float64) error
+
 	GetUser(id string, isolatedEntityID string) (*User, error)
 	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
 	EditUser(id string, isolatedEntityID string, m *User) error
