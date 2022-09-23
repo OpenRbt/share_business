@@ -35,11 +35,6 @@ type Repo struct {
 	db *DB
 }
 
-type RolePermission struct {
-	RoleID       uuid.UUID `db:"role_id"`
-	PermissionID uuid.UUID `db:"permissions_id"`
-}
-
 func connect(ctx context.Context, cfg pqx.Config, migrationDir string, resetDB bool) (*DB, error) {
 	if resetDB {
 		if err := migration.ResetAll(ctx, migrationDir, cfg); err != nil {

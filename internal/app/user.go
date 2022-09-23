@@ -11,7 +11,7 @@ type User struct {
 	CreatedAt  *time.Time
 	ID         string
 	ModifiedAt *time.Time
-	Role       *Role
+	// Role       *Role
 }
 
 func (a *app) GetUser(prof Profile, id string) (*User, error) {

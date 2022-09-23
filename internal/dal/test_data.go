@@ -12,24 +12,6 @@ import (
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 var (
-	testPermission1 = &app.Permission{
-		Name: "quia",
-	}
-	testPermission2 = &app.Permission{
-		Name: "odio",
-	}
-	testPermissions = []*app.Permission{testPermission1, testPermission2}
-	testRole1       = &app.Role{
-		Active:      true,
-		Name:        "ea",
-		Permissions: testPermissions,
-	}
-	testRole2 = &app.Role{
-		Active:      true,
-		Name:        "ipsa",
-		Permissions: testPermissions,
-	}
-	testRoles    = []*app.Role{testRole1, testRole2}
 	testSession1 = &app.Session{
 		Active:       false,
 		ClosingAt:    mustParseTime("2003-12-18T17:06:14.544Z"),
@@ -62,13 +44,11 @@ var (
 		Active:     true,
 		CreatedAt:  mustParseTime("1923-06-18T23:02:58.680Z"),
 		ModifiedAt: mustParseTime("2002-08-09T19:21:15.435Z"),
-		Role:       testRole1,
 	}
 	testUser2 = &app.User{
 		Active:     true,
 		CreatedAt:  mustParseTime("1985-03-28T22:44:57.945Z"),
 		ModifiedAt: mustParseTime("1983-12-09T18:32:01.612Z"),
-		Role:       testRole2,
 	}
 	testUsers       = []*app.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{
@@ -109,14 +89,6 @@ var (
 
 func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
 	var err error
-	testPermission1.ID, err = a.addPermission(profileID, isolatedEntityID, testPermission1)
-	if err != nil {
-		return err
-	}
-	testPermission2.ID, err = a.addPermission(profileID, isolatedEntityID, testPermission2)
-	if err != nil {
-		return err
-	}
 	testToken1.ID, err = a.addToken(profileID, isolatedEntityID, testToken1)
 	if err != nil {
 		return err
@@ -130,14 +102,6 @@ func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
 		return err
 	}
 	testWashServer2.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer2)
-	if err != nil {
-		return err
-	}
-	testRole1.ID, err = a.addRole(profileID, isolatedEntityID, testRole1)
-	if err != nil {
-		return err
-	}
-	testRole2.ID, err = a.addRole(profileID, isolatedEntityID, testRole2)
 	if err != nil {
 		return err
 	}

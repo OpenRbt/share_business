@@ -5,20 +5,6 @@ package app
 
 // App provides application features service.
 type App interface {
-	GetPermission(prof Profile, id string) (*Permission, error)
-	AddPermission(prof Profile, m *Permission) (*Permission, error)
-	EditPermission(prof Profile, id string, m *Permission) error
-	DeletePermission(prof Profile, id string) error
-	ListPermission(prof Profile, params *ListParams) ([]*Permission, []string, error)
-
-	GetRole(prof Profile, id string) (*Role, error)
-	AddRole(prof Profile, m *Role) (*Role, error)
-	EditRole(prof Profile, id string, m *Role) error
-	DeleteRole(prof Profile, id string) error
-	ListRole(prof Profile, params *ListParams) ([]*Role, []string, error)
-
-	AddPermissionsRole(id string, isolatedEntityID string, itemsID []string, items []*Permission) error
-	DeletePermissionsRole(id string, isolatedEntityID string, items []string) error
 	GetSession(prof Profile, id string) (*Session, error)
 	AddSession(prof Profile, m *Session) (*Session, error)
 	EditSession(prof Profile, id string, m *Session) error
@@ -52,20 +38,6 @@ type App interface {
 
 // Repo interface for data repository
 type Repo interface {
-	GetPermission(id string, isolatedEntityID string) (*Permission, error)
-	AddPermission(profileID string, isolatedEntityID string, m *Permission) (*Permission, error)
-	EditPermission(id string, isolatedEntityID string, m *Permission) error
-	DeletePermission(id string, profileID string, isolatedEntityID string) error
-	ListPermission(isolatedEntityID string, params *ListParams) ([]*Permission, []string, error)
-
-	GetRole(id string, isolatedEntityID string) (*Role, error)
-	AddRole(profileID string, isolatedEntityID string, m *Role) (*Role, error)
-	EditRole(id string, isolatedEntityID string, m *Role) error
-	DeleteRole(id string, profileID string, isolatedEntityID string) error
-	ListRole(isolatedEntityID string, params *ListParams) ([]*Role, []string, error)
-
-	AddPermissionsRole(id string, isolatedEntityID string, itemsID []string, items []*Permission) error
-	DeletePermissionsRole(id string, isolatedEntityID string, items []string) error
 	GetSession(id string, isolatedEntityID string) (*Session, error)
 	AddSession(profileID string, isolatedEntityID string, m *Session) (*Session, error)
 	EditSession(id string, isolatedEntityID string, m *Session) error

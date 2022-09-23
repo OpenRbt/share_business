@@ -7,19 +7,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"wash-bonus/internal/app"
+
+	"github.com/google/uuid"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 type User struct {
-	ID         uuid.UUID      `db:"id"`
-	Active     sql.NullBool   `db:"active"`
-	CreatedAt  *time.Time     `db:"created_at"`
-	ModifiedAt *time.Time     `db:"modified_at"`
-	RoleID     sql.NullString `db:"role_id"`
-	Role       Role
+	ID         uuid.UUID    `db:"id"`
+	Active     sql.NullBool `db:"active"`
+	CreatedAt  *time.Time   `db:"created_at"`
+	ModifiedAt *time.Time   `db:"modified_at"`
 }
 
 var UserProps = map[string]columnProps{
@@ -168,17 +167,17 @@ func (a *Repo) ListUser(isolatedEntityID string, params *app.ListParams) ([]*app
 }
 
 func (m *User) LazyLoading(isolatedEntityID string, a *Repo) (err error) {
-	if err = a.db.NamedGet(&m.Role, sqlGetRoleForUserLazyLoading, argGetRole{
-		ID:               m.RoleID,
-		IsolatedEntityID: isolatedEntityID,
-	}); err != nil && err != sql.ErrNoRows {
-		return
-	}
-	if err == nil {
-		if err = m.Role.LazyLoading(isolatedEntityID, a); err != nil {
-			return
-		}
-	}
+	// if err = a.db.NamedGet(&m.Role, sqlGetRoleForUserLazyLoading, argGetRole{
+	// 	ID:               m.RoleID,
+	// 	IsolatedEntityID: isolatedEntityID,
+	// }); err != nil && err != sql.ErrNoRows {
+	// 	return
+	// }
+	// if err == nil {
+	// 	if err = m.Role.LazyLoading(isolatedEntityID, a); err != nil {
+	// 		return
+	// 	}
+	// }
 	return nil
 }
 
@@ -204,9 +203,6 @@ func (a *Repo) addUser(profileID string, isolatedEntityID string, m *app.User) (
 	t := time.Now()
 	m.CreatedAt = &t
 	var roleID interface{}
-	if m.Role != nil {
-		roleID = m.Role.ID
-	}
 	if err := a.db.NamedGet(&UserID, sqlAddUser, argAddUser{
 		ID:               UserID,
 		Active:           m.Active,
@@ -254,9 +250,7 @@ func (a *Repo) bindToProfileUser(id, profileID, isolatedEntityID string) error {
 
 func (a *Repo) editUser(id string, isolatedEntityID string, m *app.User) error {
 	var roleID interface{}
-	if m.Role != nil {
-		roleID = m.Role.ID
-	}
+
 	t := time.Now()
 	m.ModifiedAt = &t
 
@@ -283,8 +277,6 @@ func (m *User) NestedFilter(key string, filter *app.Filter) (ok bool, err error)
 		splitedFilter := strings.SplitN(key, ".", 2)
 		key = splitedFilter[1]
 		switch splitedFilter[0] {
-		case "role":
-			ok, err = m.Role.NestedFilter(key, filter)
 		default:
 			ok, err = true, errNotExistFilterKey
 		}
@@ -329,7 +321,6 @@ func appUser(m User) *app.User {
 		Active:     m.Active.Bool,
 		CreatedAt:  m.CreatedAt,
 		ModifiedAt: m.ModifiedAt,
-		Role:       appRole(m.Role),
 	}
 }
 

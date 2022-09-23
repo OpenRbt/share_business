@@ -61,6 +61,6 @@ func setupIntegration() {
 }
 
 func (a *Repo) truncate() error {
-	_, err := a.db.Exec("TRUNCATE permissions, roles, users, tokens, sessions, wash_servers, wash_sessions RESTART IDENTITY CASCADE")
+	_, err := a.db.Exec("TRUNCATE users, tokens, sessions, wash_servers, wash_sessions RESTART IDENTITY CASCADE") //
 	return err
 }
