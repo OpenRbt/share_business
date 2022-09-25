@@ -19,7 +19,6 @@ type User struct {
 	CreatedAt  *time.Time     `db:"created_at"`
 	FirebaseID sql.NullString `db:"firebase_id"`
 	ModifiedAt *time.Time     `db:"modified_at"`
-	
 }
 
 var UserProps = map[string]columnProps{
@@ -198,10 +197,10 @@ func (a *Repo) addUser(profileID string, isolatedEntityID string, m *app.User) (
 	m.CreatedAt = &t
 
 	if err := a.db.NamedGet(&UserID, sqlAddUser, argAddUser{
-		ID:               UserID,
-		Active:           m.Active,
-		CreatedAt:        m.CreatedAt,
-		FirebaseID:       m.FirebaseID,
+		ID:         UserID,
+		Active:     m.Active,
+		CreatedAt:  m.CreatedAt,
+		FirebaseID: m.FirebaseID,
 
 		CreatedBy:        profileID,
 		IsolatedEntityID: isolatedEntityID,
@@ -249,11 +248,11 @@ func (a *Repo) editUser(id string, isolatedEntityID string, m *app.User) error {
 	m.ModifiedAt = &t
 
 	res, err := a.db.NamedExec(sqlEditUser, argEditUser{
-		ID:               id,
-		Active:           m.Active,
-		CreatedAt:        m.CreatedAt,
-		FirebaseID:       m.FirebaseID,
-		ModifiedAt:       m.ModifiedAt,
+		ID:         id,
+		Active:     m.Active,
+		CreatedAt:  m.CreatedAt,
+		FirebaseID: m.FirebaseID,
+		ModifiedAt: m.ModifiedAt,
 
 		IsolatedEntityID: isolatedEntityID,
 	})
@@ -319,7 +318,6 @@ func appUser(m User) *app.User {
 		CreatedAt:  m.CreatedAt,
 		FirebaseID: m.FirebaseID.String,
 		ModifiedAt: m.ModifiedAt,
-
 	}
 }
 

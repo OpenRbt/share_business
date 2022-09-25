@@ -23,7 +23,6 @@ var (
 		CreatedAt:  mustParseTime("1990-11-24T12:32:05.144Z"),
 		FirebaseID: "saepe",
 		ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
-
 	}
 	testUsers       = []*app.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{

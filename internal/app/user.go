@@ -12,7 +12,6 @@ type User struct {
 	FirebaseID string
 	ID         string
 	ModifiedAt *time.Time
-	Role       *Role
 }
 
 func (a *app) GetUser(prof Profile, id string) (*User, error) {

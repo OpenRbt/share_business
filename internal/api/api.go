@@ -16,7 +16,6 @@ import (
 	user "wash-bonus/internal/api/restapi/restapi/operations/user"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 
-	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
 

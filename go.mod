@@ -32,5 +32,5 @@ require (
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
 	github.com/shopspring/decimal v1.3.1
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
-	google.golang.org/api v0.95.0 // indirect
+	google.golang.org/api v0.95.0
 )

@@ -5,7 +5,6 @@ package app
 
 // App provides application features service.
 type App interface {
-
 	GetUser(prof Profile, id string) (*User, error)
 	AddUser(prof Profile, m *User) (*User, error)
 	EditUser(prof Profile, id string, m *User) error
@@ -23,7 +22,6 @@ type App interface {
 
 // Repo interface for data repository
 type Repo interface {
-
 	GetUser(id string, isolatedEntityID string) (*User, error)
 	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
 	EditUser(id string, isolatedEntityID string, m *User) error
