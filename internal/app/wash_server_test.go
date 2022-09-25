@@ -2,10 +2,9 @@
 package app
 
 import (
-	"testing"
-
 	"github.com/golang/mock/gomock"
 	"github.com/powerman/check"
+	"testing"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
@@ -17,11 +16,9 @@ func TestGetWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().GetWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().GetWashServer(gomock.Any(), gomock.Any()).Return(testWashServer1, nil)
 	b, err := a.GetWashServer(profile, testWashServer1.ID)
 	t.Nil(err)
@@ -35,11 +32,9 @@ func TestAddWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().AddWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().AddWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(testWashServer1, nil)
 	b, err := a.AddWashServer(profile, testWashServer1)
 	t.Nil(err)
@@ -53,11 +48,9 @@ func TestEditWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().EditWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().EditWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 	err := a.EditWashServer(profile, testWashServer1.ID, testWashServer1)
 	t.Nil(err)
@@ -70,11 +63,9 @@ func TestDeleteWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().DeleteWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().DeleteWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 	err := a.DeleteWashServer(profile, testWashServer1.ID)
 	t.Nil(err)
@@ -87,11 +78,9 @@ func TestListWashServer(tt *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepo := NewMockRepo(ctrl)
-	rulesSet := NewMockRulesSet(ctrl)
 
-	a := New(mockRepo, rulesSet)
+	a := New(mockRepo)
 
-	rulesSet.EXPECT().ListWashServerAccessManager(gomock.Any()).Return(true)
 	mockRepo.EXPECT().ListWashServer(gomock.Any(), gomock.Any()).Return(testWashServers, []string{}, nil)
 	b, _, err := a.ListWashServer(profile, listParams)
 	t.Nil(err)

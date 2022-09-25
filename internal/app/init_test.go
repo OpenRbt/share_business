@@ -3,9 +3,8 @@ package app
 
 import (
 	"github.com/go-openapi/strfmt"
-	"time"
-
 	"github.com/google/uuid"
+	"time"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
@@ -36,14 +35,14 @@ var (
 	testUser1 = &User{
 		Active:     false,
 		CreatedAt:  mustParseTime("1985-04-17T19:22:19.032Z"),
-		FirebaseId: "consequuntur",
+		FirebaseID: "consequuntur",
 		ID:         uuid.New().String(),
 		ModifiedAt: mustParseTime("2010-02-06T12:05:03.373Z"),
 	}
 	testUser2 = &User{
 		Active:     false,
 		CreatedAt:  mustParseTime("1991-04-15T17:43:24.141Z"),
-		FirebaseId: "quaerat",
+		FirebaseID: "quaerat",
 		ID:         uuid.New().String(),
 		ModifiedAt: mustParseTime("2017-09-24T16:52:40.598Z"),
 	}

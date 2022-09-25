@@ -28,11 +28,13 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddUserCreated, error)
+	AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddUserOK, error)
 
 	DeleteUser(params *DeleteUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteUserNoContent, error)
 
 	EditUser(params *EditUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EditUserOK, error)
+
+	GetCurrentUser(params *GetCurrentUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetCurrentUserOK, error)
 
 	GetUser(params *GetUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserOK, error)
 
@@ -44,7 +46,7 @@ type ClientService interface {
 /*
 AddUser add user API
 */
-func (a *Client) AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddUserCreated, error) {
+func (a *Client) AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddUserOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewAddUserParams()
@@ -70,7 +72,7 @@ func (a *Client) AddUser(params *AddUserParams, authInfo runtime.ClientAuthInfoW
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*AddUserCreated)
+	success, ok := result.(*AddUserOK)
 	if ok {
 		return success, nil
 	}
@@ -90,7 +92,7 @@ func (a *Client) DeleteUser(params *DeleteUserParams, authInfo runtime.ClientAut
 	op := &runtime.ClientOperation{
 		ID:                 "deleteUser",
 		Method:             "DELETE",
-		PathPattern:        "/user/delete",
+		PathPattern:        "/user/{id}/delete",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -128,7 +130,7 @@ func (a *Client) EditUser(params *EditUserParams, authInfo runtime.ClientAuthInf
 	op := &runtime.ClientOperation{
 		ID:                 "editUser",
 		Method:             "PUT",
-		PathPattern:        "/user/edit",
+		PathPattern:        "/user/{id}/edit",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -156,6 +158,44 @@ func (a *Client) EditUser(params *EditUserParams, authInfo runtime.ClientAuthInf
 }
 
 /*
+GetCurrentUser get current user API
+*/
+func (a *Client) GetCurrentUser(params *GetCurrentUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetCurrentUserOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetCurrentUserParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getCurrentUser",
+		Method:             "GET",
+		PathPattern:        "/user",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetCurrentUserReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetCurrentUserOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetCurrentUserDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 GetUser get user API
 */
 func (a *Client) GetUser(params *GetUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserOK, error) {
@@ -165,8 +205,8 @@ func (a *Client) GetUser(params *GetUserParams, authInfo runtime.ClientAuthInfoW
 	}
 	op := &runtime.ClientOperation{
 		ID:                 "getUser",
-		Method:             "POST",
-		PathPattern:        "/user/get",
+		Method:             "GET",
+		PathPattern:        "/user/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

@@ -12,16 +12,13 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// UserAdd user model for add and edit methods
+// UserAdd user model for add method
 //
 // swagger:model userAdd
 type UserAdd struct {
 
 	// active
 	Active bool `json:"active,omitempty"`
-
-	// firebase Id
-	FirebaseID string `json:"firebaseId,omitempty"`
 }
 
 // Validate validates this user add

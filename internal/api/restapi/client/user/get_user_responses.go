@@ -6,13 +6,11 @@ package user
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 )
@@ -83,11 +81,11 @@ func (o *GetUserOK) IsCode(code int) bool {
 }
 
 func (o *GetUserOK) Error() string {
-	return fmt.Sprintf("[POST /user/get][%d] getUserOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /user/{id}][%d] getUserOK  %+v", 200, o.Payload)
 }
 
 func (o *GetUserOK) String() string {
-	return fmt.Sprintf("[POST /user/get][%d] getUserOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /user/{id}][%d] getUserOK  %+v", 200, o.Payload)
 }
 
 func (o *GetUserOK) GetPayload() *models.User {
@@ -155,11 +153,11 @@ func (o *GetUserDefault) IsCode(code int) bool {
 }
 
 func (o *GetUserDefault) Error() string {
-	return fmt.Sprintf("[POST /user/get][%d] getUser default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /user/{id}][%d] getUser default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetUserDefault) String() string {
-	return fmt.Sprintf("[POST /user/get][%d] getUser default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /user/{id}][%d] getUser default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *GetUserDefault) GetPayload() *models.Error {
@@ -175,43 +173,5 @@ func (o *GetUserDefault) readResponse(response runtime.ClientResponse, consumer 
 		return err
 	}
 
-	return nil
-}
-
-/*
-GetUserBody get user body
-swagger:model GetUserBody
-*/
-type GetUserBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this get user body
-func (o *GetUserBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this get user body based on context it is used
-func (o *GetUserBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *GetUserBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *GetUserBody) UnmarshalBinary(b []byte) error {
-	var res GetUserBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

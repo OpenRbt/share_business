@@ -3,18 +3,17 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"flag"
 	"fmt"
 	"time"
+	"wash-bonus/internal/app/user"
+	"wash-bonus/internal/dal"
+	"wash-bonus/internal/firebase_auth"
 
 	"wash-bonus/internal/api"
 	"wash-bonus/internal/app"
-	"wash-bonus/internal/authorization"
-	"wash-bonus/internal/dal"
 	"wash-bonus/internal/def"
 
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 	"github.com/powerman/pqx"
 	"github.com/powerman/structlog"
 )
@@ -23,8 +22,6 @@ import (
 
 const (
 	connectTimeout = 3 * time.Second
-
-	ExtauthEndpointFlag = "extauth.endpoint"
 )
 
 var (
@@ -33,12 +30,11 @@ var (
 
 	log = structlog.New()
 	cfg struct {
-		logLevel        string
-		gooseDir        string
-		db              pqx.Config
-		api             api.Config
-		extauthEndpoint string
-		resetDB         bool
+		logLevel string
+		gooseDir string
+		db       pqx.Config
+		api      api.Config
+		resetDB  bool
 	}
 )
 
@@ -67,8 +63,6 @@ func init() {
 	flag.StringVar(&cfg.api.BasePath, "api.basepath", def.APIBasePath, "serve API on `path`")
 	flag.StringVar(&cfg.api.AllowedOrigins, "api.allow-origins", def.CORSAllowedOrigins, "frontend url")
 
-	flag.StringVar(&cfg.extauthEndpoint, ExtauthEndpointFlag, def.ExtauthEndpoint, "extauth service `endpoint`")
-
 }
 
 func main() {
@@ -84,37 +78,33 @@ func main() {
 	}
 }
 
-func connect() (app.App, *extauthapi.Client, error) {
+func initDal() (*dal.Repo, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), connectTimeout)
 	defer cancel()
 
-	extAuthSvc, err := extauthapi.NewClient(cfg.extauthEndpoint, &tls.Config{InsecureSkipVerify: true}, false)
-	if err != nil {
-		return nil, nil, fmt.Errorf("extauthapi: %v. Error can be if flag '%s' or environment variable '%s' is not set", err, ExtauthEndpointFlag, def.ExtauthEndpointEnvName)
-	}
-
 	r, err := dal.New(ctx, cfg.db, cfg.gooseDir, cfg.resetDB)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	rulesSet := authorization.NewRulesSet()
-
-	app := app.New(r, rulesSet)
-	return app, extAuthSvc, nil
+	return r, nil
 }
 
 func runServe(errc chan<- error) {
 	log.Info("server started")
 	defer log.Info("server finished")
 
-	appl, extAuthSvc, err := connect()
+	r, err := initDal()
 	if err != nil {
 		errc <- err
 		return
 	}
+	appl := app.New(r)
+	userSvc := user.NewService(r)
 
-	srv, err := api.NewServer(appl, extAuthSvc, cfg.api)
+	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
+
+	srv, err := api.NewServer(appl, userSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)
 		return

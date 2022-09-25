@@ -9,11 +9,16 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 )
 
 // EditUserURL generates an URL for the edit user operation
 type EditUserURL struct {
+	ID string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -35,7 +40,14 @@ func (o *EditUserURL) SetBasePath(bp string) {
 func (o *EditUserURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/user/edit"
+	var _path = "/user/{id}/edit"
+
+	id := o.ID
+	if id != "" {
+		_path = strings.Replace(_path, "{id}", id, -1)
+	} else {
+		return nil, errors.New("id is required on EditUserURL")
+	}
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)

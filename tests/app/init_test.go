@@ -2,9 +2,8 @@
 package app
 
 import (
-	"time"
-
 	"github.com/go-openapi/strfmt"
+	"time"
 
 	"github.com/google/uuid"
 

@@ -6,13 +6,11 @@ package user
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 )
@@ -82,11 +80,11 @@ func (o *DeleteUserNoContent) IsCode(code int) bool {
 }
 
 func (o *DeleteUserNoContent) Error() string {
-	return fmt.Sprintf("[DELETE /user/delete][%d] deleteUserNoContent ", 204)
+	return fmt.Sprintf("[DELETE /user/{id}/delete][%d] deleteUserNoContent ", 204)
 }
 
 func (o *DeleteUserNoContent) String() string {
-	return fmt.Sprintf("[DELETE /user/delete][%d] deleteUserNoContent ", 204)
+	return fmt.Sprintf("[DELETE /user/{id}/delete][%d] deleteUserNoContent ", 204)
 }
 
 func (o *DeleteUserNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -143,11 +141,11 @@ func (o *DeleteUserDefault) IsCode(code int) bool {
 }
 
 func (o *DeleteUserDefault) Error() string {
-	return fmt.Sprintf("[DELETE /user/delete][%d] deleteUser default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /user/{id}/delete][%d] deleteUser default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *DeleteUserDefault) String() string {
-	return fmt.Sprintf("[DELETE /user/delete][%d] deleteUser default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /user/{id}/delete][%d] deleteUser default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *DeleteUserDefault) GetPayload() *models.Error {
@@ -163,43 +161,5 @@ func (o *DeleteUserDefault) readResponse(response runtime.ClientResponse, consum
 		return err
 	}
 
-	return nil
-}
-
-/*
-DeleteUserBody delete user body
-swagger:model DeleteUserBody
-*/
-type DeleteUserBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this delete user body
-func (o *DeleteUserBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this delete user body based on context it is used
-func (o *DeleteUserBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *DeleteUserBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *DeleteUserBody) UnmarshalBinary(b []byte) error {
-	var res DeleteUserBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

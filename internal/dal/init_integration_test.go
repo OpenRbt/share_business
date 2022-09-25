@@ -60,7 +60,7 @@ func setupIntegration() {
 	testinit.Teardown(testRepo.Close)
 }
 
-func (a *Repo) truncate() error {
-	_, err := a.db.Exec("TRUNCATE users, wash_servers RESTART IDENTITY CASCADE") //
+func (r *Repo) truncate() error {
+	_, err := r.db.Exec("TRUNCATE users, wash_servers RESTART IDENTITY CASCADE") //
 	return err
 }

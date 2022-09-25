@@ -13,49 +13,29 @@ import (
 	"wash-bonus/internal/api/restapi/models"
 )
 
-// AddUserCreatedCode is the HTTP code returned for type AddUserCreated
-const AddUserCreatedCode int = 201
+// AddUserOKCode is the HTTP code returned for type AddUserOK
+const AddUserOKCode int = 200
 
 /*
-AddUserCreated Created
+AddUserOK Created
 
-swagger:response addUserCreated
+swagger:response addUserOK
 */
-type AddUserCreated struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.User `json:"body,omitempty"`
+type AddUserOK struct {
 }
 
-// NewAddUserCreated creates AddUserCreated with default headers values
-func NewAddUserCreated() *AddUserCreated {
+// NewAddUserOK creates AddUserOK with default headers values
+func NewAddUserOK() *AddUserOK {
 
-	return &AddUserCreated{}
-}
-
-// WithPayload adds the payload to the add user created response
-func (o *AddUserCreated) WithPayload(payload *models.User) *AddUserCreated {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the add user created response
-func (o *AddUserCreated) SetPayload(payload *models.User) {
-	o.Payload = payload
+	return &AddUserOK{}
 }
 
 // WriteResponse to the client
-func (o *AddUserCreated) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *AddUserOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(201)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(200)
 }
 
 /*

@@ -4,10 +4,9 @@ package dal
 import (
 	"database/sql"
 	"fmt"
+	"github.com/google/uuid"
 	"strings"
 	"time"
-
-	"github.com/google/uuid"
 	"wash-bonus/internal/app"
 )
 
@@ -49,29 +48,29 @@ var WashServerProps = map[string]columnProps{
 	},
 }
 
-func (a *Repo) GetWashServer(id string, isolatedEntityID string) (*app.WashServer, error) {
-	return a.getWashServer(id, isolatedEntityID)
+func (r *Repo) GetWashServer(id string, isolatedEntityID string) (*app.WashServer, error) {
+	return r.getWashServer(id, isolatedEntityID)
 }
 
-func (a *Repo) AddWashServer(profileID string, isolatedEntityID string, m *app.WashServer) (*app.WashServer, error) {
-	id, err := a.addWashServer(profileID, isolatedEntityID, m)
+func (r *Repo) AddWashServer(profileID string, isolatedEntityID string, m *app.WashServer) (*app.WashServer, error) {
+	id, err := r.addWashServer(profileID, isolatedEntityID, m)
 	if err != nil {
 		return nil, err
 	}
-	return a.getWashServer(id, isolatedEntityID)
+	return r.getWashServer(id, isolatedEntityID)
 }
 
-func (a *Repo) EditWashServer(id string, isolatedEntityID string, m *app.WashServer) error {
-	if err := a.editWashServer(id, isolatedEntityID, m); err != nil {
+func (r *Repo) EditWashServer(id string, isolatedEntityID string, m *app.WashServer) error {
+	if err := r.editWashServer(id, isolatedEntityID, m); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (a *Repo) DeleteWashServer(id string, profileID string, isolatedEntityID string) error {
+func (r *Repo) DeleteWashServer(id string, profileID string, isolatedEntityID string) error {
 	t := time.Now()
-	res, err := a.db.NamedExec(sqlDeleteWashServer, argDeleteWashServer{
+	res, err := r.db.NamedExec(sqlDeleteWashServer, argDeleteWashServer{
 		ID:               id,
 		DeletedAt:        &t,
 		DeletedBy:        profileID,
@@ -87,7 +86,7 @@ func (a *Repo) DeleteWashServer(id string, profileID string, isolatedEntityID st
 	return nil
 }
 
-func (a *Repo) ListWashServer(isolatedEntityID string, params *app.ListParams) ([]*app.WashServer, []string, error) {
+func (r *Repo) ListWashServer(isolatedEntityID string, params *app.ListParams) ([]*app.WashServer, []string, error) {
 	ms := []WashServer{}
 	warnings := []string{}
 
@@ -95,7 +94,7 @@ func (a *Repo) ListWashServer(isolatedEntityID string, params *app.ListParams) (
 	switch params.SortBy {
 	case "":
 	default:
-		warnings = append(warnings, fmt.Sprintf("Sorting by '%s' is not avaliable or '%s' is not a valid sort key", params.SortBy, params.SortBy))
+		warnings = append(warnings, fmt.Sprintf("Sorting by '%s' is not avaliable or '%s' is not r valid sort key", params.SortBy, params.SortBy))
 	}
 
 	if orderQuery != "" {
@@ -124,7 +123,7 @@ func (a *Repo) ListWashServer(isolatedEntityID string, params *app.ListParams) (
 		namedVars["limit"] = params.Limit
 	}
 
-	err = a.db.NamedSelect(&ms, sqlListWashServer+sqlFilters+orderQuery+offset+limit, namedVars)
+	err = r.db.NamedSelect(&ms, sqlListWashServer+sqlFilters+orderQuery+offset+limit, namedVars)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -134,9 +133,9 @@ func (a *Repo) ListWashServer(isolatedEntityID string, params *app.ListParams) (
 	return appWashServers(result), warnings, nil
 }
 
-func (a *Repo) getWashServer(id string, isolatedEntityID string) (*app.WashServer, error) {
+func (r *Repo) getWashServer(id string, isolatedEntityID string) (*app.WashServer, error) {
 	var m WashServer
-	if err := a.db.NamedGet(&m, sqlGetWashServer, argGetWashServer{
+	if err := r.db.NamedGet(&m, sqlGetWashServer, argGetWashServer{
 		ID:               newNullUUID(id),
 		IsolatedEntityID: isolatedEntityID,
 	}); err != nil {
@@ -148,11 +147,11 @@ func (a *Repo) getWashServer(id string, isolatedEntityID string) (*app.WashServe
 	return appWashServer(m), nil
 }
 
-func (a *Repo) addWashServer(profileID string, isolatedEntityID string, m *app.WashServer) (string, error) {
+func (r *Repo) addWashServer(profileID string, isolatedEntityID string, m *app.WashServer) (string, error) {
 	WashServerID := uuid.New().String()
 	t := time.Now()
 	m.CreatedAt = &t
-	if err := a.db.NamedGet(&WashServerID, sqlAddWashServer, argAddWashServer{
+	if err := r.db.NamedGet(&WashServerID, sqlAddWashServer, argAddWashServer{
 		ID:               WashServerID,
 		CreatedAt:        m.CreatedAt,
 		Key:              m.Key,
@@ -169,8 +168,8 @@ func (a *Repo) addWashServer(profileID string, isolatedEntityID string, m *app.W
 	return WashServerID, nil
 }
 
-func (a *Repo) getMyWashServerID(profileID, isolatedEntityID string) (id string, err error) {
-	if err = a.db.NamedGet(&id, sqlGetMyWashServerID, argGetMyWashServerID{
+func (r *Repo) getMyWashServerID(profileID, isolatedEntityID string) (id string, err error) {
+	if err = r.db.NamedGet(&id, sqlGetMyWashServerID, argGetMyWashServerID{
 		CreatedBy:        profileID,
 		IsolatedEntityID: isolatedEntityID,
 	}); err != nil {
@@ -182,8 +181,8 @@ func (a *Repo) getMyWashServerID(profileID, isolatedEntityID string) (id string,
 	return
 }
 
-func (a *Repo) bindToProfileWashServer(id, profileID, isolatedEntityID string) error {
-	res, err := a.db.NamedExec(sqlBindWashServerToProfile, argBindWashServerToProfile{
+func (r *Repo) bindToProfileWashServer(id, profileID, isolatedEntityID string) error {
+	res, err := r.db.NamedExec(sqlBindWashServerToProfile, argBindWashServerToProfile{
 		ID:               id,
 		CreatedBy:        profileID,
 		IsolatedEntityID: isolatedEntityID,
@@ -198,11 +197,11 @@ func (a *Repo) bindToProfileWashServer(id, profileID, isolatedEntityID string) e
 	return nil
 }
 
-func (a *Repo) editWashServer(id string, isolatedEntityID string, m *app.WashServer) error {
+func (r *Repo) editWashServer(id string, isolatedEntityID string, m *app.WashServer) error {
 	t := time.Now()
 	m.ModifiedAt = &t
 
-	res, err := a.db.NamedExec(sqlEditWashServer, argEditWashServer{
+	res, err := r.db.NamedExec(sqlEditWashServer, argEditWashServer{
 		ID:               id,
 		CreatedAt:        m.CreatedAt,
 		Key:              m.Key,

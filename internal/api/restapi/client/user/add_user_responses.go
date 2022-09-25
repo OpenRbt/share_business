@@ -23,8 +23,8 @@ type AddUserReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *AddUserReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 201:
-		result := NewAddUserCreated()
+	case 200:
+		result := NewAddUserOK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -41,65 +41,53 @@ func (o *AddUserReader) ReadResponse(response runtime.ClientResponse, consumer r
 	}
 }
 
-// NewAddUserCreated creates a AddUserCreated with default headers values
-func NewAddUserCreated() *AddUserCreated {
-	return &AddUserCreated{}
+// NewAddUserOK creates a AddUserOK with default headers values
+func NewAddUserOK() *AddUserOK {
+	return &AddUserOK{}
 }
 
 /*
-AddUserCreated describes a response with status code 201, with default header values.
+AddUserOK describes a response with status code 200, with default header values.
 
 Created
 */
-type AddUserCreated struct {
-	Payload *models.User
+type AddUserOK struct {
 }
 
-// IsSuccess returns true when this add user created response has a 2xx status code
-func (o *AddUserCreated) IsSuccess() bool {
+// IsSuccess returns true when this add user o k response has a 2xx status code
+func (o *AddUserOK) IsSuccess() bool {
 	return true
 }
 
-// IsRedirect returns true when this add user created response has a 3xx status code
-func (o *AddUserCreated) IsRedirect() bool {
+// IsRedirect returns true when this add user o k response has a 3xx status code
+func (o *AddUserOK) IsRedirect() bool {
 	return false
 }
 
-// IsClientError returns true when this add user created response has a 4xx status code
-func (o *AddUserCreated) IsClientError() bool {
+// IsClientError returns true when this add user o k response has a 4xx status code
+func (o *AddUserOK) IsClientError() bool {
 	return false
 }
 
-// IsServerError returns true when this add user created response has a 5xx status code
-func (o *AddUserCreated) IsServerError() bool {
+// IsServerError returns true when this add user o k response has a 5xx status code
+func (o *AddUserOK) IsServerError() bool {
 	return false
 }
 
-// IsCode returns true when this add user created response a status code equal to that given
-func (o *AddUserCreated) IsCode(code int) bool {
-	return code == 201
+// IsCode returns true when this add user o k response a status code equal to that given
+func (o *AddUserOK) IsCode(code int) bool {
+	return code == 200
 }
 
-func (o *AddUserCreated) Error() string {
-	return fmt.Sprintf("[POST /user/add][%d] addUserCreated  %+v", 201, o.Payload)
+func (o *AddUserOK) Error() string {
+	return fmt.Sprintf("[POST /user/add][%d] addUserOK ", 200)
 }
 
-func (o *AddUserCreated) String() string {
-	return fmt.Sprintf("[POST /user/add][%d] addUserCreated  %+v", 201, o.Payload)
+func (o *AddUserOK) String() string {
+	return fmt.Sprintf("[POST /user/add][%d] addUserOK ", 200)
 }
 
-func (o *AddUserCreated) GetPayload() *models.User {
-	return o.Payload
-}
-
-func (o *AddUserCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.User)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
+func (o *AddUserOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

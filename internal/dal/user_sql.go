@@ -2,73 +2,52 @@
 package dal
 
 import (
-	"database/sql"
+	uuid "github.com/satori/go.uuid"
 	"time"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 const (
+	sqlGetUserByIdentity = `
+	SELECT
+		id,
+		active,
+		created_at,
+		identity_id,
+		modified_at
+	FROM
+		users
+	WHERE
+		identity_id=:identity_id AND
+		NOT deleted
+	`
 	sqlGetUser = `
 	SELECT
 		id,
 		active,
 		created_at,
-		firebase_id,
+		identity_id,
 		modified_at
 	FROM
 		users
 	WHERE
 		id=:id AND
-		isolated_entity_id=:isolated_entity_id AND
 		NOT deleted
-	`
-
-	sqlGetMyUserID = `
-	SELECT
-		id
-	FROM
-		users
-	WHERE
-		created_by=:created_by AND
-		isolated_entity_id=:isolated_entity_id AND
-		NOT deleted AND
-		bound
 	`
 
 	sqlAddUser = `
 	INSERT INTO users(
 		active,
 		created_at,
-		firebase_id,
-		modified_at,
-		id,
-		created_by,
-		isolated_entity_id
+		identity_id
 	) VALUES (
 		:active,
 		:created_at,
-		:firebase_id,
-		:modified_at,
-		:id,
-		:created_by,
-		:isolated_entity_id
+		:identity_id
 	)
 	RETURNING
 		id
-	`
-
-	sqlBindUserToProfile = `
-	UPDATE
-		users
-	SET
-		bound=true
-	WHERE
-		id=:id AND
-		created_by=:created_by AND
-		isolated_entity_id=:isolated_entity_id AND
-		NOT deleted AND
-		NOT bound
 	`
 
 	sqlDeleteUser = `
@@ -80,7 +59,6 @@ const (
 		deleted_by=:deleted_by
 	WHERE
 		id=:id AND
-		isolated_entity_id=:isolated_entity_id AND
 		NOT deleted
 	`
 
@@ -89,22 +67,12 @@ const (
 		users
 	SET
 		active=:active,
-		firebase_id=:firebase_id,
-		modified_at=:modified_at
+		identity_id=:identity_id,
+		modified_at=:modified_at,
+		modified_by=:modified_by
 	WHERE
 		id=:id AND
-		isolated_entity_id=:isolated_entity_id AND
 		NOT deleted
-	`
-	sqlSetModifiedParamsUser = `
-	UPDATE
-		users
-	SET
-		modified_at=:modified_at
-		
-	WHERE
-		id=:id AND
-		isolated_entity_id=:isolated_entity_id
 	`
 
 	sqlListUser = `
@@ -112,66 +80,42 @@ const (
 		id,
 		active,
 		created_at,
-		firebase_id,
+		identity_id,
 		modified_at
 	FROM
 		users
 	WHERE
-		isolated_entity_id=:isolated_entity_id AND
-		NOT deleted
-	`
-	sqlListUserCount = `
-	SELECT
-		COUNT(*)
-	FROM
-		users
-	WHERE
-		isolated_entity_id=:isolated_entity_id AND
 		NOT deleted
 	`
 )
 
 type (
 	argGetUser struct {
-		ID               sql.NullString `db:"id"`
-		IsolatedEntityID string         `db:"isolated_entity_id"`
+		ID string `db:"id"`
 	}
 
-	argGetMyUserID struct {
-		CreatedBy        string `db:"created_by"`
-		IsolatedEntityID string `db:"isolated_entity_id"`
+	argGetUserByIdentity struct {
+		IdentityID string `db:"identity_id"`
 	}
+
 	argAddUser struct {
-		ID               string     `db:"id"`
-		Active           bool       `db:"active"`
-		CreatedAt        *time.Time `db:"created_at"`
-		FirebaseId       string     `db:"firebase_id"`
-		ModifiedAt       *time.Time `db:"modified_at"`
-		CreatedBy        string     `db:"created_by"`
-		IsolatedEntityID string     `db:"isolated_entity_id"`
+		Active     bool       `db:"active"`
+		CreatedAt  *time.Time `db:"created_at"`
+		IdentityID string     `db:"identity_id"`
 	}
-	argBindUserToProfile struct {
-		ID               string `db:"id"`
-		CreatedBy        string `db:"created_by"`
-		IsolatedEntityID string `db:"isolated_entity_id"`
-	}
+
 	argEditUser struct {
-		ID               string     `db:"id"`
-		Active           bool       `db:"active"`
-		CreatedAt        *time.Time `db:"created_at"`
-		FirebaseId       string     `db:"firebase_id"`
-		ModifiedAt       *time.Time `db:"modified_at"`
-		IsolatedEntityID string     `db:"isolated_entity_id"`
+		ID         string        `db:"id"`
+		Active     bool          `db:"active"`
+		CreatedAt  *time.Time    `db:"created_at"`
+		IdentityID string        `db:"identity_id"`
+		ModifiedAt *time.Time    `db:"modified_at"`
+		ModifiedBy uuid.NullUUID `db:"modified_by"`
 	}
+
 	argDeleteUser struct {
-		ID               string     `db:"id"`
-		DeletedAt        *time.Time `db:"deleted_at"`
-		DeletedBy        string     `db:"deleted_by"`
-		IsolatedEntityID string     `db:"isolated_entity_id"`
-	}
-	argSetModifiedParamsUser struct {
-		ID               string     `db:"id"`
-		ModifiedAt       *time.Time `db:"modified_at"`
-		IsolatedEntityID string     `db:"isolated_entity_id"`
+		ID        string        `db:"id"`
+		DeletedAt time.Time     `db:"deleted_at"`
+		DeletedBy uuid.NullUUID `db:"deleted_by"`
 	}
 )
