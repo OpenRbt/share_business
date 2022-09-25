@@ -3,21 +3,34 @@ package api
 
 import (
 	"errors"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/swag"
 	"time"
 	"wash-bonus/internal/api/restapi/models"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 	"wash-bonus/internal/app"
+	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/def"
+	"wash-bonus/internal/dto"
+	"wash-bonus/internal/firebase_auth"
+
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/swag"
 
 	"github.com/go-openapi/strfmt"
+
+	"wash-bonus/internal/api/restapi/restapi/operations"
 )
 
-// Make sure not to overwrite this file after you generated it because all your edits would be lost!
+func setWashServerHandlers(api *operations.WashBonusAPI, svc *service) {
+	api.WashServerGetWashServerHandler = washServer.GetWashServerHandlerFunc(svc.GetWashServer)
+	api.WashServerAddWashServerHandler = washServer.AddWashServerHandlerFunc(svc.AddWashServer)
+	api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
+	api.WashServerDeleteWashServerHandler = washServer.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
+	api.WashServerListWashServerHandler = washServer.ListWashServerHandlerFunc(svc.ListWashServer)
+}
+
 func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile interface{}) middleware.Responder {
-	//_ := profile.(*auth.UserRecord)
-	c, err := svc.app.GetWashServer(app.Profile{}, params.Body.ID)
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	c, err := svc.washServerSvc.Get(dto.ToAppIdentityProfile(*prof), params.Body.ID)
 	switch {
 	default:
 		log.PrintErr("GetWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -43,8 +56,8 @@ func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile
 	}
 }
 func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile interface{}) middleware.Responder {
-	//_ := profile.(*auth.UserRecord)
-	c, err := svc.app.AddWashServer(app.Profile{}, appWashServerAdd(params.Body))
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	err := svc.washServerSvc.Add(dto.ToAppIdentityProfile(*prof), appWashServerAdd(params.Body))
 	switch {
 	default:
 		log.PrintErr("AddWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -60,12 +73,12 @@ func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile
 		})
 	case err == nil:
 		log.Info("AddWashServer ok")
-		return washServer.NewAddWashServerCreated().WithPayload(apiWashServer(c))
+		return washServer.NewAddWashServerCreated().WithPayload(apiWashServer(entity.WashServer{}))
 	}
 }
 func (svc *service) EditWashServer(params washServer.EditWashServerParams, profile interface{}) middleware.Responder {
-	//_ := profile.(*auth.UserRecord)
-	err := svc.app.EditWashServer(app.Profile{}, params.Body.ID, appWashServerAdd(params.Body.Data))
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	err := svc.washServerSvc.Edit(dto.ToAppIdentityProfile(*prof), params.Body.ID, appWashServerAdd(params.Body.Data))
 	switch {
 	default:
 		log.PrintErr("EditWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -91,8 +104,8 @@ func (svc *service) EditWashServer(params washServer.EditWashServerParams, profi
 	}
 }
 func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, profile interface{}) middleware.Responder {
-	//_ := profile.(*auth.UserRecord)
-	err := svc.app.DeleteWashServer(app.Profile{}, params.Body.ID)
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	err := svc.washServerSvc.Delete(dto.ToAppIdentityProfile(*prof), params.Body.ID)
 	switch {
 	default:
 		log.PrintErr("DeleteWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -118,8 +131,8 @@ func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, p
 	}
 }
 func (svc *service) ListWashServer(params washServer.ListWashServerParams, profile interface{}) middleware.Responder {
-	//_ := profile.(*auth.UserRecord)
-	c, warnings, err := svc.app.ListWashServer(app.Profile{}, appListParams(params.Body))
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	c, warnings, err := svc.washServerSvc.List(dto.ToAppIdentityProfile(*prof), dto.ListFilterFromRest(params.Body))
 	switch {
 	default:
 		log.PrintErr("ListWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
