@@ -17,8 +17,8 @@ securityDefinitions:
     name: Authorization
 security:
   - authKey: []
-paths:  
-  /healthCheck:    
+paths:
+  /healthCheck:
     get:
       tags:
         - Standard
@@ -45,280 +45,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /permission/get:    
-    post: 
-      tags:
-        - Permission
-      operationId: getPermission
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        200:
-          description: OK
-          schema:
-                  $ref: "#/definitions/permission"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /permission/add:    
-    post: 
-      tags:
-        - Permission
-      operationId: addPermission
-      parameters:
-        - name: body
-          in: body
-          schema:
-                $ref: "#/definitions/permissionAdd" 
-      responses:
-        201:
-          description: Created 
-          schema:
-            $ref: "#/definitions/permission"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /permission/edit:    
-    put: 
-      tags:
-        - Permission
-      operationId: editPermission
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-              data:
-                $ref: "#/definitions/permissionAdd" 
-      responses:
-        200:
-          description: OK
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /permission/delete:    
-    delete: 
-      tags:
-        - Permission
-      operationId: deletePermission
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        204:
-          description: Deleted
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /permission/list:    
-    post: 
-      tags:
-        - Permission
-      operationId: listPermission
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/listParams" 
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            properties:
-              warnings:
-                type: array
-                items:
-                  type: string
-              items:
-                type: array
-                items:
-                  $ref: "#/definitions/permission"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/get:    
-    post: 
-      tags:
-        - Role
-      operationId: getRole
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        200:
-          description: OK
-          schema:
-                  $ref: "#/definitions/role"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/add:    
-    post: 
-      tags:
-        - Role
-      operationId: addRole
-      parameters:
-        - name: body
-          in: body
-          schema:
-                $ref: "#/definitions/roleAdd" 
-      responses:
-        201:
-          description: Created 
-          schema:
-            $ref: "#/definitions/role"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/edit:    
-    put: 
-      tags:
-        - Role
-      operationId: editRole
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-              data:
-                $ref: "#/definitions/roleAdd" 
-      responses:
-        200:
-          description: OK
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/delete:    
-    delete: 
-      tags:
-        - Role
-      operationId: deleteRole
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        204:
-          description: Deleted
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/list:    
-    post: 
-      tags:
-        - Role
-      operationId: listRole
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/listParams" 
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            properties:
-              warnings:
-                type: array
-                items:
-                  type: string
-              items:
-                type: array
-                items:
-                  $ref: "#/definitions/role"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/addPermissions:    
-    post:
-      tags:
-        - Role
-      operationId: addPermissionsRole
-      parameters:
-        - name: body
-          in: body
-          schema: 
-            type: object
-            properties:
-              id:
-                type: string
-              itemsID:
-                type: array
-                items:
-                  type: string
-              items:
-                type: array
-                items:
-                  $ref: "#/definitions/permissionAdd" 
-      responses:        
-        200:
-          description: OK
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /role/deletePermissions:    
-    post:
-      tags:
-        - Role
-      operationId: deletePermissionsRole
-      parameters:
-        - name: body
-          in: body
-          schema: 
-            type: object
-            properties:
-              id:
-                type: string
-              items:
-                type: array
-                items:
-                  type: string
-      responses:        
-        200:
-          description: OK
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
+
   /user/get:    
     post: 
       tags:
@@ -554,49 +281,6 @@ definitions:
         format: int32
       message:
         type: string
-  
-  permission:
-    type: object
-    description: "permission object"
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-  permissionAdd:
-    type: object
-    description: "permission model for add and edit methods"
-    properties:
-      name:
-        type: string
-  
-  role:
-    type: object
-    description: "role object"
-    properties:
-      id:
-        type: string
-      active:
-        type: boolean
-      name:
-        type: string  
-      permissions:
-        type: array
-        items:
-          $ref: "#/definitions/permission"
-  roleAdd:
-    type: object
-    description: "role model for add and edit methods"
-    properties:
-      active:
-        type: boolean
-      name:
-        type: string  
-      permissions:
-        type: array
-        items:
-          type: string
-  
   user:
     type: object
     description: "user object"
@@ -614,9 +298,7 @@ definitions:
       modifiedAt:
         type: string
         format: date-time
-        x-nullable: true            
-      role:
-        $ref: "#/definitions/role"
+        x-nullable: true
   userAdd:
     type: object
     description: "user model for add and edit methods"
@@ -624,10 +306,8 @@ definitions:
       active:
         type: boolean
       firebaseId:
-        type: string            
-      role:
         type: string
-  
+
   washServer:
     type: object
     description: "washServer object"

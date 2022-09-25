@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package main
@@ -56,7 +57,6 @@ func setupIntegration() {
 		go runServe(errc)
 		testinit.Fatal(<-errc)
 	}()
-
 
 	tsURL := fmt.Sprintf("https://%s:%d", cfg.api.Host, cfg.api.Port)
 	extClient = client.NewHTTPClientWithConfig(nil, &client.TransportConfig{

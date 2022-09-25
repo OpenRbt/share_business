@@ -9,23 +9,22 @@ import (
 	"wash-bonus/internal/api/restapi/restapi"
 	"wash-bonus/internal/api/restapi/restapi/operations"
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
-	
-		permission "wash-bonus/internal/api/restapi/restapi/operations/permission"
-		role "wash-bonus/internal/api/restapi/restapi/operations/role"
-		user "wash-bonus/internal/api/restapi/restapi/operations/user"
-		washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
+
+	user "wash-bonus/internal/api/restapi/restapi/operations/user"
+	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
+
+	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app"
-		"wash-bonus/internal/def"
-		"wash-bonus/internal/api/restapi/models"
+	"wash-bonus/internal/def"
 
-		extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
+	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 
-		"github.com/go-openapi/swag"
-	"github.com/rs/cors"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
 	"github.com/powerman/structlog"
+	"github.com/rs/cors"
 	"github.com/sebest/xff"
 )
 
@@ -67,36 +66,20 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, erro
 	api := operations.NewWashBonusAPI(swaggerSpec)
 
 	api.Logger = structlog.New(structlog.KeyUnit, "swagger").Printf
-		api.AuthKeyAuth = svc.checkerAuth
+	api.AuthKeyAuth = svc.checkerAuth
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
-		api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
-			api.PermissionGetPermissionHandler = permission.GetPermissionHandlerFunc(svc.GetPermission)
-			api.PermissionAddPermissionHandler = permission.AddPermissionHandlerFunc(svc.AddPermission)
-			api.PermissionEditPermissionHandler = permission.EditPermissionHandlerFunc(svc.EditPermission)
-			api.PermissionDeletePermissionHandler = permission.DeletePermissionHandlerFunc(svc.DeletePermission)
-			api.PermissionListPermissionHandler = permission.ListPermissionHandlerFunc(svc.ListPermission)
-			api.RoleGetRoleHandler = role.GetRoleHandlerFunc(svc.GetRole)
-			api.RoleAddRoleHandler = role.AddRoleHandlerFunc(svc.AddRole)
-			api.RoleEditRoleHandler = role.EditRoleHandlerFunc(svc.EditRole)
-			api.RoleDeleteRoleHandler = role.DeleteRoleHandlerFunc(svc.DeleteRole)
-			api.RoleListRoleHandler = role.ListRoleHandlerFunc(svc.ListRole)
-				api.RoleAddPermissionsRoleHandler = role.AddPermissionsRoleHandlerFunc(svc.AddPermissionsRole)
-				api.RoleDeletePermissionsRoleHandler = role.DeletePermissionsRoleHandlerFunc(svc.DeletePermissionsRole)
-			api.UserGetUserHandler = user.GetUserHandlerFunc(svc.GetUser)
-			api.UserAddUserHandler = user.AddUserHandlerFunc(svc.AddUser)
-			api.UserEditUserHandler = user.EditUserHandlerFunc(svc.EditUser)
-			api.UserDeleteUserHandler = user.DeleteUserHandlerFunc(svc.DeleteUser)
-			api.UserListUserHandler = user.ListUserHandlerFunc(svc.ListUser)
-			api.WashServerGetWashServerHandler = washServer.GetWashServerHandlerFunc(svc.GetWashServer)
-			api.WashServerAddWashServerHandler = washServer.AddWashServerHandlerFunc(svc.AddWashServer)
-			api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
-			api.WashServerDeleteWashServerHandler = washServer.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
-			api.WashServerListWashServerHandler = washServer.ListWashServerHandlerFunc(svc.ListWashServer)
-		
-		
-		
-		
+	api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
+	api.UserGetUserHandler = user.GetUserHandlerFunc(svc.GetUser)
+	api.UserAddUserHandler = user.AddUserHandlerFunc(svc.AddUser)
+	api.UserEditUserHandler = user.EditUserHandlerFunc(svc.EditUser)
+	api.UserDeleteUserHandler = user.DeleteUserHandlerFunc(svc.DeleteUser)
+	api.UserListUserHandler = user.ListUserHandlerFunc(svc.ListUser)
+	api.WashServerGetWashServerHandler = washServer.GetWashServerHandlerFunc(svc.GetWashServer)
+	api.WashServerAddWashServerHandler = washServer.AddWashServerHandlerFunc(svc.AddWashServer)
+	api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
+	api.WashServerDeleteWashServerHandler = washServer.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
+	api.WashServerListWashServerHandler = washServer.ListWashServerHandlerFunc(svc.ListWashServer)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)
@@ -123,8 +106,7 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, erro
 		isSafe := func(r *http.Request) bool { return safePath[r.URL.Path] }
 		forbidCSRF := makeForbidCSRF(isSafe)
 
-		withValidatePath := map[string]bool{
-		}
+		withValidatePath := map[string]bool{}
 		needValidate := func(r *http.Request) bool { return withValidatePath[r.URL.Path] }
 		validateToken := svc.makeValidateToken(needValidate)
 
@@ -136,12 +118,12 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, erro
 		AllowedMethods:   []string{"POST", "PUT", "GET", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
-			// Enable Debugging for testing, consider disabling in production
-			Debug: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: true,
 	})
 	newCORS.Log = cors.Logger(structlog.New(structlog.KeyUnit, "CORS"))
 	handleCORS := newCORS.Handler
-	
+
 	server.SetHandler(handleCORS(globalMiddlewares(api.Serve(middlewares))))
 
 	return server, nil
@@ -150,24 +132,24 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config) (*restapi.Server, erro
 func healthCheck(params standard.HealthCheckParams, profile interface{}) middleware.Responder {
 	return standard.NewHealthCheckOK().WithPayload(&standard.HealthCheckOKBody{Ok: true})
 }
-	func (svc *service) addTestData(params standard.AddTestDataParams, profile interface{}) middleware.Responder {
-		prof := profile.(*extauthapi.Profile)
-		err := svc.app.AddTestData(toAppProfile(prof))
-		switch {
-		default:
-			log.PrintErr("AddTestData server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-			return standard.NewAddTestDataDefault(codeInternal.status).WithPayload(&models.Error{
-				Code:    swag.Int32(codeInternal.extra),
-				Message: swag.String("internal error"),
-			})
-		case errors.Is(err, app.ErrAccessDenied):
-			log.Info("AddTestData client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-			return standard.NewAddTestDataDefault(codeForbidden.status).WithPayload(&models.Error{
-				Code:    swag.Int32(codeForbidden.extra),
-				Message: swag.String(err.Error()),
-			})
-		case err == nil:
-			log.Info("AddTestData ok")
-			return standard.NewAddTestDataOK()
-		}
+func (svc *service) addTestData(params standard.AddTestDataParams, profile interface{}) middleware.Responder {
+	prof := profile.(*extauthapi.Profile)
+	err := svc.app.AddTestData(toAppProfile(prof))
+	switch {
+	default:
+		log.PrintErr("AddTestData server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
+		return standard.NewAddTestDataDefault(codeInternal.status).WithPayload(&models.Error{
+			Code:    swag.Int32(codeInternal.extra),
+			Message: swag.String("internal error"),
+		})
+	case errors.Is(err, app.ErrAccessDenied):
+		log.Info("AddTestData client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
+		return standard.NewAddTestDataDefault(codeForbidden.status).WithPayload(&models.Error{
+			Code:    swag.Int32(codeForbidden.extra),
+			Message: swag.String(err.Error()),
+		})
+	case err == nil:
+		log.Info("AddTestData ok")
+		return standard.NewAddTestDataOK()
 	}
+}

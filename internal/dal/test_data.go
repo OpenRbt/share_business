@@ -3,7 +3,7 @@ package dal
 
 import (
 	"time"
-	
+
 	"wash-bonus/internal/app"
 
 	"github.com/go-openapi/strfmt"
@@ -12,89 +12,56 @@ import (
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 var (
-	testPermission1 = &app.Permission{
-			Name: "et",
-	}
-		testPermission2 = &app.Permission{
-				Name: "facere",
-		}
-		testPermissions = []*app.Permission{testPermission1, testPermission2}
-	testRole1 = &app.Role{
-			Active: false,
-			Name: "dolorum",
-			Permissions: testPermissions,
-	}
-		testRole2 = &app.Role{
-				Active: true,
-				Name: "quo",
-				Permissions: testPermissions,
-		}
-		testRoles = []*app.Role{testRole1, testRole2}
 	testUser1 = &app.User{
-			Active: true,
-			CreatedAt: mustParseTime("1980-06-12T19:45:45.470Z"),
-			FirebaseId: "a",
-			ModifiedAt: mustParseTime("1936-04-24T00:37:08.998Z"),
-			Role: testRole1,
+		Active:     true,
+		CreatedAt:  mustParseTime("1923-06-18T23:02:58.680Z"),
+		FirebaseId: "a",
+		ModifiedAt: mustParseTime("2002-08-09T19:21:15.435Z"),
 	}
-		testUser2 = &app.User{
-				Active: false,
-				CreatedAt: mustParseTime("1990-11-24T12:32:05.144Z"),
-				FirebaseId: "saepe",
-				ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
-				Role: testRole2,
-		}
-		testUsers = []*app.User{testUser1, testUser2}
+	testUser2 = &app.User{
+		Active:     false,
+		CreatedAt:  mustParseTime("1990-11-24T12:32:05.144Z"),
+		FirebaseId: "saepe",
+		ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
+	}
+	testUsers       = []*app.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{
-			CreatedAt: mustParseTime("1990-02-28T18:25:58.354Z"),
-			Key: "eligendi",
-			LastUpdateAt: mustParseTime("1966-07-03T18:57:27.125Z"),
-			ModifiedAt: mustParseTime("1974-04-20T07:40:12.568Z"),
-			Name: "deleniti",
+		CreatedAt:    mustParseTime("1990-02-28T18:25:58.354Z"),
+		Key:          "eligendi",
+		LastUpdateAt: mustParseTime("1966-07-03T18:57:27.125Z"),
+		ModifiedAt:   mustParseTime("1974-04-20T07:40:12.568Z"),
+		Name:         "deleniti",
 	}
-		testWashServer2 = &app.WashServer{
-				CreatedAt: mustParseTime("1977-10-02T19:37:59.664Z"),
-				Key: "molestias",
-				LastUpdateAt: mustParseTime("1947-03-30T18:52:55.557Z"),
-				ModifiedAt: mustParseTime("1903-07-21T04:11:10.272Z"),
-				Name: "maxime",
-		}
-		testWashServers = []*app.WashServer{testWashServer1, testWashServer2}
+	testWashServer2 = &app.WashServer{
+		CreatedAt:    mustParseTime("1977-10-02T19:37:59.664Z"),
+		Key:          "molestias",
+		LastUpdateAt: mustParseTime("1947-03-30T18:52:55.557Z"),
+		ModifiedAt:   mustParseTime("1903-07-21T04:11:10.272Z"),
+		Name:         "maxime",
+	}
+	testWashServers = []*app.WashServer{testWashServer1, testWashServer2}
 )
-func (a *Repo) AddTestData(profileID, isolatedEntityID string) error { 
+
+func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
 	var err error
-				testPermission1.ID, err = a.addPermission(profileID, isolatedEntityID, testPermission1)
-				if err != nil {
-					return err
-				}
-					testPermission2.ID, err = a.addPermission(profileID, isolatedEntityID, testPermission2)
-					if err != nil {
-						return err
-					}
-				testWashServer1.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer1)
-				if err != nil {
-					return err
-				}
-					testWashServer2.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer2)
-					if err != nil {
-						return err
-					}
-				testRole1.ID, err = a.addRole(profileID, isolatedEntityID, testRole1)
-				if err != nil {
-					return err
-				}
-					testRole2.ID, err = a.addRole(profileID, isolatedEntityID, testRole2)
-					if err != nil {
-						return err
-					}
-				testUser1.ID, err = a.addUser(profileID, isolatedEntityID, testUser1)
-				if err != nil {
-					return err
-				}
-					testUser2.ID, err = a.addUser(profileID, isolatedEntityID, testUser2)
-					if err != nil {
-						return err
-					}
+
+	testWashServer1.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer1)
+	if err != nil {
+		return err
+	}
+	testWashServer2.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer2)
+	if err != nil {
+		return err
+	}
+
+	testUser1.ID, err = a.addUser(profileID, isolatedEntityID, testUser1)
+	if err != nil {
+		return err
+	}
+	testUser2.ID, err = a.addUser(profileID, isolatedEntityID, testUser2)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

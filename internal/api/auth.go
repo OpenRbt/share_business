@@ -5,8 +5,8 @@ import (
 	"context"
 	"time"
 
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 	oapierrors "github.com/go-openapi/errors"
+	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 	"github.com/powerman/structlog"
 )
 
