@@ -12,91 +12,38 @@ import (
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 var (
-	testSession1 = &app.Session{
-		Active:       false,
-		ClosingAt:    mustParseTime("2003-12-18T17:06:14.544Z"),
-		CreatedAt:    mustParseTime("1928-12-08T19:38:32.613Z"),
-		ExpirationAt: mustParseTime("1943-01-04T21:55:24.534Z"),
-		UpdateAt:     mustParseTime("1982-02-03T22:26:10.886Z"),
-		User:         testToken1,
-	}
-	testSession2 = &app.Session{
-		Active:       true,
-		ClosingAt:    mustParseTime("1973-12-01T18:50:38.585Z"),
-		CreatedAt:    mustParseTime("1930-02-24T02:37:06.512Z"),
-		ExpirationAt: mustParseTime("2016-11-11T12:06:59.579Z"),
-		UpdateAt:     mustParseTime("1908-10-05T12:45:14.024Z"),
-		User:         testToken2,
-	}
-	testSessions = []*app.Session{testSession1, testSession2}
-	testToken1   = &app.Token{
-		ExpirationAt: mustParseTime("1973-05-05T16:02:59.541Z"),
-		Token:        "vero",
-		Type:         "qui",
-	}
-	testToken2 = &app.Token{
-		ExpirationAt: mustParseTime("1987-07-05T14:25:56.067Z"),
-		Token:        "omnis",
-		Type:         "blanditiis",
-	}
-	testTokens = []*app.Token{testToken1, testToken2}
 	testUser1  = &app.User{
 		Active:     true,
 		CreatedAt:  mustParseTime("1923-06-18T23:02:58.680Z"),
+		FirebaseId: "a",
 		ModifiedAt: mustParseTime("2002-08-09T19:21:15.435Z"),
 	}
-	testUser2 = &app.User{
-		Active:     true,
-		CreatedAt:  mustParseTime("1985-03-28T22:44:57.945Z"),
-		ModifiedAt: mustParseTime("1983-12-09T18:32:01.612Z"),
+		testUser2 = &app.User{
+				Active: false,
+				CreatedAt: mustParseTime("1990-11-24T12:32:05.144Z"),
+				FirebaseId: "saepe",
+				ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
 	}
 	testUsers       = []*app.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{
-		CreatedAt:    mustParseTime("1919-03-24T04:14:40.801Z"),
-		Key:          "soluta",
-		LastUpdateAt: mustParseTime("1942-07-30T13:10:15.733Z"),
-		ModifiedAt:   mustParseTime("1997-06-02T09:01:25.092Z"),
-		Name:         "et",
+			CreatedAt: mustParseTime("1990-02-28T18:25:58.354Z"),
+			Key: "eligendi",
+			LastUpdateAt: mustParseTime("1966-07-03T18:57:27.125Z"),
+			ModifiedAt: mustParseTime("1974-04-20T07:40:12.568Z"),
+			Name: "deleniti",
 	}
-	testWashServer2 = &app.WashServer{
-		CreatedAt:    mustParseTime("1939-07-27T11:32:32.460Z"),
-		Key:          "ducimus",
-		LastUpdateAt: mustParseTime("1994-08-19T15:53:02.411Z"),
-		ModifiedAt:   mustParseTime("2009-03-02T07:47:26.524Z"),
-		Name:         "ipsa",
-	}
-	testWashServers  = []*app.WashServer{testWashServer1, testWashServer2}
-	testWashSession1 = &app.WashSession{
-		Active:       true,
-		ClosingAt:    mustParseTime("1907-10-24T17:56:09.295Z"),
-		CreatedAt:    mustParseTime("1961-02-13T20:45:38.209Z"),
-		ExpirationAt: mustParseTime("2022-06-09T08:37:08.027Z"),
-		UpdateAt:     mustParseTime("1914-01-04T07:05:31.856Z"),
-		User:         testToken1,
-		WashServer:   testWashServer1,
-	}
-	testWashSession2 = &app.WashSession{
-		Active:       false,
-		ClosingAt:    mustParseTime("2007-12-01T12:51:35.926Z"),
-		CreatedAt:    mustParseTime("1942-08-17T06:06:11.736Z"),
-		ExpirationAt: mustParseTime("2004-03-22T19:16:32.842Z"),
-		UpdateAt:     mustParseTime("1937-02-26T19:26:15.149Z"),
-		User:         testToken2,
-		WashServer:   testWashServer2,
-	}
-	testWashSessions = []*app.WashSession{testWashSession1, testWashSession2}
+		testWashServer2 = &app.WashServer{
+				CreatedAt: mustParseTime("1977-10-02T19:37:59.664Z"),
+				Key: "molestias",
+				LastUpdateAt: mustParseTime("1947-03-30T18:52:55.557Z"),
+				ModifiedAt: mustParseTime("1903-07-21T04:11:10.272Z"),
+				Name: "maxime",
+		}
+		testWashServers = []*app.WashServer{testWashServer1, testWashServer2}
 )
-
 func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
 	var err error
-	testToken1.ID, err = a.addToken(profileID, isolatedEntityID, testToken1)
-	if err != nil {
-		return err
-	}
-	testToken2.ID, err = a.addToken(profileID, isolatedEntityID, testToken2)
-	if err != nil {
-		return err
-	}
+
 	testWashServer1.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer1)
 	if err != nil {
 		return err
@@ -105,22 +52,7 @@ func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
 	if err != nil {
 		return err
 	}
-	testSession1.ID, err = a.addSession(profileID, isolatedEntityID, testSession1)
-	if err != nil {
-		return err
-	}
-	testSession2.ID, err = a.addSession(profileID, isolatedEntityID, testSession2)
-	if err != nil {
-		return err
-	}
-	testWashSession1.ID, err = a.addWashSession(profileID, isolatedEntityID, testWashSession1)
-	if err != nil {
-		return err
-	}
-	testWashSession2.ID, err = a.addWashSession(profileID, isolatedEntityID, testWashSession2)
-	if err != nil {
-		return err
-	}
+
 	testUser1.ID, err = a.addUser(profileID, isolatedEntityID, testUser1)
 	if err != nil {
 		return err

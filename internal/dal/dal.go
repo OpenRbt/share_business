@@ -35,6 +35,7 @@ type Repo struct {
 	db *DB
 }
 
+
 func connect(ctx context.Context, cfg pqx.Config, migrationDir string, resetDB bool) (*DB, error) {
 	if resetDB {
 		if err := migration.ResetAll(ctx, migrationDir, cfg); err != nil {
@@ -70,7 +71,7 @@ func connect(ctx context.Context, cfg pqx.Config, migrationDir string, resetDB b
 	return NewDB(sqlxx.NewDB(sqlx.NewDb(db, "postgres"))), nil
 }
 
-func New(ctx context.Context, dbCfg pqx.Config, migrationDir string, resetDB bool) (*Repo, error) {
+func New(ctx context.Context, dbCfg pqx.Config, migrationDir string, resetDB bool) (*Repo,  error) {
 	db, err := connect(ctx, dbCfg, migrationDir, resetDB)
 	if err != nil {
 		return nil, err
@@ -84,6 +85,7 @@ func New(ctx context.Context, dbCfg pqx.Config, migrationDir string, resetDB boo
 func (a *Repo) Close() {
 	log.WarnIfFail(a.db.Close)
 }
+
 
 func filterCount(include bool, a, b interface{}) int {
 	if include {
@@ -141,7 +143,7 @@ func pagination(offset, limit, len int) (start, end int) {
 }
 
 // contains is equal to strings.Contains but case insensitive
-func contains(str, substr string) bool {
+func contains(str, substr string) bool  {
 	return strings.Contains(strings.ToLower(str), strings.ToLower(substr))
 }
 

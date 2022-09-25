@@ -57,6 +57,7 @@ var (
 	ExtauthEndpoint     = os.Getenv(ExtauthEndpointEnvName)
 	CORSAllowedOrigins  = os.Getenv("MSRV_CORS_ALLOWED_ORIGINS")
 	DisableCookieSecure = boolGetenv("MSRV_DISABLE_COOKIE_SECURE")
+	
 )
 
 func intGetenv(name string, def int) int {

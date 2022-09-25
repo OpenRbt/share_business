@@ -45,7 +45,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  
+
   /user/get:    
     post: 
       tags:
@@ -268,117 +268,6 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /washSession/get:    
-    post: 
-      tags:
-        - WashSession
-      operationId: getWashSession
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        200:
-          description: OK
-          schema:
-                  $ref: "#/definitions/washSession"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /washSession/add:    
-    post: 
-      tags:
-        - WashSession
-      operationId: addWashSession
-      parameters:
-        - name: body
-          in: body
-          schema:
-                $ref: "#/definitions/washSessionAdd" 
-      responses:
-        201:
-          description: Created 
-          schema:
-            $ref: "#/definitions/washSession"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /washSession/edit:    
-    put: 
-      tags:
-        - WashSession
-      operationId: editWashSession
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-              data:
-                $ref: "#/definitions/washSessionAdd" 
-      responses:
-        200:
-          description: OK
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /washSession/delete:    
-    delete: 
-      tags:
-        - WashSession
-      operationId: deleteWashSession
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        204:
-          description: Deleted
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /washSession/list:    
-    post: 
-      tags:
-        - WashSession
-      operationId: listWashSession
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/listParams" 
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            properties:
-              warnings:
-                type: array
-                items:
-                  type: string
-              items:
-                type: array
-                items:
-                  $ref: "#/definitions/washSession"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
 definitions:
   error:
     type: object
@@ -392,81 +281,6 @@ definitions:
         format: int32
       message:
         type: string
-    
-  session:
-    type: object
-    description: "session object"
-    properties:
-      id:
-        type: string
-      active:
-        type: boolean
-      closingAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      createdAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      expirationAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      updateAt:
-        type: string
-        format: date-time
-        x-nullable: true            
-      user:
-        $ref: "#/definitions/token"
-  sessionAdd:
-    type: object
-    description: "session model for add and edit methods"
-    properties:
-      active:
-        type: boolean
-      closingAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      expirationAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      updateAt:
-        type: string
-        format: date-time
-        x-nullable: true            
-      user:
-        type: string
-  
-  token:
-    type: object
-    description: "token object"
-    properties:
-      id:
-        type: string
-      expirationAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      token:
-        type: string
-      type:
-        type: string
-  tokenAdd:
-    type: object
-    description: "token model for add and edit methods"
-    properties:
-      expirationAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      token:
-        type: string
-      type:
-        type: string
-  
   user:
     type: object
     description: "user object"
@@ -479,17 +293,21 @@ definitions:
         type: string
         format: date-time
         x-nullable: true
+      firebaseId:
+        type: string
       modifiedAt:
         type: string
         format: date-time
-        x-nullable: true            
+        x-nullable: true
   userAdd:
     type: object
     description: "user model for add and edit methods"
     properties:
       active:
-        type: boolean            
-  
+        type: boolean
+      firebaseId:
+        type: string
+
   washServer:
     type: object
     description: "washServer object"
@@ -523,57 +341,6 @@ definitions:
         format: date-time
         x-nullable: true
       name:
-        type: string
-  
-  washSession:
-    type: object
-    description: "washSession object"
-    properties:
-      id:
-        type: string
-      active:
-        type: boolean
-      closingAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      createdAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      expirationAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      updateAt:
-        type: string
-        format: date-time
-        x-nullable: true            
-      user:
-        $ref: "#/definitions/token"            
-      washServer:
-        $ref: "#/definitions/washServer"
-  washSessionAdd:
-    type: object
-    description: "washSession model for add and edit methods"
-    properties:
-      active:
-        type: boolean
-      closingAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      expirationAt:
-        type: string
-        format: date-time
-        x-nullable: true
-      updateAt:
-        type: string
-        format: date-time
-        x-nullable: true            
-      user:
-        type: string            
-      washServer:
         type: string
  
 

@@ -5,16 +5,6 @@ package app
 
 // App provides application features service.
 type App interface {
-	GetSession(prof Profile, id string) (*Session, error)
-	AddSession(prof Profile, m *Session) (*Session, error)
-	EditSession(prof Profile, id string, m *Session) error
-	DeleteSession(prof Profile, id string) error
-	ListSession(prof Profile, params *ListParams) ([]*Session, []string, error)
-
-	GetToken(prof Profile, id string) (*Token, error)
-	AddToken(prof Profile, m *Token) (*Token, error)
-	DeleteToken(prof Profile, id string) error
-
 	GetUser(prof Profile, id string) (*User, error)
 	AddUser(prof Profile, m *User) (*User, error)
 	EditUser(prof Profile, id string, m *User) error
@@ -38,16 +28,6 @@ type App interface {
 
 // Repo interface for data repository
 type Repo interface {
-	GetSession(id string, isolatedEntityID string) (*Session, error)
-	AddSession(profileID string, isolatedEntityID string, m *Session) (*Session, error)
-	EditSession(id string, isolatedEntityID string, m *Session) error
-	DeleteSession(id string, profileID string, isolatedEntityID string) error
-	ListSession(isolatedEntityID string, params *ListParams) ([]*Session, []string, error)
-
-	GetToken(id string, isolatedEntityID string) (*Token, error)
-	AddToken(profileID string, isolatedEntityID string, m *Token) (*Token, error)
-	DeleteToken(id string, profileID string, isolatedEntityID string) error
-
 	GetUser(id string, isolatedEntityID string) (*User, error)
 	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
 	EditUser(id string, isolatedEntityID string, m *User) error
@@ -60,49 +40,46 @@ type Repo interface {
 	DeleteWashServer(id string, profileID string, isolatedEntityID string) error
 	ListWashServer(isolatedEntityID string, params *ListParams) ([]*WashServer, []string, error)
 
-	GetWashSession(id string, isolatedEntityID string) (*WashSession, error)
-	AddWashSession(profileID string, isolatedEntityID string, m *WashSession) (*WashSession, error)
-	EditWashSession(id string, isolatedEntityID string, m *WashSession) error
-	DeleteWashSession(id string, profileID string, isolatedEntityID string) error
-	ListWashSession(isolatedEntityID string, params *ListParams) ([]*WashSession, []string, error)
 
-	AddTestData(profileID, isolatedEntityID string) error
+
+    AddTestData(profileID, isolatedEntityID string) error
 }
 
-type ListParams struct {
-	Offset       int64
-	Limit        int64
-	FilterGroups []*FilterGroup
-	SortBy       string
-	OrderBy      string
-}
 
-type FilterGroup struct {
-	Key         string
-	LogicFilter bool
-	Filters     []*Filter
-}
+    type ListParams struct {
+        Offset       int64
+        Limit        int64
+        FilterGroups []*FilterGroup
+        SortBy       string
+        OrderBy      string
+    }
 
-type Filter struct {
-	Value      string
-	Operator   string
-	IgnoreCase bool
-}
+    type FilterGroup struct {
+        Key         string
+        LogicFilter bool
+        Filters     []*Filter
+    }
+
+    type Filter struct {
+        Value      string
+        Operator   string
+        IgnoreCase bool
+    }
 
 type app struct {
 	repo     Repo
 	rulesSet RulesSet
 }
 
-func New(r Repo, rs RulesSet) App {
+func New(r Repo, rs RulesSet) (App) {
 	return &app{
-		repo:     r,
-		rulesSet: rs,
+		repo: r,
+        rulesSet: rs,
 	}
 }
-func (a *app) AddTestData(prof Profile) error {
-	if !prof.Authz.Admin {
-		return ErrAccessDenied
-	}
-	return a.repo.AddTestData(prof.ID, prof.IsolatedEntityID)
-}
+    func (a *app) AddTestData(prof Profile) error {
+        if !prof.Authz.Admin {
+            return ErrAccessDenied
+        }
+        return a.repo.AddTestData(prof.ID, prof.IsolatedEntityID)
+    }

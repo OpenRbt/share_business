@@ -10,13 +10,6 @@ DOCKER_CONTAINER_NAME=wash-bonus
 test:
 	go test  ./...
 
-build_app:
-	go build -o ./bin/wash-bonus ./cmd/main/*
-
-run_app:
-	export MSRV_DB_HOST="localhost" && export MSRV_DB_PORT="5432" && export  MSRV_DB_USER="postgres" && export  MSRV_DB_PASS="postgres" && export MSRV_DB_NAME="postgres" && \
-	go build -o ./bin/wash-bonus ./cmd/main/* && ./bin/wash-bonus
-
 test-i:
 	go test --tags=integration ./...
 
@@ -25,9 +18,6 @@ db_start:
 
 db_stop:
 	docker stop $(DB_CONTAINER_NAME)
-
-db_os_stop:
-	sudo service postgresql stop
 
 start_docker:
 	docker build -t $(DOCKER_IMAGE_NAME) .

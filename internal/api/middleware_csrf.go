@@ -12,10 +12,9 @@ import (
 	"io"
 	"net/http"
 
-	extauthapi "wash-bonus/internal/authentication"
-
+	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 	"github.com/powerman/structlog"
-
+	
 	"wash-bonus/internal/def"
 )
 

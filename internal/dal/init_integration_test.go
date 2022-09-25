@@ -1,4 +1,3 @@
-//go:build integration
 // +build integration
 
 package dal
@@ -20,12 +19,12 @@ var ctx = context.Background()
 
 var (
 	isolatedEntityID = uuid.New().String()
-	profID1          = uuid.New().String()
-	profID2          = uuid.New().String()
-	listParams       = &app.ListParams{
-		Offset: 0,
-		Limit:  5,
-	}
+	profID1 = uuid.New().String()
+	profID2 = uuid.New().String()
+		listParams = &app.ListParams{
+			Offset: 0,
+			Limit: 5,
+		}
 )
 
 func init() { testinit.Setup(2, setupIntegration) }
@@ -53,7 +52,7 @@ func setupIntegration() {
 	testinit.Teardown(cleanup)
 	dbCfg.DBName += "_" + dbSuffix
 
-	testRepo, err = New(ctx, dbCfg, migrationDir, false)
+	testRepo,  err = New(ctx, dbCfg, migrationDir, false)
 	if err != nil {
 		testinit.Fatal(err)
 	}
@@ -61,6 +60,6 @@ func setupIntegration() {
 }
 
 func (a *Repo) truncate() error {
-	_, err := a.db.Exec("TRUNCATE users, tokens, sessions, wash_servers, wash_sessions RESTART IDENTITY CASCADE") //
+	_, err := a.db.Exec("TRUNCATE users, wash_servers RESTART IDENTITY CASCADE") //
 	return err
 }
