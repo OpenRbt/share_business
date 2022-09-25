@@ -3,17 +3,17 @@ package api
 
 import (
 	"context"
-	"firebase.google.com/go/auth"
 	"net/http"
 	"path"
-	"wash-bonus/internal/firebase_service"
+	user2 "wash-bonus/internal/app/user"
+	"wash-bonus/internal/dto"
+	"wash-bonus/internal/firebase_auth"
 
 	"wash-bonus/internal/api/restapi/restapi"
 	"wash-bonus/internal/api/restapi/restapi/operations"
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
 
 	"wash-bonus/internal/api/restapi/models"
-	user "wash-bonus/internal/api/restapi/restapi/operations/user"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 
 	"wash-bonus/internal/app"
@@ -36,6 +36,8 @@ type Ctx = context.Context
 // Log is a synonym for convenience.
 type Log = *structlog.Logger
 
+var log = structlog.New()
+
 type Config struct {
 	Host           string
 	Port           int
@@ -44,16 +46,16 @@ type Config struct {
 }
 
 type service struct {
-	app      app.App
-	extAuth  AuthSvc
-	firebase firebase_service.Service
+	app     app.App
+	userSvc user2.UserSvc
+	auth    firebase_auth.Service
 }
 
-func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_service.Service) (*restapi.Server, error) {
+func NewServer(appl app.App, userSvc user2.UserSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
 	svc := &service{
-		app:      appl,
-		extAuth:  extAuth,
-		firebase: firebase,
+		app:     appl,
+		userSvc: userSvc,
+		auth:    firebase,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
@@ -68,16 +70,13 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_serv
 	api := operations.NewWashBonusAPI(swaggerSpec)
 
 	api.Logger = structlog.New(structlog.KeyUnit, "swagger").Printf
-	api.AuthKeyAuth = svc.firebase.GetFirebaseProfile
+	api.AuthKeyAuth = svc.auth.Auth
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 	api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
 
-	api.UserGetUserHandler = user.GetUserHandlerFunc(svc.GetUser)
-	api.UserAddUserHandler = user.AddUserHandlerFunc(svc.AddUser)
-	api.UserEditUserHandler = user.EditUserHandlerFunc(svc.EditUser)
-	api.UserDeleteUserHandler = user.DeleteUserHandlerFunc(svc.DeleteUser)
-	api.UserListUserHandler = user.ListUserHandlerFunc(svc.ListUser)
+	setUserHandlers(api, svc)
+
 	api.WashServerGetWashServerHandler = washServer.GetWashServerHandlerFunc(svc.GetWashServer)
 	api.WashServerAddWashServerHandler = washServer.AddWashServerHandlerFunc(svc.AddWashServer)
 	api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
@@ -109,11 +108,7 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_serv
 		isSafe := func(r *http.Request) bool { return safePath[r.URL.Path] }
 		forbidCSRF := makeForbidCSRF(isSafe)
 
-		withValidatePath := map[string]bool{}
-		needValidate := func(r *http.Request) bool { return withValidatePath[r.URL.Path] }
-		validateToken := svc.makeValidateToken(needValidate)
-
-		return validateToken(forbidCSRF(handler))
+		return forbidCSRF(handler)
 	}
 
 	newCORS := cors.New(cors.Options{
@@ -135,9 +130,10 @@ func NewServer(appl app.App, extAuth AuthSvc, cfg Config, firebase firebase_serv
 func healthCheck(params standard.HealthCheckParams, profile interface{}) middleware.Responder {
 	return standard.NewHealthCheckOK().WithPayload(&standard.HealthCheckOKBody{Ok: true})
 }
+
 func (svc *service) addTestData(params standard.AddTestDataParams, profile interface{}) middleware.Responder {
-	prof := profile.(*auth.UserRecord)
-	err := svc.app.AddTestData(toAppProfile(prof))
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	err := svc.app.AddTestData(dto.ToAppIdentityProfile(*prof))
 	switch {
 	default:
 		log.PrintErr("AddTestData server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)

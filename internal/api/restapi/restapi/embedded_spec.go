@@ -77,6 +77,28 @@ func init() {
         }
       }
     },
+    "/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/user/add": {
       "post": {
         "tags": [
@@ -93,116 +115,8 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/user"
-            }
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/user/delete": {
-      "delete": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "deleteUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Deleted"
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/user/edit": {
-      "put": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "editUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": {
-                  "$ref": "#/definitions/userAdd"
-                },
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
           "200": {
-            "description": "OK"
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/user/get": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "getUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/user"
-            }
+            "description": "Created"
           },
           "default": {
             "description": "error",
@@ -248,6 +162,97 @@ func init() {
                 }
               }
             }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}/delete": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}/edit": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "editUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/userUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "default": {
             "description": "error",
@@ -547,14 +552,20 @@ func init() {
       }
     },
     "userAdd": {
-      "description": "user model for add and edit methods",
+      "description": "user model for add method",
       "type": "object",
       "properties": {
         "active": {
           "type": "boolean"
-        },
-        "firebaseId": {
-          "type": "string"
+        }
+      }
+    },
+    "userUpdate": {
+      "description": "user model for edit method",
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
         }
       }
     },
@@ -680,6 +691,28 @@ func init() {
         }
       }
     },
+    "/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/user/add": {
       "post": {
         "tags": [
@@ -696,116 +729,8 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/user"
-            }
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/user/delete": {
-      "delete": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "deleteUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Deleted"
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/user/edit": {
-      "put": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "editUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": {
-                  "$ref": "#/definitions/userAdd"
-                },
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
           "200": {
-            "description": "OK"
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/user/get": {
-      "post": {
-        "tags": [
-          "User"
-        ],
-        "operationId": "getUser",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/user"
-            }
+            "description": "Created"
           },
           "default": {
             "description": "error",
@@ -851,6 +776,97 @@ func init() {
                 }
               }
             }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}/delete": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}/edit": {
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "editUser",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/userUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "default": {
             "description": "error",
@@ -1151,14 +1167,20 @@ func init() {
       }
     },
     "userAdd": {
-      "description": "user model for add and edit methods",
+      "description": "user model for add method",
       "type": "object",
       "properties": {
         "active": {
           "type": "boolean"
-        },
-        "firebaseId": {
-          "type": "string"
+        }
+      }
+    },
+    "userUpdate": {
+      "description": "user model for edit method",
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
         }
       }
     },

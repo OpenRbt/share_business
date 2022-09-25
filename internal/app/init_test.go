@@ -3,9 +3,8 @@ package app
 
 import (
 	"github.com/go-openapi/strfmt"
-	"time"
-
 	"github.com/google/uuid"
+	"time"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!

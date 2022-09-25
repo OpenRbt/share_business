@@ -2,17 +2,15 @@
 -- +goose Up
 CREATE TABLE users
 (
-    id uuid PRIMARY KEY,
+    id uuid PRIMARY KEY default gen_random_uuid(),
     active boolean,
+    identity_id text,
     created_at timestamp,
-    firebase_id text,
     modified_at timestamp,
-    created_by uuid NOT NULL,
-    bound boolean NOT NULL DEFAULT false,
+    modified_by uuid,
     deleted boolean NOT NULL DEFAULT false,
     deleted_at TIMESTAMP,
-    deleted_by uuid,
-    isolated_entity_id uuid NOT NULL
+    deleted_by uuid
 );
 
 

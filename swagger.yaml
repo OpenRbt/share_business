@@ -46,19 +46,31 @@ paths:
           schema:
             $ref: "#/definitions/error"
 
-  /user/get:    
-    post: 
+  /user:
+    get:
+      tags:
+        - User
+      operationId: getCurrentUser
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/user"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /user/{id}:
+    get:
       tags:
         - User
       operationId: getUser
       parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
+        - name: id
+          in: path
+          type: string
+          required: true
       responses:
         200:
           description: OK
@@ -79,29 +91,26 @@ paths:
           schema:
                 $ref: "#/definitions/userAdd" 
       responses:
-        201:
-          description: Created 
-          schema:
-            $ref: "#/definitions/user"
+        200:
+          description: Created
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /user/edit:    
-    put: 
+  /user/{id}/edit:
+    put:
       tags:
         - User
       operationId: editUser
       parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
         - name: body
           in: body
           schema:
-            type: object
-            properties:
-              id:
-                type: string
-              data:
-                $ref: "#/definitions/userAdd" 
+            $ref: "#/definitions/userUpdate"
       responses:
         200:
           description: OK
@@ -109,19 +118,16 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /user/delete:    
+  /user/{id}/delete:
     delete: 
       tags:
         - User
       operationId: deleteUser
       parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
+        - name: id
+          in: path
+          type: string
+          required: true
       responses:
         204:
           description: Deleted
@@ -299,14 +305,20 @@ definitions:
         type: string
         format: date-time
         x-nullable: true
-  userAdd:
+
+  userUpdate:
     type: object
-    description: "user model for add and edit methods"
+    description: "user model for edit method"
     properties:
       active:
         type: boolean
-      firebaseId:
-        type: string
+
+  userAdd:
+    type: object
+    description: "user model for add method"
+    properties:
+      active:
+        type: boolean
 
   washServer:
     type: object

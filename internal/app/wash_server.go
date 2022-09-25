@@ -16,17 +16,17 @@ type WashServer struct {
 }
 
 func (a *app) GetWashServer(prof Profile, id string) (*WashServer, error) {
-	return a.repo.GetWashServer(id, prof.IsolatedEntityID)
+	return a.repo.GetWashServer(id, "")
 }
 func (a *app) AddWashServer(prof Profile, m *WashServer) (*WashServer, error) {
-	return a.repo.AddWashServer(prof.ID, prof.IsolatedEntityID, m)
+	return a.repo.AddWashServer("prof_id_stub", "", m)
 }
 func (a *app) EditWashServer(prof Profile, id string, m *WashServer) error {
-	return a.repo.EditWashServer(id, prof.IsolatedEntityID, m)
+	return a.repo.EditWashServer(id, "", m)
 }
 func (a *app) DeleteWashServer(prof Profile, id string) error {
-	return a.repo.DeleteWashServer(id, prof.ID, prof.IsolatedEntityID)
+	return a.repo.DeleteWashServer(id, "prof_id_stub", "")
 }
 func (a *app) ListWashServer(prof Profile, params *ListParams) ([]*WashServer, []string, error) {
-	return a.repo.ListWashServer(prof.IsolatedEntityID, params)
+	return a.repo.ListWashServer("", params)
 }

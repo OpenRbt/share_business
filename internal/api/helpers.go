@@ -2,7 +2,6 @@
 package api
 
 import (
-	"firebase.google.com/go/auth"
 	"strings"
 	"time"
 
@@ -78,15 +77,6 @@ func toDatesArray(dates []*time.Time) (ds []*strfmt.Date) {
 		ds = append(ds, (*strfmt.Date)(date))
 	}
 	return
-}
-
-func toAppProfile(userRecord *auth.UserRecord) app.Profile {
-	return app.Profile{
-		ID:               userRecord.UID,
-		Authn:            userRecord != nil,
-		Authz:            app.Authz{},
-		IsolatedEntityID: userRecord.Email,
-	}
 }
 
 func splitCommaSeparatedStr(commaSeparated string) (result []string) {

@@ -6,12 +6,9 @@ package user
 // Editing this file might prove futile when you re-run the generate command
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 )
 
 // DeleteUserHandlerFunc turns a function with the right signature into a delete user handler
@@ -33,7 +30,7 @@ func NewDeleteUser(ctx *middleware.Context, handler DeleteUserHandler) *DeleteUs
 }
 
 /*
-	DeleteUser swagger:route DELETE /user/delete User deleteUser
+	DeleteUser swagger:route DELETE /user/{id}/delete User deleteUser
 
 DeleteUser delete user API
 */
@@ -69,41 +66,4 @@ func (o *DeleteUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	res := o.Handler.Handle(Params, principal) // actually handle the request
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
-}
-
-// DeleteUserBody delete user body
-//
-// swagger:model DeleteUserBody
-type DeleteUserBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this delete user body
-func (o *DeleteUserBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this delete user body based on context it is used
-func (o *DeleteUserBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *DeleteUserBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *DeleteUserBody) UnmarshalBinary(b []byte) error {
-	var res DeleteUserBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
-	return nil
 }

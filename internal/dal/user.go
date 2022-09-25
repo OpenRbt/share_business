@@ -3,258 +3,76 @@ package dal
 
 import (
 	"database/sql"
-	"fmt"
-	"strings"
+	uuid "github.com/satori/go.uuid"
 	"time"
-
-	"github.com/google/uuid"
 	"wash-bonus/internal/app"
+	"wash-bonus/internal/app/entity"
+	"wash-bonus/internal/app/entity/vo"
+	"wash-bonus/internal/dal/dbmodel"
+	"wash-bonus/internal/dto"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
-type User struct {
-	ID         uuid.UUID      `db:"id"`
-	Active     sql.NullBool   `db:"active"`
-	CreatedAt  *time.Time     `db:"created_at"`
-	FirebaseID sql.NullString `db:"firebase_id"`
-	ModifiedAt *time.Time     `db:"modified_at"`
-}
+func (r *Repo) GetUserByIdentityID(identityID string) (*entity.User, error) {
+	var m dbmodel.User
 
-var UserProps = map[string]columnProps{
-	"active": {
-		sqlName:  "active",
-		typeName: "bool",
-	},
-	"createdAt": {
-		sqlName:  "created_at",
-		typeName: "date-time",
-	},
-	"firebaseId": {
-		sqlName:  "firebase_id",
-		typeName: "string",
-	},
-	"id": {
-		sqlName:  "id",
-		typeName: "uuid",
-	},
-	"modifiedAt": {
-		sqlName:  "modified_at",
-		typeName: "date-time",
-	},
-	"role": {
-		sqlName:  "role_id",
-		typeName: "uuid",
-	},
-}
-
-func (a *Repo) GetUser(id string, isolatedEntityID string) (*app.User, error) {
-	return a.getUser(id, isolatedEntityID)
-}
-
-func (a *Repo) AddUser(profileID string, isolatedEntityID string, m *app.User) (*app.User, error) {
-	id, err := a.addUser(profileID, isolatedEntityID, m)
-	if err != nil {
-		return nil, err
-	}
-	return a.getUser(id, isolatedEntityID)
-}
-
-func (a *Repo) EditUser(id string, isolatedEntityID string, m *app.User) error {
-	if err := a.editUser(id, isolatedEntityID, m); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *Repo) DeleteUser(id string, profileID string, isolatedEntityID string) error {
-	t := time.Now()
-	res, err := a.db.NamedExec(sqlDeleteUser, argDeleteUser{
-		ID:               id,
-		DeletedAt:        &t,
-		DeletedBy:        profileID,
-		IsolatedEntityID: isolatedEntityID,
+	err := r.db.NamedGet(&m, sqlGetUserByIdentity, argGetUserByIdentity{
+		IdentityID: identityID,
 	})
+
 	if err != nil {
-		return err
-	}
-	if count, _ := res.RowsAffected(); count == 0 {
-		return app.ErrNotFound
-	}
-
-	return nil
-}
-
-func (a *Repo) ListUser(isolatedEntityID string, params *app.ListParams) ([]*app.User, []string, error) {
-	ms := []User{}
-	warnings := []string{}
-
-	var orderQuery string
-	switch params.SortBy {
-	case "":
-	default:
-		warnings = append(warnings, fmt.Sprintf("Sorting by '%s' is not avaliable or '%s' is not a valid sort key", params.SortBy, params.SortBy))
-	}
-
-	if orderQuery != "" {
-		switch params.OrderBy {
-		case "ASC", "":
-			orderQuery += " ASC"
-		case "DESC":
-			orderQuery += " DESC"
-		}
-	}
-
-	bf := newBuilderFilter(params.FilterGroups, UserProps)
-
-	sqlFilters, namedVars, warningsFromPrepared := bf.preparedSQLFilters()
-	warnings = append(warnings, warningsFromPrepared...)
-
-	namedVars["isolated_entity_id"] = isolatedEntityID
-
-	var offset, limit string
-	var err error
-
-	nestedFilterGroups := bf.nestedFilterGroups()
-
-	externalPagination := false
-	if len(nestedFilterGroups) != 0 {
-		externalPagination = true
-	}
-	if !externalPagination {
-		offset = " OFFSET :offset"
-		namedVars["offset"] = params.Offset
-		if params.Limit != 0 {
-			limit = " LIMIT :limit"
-			namedVars["limit"] = params.Limit
-		}
-	}
-
-	err = a.db.NamedSelect(&ms, sqlListUser+sqlFilters+orderQuery+offset+limit, namedVars)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	result := []User{}
-	for i := range ms {
-		if err := ms[i].LazyLoading(isolatedEntityID, a); err != nil {
-			return nil, nil, err
-		}
-
-		ok := true
-		for j, filterGroup := range nestedFilterGroups {
-			for _, filter := range filterGroup.Filters {
-				var validFilter error
-				ok, validFilter = ms[i].NestedFilter(filterGroup.Key, filter)
-				if validFilter != nil {
-					warnings = append(warnings, fmt.Sprintf("Filter key: '%s'. Error: %s", filterGroup.Key, validFilter.Error()))
-					nestedFilterGroups = append(nestedFilterGroups[:j], nestedFilterGroups[j+1:]...)
-					j--
-				}
-				if (!ok && filterGroup.LogicFilter) || (ok && !filterGroup.LogicFilter) {
-					break
-				}
-			}
-		}
-		if ok {
-			result = append(result, ms[i])
-		}
-	}
-
-	if externalPagination {
-		start, end := pagination(int(params.Offset), int(params.Limit), len(result))
-		result = result[start:end]
-	}
-
-	return appUsers(result), warnings, nil
-}
-
-func (m *User) LazyLoading(isolatedEntityID string, a *Repo) (err error) {
-	return nil
-}
-
-func (a *Repo) getUser(id string, isolatedEntityID string) (*app.User, error) {
-	var m User
-	if err := a.db.NamedGet(&m, sqlGetUser, argGetUser{
-		ID:               newNullUUID(id),
-		IsolatedEntityID: isolatedEntityID,
-	}); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, app.ErrNotFound
 		}
 		return nil, err
 	}
-	if err := m.LazyLoading(isolatedEntityID, a); err != nil {
+
+	user := dto.UserFromDB(m)
+	return &user, nil
+}
+
+func (r *Repo) GetUser(id string) (*entity.User, error) {
+	var m dbmodel.User
+
+	err := r.db.NamedGet(&m, sqlGetUser, argGetUser{
+		ID: id,
+	})
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, sql.ErrNoRows
+		}
 		return nil, err
 	}
-	return appUser(m), nil
+
+	user := dto.UserFromDB(m)
+	return &user, nil
 }
 
-func (a *Repo) addUser(profileID string, isolatedEntityID string, m *app.User) (string, error) {
-	UserID := uuid.New().String()
-	t := time.Now()
-	m.CreatedAt = &t
-
-	if err := a.db.NamedGet(&UserID, sqlAddUser, argAddUser{
-		ID:         UserID,
-		Active:     m.Active,
-		CreatedAt:  m.CreatedAt,
-		FirebaseID: m.FirebaseID,
-
-		CreatedBy:        profileID,
-		IsolatedEntityID: isolatedEntityID,
-	}); err != nil {
-		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
-			return "", app.ErrDuplicateID
-		}
-		return "", err
-	}
-	return UserID, nil
-}
-
-func (a *Repo) getMyUserID(profileID, isolatedEntityID string) (id string, err error) {
-	if err = a.db.NamedGet(&id, sqlGetMyUserID, argGetMyUserID{
-		CreatedBy:        profileID,
-		IsolatedEntityID: isolatedEntityID,
-	}); err != nil {
-		if err == sql.ErrNoRows {
-			return "", app.ErrNotFound
-		}
-		return
-	}
-	return
-}
-
-func (a *Repo) bindToProfileUser(id, profileID, isolatedEntityID string) error {
-	res, err := a.db.NamedExec(sqlBindUserToProfile, argBindUserToProfile{
-		ID:               id,
-		CreatedBy:        profileID,
-		IsolatedEntityID: isolatedEntityID,
+func (r *Repo) AddUser(u entity.User) error {
+	_, err := r.db.NamedExec(sqlAddUser, argAddUser{
+		Active:     u.Active,
+		CreatedAt:  u.CreatedAt,
+		IdentityID: u.IdentityID,
 	})
+
 	if err != nil {
 		return err
 	}
 
-	if count, _ := res.RowsAffected(); count == 0 {
-		return app.ErrNotFound
-	}
 	return nil
 }
 
-func (a *Repo) editUser(id string, isolatedEntityID string, m *app.User) error {
-
+func (r *Repo) EditUser(id string, update vo.UserUpdate, editedBy entity.User) error {
 	t := time.Now()
-	m.ModifiedAt = &t
 
-	res, err := a.db.NamedExec(sqlEditUser, argEditUser{
-		ID:         id,
-		Active:     m.Active,
-		CreatedAt:  m.CreatedAt,
-		FirebaseID: m.FirebaseID,
-		ModifiedAt: m.ModifiedAt,
+	res, err := r.db.NamedExec(sqlEditUser, argEditUser{
+		ID:     id,
+		Active: update.Active,
 
-		IsolatedEntityID: isolatedEntityID,
+		ModifiedAt: &t,
+		ModifiedBy: uuid.NullUUID{UUID: editedBy.ID, Valid: true},
 	})
 	if err != nil {
 		return err
@@ -266,66 +84,38 @@ func (a *Repo) editUser(id string, isolatedEntityID string, m *app.User) error {
 
 	return nil
 }
-func (m *User) NestedFilter(key string, filter *app.Filter) (ok bool, err error) {
-	if strings.Contains(key, ".") {
-		splitedFilter := strings.SplitN(key, ".", 2)
-		key = splitedFilter[1]
-		switch splitedFilter[0] {
-		default:
-			ok, err = true, errNotExistFilterKey
-		}
-	} else {
-		ok, err = m.Filter(key, filter)
+
+func (r *Repo) DeleteUser(id string, deletedBy entity.User) error {
+	t := time.Now()
+	res, err := r.db.NamedExec(sqlDeleteUser, argDeleteUser{
+		ID:        id,
+		DeletedAt: t,
+		DeletedBy: uuid.NullUUID{
+			UUID:  deletedBy.ID,
+			Valid: true,
+		},
+	})
+	if err != nil {
+		return err
 	}
-	return
+	if count, _ := res.RowsAffected(); count == 0 {
+		return app.ErrNotFound
+	}
+
+	return nil
 }
 
-func (m *User) Filter(key string, filter *app.Filter) (ok bool, err error) {
-	columnType := UserProps[key].typeName
-	if err = validateOperator(filter.Operator, columnType); err != nil {
-		return true, err
-	}
-	if err = vaidateIgnoreCase(filter.IgnoreCase, columnType); err != nil {
-		return true, err
-	}
-	if err := validateValue(filter.Value, columnType); err != nil {
-		return true, err
-	}
-	switch key {
-	case "id":
-		ok = compareUUID(filter.Operator, m.ID, filter.Value)
-	case "active":
-		ok = compareBool(filter.Operator, m.Active.Bool, filter.Value)
-	case "createdAt":
-		ok = compareTime(filter.Operator, *m.CreatedAt, filter.Value)
-	case "firebaseId":
-		ok = compareString(filter.Operator, filter.IgnoreCase, m.FirebaseID.String, filter.Value)
-	case "modifiedAt":
-		ok = compareTime(filter.Operator, *m.ModifiedAt, filter.Value)
-	default:
-		ok, err = true, errNotExistFilterKey
-	}
-	return
-}
+// TODO: Build sql with filters and pagination
+func (r *Repo) ListUsers(filter vo.ListFilter) ([]entity.User, []string, error) {
+	ms := []dbmodel.User{}
+	warnings := []string{}
 
-func appUser(m User) *app.User {
-	if m.ID.String() == "00000000-0000-0000-0000-000000000000" {
-		return nil
-	}
-	return &app.User{
-		ID:         m.ID.String(),
-		Active:     m.Active.Bool,
-		CreatedAt:  m.CreatedAt,
-		FirebaseID: m.FirebaseID.String,
-		ModifiedAt: m.ModifiedAt,
-	}
-}
-
-func appUsers(ms []User) []*app.User {
-	ams := []*app.User{}
-	for _, m := range ms {
-		ams = append(ams, appUser(m))
+	err := r.db.NamedSelect(&ms, sqlListUser, nil)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return ams
+	result := []dbmodel.User{}
+
+	return dto.UsersFromDB(result), warnings, nil
 }

@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"wash-bonus/internal/api/restapi/models"
 )
 
 // NewEditUserParams creates a new EditUserParams object,
@@ -62,7 +64,10 @@ EditUserParams contains all the parameters to send to the API endpoint
 type EditUserParams struct {
 
 	// Body.
-	Body EditUserBody
+	Body *models.UserUpdate
+
+	// ID.
+	ID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -118,14 +123,25 @@ func (o *EditUserParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the edit user params
-func (o *EditUserParams) WithBody(body EditUserBody) *EditUserParams {
+func (o *EditUserParams) WithBody(body *models.UserUpdate) *EditUserParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the edit user params
-func (o *EditUserParams) SetBody(body EditUserBody) {
+func (o *EditUserParams) SetBody(body *models.UserUpdate) {
 	o.Body = body
+}
+
+// WithID adds the id to the edit user params
+func (o *EditUserParams) WithID(id string) *EditUserParams {
+	o.SetID(id)
+	return o
+}
+
+// SetID adds the id to the edit user params
+func (o *EditUserParams) SetID(id string) {
+	o.ID = id
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -135,7 +151,14 @@ func (o *EditUserParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
+	}
+
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
 	}
 

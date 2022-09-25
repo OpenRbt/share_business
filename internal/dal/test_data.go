@@ -2,29 +2,28 @@
 package dal
 
 import (
-	"time"
-
-	"wash-bonus/internal/app"
-
 	"github.com/go-openapi/strfmt"
+	"time"
+	"wash-bonus/internal/app"
+	"wash-bonus/internal/app/entity"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 var (
-	testUser1 = &app.User{
+	testUser1 = &entity.User{
 		Active:     true,
-		CreatedAt:  mustParseTime("1923-06-18T23:02:58.680Z"),
-		FirebaseID: "a",
-		ModifiedAt: mustParseTime("2002-08-09T19:21:15.435Z"),
+		CreatedAt:  mustParseTime("1980-06-12T19:45:45.470Z"),
+		IdentityID: "a",
+		ModifiedAt: mustParseTime("1936-04-24T00:37:08.998Z"),
 	}
-	testUser2 = &app.User{
+	testUser2 = &entity.User{
 		Active:     false,
 		CreatedAt:  mustParseTime("1990-11-24T12:32:05.144Z"),
-		FirebaseID: "saepe",
+		IdentityID: "saepe",
 		ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
 	}
-	testUsers       = []*app.User{testUser1, testUser2}
+	testUsers       = []*entity.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{
 		CreatedAt:    mustParseTime("1990-02-28T18:25:58.354Z"),
 		Key:          "eligendi",
@@ -42,26 +41,30 @@ var (
 	testWashServers = []*app.WashServer{testWashServer1, testWashServer2}
 )
 
-func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
+func (r *Repo) AddTestData(profileID, isolatedEntityID string) error {
 	var err error
 
-	testWashServer1.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer1)
+	testWashServer1.ID, err = r.addWashServer(profileID, isolatedEntityID, testWashServer1)
 	if err != nil {
 		return err
 	}
-	testWashServer2.ID, err = a.addWashServer(profileID, isolatedEntityID, testWashServer2)
+	testWashServer1.ID, err = r.addWashServer(profileID, isolatedEntityID, testWashServer1)
 	if err != nil {
 		return err
 	}
 
-	testUser1.ID, err = a.addUser(profileID, isolatedEntityID, testUser1)
 	if err != nil {
 		return err
 	}
-	testUser2.ID, err = a.addUser(profileID, isolatedEntityID, testUser2)
-	if err != nil {
-		return err
-	}
+
+	//testUser1.ID, err = r.addUser(profileID, isolatedEntityID, testUser1)
+	//if err != nil {
+	//	return err
+	//}
+	//testUser2.ID, err = r.addUser(profileID, isolatedEntityID, testUser2)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 

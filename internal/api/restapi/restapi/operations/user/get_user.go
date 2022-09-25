@@ -6,12 +6,9 @@ package user
 // Editing this file might prove futile when you re-run the generate command
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 )
 
 // GetUserHandlerFunc turns a function with the right signature into a get user handler
@@ -33,7 +30,7 @@ func NewGetUser(ctx *middleware.Context, handler GetUserHandler) *GetUser {
 }
 
 /*
-	GetUser swagger:route POST /user/get User getUser
+	GetUser swagger:route GET /user/{id} User getUser
 
 GetUser get user API
 */
@@ -69,41 +66,4 @@ func (o *GetUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	res := o.Handler.Handle(Params, principal) // actually handle the request
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
-}
-
-// GetUserBody get user body
-//
-// swagger:model GetUserBody
-type GetUserBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this get user body
-func (o *GetUserBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this get user body based on context it is used
-func (o *GetUserBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *GetUserBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *GetUserBody) UnmarshalBinary(b []byte) error {
-	var res GetUserBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
-	return nil
 }

@@ -81,8 +81,8 @@ func New(ctx context.Context, dbCfg pqx.Config, migrationDir string, resetDB boo
 	return repo, nil
 }
 
-func (a *Repo) Close() {
-	log.WarnIfFail(a.db.Close)
+func (r *Repo) Close() {
+	log.WarnIfFail(r.db.Close)
 }
 
 func filterCount(include bool, a, b interface{}) int {

@@ -2,10 +2,9 @@
 package app
 
 import (
-	"testing"
-
 	"github.com/golang/mock/gomock"
 	"github.com/powerman/check"
+	"testing"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!

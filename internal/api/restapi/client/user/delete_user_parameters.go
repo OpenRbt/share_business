@@ -61,8 +61,8 @@ DeleteUserParams contains all the parameters to send to the API endpoint
 */
 type DeleteUserParams struct {
 
-	// Body.
-	Body DeleteUserBody
+	// ID.
+	ID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +117,15 @@ func (o *DeleteUserParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the delete user params
-func (o *DeleteUserParams) WithBody(body DeleteUserBody) *DeleteUserParams {
-	o.SetBody(body)
+// WithID adds the id to the delete user params
+func (o *DeleteUserParams) WithID(id string) *DeleteUserParams {
+	o.SetID(id)
 	return o
 }
 
-// SetBody adds the body to the delete user params
-func (o *DeleteUserParams) SetBody(body DeleteUserBody) {
-	o.Body = body
+// SetID adds the id to the delete user params
+func (o *DeleteUserParams) SetID(id string) {
+	o.ID = id
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -135,7 +135,9 @@ func (o *DeleteUserParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Re
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
 	}
 
