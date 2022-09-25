@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	log = structlog.New().SetDefaultKeyvals(structlog.KeyUnit, "migrate")
+	log     = structlog.New().SetDefaultKeyvals(structlog.KeyUnit, "migrate")
 	gooseMu sync.Mutex
 )
 

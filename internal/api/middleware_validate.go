@@ -4,14 +4,12 @@ package api
 import (
 	"net"
 	"net/http"
-
-	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 const (
-	headerValidate = extauthapi.ValidateHeaderName
+	headerValidate = "Authorization"
 )
 
 // makeValidateToken creates middleware for checks validation token

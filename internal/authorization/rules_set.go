@@ -17,67 +17,66 @@ func NewRulesSet() *rulesSet {
 	}
 }
 
+func (rs *rulesSet) GetPermissionAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) AddPermissionAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) EditPermissionAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) DeletePermissionAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) ListPermissionAccessManager(prof app.Profile) bool {
+	return true
+}
 
-		func (rs *rulesSet) GetPermissionAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) AddPermissionAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) EditPermissionAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) DeletePermissionAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) ListPermissionAccessManager(prof app.Profile) bool {
-			return true
-		}
+func (rs *rulesSet) GetRoleAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) AddRoleAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) EditRoleAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) DeleteRoleAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) ListRoleAccessManager(prof app.Profile) bool {
+	return true
+}
 
-		func (rs *rulesSet) GetRoleAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) AddRoleAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) EditRoleAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) DeleteRoleAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) ListRoleAccessManager(prof app.Profile) bool {
-			return true
-		}
+func (rs *rulesSet) GetUserAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) AddUserAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) EditUserAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) DeleteUserAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) ListUserAccessManager(prof app.Profile) bool {
+	return true
+}
 
-		func (rs *rulesSet) GetUserAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) AddUserAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) EditUserAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) DeleteUserAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) ListUserAccessManager(prof app.Profile) bool {
-			return true
-		}
-
-		func (rs *rulesSet) GetWashServerAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) AddWashServerAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) EditWashServerAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) DeleteWashServerAccessManager(prof app.Profile) bool {
-			return true
-		}
-		func (rs *rulesSet) ListWashServerAccessManager(prof app.Profile) bool {
-			return true
-		}
+func (rs *rulesSet) GetWashServerAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) AddWashServerAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) EditWashServerAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) DeleteWashServerAccessManager(prof app.Profile) bool {
+	return true
+}
+func (rs *rulesSet) ListWashServerAccessManager(prof app.Profile) bool {
+	return true
+}

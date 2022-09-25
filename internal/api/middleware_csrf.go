@@ -14,7 +14,7 @@ import (
 
 	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 	"github.com/powerman/structlog"
-	
+
 	"wash-bonus/internal/def"
 )
 

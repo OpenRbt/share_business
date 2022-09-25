@@ -12,35 +12,36 @@ import (
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
 var (
-	testUser1  = &app.User{
+	testUser1 = &app.User{
 		Active:     true,
 		CreatedAt:  mustParseTime("1923-06-18T23:02:58.680Z"),
 		FirebaseId: "a",
 		ModifiedAt: mustParseTime("2002-08-09T19:21:15.435Z"),
 	}
-		testUser2 = &app.User{
-				Active: false,
-				CreatedAt: mustParseTime("1990-11-24T12:32:05.144Z"),
-				FirebaseId: "saepe",
-				ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
+	testUser2 = &app.User{
+		Active:     false,
+		CreatedAt:  mustParseTime("1990-11-24T12:32:05.144Z"),
+		FirebaseId: "saepe",
+		ModifiedAt: mustParseTime("1930-10-21T20:38:59.008Z"),
 	}
 	testUsers       = []*app.User{testUser1, testUser2}
 	testWashServer1 = &app.WashServer{
-			CreatedAt: mustParseTime("1990-02-28T18:25:58.354Z"),
-			Key: "eligendi",
-			LastUpdateAt: mustParseTime("1966-07-03T18:57:27.125Z"),
-			ModifiedAt: mustParseTime("1974-04-20T07:40:12.568Z"),
-			Name: "deleniti",
+		CreatedAt:    mustParseTime("1990-02-28T18:25:58.354Z"),
+		Key:          "eligendi",
+		LastUpdateAt: mustParseTime("1966-07-03T18:57:27.125Z"),
+		ModifiedAt:   mustParseTime("1974-04-20T07:40:12.568Z"),
+		Name:         "deleniti",
 	}
-		testWashServer2 = &app.WashServer{
-				CreatedAt: mustParseTime("1977-10-02T19:37:59.664Z"),
-				Key: "molestias",
-				LastUpdateAt: mustParseTime("1947-03-30T18:52:55.557Z"),
-				ModifiedAt: mustParseTime("1903-07-21T04:11:10.272Z"),
-				Name: "maxime",
-		}
-		testWashServers = []*app.WashServer{testWashServer1, testWashServer2}
+	testWashServer2 = &app.WashServer{
+		CreatedAt:    mustParseTime("1977-10-02T19:37:59.664Z"),
+		Key:          "molestias",
+		LastUpdateAt: mustParseTime("1947-03-30T18:52:55.557Z"),
+		ModifiedAt:   mustParseTime("1903-07-21T04:11:10.272Z"),
+		Name:         "maxime",
+	}
+	testWashServers = []*app.WashServer{testWashServer1, testWashServer2}
 )
+
 func (a *Repo) AddTestData(profileID, isolatedEntityID string) error {
 	var err error
 

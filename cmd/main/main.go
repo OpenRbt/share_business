@@ -28,8 +28,8 @@ const (
 )
 
 var (
-	testRepo     *dal.Repo
-	testAppl     app.App
+	testRepo *dal.Repo
+	testAppl app.App
 
 	log = structlog.New()
 	cfg struct {
@@ -60,8 +60,7 @@ func init() {
 	flag.StringVar(&cfg.db.User, "db.user", def.DBUser, "PostgreSQL `user`")
 	flag.StringVar(&cfg.db.Pass, "db.pass", def.DBPass, "PostgreSQL `pass`")
 	flag.StringVar(&cfg.db.DBName, "db.name", def.DBName, "PostgreSQL `dbname`")
-		flag.BoolVar(&cfg.resetDB, "db.reset", def.ResetDB, "reset database if true")
-	
+	flag.BoolVar(&cfg.resetDB, "db.reset", def.ResetDB, "reset database if true")
 
 	flag.StringVar(&cfg.api.Host, "api.host", def.APIHost, "serve API on `host`")
 	flag.IntVar(&cfg.api.Port, "api.port", def.APIPort, "serve API on `port` (>0)")
@@ -69,7 +68,7 @@ func init() {
 	flag.StringVar(&cfg.api.AllowedOrigins, "api.allow-origins", def.CORSAllowedOrigins, "frontend url")
 
 	flag.StringVar(&cfg.extauthEndpoint, ExtauthEndpointFlag, def.ExtauthEndpoint, "extauth service `endpoint`")
-	
+
 }
 
 func main() {
@@ -94,13 +93,13 @@ func connect() (app.App, *extauthapi.Client, error) {
 		return nil, nil, fmt.Errorf("extauthapi: %v. Error can be if flag '%s' or environment variable '%s' is not set", err, ExtauthEndpointFlag, def.ExtauthEndpointEnvName)
 	}
 
-	r,  err := dal.New(ctx, cfg.db, cfg.gooseDir, cfg.resetDB)
+	r, err := dal.New(ctx, cfg.db, cfg.gooseDir, cfg.resetDB)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	rulesSet := authorization.NewRulesSet()
-	
+
 	app := app.New(r, rulesSet)
 	return app, extAuthSvc, nil
 }

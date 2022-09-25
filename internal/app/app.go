@@ -17,12 +17,6 @@ type App interface {
 	DeleteWashServer(prof Profile, id string) error
 	ListWashServer(prof Profile, params *ListParams) ([]*WashServer, []string, error)
 
-	GetWashSession(prof Profile, id string) (*WashSession, error)
-	AddWashSession(prof Profile, m *WashSession) (*WashSession, error)
-	EditWashSession(prof Profile, id string, m *WashSession) error
-	DeleteWashSession(prof Profile, id string) error
-	ListWashSession(prof Profile, params *ListParams) ([]*WashSession, []string, error)
-
 	AddTestData(prof Profile) error
 }
 
@@ -40,46 +34,43 @@ type Repo interface {
 	DeleteWashServer(id string, profileID string, isolatedEntityID string) error
 	ListWashServer(isolatedEntityID string, params *ListParams) ([]*WashServer, []string, error)
 
-
-
-    AddTestData(profileID, isolatedEntityID string) error
+	AddTestData(profileID, isolatedEntityID string) error
 }
 
+type ListParams struct {
+	Offset       int64
+	Limit        int64
+	FilterGroups []*FilterGroup
+	SortBy       string
+	OrderBy      string
+}
 
-    type ListParams struct {
-        Offset       int64
-        Limit        int64
-        FilterGroups []*FilterGroup
-        SortBy       string
-        OrderBy      string
-    }
+type FilterGroup struct {
+	Key         string
+	LogicFilter bool
+	Filters     []*Filter
+}
 
-    type FilterGroup struct {
-        Key         string
-        LogicFilter bool
-        Filters     []*Filter
-    }
-
-    type Filter struct {
-        Value      string
-        Operator   string
-        IgnoreCase bool
-    }
+type Filter struct {
+	Value      string
+	Operator   string
+	IgnoreCase bool
+}
 
 type app struct {
 	repo     Repo
 	rulesSet RulesSet
 }
 
-func New(r Repo, rs RulesSet) (App) {
+func New(r Repo, rs RulesSet) App {
 	return &app{
-		repo: r,
-        rulesSet: rs,
+		repo:     r,
+		rulesSet: rs,
 	}
 }
-    func (a *app) AddTestData(prof Profile) error {
-        if !prof.Authz.Admin {
-            return ErrAccessDenied
-        }
-        return a.repo.AddTestData(prof.ID, prof.IsolatedEntityID)
-    }
+func (a *app) AddTestData(prof Profile) error {
+	if !prof.Authz.Admin {
+		return ErrAccessDenied
+	}
+	return a.repo.AddTestData(prof.ID, prof.IsolatedEntityID)
+}
