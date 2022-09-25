@@ -9,8 +9,6 @@ import (
 
 // App provides application features service.
 type App interface {
-<<<<<<< HEAD
-=======
 	GetSession(prof Profile, id string) (*Session, error)
 	AddSession(prof Profile, m *Session) (*Session, error)
 	EditSession(prof Profile, id string, m *Session) error
@@ -32,7 +30,6 @@ type App interface {
 	EditBonusBalance(id string, balance float64) error
 	DeleteBonusBalance(id string, userId string) error
 
->>>>>>> Add swagger
 	GetWashServer(prof Profile, id string) (*WashServer, error)
 	AddWashServer(prof Profile, m *WashServer) (*WashServer, error)
 	EditWashServer(prof Profile, id string, m *WashServer) error
@@ -44,8 +41,6 @@ type App interface {
 
 // Repo interface for data user
 type Repo interface {
-<<<<<<< HEAD
-=======
 	GetSession(id string, isolatedEntityID string) (*Session, error)
 	AddSession(profileID string, isolatedEntityID string, m *Session) (*Session, error)
 	EditSession(id string, isolatedEntityID string, m *Session) error
@@ -67,7 +62,6 @@ type Repo interface {
 	DeleteUser(id string, profileID string, isolatedEntityID string) error
 	ListUser(isolatedEntityID string, params *ListParams) ([]*User, []string, error)
 
->>>>>>> Add BonusBalance
 	GetWashServer(id string, isolatedEntityID string) (*WashServer, error)
 	AddWashServer(profileID string, isolatedEntityID string, m *WashServer) (*WashServer, error)
 	EditWashServer(id string, isolatedEntityID string, m *WashServer) error
