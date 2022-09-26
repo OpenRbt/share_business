@@ -6,12 +6,9 @@ package wash_server
 // Editing this file might prove futile when you re-run the generate command
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 )
 
 // GetWashServerHandlerFunc turns a function with the right signature into a get wash server handler
@@ -32,10 +29,10 @@ func NewGetWashServer(ctx *middleware.Context, handler GetWashServerHandler) *Ge
 	return &GetWashServer{Context: ctx, Handler: handler}
 }
 
-/*
-	GetWashServer swagger:route POST /washServer/get WashServer getWashServer
+/* GetWashServer swagger:route GET /washServer/{id} WashServer getWashServer
 
 GetWashServer get wash server API
+
 */
 type GetWashServer struct {
 	Context *middleware.Context
@@ -69,41 +66,4 @@ func (o *GetWashServer) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	res := o.Handler.Handle(Params, principal) // actually handle the request
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
-}
-
-// GetWashServerBody get wash server body
-//
-// swagger:model GetWashServerBody
-type GetWashServerBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this get wash server body
-func (o *GetWashServerBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this get wash server body based on context it is used
-func (o *GetWashServerBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *GetWashServerBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *GetWashServerBody) UnmarshalBinary(b []byte) error {
-	var res GetWashServerBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
-	return nil
 }

@@ -29,10 +29,10 @@ func NewAddWashServer(ctx *middleware.Context, handler AddWashServerHandler) *Ad
 	return &AddWashServer{Context: ctx, Handler: handler}
 }
 
-/*
-	AddWashServer swagger:route POST /washServer/add WashServer addWashServer
+/* AddWashServer swagger:route POST /washServer WashServer addWashServer
 
 AddWashServer add wash server API
+
 */
 type AddWashServer struct {
 	Context *middleware.Context

@@ -6,13 +6,11 @@ package wash_server
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 )
@@ -48,45 +46,15 @@ func NewDeleteWashServerNoContent() *DeleteWashServerNoContent {
 	return &DeleteWashServerNoContent{}
 }
 
-/*
-DeleteWashServerNoContent describes a response with status code 204, with default header values.
+/* DeleteWashServerNoContent describes a response with status code 204, with default header values.
 
 Deleted
 */
 type DeleteWashServerNoContent struct {
 }
 
-// IsSuccess returns true when this delete wash server no content response has a 2xx status code
-func (o *DeleteWashServerNoContent) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this delete wash server no content response has a 3xx status code
-func (o *DeleteWashServerNoContent) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this delete wash server no content response has a 4xx status code
-func (o *DeleteWashServerNoContent) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this delete wash server no content response has a 5xx status code
-func (o *DeleteWashServerNoContent) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this delete wash server no content response a status code equal to that given
-func (o *DeleteWashServerNoContent) IsCode(code int) bool {
-	return code == 204
-}
-
 func (o *DeleteWashServerNoContent) Error() string {
-	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServerNoContent ", 204)
-}
-
-func (o *DeleteWashServerNoContent) String() string {
-	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServerNoContent ", 204)
+	return fmt.Sprintf("[DELETE /washServer/{id}][%d] deleteWashServerNoContent ", 204)
 }
 
 func (o *DeleteWashServerNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -101,8 +69,7 @@ func NewDeleteWashServerDefault(code int) *DeleteWashServerDefault {
 	}
 }
 
-/*
-DeleteWashServerDefault describes a response with status code -1, with default header values.
+/* DeleteWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -117,39 +84,9 @@ func (o *DeleteWashServerDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this delete wash server default response has a 2xx status code
-func (o *DeleteWashServerDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this delete wash server default response has a 3xx status code
-func (o *DeleteWashServerDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this delete wash server default response has a 4xx status code
-func (o *DeleteWashServerDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this delete wash server default response has a 5xx status code
-func (o *DeleteWashServerDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this delete wash server default response a status code equal to that given
-func (o *DeleteWashServerDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *DeleteWashServerDefault) Error() string {
-	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServer default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /washServer/{id}][%d] deleteWashServer default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *DeleteWashServerDefault) String() string {
-	return fmt.Sprintf("[DELETE /washServer/delete][%d] deleteWashServer default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *DeleteWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -163,43 +100,5 @@ func (o *DeleteWashServerDefault) readResponse(response runtime.ClientResponse, 
 		return err
 	}
 
-	return nil
-}
-
-/*
-DeleteWashServerBody delete wash server body
-swagger:model DeleteWashServerBody
-*/
-type DeleteWashServerBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this delete wash server body
-func (o *DeleteWashServerBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this delete wash server body based on context it is used
-func (o *DeleteWashServerBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *DeleteWashServerBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *DeleteWashServerBody) UnmarshalBinary(b []byte) error {
-	var res DeleteWashServerBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

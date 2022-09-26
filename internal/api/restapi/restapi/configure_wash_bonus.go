@@ -16,7 +16,7 @@ import (
 	"wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 )
 
-//go:generate swagger generate server --target ..\..\restapi --name WashBonus --spec ..\..\..\..\swagger.yaml --principal interface{} --exclude-main
+//go:generate swagger generate server --target ../../restapi --name WashBonus --spec ../../../../swagger.yaml --principal interface{} --exclude-main
 
 func configureFlags(api *operations.WashBonusAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -86,6 +86,11 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	if api.WashServerEditWashServerHandler == nil {
 		api.WashServerEditWashServerHandler = wash_server.EditWashServerHandlerFunc(func(params wash_server.EditWashServerParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_server.EditWashServer has not yet been implemented")
+		})
+	}
+	if api.WashServerGenerateKeyWashServerHandler == nil {
+		api.WashServerGenerateKeyWashServerHandler = wash_server.GenerateKeyWashServerHandlerFunc(func(params wash_server.GenerateKeyWashServerParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation wash_server.GenerateKeyWashServer has not yet been implemented")
 		})
 	}
 	if api.UserGetCurrentUserHandler == nil {

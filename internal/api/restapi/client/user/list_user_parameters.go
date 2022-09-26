@@ -54,12 +54,10 @@ func NewListUserParamsWithHTTPClient(client *http.Client) *ListUserParams {
 	}
 }
 
-/*
-ListUserParams contains all the parameters to send to the API endpoint
+/* ListUserParams contains all the parameters to send to the API endpoint
+   for the list user operation.
 
-	for the list user operation.
-
-	Typically these are written to a http.Request.
+   Typically these are written to a http.Request.
 */
 type ListUserParams struct {
 

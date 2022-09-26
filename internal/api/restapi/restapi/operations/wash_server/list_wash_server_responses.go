@@ -16,8 +16,7 @@ import (
 // ListWashServerOKCode is the HTTP code returned for type ListWashServerOK
 const ListWashServerOKCode int = 200
 
-/*
-ListWashServerOK OK
+/*ListWashServerOK OK
 
 swagger:response listWashServerOK
 */
@@ -26,7 +25,7 @@ type ListWashServerOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *ListWashServerOKBody `json:"body,omitempty"`
+	Payload *models.ListWashServer `json:"body,omitempty"`
 }
 
 // NewListWashServerOK creates ListWashServerOK with default headers values
@@ -36,13 +35,13 @@ func NewListWashServerOK() *ListWashServerOK {
 }
 
 // WithPayload adds the payload to the list wash server o k response
-func (o *ListWashServerOK) WithPayload(payload *ListWashServerOKBody) *ListWashServerOK {
+func (o *ListWashServerOK) WithPayload(payload *models.ListWashServer) *ListWashServerOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the list wash server o k response
-func (o *ListWashServerOK) SetPayload(payload *ListWashServerOKBody) {
+func (o *ListWashServerOK) SetPayload(payload *models.ListWashServer) {
 	o.Payload = payload
 }
 
@@ -58,8 +57,7 @@ func (o *ListWashServerOK) WriteResponse(rw http.ResponseWriter, producer runtim
 	}
 }
 
-/*
-ListWashServerDefault error
+/*ListWashServerDefault error
 
 swagger:response listWashServerDefault
 */

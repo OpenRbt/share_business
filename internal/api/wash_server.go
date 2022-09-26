@@ -22,12 +22,12 @@ func setWashServerHandlers(api *operations.WashBonusAPI, svc *service) {
 	api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
 	api.WashServerDeleteWashServerHandler = washServer.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
 	api.WashServerListWashServerHandler = washServer.ListWashServerHandlerFunc(svc.ListWashServer)
-	// !!! Добавить регистрацию хендлера генерации ключей
+	api.WashServerGenerateKeyWashServerHandler = washServer.GenerateKeyWashServerHandlerFunc(svc.GenerateKeyWashServer)
 }
 
 func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	s, err := svc.washServerSvc.Get(dto.ToAppIdentityProfile(*prof), params.Body.ID)
+	s, err := svc.washServerSvc.Get(dto.ToAppIdentityProfile(*prof), params.ID)
 	switch {
 	default:
 		log.PrintErr("GetWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -48,14 +48,17 @@ func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
-		log.Info("GetWashServer ok", "id", params.Body.ID)
-		return washServer.NewGetWashServerOK().WithPayload(dto.WashServerToRest(*s))
+		log.Info("GetWashServer ok", "id", params.ID)
+		return washServer.NewGetWashServerOK().WithPayload(dto.WashServerToRest(s))
 	}
 }
 
 func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	err := svc.washServerSvc.Add(dto.ToAppIdentityProfile(*prof), dto.WashServerFromRestAdd(params.Body))
+	wash, err := dto.WashServerFromRestAdd(params.Body)
+	if err == nil {
+		err = svc.washServerSvc.Add(dto.ToAppIdentityProfile(*prof), *wash)
+	}
 	switch {
 	default:
 		log.PrintErr("AddWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -71,14 +74,16 @@ func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile
 		})
 	case err == nil:
 		log.Info("AddWashServer ok")
-		return washServer.NewAddWashServerCreated().WithPayload(&models.WashServer{})
+		return washServer.NewAddWashServerOK()
 	}
 }
 
 func (svc *service) EditWashServer(params washServer.EditWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	// !!! Исправить то что пустой апдейт подается
-	err := svc.washServerSvc.Edit(dto.ToAppIdentityProfile(*prof), params.Body.ID, dto.WashServerFromRestUpdate(models.WashServer{}))
+	wash, err := dto.WashServerFromRestUpdate(params.Body)
+	if err == nil {
+		err = svc.washServerSvc.Edit(dto.ToAppIdentityProfile(*prof), params.ID, *wash)
+	}
 	switch {
 	default:
 		log.PrintErr("EditWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -106,7 +111,7 @@ func (svc *service) EditWashServer(params washServer.EditWashServerParams, profi
 
 func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	err := svc.washServerSvc.Delete(dto.ToAppIdentityProfile(*prof), params.Body.ID)
+	err := svc.washServerSvc.Delete(dto.ToAppIdentityProfile(*prof), params.ID)
 	switch {
 	default:
 		log.PrintErr("DeleteWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -127,14 +132,14 @@ func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, p
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
-		log.Info("DeleteWashServer ok", "id", params.Body.ID)
+		log.Info("DeleteWashServer ok", "id", params.ID)
 		return washServer.NewDeleteWashServerNoContent()
 	}
 }
 
 func (svc *service) ListWashServer(params washServer.ListWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	c, warnings, err := svc.washServerSvc.List(dto.ToAppIdentityProfile(*prof), dto.ListFilterFromRest(params.Body))
+	ss, warnings, err := svc.washServerSvc.List(dto.ToAppIdentityProfile(*prof), dto.ListFilterFromRest(params.Body))
 	switch {
 	default:
 		log.PrintErr("ListWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -150,17 +155,16 @@ func (svc *service) ListWashServer(params washServer.ListWashServerParams, profi
 		})
 	case err == nil:
 		log.Info("ListWashServer ok")
-		return washServer.NewListWashServerOK().WithPayload(&washServer.ListWashServerOKBody{
-			Items:    dto.WashServersToRest(c),
+		return washServer.NewListWashServerOK().WithPayload(&models.ListWashServer{
 			Warnings: warnings,
+			Items:    dto.WashServersToRest(ss),
 		})
 	}
 }
 
-func (svc *service) GenerateKeyWashServer(params washServer.EditWashServerParams, profile interface{}) middleware.Responder {
-	// !!! Исправить после генерации
+func (svc *service) GenerateKeyWashServer(params washServer.GenerateKeyWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	_, err := svc.washServerSvc.GenerateServiceKey(dto.ToAppIdentityProfile(*prof), params.Body.ID)
+	key, err := svc.washServerSvc.GenerateServiceKey(dto.ToAppIdentityProfile(*prof), params.ID)
 	switch {
 	default:
 		log.PrintErr("GenerateKeyWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -176,6 +180,8 @@ func (svc *service) GenerateKeyWashServer(params washServer.EditWashServerParams
 		})
 	case err == nil:
 		log.Info("GenerateKeyWashServer ok")
-		return washServer.NewGetWashServerOK()
+		return washServer.NewGenerateKeyWashServerOK().WithPayload(&models.WashServerGenerateKeyResp{
+			ServiceKey: *key,
+		})
 	}
 }

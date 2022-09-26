@@ -36,35 +36,48 @@ func WashServersToRest(ss []entity.WashServer) []*models.WashServer {
 	apiWashServers := make([]*models.WashServer, len(ss))
 
 	for i, s := range ss {
-		apiWashServer := WashServerToRest(s)
+		apiWashServer := WashServerToRest(&s)
 		apiWashServers[i] = apiWashServer
 	}
+
 	return apiWashServers
 }
 
-func WashServerToRest(s entity.WashServer) *models.WashServer {
+func WashServerToRest(s *entity.WashServer) *models.WashServer {
 	return &models.WashServer{
-		ID:         s.ID.String(),
-		Key:        s.ServiceKey,
-		CreatedAt:  (*strfmt.DateTime)(s.CreatedAt),
-		ModifiedAt: (*strfmt.DateTime)(s.ModifiedAt),
-		Name:       s.Name,
-	}
-}
-
-func WashServerFromRestAdd(s *models.WashServerAdd) entity.WashServer {
-	return entity.WashServer{
-		Name:       s.Name,
-		ServiceKey: s.Key,
-	}
-}
-
-func WashServerFromRestUpdate(s models.WashServer) vo.WashServerUpdate {
-	// !!! Исправить заполнение структуры
-	return vo.WashServerUpdate{
-		ServiceKey:  s.Key,
+		ID:          s.ID.String(),
+		ServiceKey:  s.ServiceKey,
+		CreatedAt:   (*strfmt.DateTime)(s.CreatedAt),
+		ModifiedAt:  (*strfmt.DateTime)(s.ModifiedAt),
 		Name:        s.Name,
-		Description: "",
-		OwnerID:     uuid.UUID{},
+		Description: s.Description,
+		OwnerID:     s.OwnerID.String(),
 	}
+}
+
+func WashServerFromRestAdd(s *models.WashServerAdd) (*entity.WashServer, error) {
+	id, err := uuid.FromString(s.OwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.WashServer{
+		Name:        s.Name,
+		Description: s.Description,
+		OwnerID:     id,
+	}, nil
+}
+
+func WashServerFromRestUpdate(s *models.WashServerUpdate) (*vo.WashServerUpdate, error) {
+	id, err := uuid.FromString(s.OwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &vo.WashServerUpdate{
+		ServiceKey:  s.ServiceKey,
+		Name:        s.Name,
+		Description: s.Description,
+		OwnerID:     id,
+	}, nil
 }

@@ -13,19 +13,19 @@ import (
 	"github.com/go-openapi/strfmt"
 )
 
-// NewDeleteWashServerParams creates a new DeleteWashServerParams object
+// NewGenerateKeyWashServerParams creates a new GenerateKeyWashServerParams object
 //
 // There are no default values defined in the spec.
-func NewDeleteWashServerParams() DeleteWashServerParams {
+func NewGenerateKeyWashServerParams() GenerateKeyWashServerParams {
 
-	return DeleteWashServerParams{}
+	return GenerateKeyWashServerParams{}
 }
 
-// DeleteWashServerParams contains all the bound params for the delete wash server operation
+// GenerateKeyWashServerParams contains all the bound params for the generate key wash server operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters deleteWashServer
-type DeleteWashServerParams struct {
+// swagger:parameters generateKeyWashServer
+type GenerateKeyWashServerParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -40,8 +40,8 @@ type DeleteWashServerParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewDeleteWashServerParams() beforehand.
-func (o *DeleteWashServerParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewGenerateKeyWashServerParams() beforehand.
+func (o *GenerateKeyWashServerParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
@@ -57,7 +57,7 @@ func (o *DeleteWashServerParams) BindRequest(r *http.Request, route *middleware.
 }
 
 // bindID binds and validates parameter ID from path.
-func (o *DeleteWashServerParams) bindID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *GenerateKeyWashServerParams) bindID(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]

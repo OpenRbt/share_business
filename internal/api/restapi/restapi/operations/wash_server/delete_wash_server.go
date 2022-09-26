@@ -6,12 +6,9 @@ package wash_server
 // Editing this file might prove futile when you re-run the generate command
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 )
 
 // DeleteWashServerHandlerFunc turns a function with the right signature into a delete wash server handler
@@ -32,10 +29,10 @@ func NewDeleteWashServer(ctx *middleware.Context, handler DeleteWashServerHandle
 	return &DeleteWashServer{Context: ctx, Handler: handler}
 }
 
-/*
-	DeleteWashServer swagger:route DELETE /washServer/delete WashServer deleteWashServer
+/* DeleteWashServer swagger:route DELETE /washServer/{id} WashServer deleteWashServer
 
 DeleteWashServer delete wash server API
+
 */
 type DeleteWashServer struct {
 	Context *middleware.Context
@@ -69,41 +66,4 @@ func (o *DeleteWashServer) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	res := o.Handler.Handle(Params, principal) // actually handle the request
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
-}
-
-// DeleteWashServerBody delete wash server body
-//
-// swagger:model DeleteWashServerBody
-type DeleteWashServerBody struct {
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this delete wash server body
-func (o *DeleteWashServerBody) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this delete wash server body based on context it is used
-func (o *DeleteWashServerBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *DeleteWashServerBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *DeleteWashServerBody) UnmarshalBinary(b []byte) error {
-	var res DeleteWashServerBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
-	return nil
 }

@@ -263,7 +263,7 @@ func init() {
         }
       }
     },
-    "/washServer/add": {
+    "/washServer": {
       "post": {
         "tags": [
           "WashServer"
@@ -279,80 +279,8 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/washServer"
-            }
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/washServer/delete": {
-      "delete": {
-        "tags": [
-          "WashServer"
-        ],
-        "operationId": "deleteWashServer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Deleted"
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/washServer/edit": {
-      "put": {
-        "tags": [
-          "WashServer"
-        ],
-        "operationId": "editWashServer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": {
-                  "$ref": "#/definitions/washServerAdd"
-                },
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
           "200": {
-            "description": "OK"
+            "description": "Created"
           },
           "default": {
             "description": "error",
@@ -363,24 +291,18 @@ func init() {
         }
       }
     },
-    "/washServer/get": {
-      "post": {
+    "/washServer/{id}": {
+      "get": {
         "tags": [
           "WashServer"
         ],
         "operationId": "getWashServer",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
@@ -397,9 +319,96 @@ func init() {
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "WashServer"
+        ],
+        "operationId": "editWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/washServerUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "WashServer"
+        ],
+        "operationId": "deleteWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
       }
     },
-    "/washServer/list": {
+    "/washServer/{id}/generate-key": {
+      "put": {
+        "tags": [
+          "WashServer"
+        ],
+        "operationId": "generateKeyWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/washServerGenerateKeyResp"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/washServers/": {
       "post": {
         "tags": [
           "WashServer"
@@ -418,21 +427,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object",
-              "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/washServer"
-                  }
-                },
-                "warnings": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
+              "$ref": "#/definitions/listWashServer"
             }
           },
           "default": {
@@ -526,6 +521,24 @@ func init() {
         }
       }
     },
+    "listWashServer": {
+      "description": "washServer list object",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/washServer"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "user": {
       "description": "user object",
       "type": "object",
@@ -578,16 +591,11 @@ func init() {
           "format": "date-time",
           "x-nullable": true
         },
+        "description": {
+          "type": "string"
+        },
         "id": {
           "type": "string"
-        },
-        "key": {
-          "type": "string"
-        },
-        "lastUpdateAt": {
-          "type": "string",
-          "format": "date-time",
-          "x-nullable": true
         },
         "modifiedAt": {
           "type": "string",
@@ -596,22 +604,53 @@ func init() {
         },
         "name": {
           "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        },
+        "service_key": {
+          "type": "string"
         }
       }
     },
     "washServerAdd": {
-      "description": "washServer model for add and edit methods",
+      "description": "washServer model for add methods",
       "type": "object",
       "properties": {
-        "key": {
+        "description": {
           "type": "string"
         },
-        "lastUpdateAt": {
-          "type": "string",
-          "format": "date-time",
-          "x-nullable": true
+        "name": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        }
+      }
+    },
+    "washServerGenerateKeyResp": {
+      "description": "washServerGenerateKeyResp object",
+      "type": "object",
+      "properties": {
+        "service_key": {
+          "type": "string"
+        }
+      }
+    },
+    "washServerUpdate": {
+      "description": "washServer model for edit methods",
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
         },
         "name": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        },
+        "service_key": {
           "type": "string"
         }
       }
@@ -877,7 +916,7 @@ func init() {
         }
       }
     },
-    "/washServer/add": {
+    "/washServer": {
       "post": {
         "tags": [
           "WashServer"
@@ -893,80 +932,8 @@ func init() {
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created",
-            "schema": {
-              "$ref": "#/definitions/washServer"
-            }
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/washServer/delete": {
-      "delete": {
-        "tags": [
-          "WashServer"
-        ],
-        "operationId": "deleteWashServer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Deleted"
-          },
-          "default": {
-            "description": "error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/washServer/edit": {
-      "put": {
-        "tags": [
-          "WashServer"
-        ],
-        "operationId": "editWashServer",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "data": {
-                  "$ref": "#/definitions/washServerAdd"
-                },
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
           "200": {
-            "description": "OK"
+            "description": "Created"
           },
           "default": {
             "description": "error",
@@ -977,24 +944,18 @@ func init() {
         }
       }
     },
-    "/washServer/get": {
-      "post": {
+    "/washServer/{id}": {
+      "get": {
         "tags": [
           "WashServer"
         ],
         "operationId": "getWashServer",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
@@ -1011,9 +972,96 @@ func init() {
             }
           }
         }
+      },
+      "put": {
+        "tags": [
+          "WashServer"
+        ],
+        "operationId": "editWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/washServerUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "WashServer"
+        ],
+        "operationId": "deleteWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
       }
     },
-    "/washServer/list": {
+    "/washServer/{id}/generate-key": {
+      "put": {
+        "tags": [
+          "WashServer"
+        ],
+        "operationId": "generateKeyWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/washServerGenerateKeyResp"
+            }
+          },
+          "default": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/washServers/": {
       "post": {
         "tags": [
           "WashServer"
@@ -1032,21 +1080,7 @@ func init() {
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object",
-              "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/washServer"
-                  }
-                },
-                "warnings": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
+              "$ref": "#/definitions/listWashServer"
             }
           },
           "default": {
@@ -1141,6 +1175,24 @@ func init() {
         }
       }
     },
+    "listWashServer": {
+      "description": "washServer list object",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/washServer"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "user": {
       "description": "user object",
       "type": "object",
@@ -1193,16 +1245,11 @@ func init() {
           "format": "date-time",
           "x-nullable": true
         },
+        "description": {
+          "type": "string"
+        },
         "id": {
           "type": "string"
-        },
-        "key": {
-          "type": "string"
-        },
-        "lastUpdateAt": {
-          "type": "string",
-          "format": "date-time",
-          "x-nullable": true
         },
         "modifiedAt": {
           "type": "string",
@@ -1211,22 +1258,53 @@ func init() {
         },
         "name": {
           "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        },
+        "service_key": {
+          "type": "string"
         }
       }
     },
     "washServerAdd": {
-      "description": "washServer model for add and edit methods",
+      "description": "washServer model for add methods",
       "type": "object",
       "properties": {
-        "key": {
+        "description": {
           "type": "string"
         },
-        "lastUpdateAt": {
-          "type": "string",
-          "format": "date-time",
-          "x-nullable": true
+        "name": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        }
+      }
+    },
+    "washServerGenerateKeyResp": {
+      "description": "washServerGenerateKeyResp object",
+      "type": "object",
+      "properties": {
+        "service_key": {
+          "type": "string"
+        }
+      }
+    },
+    "washServerUpdate": {
+      "description": "washServer model for edit methods",
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
         },
         "name": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string"
+        },
+        "service_key": {
           "type": "string"
         }
       }

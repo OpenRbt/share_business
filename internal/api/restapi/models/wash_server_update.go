@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// WashServerAdd washServer model for add methods
+// WashServerUpdate washServer model for edit methods
 //
-// swagger:model washServerAdd
-type WashServerAdd struct {
+// swagger:model washServerUpdate
+type WashServerUpdate struct {
 
 	// description
 	Description string `json:"description,omitempty"`
@@ -25,20 +25,23 @@ type WashServerAdd struct {
 
 	// owner id
 	OwnerID string `json:"owner_id,omitempty"`
+
+	// service key
+	ServiceKey string `json:"service_key,omitempty"`
 }
 
-// Validate validates this wash server add
-func (m *WashServerAdd) Validate(formats strfmt.Registry) error {
+// Validate validates this wash server update
+func (m *WashServerUpdate) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this wash server add based on context it is used
-func (m *WashServerAdd) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this wash server update based on context it is used
+func (m *WashServerUpdate) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *WashServerAdd) MarshalBinary() ([]byte, error) {
+func (m *WashServerUpdate) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -46,8 +49,8 @@ func (m *WashServerAdd) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *WashServerAdd) UnmarshalBinary(b []byte) error {
-	var res WashServerAdd
+func (m *WashServerUpdate) UnmarshalBinary(b []byte) error {
+	var res WashServerUpdate
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

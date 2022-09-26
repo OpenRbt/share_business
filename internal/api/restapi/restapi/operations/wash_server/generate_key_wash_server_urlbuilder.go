@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-// DeleteWashServerURL generates an URL for the delete wash server operation
-type DeleteWashServerURL struct {
+// GenerateKeyWashServerURL generates an URL for the generate key wash server operation
+type GenerateKeyWashServerURL struct {
 	ID string
 
 	_basePath string
@@ -24,7 +24,7 @@ type DeleteWashServerURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *DeleteWashServerURL) WithBasePath(bp string) *DeleteWashServerURL {
+func (o *GenerateKeyWashServerURL) WithBasePath(bp string) *GenerateKeyWashServerURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -32,21 +32,21 @@ func (o *DeleteWashServerURL) WithBasePath(bp string) *DeleteWashServerURL {
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *DeleteWashServerURL) SetBasePath(bp string) {
+func (o *GenerateKeyWashServerURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *DeleteWashServerURL) Build() (*url.URL, error) {
+func (o *GenerateKeyWashServerURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/washServer/{id}"
+	var _path = "/washServer/{id}/generate-key"
 
 	id := o.ID
 	if id != "" {
 		_path = strings.Replace(_path, "{id}", id, -1)
 	} else {
-		return nil, errors.New("id is required on DeleteWashServerURL")
+		return nil, errors.New("id is required on GenerateKeyWashServerURL")
 	}
 
 	_basePath := o._basePath
@@ -56,7 +56,7 @@ func (o *DeleteWashServerURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *DeleteWashServerURL) Must(u *url.URL, err error) *url.URL {
+func (o *GenerateKeyWashServerURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -67,17 +67,17 @@ func (o *DeleteWashServerURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *DeleteWashServerURL) String() string {
+func (o *GenerateKeyWashServerURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *DeleteWashServerURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *GenerateKeyWashServerURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on DeleteWashServerURL")
+		return nil, errors.New("scheme is required for a full url on GenerateKeyWashServerURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on DeleteWashServerURL")
+		return nil, errors.New("host is required for a full url on GenerateKeyWashServerURL")
 	}
 
 	base, err := o.Build()
@@ -91,6 +91,6 @@ func (o *DeleteWashServerURL) BuildFull(scheme, host string) (*url.URL, error) {
 }
 
 // StringFull returns the string representation of a complete url
-func (o *DeleteWashServerURL) StringFull(scheme, host string) string {
+func (o *GenerateKeyWashServerURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }
