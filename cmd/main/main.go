@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 	"wash-bonus/internal/app/user"
+	"wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dal"
 	"wash-bonus/internal/firebase_auth"
 
@@ -101,10 +102,11 @@ func runServe(errc chan<- error) {
 	}
 	appl := app.New(r)
 	userSvc := user.NewService(r)
+	washServerSvc := wash_server.NewService(r)
 
 	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
 
-	srv, err := api.NewServer(appl, userSvc, cfg.api, firebase)
+	srv, err := api.NewServer(appl, userSvc, washServerSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)
 		return

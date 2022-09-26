@@ -1,8 +1,11 @@
 package wash_server
 
 import (
+	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type WashServerSvc interface {
@@ -11,6 +14,7 @@ type WashServerSvc interface {
 	Edit(prof entity.IdentityProfile, id string, update vo.WashServerUpdate) error
 	Delete(prof entity.IdentityProfile, id string) error
 	List(prof entity.IdentityProfile, filter vo.ListFilter) ([]entity.WashServer, []string, error)
+	GenerateServiceKey(prof entity.IdentityProfile, wash_server_id string) (*string, error)
 }
 
 type Repository interface {
@@ -18,7 +22,7 @@ type Repository interface {
 	AddWashServer(s entity.WashServer) error
 	EditWashServer(id string, update vo.WashServerUpdate, editedBy entity.User) error
 	DeleteWashServer(id string, deletedBy entity.User) error
-	ListWashServer(filter vo.ListFilter) ([]entity.WashServer, []string, error)
+	ListWashServers(filter vo.ListFilter) ([]entity.WashServer, []string, error)
 }
 
 type Service struct {
@@ -46,5 +50,28 @@ func (a *Service) Delete(prof entity.IdentityProfile, id string) error {
 }
 
 func (a *Service) List(prof entity.IdentityProfile, filter vo.ListFilter) ([]entity.WashServer, []string, error) {
-	return a.repo.ListWashServer(filter)
+	return a.repo.ListWashServers(filter)
+}
+
+func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id string) (*string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"owner_id":       prof.UID,
+		"wash_server_id": wash_server_id,
+	})
+	// !!! Где объявить константу с сикрет кеем?
+	tokenString, err := token.SignedString([]byte("sdfghj"))
+	if err != nil {
+		return nil, app.ErrGenerateJWT
+	}
+
+	// !!! Должны указать пользователя, но не можем его получить, так как в интерфейсе нет метода для этого
+	err = a.repo.EditWashServer(wash_server_id, vo.WashServerUpdate{
+		ServiceKey: tokenString,
+	}, entity.User{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &tokenString, nil
 }

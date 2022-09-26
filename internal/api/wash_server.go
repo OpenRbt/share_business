@@ -3,19 +3,15 @@ package api
 
 import (
 	"errors"
-	"time"
 	"wash-bonus/internal/api/restapi/models"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 	"wash-bonus/internal/app"
-	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/def"
 	"wash-bonus/internal/dto"
 	"wash-bonus/internal/firebase_auth"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/swag"
-
-	"github.com/go-openapi/strfmt"
 
 	"wash-bonus/internal/api/restapi/restapi/operations"
 )
@@ -26,11 +22,12 @@ func setWashServerHandlers(api *operations.WashBonusAPI, svc *service) {
 	api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
 	api.WashServerDeleteWashServerHandler = washServer.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
 	api.WashServerListWashServerHandler = washServer.ListWashServerHandlerFunc(svc.ListWashServer)
+	// !!! Добавить регистрацию хендлера генерации ключей
 }
 
 func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	c, err := svc.washServerSvc.Get(dto.ToAppIdentityProfile(*prof), params.Body.ID)
+	s, err := svc.washServerSvc.Get(dto.ToAppIdentityProfile(*prof), params.Body.ID)
 	switch {
 	default:
 		log.PrintErr("GetWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -52,12 +49,13 @@ func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile
 		})
 	case err == nil:
 		log.Info("GetWashServer ok", "id", params.Body.ID)
-		return washServer.NewGetWashServerOK().WithPayload(apiWashServer(c))
+		return washServer.NewGetWashServerOK().WithPayload(dto.WashServerToRest(*s))
 	}
 }
+
 func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	err := svc.washServerSvc.Add(dto.ToAppIdentityProfile(*prof), appWashServerAdd(params.Body))
+	err := svc.washServerSvc.Add(dto.ToAppIdentityProfile(*prof), dto.WashServerFromRestAdd(params.Body))
 	switch {
 	default:
 		log.PrintErr("AddWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -73,12 +71,14 @@ func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile
 		})
 	case err == nil:
 		log.Info("AddWashServer ok")
-		return washServer.NewAddWashServerCreated().WithPayload(apiWashServer(entity.WashServer{}))
+		return washServer.NewAddWashServerCreated().WithPayload(&models.WashServer{})
 	}
 }
+
 func (svc *service) EditWashServer(params washServer.EditWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	err := svc.washServerSvc.Edit(dto.ToAppIdentityProfile(*prof), params.Body.ID, appWashServerAdd(params.Body.Data))
+	// !!! Исправить то что пустой апдейт подается
+	err := svc.washServerSvc.Edit(dto.ToAppIdentityProfile(*prof), params.Body.ID, dto.WashServerFromRestUpdate(models.WashServer{}))
 	switch {
 	default:
 		log.PrintErr("EditWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -103,6 +103,7 @@ func (svc *service) EditWashServer(params washServer.EditWashServerParams, profi
 		return washServer.NewEditWashServerOK()
 	}
 }
+
 func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	err := svc.washServerSvc.Delete(dto.ToAppIdentityProfile(*prof), params.Body.ID)
@@ -130,6 +131,7 @@ func (svc *service) DeleteWashServer(params washServer.DeleteWashServerParams, p
 		return washServer.NewDeleteWashServerNoContent()
 	}
 }
+
 func (svc *service) ListWashServer(params washServer.ListWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	c, warnings, err := svc.washServerSvc.List(dto.ToAppIdentityProfile(*prof), dto.ListFilterFromRest(params.Body))
@@ -149,73 +151,31 @@ func (svc *service) ListWashServer(params washServer.ListWashServerParams, profi
 	case err == nil:
 		log.Info("ListWashServer ok")
 		return washServer.NewListWashServerOK().WithPayload(&washServer.ListWashServerOKBody{
-			Items:    apiWashServers(c),
+			Items:    dto.WashServersToRest(c),
 			Warnings: warnings,
 		})
 	}
 }
 
-func apiWashServer(a *app.WashServer) *models.WashServer {
-	if a == nil {
-		return nil
+func (svc *service) GenerateKeyWashServer(params washServer.EditWashServerParams, profile interface{}) middleware.Responder {
+	// !!! Исправить после генерации
+	prof := profile.(*firebase_auth.FirebaseProfile)
+	_, err := svc.washServerSvc.GenerateServiceKey(dto.ToAppIdentityProfile(*prof), params.Body.ID)
+	switch {
+	default:
+		log.PrintErr("GenerateKeyWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
+		return washServer.NewEditWashServerDefault(codeInternal.status).WithPayload(&models.Error{
+			Code:    swag.Int32(codeInternal.extra),
+			Message: swag.String("internal error"),
+		})
+	case errors.Is(err, app.ErrAccessDenied):
+		log.Info("GenerateKeyWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
+		return washServer.NewEditWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
+			Code:    swag.Int32(codeForbidden.extra),
+			Message: swag.String(err.Error()),
+		})
+	case err == nil:
+		log.Info("GenerateKeyWashServer ok")
+		return washServer.NewGetWashServerOK()
 	}
-	return &models.WashServer{
-		ID:           a.ID,
-		CreatedAt:    (*strfmt.DateTime)(a.CreatedAt),
-		Key:          a.Key,
-		LastUpdateAt: (*strfmt.DateTime)(a.LastUpdateAt),
-		ModifiedAt:   (*strfmt.DateTime)(a.ModifiedAt),
-		Name:         a.Name,
-	}
-}
-
-func apiWashServers(apps []*app.WashServer) []*models.WashServer {
-	apis := []*models.WashServer{}
-	for i := range apps {
-		apis = append(apis, apiWashServer(apps[i]))
-	}
-	return apis
-}
-
-func appWashServer(a *models.WashServer) *app.WashServer {
-	if a == nil {
-		return nil
-	}
-	washServer := &app.WashServer{}
-	washServer.ID = a.ID
-	washServer.CreatedAt = (*time.Time)(a.CreatedAt)
-	washServer.Key = a.Key
-	washServer.LastUpdateAt = (*time.Time)(a.LastUpdateAt)
-	washServer.ModifiedAt = (*time.Time)(a.ModifiedAt)
-	washServer.Name = a.Name
-
-	return washServer
-}
-
-func appWashServers(apis []*models.WashServer) []*app.WashServer {
-	apps := []*app.WashServer{}
-	for i := range apis {
-		apps = append(apps, appWashServer(apis[i]))
-	}
-	return apps
-}
-
-func appWashServerAdd(a *models.WashServerAdd) *app.WashServer {
-	if a == nil {
-		return nil
-	}
-	washServer := &app.WashServer{}
-	washServer.Key = a.Key
-	washServer.LastUpdateAt = (*time.Time)(a.LastUpdateAt)
-	washServer.Name = a.Name
-
-	return washServer
-}
-
-func appWashServersAdd(apis []*models.WashServerAdd) []*app.WashServer {
-	apps := []*app.WashServer{}
-	for i := range apis {
-		apps = append(apps, appWashServerAdd(apis[i]))
-	}
-	return apps
 }

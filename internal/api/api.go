@@ -52,11 +52,12 @@ type service struct {
 	auth          firebase_auth.Service
 }
 
-func NewServer(appl app.App, userSvc user2.UserSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
+func NewServer(appl app.App, userSvc user2.UserSvc, washServerSvc wash_server2.WashServerSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
 	svc := &service{
-		app:     appl,
-		userSvc: userSvc,
-		auth:    firebase,
+		app:           appl,
+		userSvc:       userSvc,
+		washServerSvc: washServerSvc,
+		auth:          firebase,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)

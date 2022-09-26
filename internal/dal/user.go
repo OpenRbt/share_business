@@ -3,13 +3,14 @@ package dal
 
 import (
 	"database/sql"
-	uuid "github.com/satori/go.uuid"
 	"time"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/dal/dbmodel"
 	"wash-bonus/internal/dto"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
