@@ -18,6 +18,7 @@ type WashServerSvc interface {
 }
 
 type Repository interface {
+	GetUserByIdentityID(identityID string) (*entity.User, error)
 	GetWashServer(id string) (*entity.WashServer, error)
 	AddWashServer(s entity.WashServer) error
 	EditWashServer(id string, update vo.WashServerUpdate, editedBy entity.User) error
@@ -42,11 +43,19 @@ func (a *Service) Add(prof entity.IdentityProfile, s entity.WashServer) error {
 }
 
 func (a *Service) Edit(prof entity.IdentityProfile, id string, update vo.WashServerUpdate) error {
-	return a.repo.EditWashServer(id, update, entity.User{})
+	editor, err := a.repo.GetUserByIdentityID(prof.UID)
+	if err != nil {
+		return err
+	}
+	return a.repo.EditWashServer(id, update, *editor)
 }
 
 func (a *Service) Delete(prof entity.IdentityProfile, id string) error {
-	return a.repo.DeleteWashServer(id, entity.User{})
+	editor, err := a.repo.GetUserByIdentityID(prof.UID)
+	if err != nil {
+		return err
+	}
+	return a.repo.DeleteWashServer(id, *editor)
 }
 
 func (a *Service) List(prof entity.IdentityProfile, filter vo.ListFilter) ([]entity.WashServer, []string, error) {
@@ -54,8 +63,13 @@ func (a *Service) List(prof entity.IdentityProfile, filter vo.ListFilter) ([]ent
 }
 
 func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id string) (*string, error) {
+	editor, err := a.repo.GetUserByIdentityID(prof.UID)
+	if err != nil {
+		return nil, err
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"owner_id":       prof.UID,
+		"owner_id":       editor.ID,
 		"wash_server_id": wash_server_id,
 	})
 	// !!! Где объявить константу с сикрет кеем?
@@ -64,10 +78,9 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		return nil, app.ErrGenerateJWT
 	}
 
-	// !!! Должны указать пользователя, но не можем его получить, так как в интерфейсе нет метода для этого
 	err = a.repo.EditWashServer(wash_server_id, vo.WashServerUpdate{
 		ServiceKey: tokenString,
-	}, entity.User{})
+	}, *editor)
 
 	if err != nil {
 		return nil, err
