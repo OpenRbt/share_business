@@ -235,7 +235,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /washServers/:    
+  /washServers:    
     post:
       tags:
         - WashServer

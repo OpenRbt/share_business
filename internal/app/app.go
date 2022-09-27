@@ -14,7 +14,7 @@ type App interface {
 
 // Repo interface for data user
 type Repo interface {
-	AddTestData(profileID, isolatedEntityID string) error
+	//AddTestData(profileID, isolatedEntityID string) error
 }
 
 // TODO: Fully remove this stub
@@ -55,5 +55,6 @@ func (a *app) AddTestData(prof entity.IdentityProfile) error {
 	if true {
 		return ErrAccessDenied
 	}
-	return a.repo.AddTestData("prof_id_stub", "")
+	//return a.repo.AddTestData("prof_id_stub", "")
+	return nil
 }

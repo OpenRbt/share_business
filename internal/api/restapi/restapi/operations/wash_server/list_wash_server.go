@@ -29,7 +29,7 @@ func NewListWashServer(ctx *middleware.Context, handler ListWashServerHandler) *
 	return &ListWashServer{Context: ctx, Handler: handler}
 }
 
-/* ListWashServer swagger:route POST /washServers/ WashServer listWashServer
+/* ListWashServer swagger:route POST /washServers WashServer listWashServer
 
 ListWashServer list wash server API
 

@@ -55,7 +55,7 @@ type ListWashServerOK struct {
 }
 
 func (o *ListWashServerOK) Error() string {
-	return fmt.Sprintf("[POST /washServers/][%d] listWashServerOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /washServers][%d] listWashServerOK  %+v", 200, o.Payload)
 }
 func (o *ListWashServerOK) GetPayload() *models.ListWashServer {
 	return o.Payload
@@ -96,7 +96,7 @@ func (o *ListWashServerDefault) Code() int {
 }
 
 func (o *ListWashServerDefault) Error() string {
-	return fmt.Sprintf("[POST /washServers/][%d] listWashServer default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /washServers][%d] listWashServer default  %+v", o._statusCode, o.Payload)
 }
 func (o *ListWashServerDefault) GetPayload() *models.Error {
 	return o.Payload

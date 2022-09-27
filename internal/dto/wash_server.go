@@ -25,7 +25,7 @@ func WashServerFromDB(s *dbmodel.WashServer) *entity.WashServer {
 		CreatedAt:   s.CreatedAt,
 		ModifiedAt:  s.ModifiedAt,
 		ID:          s.ID,
-		OwnerID:     s.OwnerID,
+		Owner:       entity.User{ID: s.OwnerID},
 		ServiceKey:  s.ServiceKey,
 		Name:        s.Name,
 		Description: s.Description,
@@ -51,7 +51,7 @@ func WashServerToRest(s *entity.WashServer) *models.WashServer {
 		ModifiedAt:  (*strfmt.DateTime)(s.ModifiedAt),
 		Name:        s.Name,
 		Description: s.Description,
-		OwnerID:     s.OwnerID.String(),
+		OwnerID:     s.Owner.ID.String(),
 	}
 }
 
@@ -64,7 +64,7 @@ func WashServerFromRestAdd(s *models.WashServerAdd) (*entity.WashServer, error) 
 	return &entity.WashServer{
 		Name:        s.Name,
 		Description: s.Description,
-		OwnerID:     id,
+		Owner:       entity.User{ID: id},
 	}, nil
 }
 

@@ -244,7 +244,7 @@ func (a *Client) ListWashServer(params *ListWashServerParams, authInfo runtime.C
 	op := &runtime.ClientOperation{
 		ID:                 "listWashServer",
 		Method:             "POST",
-		PathPattern:        "/washServers/",
+		PathPattern:        "/washServers",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

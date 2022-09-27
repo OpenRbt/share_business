@@ -30,7 +30,7 @@ func (r *Repo) AddWashServer(s entity.WashServer) error {
 	_, err := r.db.NamedExec(sqlAddWashServer, argAddWashServer{
 		Name:        s.Name,
 		Description: s.Description,
-		OwnerID:     s.OwnerID.String(),
+		OwnerID:     s.Owner.ID.String(),
 		CreatedAt:   time.Now(),
 	})
 

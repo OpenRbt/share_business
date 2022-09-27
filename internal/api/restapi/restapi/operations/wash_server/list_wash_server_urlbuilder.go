@@ -35,7 +35,7 @@ func (o *ListWashServerURL) SetBasePath(bp string) {
 func (o *ListWashServerURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/washServers/"
+	var _path = "/washServers"
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)

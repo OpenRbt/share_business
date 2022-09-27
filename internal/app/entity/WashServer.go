@@ -10,7 +10,7 @@ type WashServer struct {
 	CreatedAt   *time.Time
 	ModifiedAt  *time.Time
 	ID          uuid.UUID
-	OwnerID     uuid.UUID
+	Owner       User
 	ServiceKey  string
 	Name        string
 	Description string

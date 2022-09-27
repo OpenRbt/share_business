@@ -408,7 +408,7 @@ func init() {
         }
       }
     },
-    "/washServers/": {
+    "/washServers": {
       "post": {
         "tags": [
           "WashServer"
@@ -1061,7 +1061,7 @@ func init() {
         }
       }
     },
-    "/washServers/": {
+    "/washServers": {
       "post": {
         "tags": [
           "WashServer"
