@@ -4,7 +4,7 @@ CREATE TABLE bonus_balance
 (
     id uuid PRIMARY KEY,
     user_id REFERENCES users(id),
-    balance float,
+    balance numeric(12, 2),
     deleted boolean NOT NULL DEFAULT false,
     deleted_at TIMESTAMP,
     deleted_by uuid,

@@ -12,7 +12,7 @@ import (
 
 type BonusBalance struct {
 	ID      uuid.UUID       `db:"id"`
-	UserID  uuid.UUID       `db:"user_id`
+	UserID  uuid.UUID       `db:"user_id"`
 	balance sql.NullFloat64 `db:"balance"`
 }
 
