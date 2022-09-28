@@ -9,22 +9,6 @@ import (
 
 // App provides application features service.
 type App interface {
-	GetSession(prof Profile, id string) (*Session, error)
-	AddSession(prof Profile, m *Session) (*Session, error)
-	EditSession(prof Profile, id string, m *Session) error
-	DeleteSession(prof Profile, id string) error
-	ListSession(prof Profile, params *ListParams) ([]*Session, []string, error)
-
-	GetToken(prof Profile, id string) (*Token, error)
-	AddToken(prof Profile, m *Token) (*Token, error)
-	DeleteToken(prof Profile, id string) error
-
-	GetUser(prof Profile, id string) (*User, error)
-	AddUser(prof Profile, m *User) (*User, error)
-	EditUser(prof Profile, id string, m *User) error
-	DeleteUser(prof Profile, id string) error
-	ListUser(prof Profile, params *ListParams) ([]*User, []string, error)
-
 	GetBonusBalance(id string) (*BonusBalance, error)
 	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
 	EditBonusBalance(id string, balance float64) error
@@ -41,26 +25,10 @@ type App interface {
 
 // Repo interface for data user
 type Repo interface {
-	GetSession(id string, isolatedEntityID string) (*Session, error)
-	AddSession(profileID string, isolatedEntityID string, m *Session) (*Session, error)
-	EditSession(id string, isolatedEntityID string, m *Session) error
-	DeleteSession(id string, profileID string, isolatedEntityID string) error
-	ListSession(isolatedEntityID string, params *ListParams) ([]*Session, []string, error)
-
-	GetToken(id string, isolatedEntityID string) (*Token, error)
-	AddToken(profileID string, isolatedEntityID string, m *Token) (*Token, error)
-	DeleteToken(id string, profileID string, isolatedEntityID string) error
-
 	GetBonusBalance(id string) (*BonusBalance, error)
 	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
 	EditBonusBalance(id string, balance float64) error
 	DeleteBonusBalance(id string, userId string) error
-
-	GetUser(id string, isolatedEntityID string) (*User, error)
-	AddUser(profileID string, isolatedEntityID string, m *User) (*User, error)
-	EditUser(id string, isolatedEntityID string, m *User) error
-	DeleteUser(id string, profileID string, isolatedEntityID string) error
-	ListUser(isolatedEntityID string, params *ListParams) ([]*User, []string, error)
 
 	GetWashServer(id string, isolatedEntityID string) (*WashServer, error)
 	AddWashServer(profileID string, isolatedEntityID string, m *WashServer) (*WashServer, error)

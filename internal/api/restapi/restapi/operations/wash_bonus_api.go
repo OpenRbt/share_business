@@ -59,9 +59,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		WashServerAddWashServerHandler: wash_server.AddWashServerHandlerFunc(func(params wash_server.AddWashServerParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_server.AddWashServer has not yet been implemented")
 		}),
-		WashSessionAddWashSessionHandler: wash_session.AddWashSessionHandlerFunc(func(params wash_session.AddWashSessionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation wash_session.AddWashSession has not yet been implemented")
-		}),
 		BonusBalanceDeleteBonusBalanceHandler: bonus_balance.DeleteBonusBalanceHandlerFunc(func(params bonus_balance.DeleteBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.DeleteBonusBalance has not yet been implemented")
 		}),
@@ -70,9 +67,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		}),
 		WashServerDeleteWashServerHandler: wash_server.DeleteWashServerHandlerFunc(func(params wash_server.DeleteWashServerParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_server.DeleteWashServer has not yet been implemented")
-		}),
-		WashSessionDeleteWashSessionHandler: wash_session.DeleteWashSessionHandlerFunc(func(params wash_session.DeleteWashSessionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation wash_session.DeleteWashSession has not yet been implemented")
 		}),
 		BonusBalanceEditBonusBalanceHandler: bonus_balance.EditBonusBalanceHandlerFunc(func(params bonus_balance.EditBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.EditBonusBalance has not yet been implemented")
@@ -85,9 +79,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		}),
 		UserGetCurrentUserHandler: user.GetCurrentUserHandlerFunc(func(params user.GetCurrentUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.GetCurrentUser has not yet been implemented")
-		}),
-		BonusBalanceGetBonusBalanceHandler: bonus_balance.GetBonusBalanceHandlerFunc(func(params bonus_balance.GetBonusBalanceParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
 		}),
 		BonusBalanceGetBonusBalanceHandler: bonus_balance.GetBonusBalanceHandlerFunc(func(params bonus_balance.GetBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
@@ -165,16 +156,12 @@ type WashBonusAPI struct {
 	UserAddUserHandler user.AddUserHandler
 	// WashServerAddWashServerHandler sets the operation handler for the add wash server operation
 	WashServerAddWashServerHandler wash_server.AddWashServerHandler
-	// WashSessionAddWashSessionHandler sets the operation handler for the add wash session operation
-	WashSessionAddWashSessionHandler wash_session.AddWashSessionHandler
 	// BonusBalanceDeleteBonusBalanceHandler sets the operation handler for the delete bonus balance operation
 	BonusBalanceDeleteBonusBalanceHandler bonus_balance.DeleteBonusBalanceHandler
 	// UserDeleteUserHandler sets the operation handler for the delete user operation
 	UserDeleteUserHandler user.DeleteUserHandler
 	// WashServerDeleteWashServerHandler sets the operation handler for the delete wash server operation
 	WashServerDeleteWashServerHandler wash_server.DeleteWashServerHandler
-	// WashSessionDeleteWashSessionHandler sets the operation handler for the delete wash session operation
-	WashSessionDeleteWashSessionHandler wash_session.DeleteWashSessionHandler
 	// BonusBalanceEditBonusBalanceHandler sets the operation handler for the edit bonus balance operation
 	BonusBalanceEditBonusBalanceHandler bonus_balance.EditBonusBalanceHandler
 	// UserEditUserHandler sets the operation handler for the edit user operation
@@ -183,8 +170,6 @@ type WashBonusAPI struct {
 	WashServerEditWashServerHandler wash_server.EditWashServerHandler
 	// UserGetCurrentUserHandler sets the operation handler for the get current user operation
 	UserGetCurrentUserHandler user.GetCurrentUserHandler
-	// WashSessionEditWashSessionHandler sets the operation handler for the edit wash session operation
-	WashSessionEditWashSessionHandler wash_session.EditWashSessionHandler
 	// BonusBalanceGetBonusBalanceHandler sets the operation handler for the get bonus balance operation
 	BonusBalanceGetBonusBalanceHandler bonus_balance.GetBonusBalanceHandler
 	// UserGetUserHandler sets the operation handler for the get user operation
@@ -290,9 +275,6 @@ func (o *WashBonusAPI) Validate() error {
 	if o.WashServerAddWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_server.AddWashServerHandler")
 	}
-	if o.WashSessionAddWashSessionHandler == nil {
-		unregistered = append(unregistered, "wash_session.AddWashSessionHandler")
-	}
 	if o.BonusBalanceDeleteBonusBalanceHandler == nil {
 		unregistered = append(unregistered, "bonus_balance.DeleteBonusBalanceHandler")
 	}
@@ -301,9 +283,6 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.WashServerDeleteWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_server.DeleteWashServerHandler")
-	}
-	if o.WashSessionDeleteWashSessionHandler == nil {
-		unregistered = append(unregistered, "wash_session.DeleteWashSessionHandler")
 	}
 	if o.BonusBalanceEditBonusBalanceHandler == nil {
 		unregistered = append(unregistered, "bonus_balance.EditBonusBalanceHandler")

@@ -74,11 +74,6 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return middleware.NotImplemented("operation wash_server.AddWashServer has not yet been implemented")
 		})
 	}
-	if api.WashSessionAddWashSessionHandler == nil {
-		api.WashSessionAddWashSessionHandler = wash_session.AddWashSessionHandlerFunc(func(params wash_session.AddWashSessionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation wash_session.AddWashSession has not yet been implemented")
-		})
-	}
 	if api.BonusBalanceDeleteBonusBalanceHandler == nil {
 		api.BonusBalanceDeleteBonusBalanceHandler = bonus_balance.DeleteBonusBalanceHandlerFunc(func(params bonus_balance.DeleteBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.DeleteBonusBalance has not yet been implemented")
@@ -92,11 +87,6 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	if api.WashServerDeleteWashServerHandler == nil {
 		api.WashServerDeleteWashServerHandler = wash_server.DeleteWashServerHandlerFunc(func(params wash_server.DeleteWashServerParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_server.DeleteWashServer has not yet been implemented")
-		})
-	}
-	if api.WashSessionDeleteWashSessionHandler == nil {
-		api.WashSessionDeleteWashSessionHandler = wash_session.DeleteWashSessionHandlerFunc(func(params wash_session.DeleteWashSessionParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation wash_session.DeleteWashSession has not yet been implemented")
 		})
 	}
 	if api.BonusBalanceEditBonusBalanceHandler == nil {
