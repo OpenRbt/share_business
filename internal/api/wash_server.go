@@ -3,6 +3,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"wash-bonus/internal/api/restapi/models"
 	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 	"wash-bonus/internal/app"
@@ -54,6 +55,7 @@ func (svc *service) GetWashServer(params washServer.GetWashServerParams, profile
 }
 
 func (svc *service) AddWashServer(params washServer.AddWashServerParams, profile interface{}) middleware.Responder {
+	fmt.Println("AddWashServer: ", params.Body.Name)
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	wash, err := dto.WashServerFromRestAdd(params.Body)
 	if err == nil {
@@ -164,7 +166,9 @@ func (svc *service) ListWashServer(params washServer.ListWashServerParams, profi
 
 func (svc *service) GenerateKeyWashServer(params washServer.GenerateKeyWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
+	fmt.Println("Gen KEy: ", params.ID)
 	key, err := svc.washServerSvc.GenerateServiceKey(dto.ToAppIdentityProfile(*prof), params.ID)
+	fmt.Println("Err: ", err)
 	switch {
 	default:
 		log.PrintErr("GenerateKeyWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)

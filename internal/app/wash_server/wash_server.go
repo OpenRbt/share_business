@@ -68,8 +68,13 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		return nil, err
 	}
 
+	wash, err := a.repo.GetWashServer(wash_server_id)
+	if err != nil {
+		return nil, err
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"owner_id":       editor.ID,
+		"owner_id":       wash.Owner.ID,
 		"wash_server_id": wash_server_id,
 	})
 	// !!! Где объявить константу с сикрет кеем?
@@ -79,7 +84,10 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 	}
 
 	err = a.repo.EditWashServer(wash_server_id, vo.WashServerUpdate{
-		ServiceKey: tokenString,
+		Name:        wash.Name,
+		Description: wash.Description,
+		ServiceKey:  tokenString,
+		OwnerID:     wash.Owner.ID,
 	}, *editor)
 
 	if err != nil {

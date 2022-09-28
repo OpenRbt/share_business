@@ -2,6 +2,7 @@
 package dal
 
 import (
+	"database/sql"
 	"time"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
@@ -13,9 +14,9 @@ import (
 )
 
 func (r *Repo) GetWashServer(id string) (*entity.WashServer, error) {
-	var m *dbmodel.WashServer
+	var m dbmodel.WashServer
 
-	err := r.db.NamedGet(m, sqlGetWashServer, argGetWashServer{
+	err := r.db.NamedGet(&m, sqlGetWashServer, argGetWashServer{
 		ID: id,
 	})
 
@@ -42,8 +43,16 @@ func (r *Repo) AddWashServer(s entity.WashServer) error {
 }
 
 func (r *Repo) EditWashServer(id string, update vo.WashServerUpdate, editedBy entity.User) error {
+	valid := false
+	if update.ServiceKey != "" {
+		valid = true
+	}
 	res, err := r.db.NamedExec(sqlEditWashServer, argEditWashServer{
-		ServiceKey:  update.ServiceKey,
+		ID: id,
+		ServiceKey: sql.NullString{
+			String: update.ServiceKey,
+			Valid:  valid,
+		},
 		Name:        update.Name,
 		Description: update.Description,
 		OwnerID:     update.OwnerID.String(),

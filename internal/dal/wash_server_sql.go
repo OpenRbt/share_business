@@ -2,6 +2,7 @@
 package dal
 
 import (
+	"database/sql"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -31,7 +32,7 @@ const (
 		name,
 		description,
 		owner_id,
-		created_at,
+		created_at
 	) VALUES (
 		:name,
 		:description,
@@ -98,12 +99,13 @@ type (
 	}
 
 	argEditWashServer struct {
-		ServiceKey  string        `db:"service_key"`
-		Name        string        `db:"name"`
-		Description string        `db:"description"`
-		OwnerID     string        `db:"owner_id"`
-		ModifiedAt  time.Time     `db:"modified_at"`
-		ModifiedBy  uuid.NullUUID `db:"modified_by"`
+		ID          string         `db:"id"`
+		ServiceKey  sql.NullString `db:"service_key"`
+		Name        string         `db:"name"`
+		Description string         `db:"description"`
+		OwnerID     string         `db:"owner_id"`
+		ModifiedAt  time.Time      `db:"modified_at"`
+		ModifiedBy  uuid.NullUUID  `db:"modified_by"`
 	}
 
 	argDeleteWashServer struct {

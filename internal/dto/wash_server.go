@@ -14,19 +14,19 @@ func WashServersFromDB(ss []dbmodel.WashServer) []entity.WashServer {
 	res := make([]entity.WashServer, len(ss))
 
 	for i, s := range ss {
-		res[i] = *WashServerFromDB(&s)
+		res[i] = *WashServerFromDB(s)
 	}
 
 	return res
 }
 
-func WashServerFromDB(s *dbmodel.WashServer) *entity.WashServer {
+func WashServerFromDB(s dbmodel.WashServer) *entity.WashServer {
 	return &entity.WashServer{
 		CreatedAt:   s.CreatedAt,
 		ModifiedAt:  s.ModifiedAt,
 		ID:          s.ID,
 		Owner:       entity.User{ID: s.OwnerID},
-		ServiceKey:  s.ServiceKey,
+		ServiceKey:  s.ServiceKey.String,
 		Name:        s.Name,
 		Description: s.Description,
 	}

@@ -92,7 +92,7 @@ func (svc *service) GetUser(params user.GetUserParams, profile interface{}) midd
 func (svc *service) AddUser(params user.AddUserParams, profile interface{}) middleware.Responder {
 	fmt.Println("\nAddUser start: ", profile)
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	fmt.Println("\nAddUser prof: ", prof)
+	fmt.Println("\nAddUser prof: ", prof.UID)
 
 	err := svc.userSvc.Add(dto.ToAppIdentityProfile(*prof), dto.UserFromRestAdd(*params.Body))
 	fmt.Println("\nAddUser com: ", err)
