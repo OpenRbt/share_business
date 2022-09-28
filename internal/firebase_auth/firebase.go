@@ -41,7 +41,7 @@ func New(keyfileLocation string) Service {
 
 	auth, err := app.Auth(context.Background())
 	if err != nil {
-		panic("Failed to load Firebase")
+		panic("Failed to load Firebase auth")
 	}
 
 	return &FirebaseService{
