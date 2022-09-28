@@ -2,10 +2,11 @@ package dal
 
 import (
 	"database/sql"
-	"strings"
 	"time"
 
 	"wash-bonus/internal/app"
+
+	"wash-bonus/internal/app/entity"
 
 	"github.com/google/uuid"
 )
@@ -16,7 +17,7 @@ type BonusBalance struct {
 	balance sql.NullFloat64 `db:"balance"`
 }
 
-func (a *Repo) GetBonusBalance(id string) (*app.BonusBalance, error) {
+func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
 	var m BonusBalance
 	if err := a.db.NamedGet(&m, sqlGetBonusBalance, argGetBonusBalance{
 		ID: newNullUUID(id),
@@ -29,19 +30,15 @@ func (a *Repo) GetBonusBalance(id string) (*app.BonusBalance, error) {
 	return appBonusBalance(m), nil
 }
 
-func (a *Repo) AddBonusBalance(userID string, balance float64) (*app.BonusBalance, error) {
-	ID := uuid.New().String()
-	if err := a.db.NamedGet(&ID, sqlAddBonusBalance, argAddBonusBalance{
-		ID:      ID,
+func (a *Repo) AddBonusBalance(userID string, balance float64) error {
+	_, err := a.db.NamedExec(sqlAddBonusBalance, argAddBonusBalance{
 		UserID:  userID,
 		balance: balance,
-	}); err != nil {
-		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
-			return nil, app.ErrDuplicateID
-		}
-		return nil, err
+	})
+	if err != nil {
+		return err
 	}
-	return a.GetBonusBalance(ID)
+	return nil
 }
 
 func (a *Repo) EditBonusBalance(id string, balance float64) error {
@@ -77,8 +74,8 @@ func (a *Repo) DeleteBonusBalance(id string, userId string) error {
 	return nil
 }
 
-func appBonusBalance(m BonusBalance) *app.BonusBalance {
-	return &app.BonusBalance{
+func appBonusBalance(m BonusBalance) *entity.BonusBalance {
+	return &entity.BonusBalance{
 		UserId:  m.UserID.String(),
 		Balance: m.balance.Float64,
 	}

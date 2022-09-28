@@ -20,11 +20,9 @@ const (
 
 	sqlAddBonusBalance = `
 	INSERT INTO bonus_balance(
-		id,
 		user_id,
 		balance,
 	) VALUES (
-		:id,
 		:user_id,
 		:balance,
 	)
@@ -61,7 +59,6 @@ type (
 	}
 
 	argAddBonusBalance struct {
-		ID      string  `db:"id"`
 		UserID  string  `db:"user_id"`
 		balance float64 `db:"balance"`
 	}

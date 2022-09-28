@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 	"path"
+	bonus2 "wash-bonus/internal/app/bonusBalance"
 	user2 "wash-bonus/internal/app/user"
 	"wash-bonus/internal/dto"
 	"wash-bonus/internal/firebase_auth"
@@ -48,16 +49,18 @@ type Config struct {
 }
 
 type service struct {
-	app     app.App
-	userSvc user2.UserSvc
-	auth    firebase_auth.Service
+	app      app.App
+	bonusSvc bonus2.BonusBalanceSvc
+	userSvc  user2.UserSvc
+	auth     firebase_auth.Service
 }
 
-func NewServer(appl app.App, userSvc user2.UserSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
+func NewServer(appl app.App, userSvc user2.UserSvc, bonusBalanceSvc bonus2.BonusBalanceSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
 	svc := &service{
-		app:     appl,
-		userSvc: userSvc,
-		auth:    firebase,
+		app:      appl,
+		userSvc:  userSvc,
+		auth:     firebase,
+		bonusSvc: bonusBalanceSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)

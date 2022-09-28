@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/def"
 
 	"github.com/go-openapi/swag"
@@ -16,7 +17,7 @@ import (
 )
 
 func (svc *service) GetBonusBalance(params balance.GetBonusBalanceParams, profile interface{}) middleware.Responder {
-	c, err := svc.app.GetBonusBalance(params.Body.ID)
+	c, err := svc.bonusSvc.GetBonusBalance(params.Body.ID)
 	switch {
 	default:
 		log.PrintErr("GetBonusBalance server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -44,7 +45,7 @@ func (svc *service) GetBonusBalance(params balance.GetBonusBalanceParams, profil
 
 func (svc *service) AddBonusBalance(params balance.AddBonusBalanceParams, profile interface{}) middleware.Responder {
 	balanc, _ := strconv.ParseFloat(params.Body.Balance, 8)
-	c, err := svc.app.AddBonusBalance(balanc, params.Body.UserID)
+	c, err := svc.bonusSvc.AddBonusBalance(params.Body.UserID, balanc)
 	switch {
 	default:
 		log.PrintErr("AddBonusBalance server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -66,7 +67,7 @@ func (svc *service) AddBonusBalance(params balance.AddBonusBalanceParams, profil
 
 func (svc *service) EditBonusBalance(params balance.EditBonusBalanceParams, profile interface{}) middleware.Responder {
 	balanc, _ := strconv.ParseFloat(params.Body.Data.Balance, 8)
-	err := svc.app.EditBonusBalance(params.Body.ID, balanc)
+	err := svc.bonusSvc.EditBonusBalance(params.Body.ID, balanc)
 	switch {
 	default:
 		log.PrintErr("EditBonusBalance server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -93,7 +94,7 @@ func (svc *service) EditBonusBalance(params balance.EditBonusBalanceParams, prof
 }
 
 func (svc *service) DeleteBonusBalance(params balance.DeleteBonusBalanceParams, profile interface{}) middleware.Responder {
-	err := svc.app.DeleteBonusBalance(params.Body.ID, params.Body.UserID)
+	err := svc.bonusSvc.DeleteBonusBalance(params.Body.ID, params.Body.UserID)
 	switch {
 	default:
 		log.PrintErr("DeleteBonusBalance server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
@@ -119,7 +120,7 @@ func (svc *service) DeleteBonusBalance(params balance.DeleteBonusBalanceParams, 
 	}
 }
 
-func apiBonusBalance(a *app.BonusBalance) *models.Balance {
+func apiBonusBalance(a *entity.BonusBalance) *models.Balance {
 	if a == nil {
 		return nil
 	}

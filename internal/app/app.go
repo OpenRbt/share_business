@@ -9,11 +9,6 @@ import (
 
 // App provides application features service.
 type App interface {
-	GetBonusBalance(id string) (*BonusBalance, error)
-	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
-	EditBonusBalance(id string, balance float64) error
-	DeleteBonusBalance(id string, userId string) error
-
 	GetWashServer(prof Profile, id string) (*WashServer, error)
 	AddWashServer(prof Profile, m *WashServer) (*WashServer, error)
 	EditWashServer(prof Profile, id string, m *WashServer) error
@@ -25,11 +20,6 @@ type App interface {
 
 // Repo interface for data user
 type Repo interface {
-	GetBonusBalance(id string) (*BonusBalance, error)
-	AddBonusBalance(balance float64, userId string) (*BonusBalance, error)
-	EditBonusBalance(id string, balance float64) error
-	DeleteBonusBalance(id string, userId string) error
-
 	GetWashServer(id string, isolatedEntityID string) (*WashServer, error)
 	AddWashServer(profileID string, isolatedEntityID string, m *WashServer) (*WashServer, error)
 	EditWashServer(id string, isolatedEntityID string, m *WashServer) error
