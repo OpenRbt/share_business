@@ -102,7 +102,7 @@ func runServe(errc chan<- error) {
 	}
 	appl := app.New(r)
 	userSvc := user.NewService(r)
-	washServerSvc, err := wash_server.NewService(r, def.WashServerRSAKeyFilePath)
+	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath)
 	if err != nil {
 		errc <- err
 		return

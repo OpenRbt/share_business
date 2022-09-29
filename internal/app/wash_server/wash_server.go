@@ -4,6 +4,7 @@ import (
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
+	"wash-bonus/internal/app/user"
 
 	"github.com/golang-jwt/jwt/v4"
 
@@ -20,7 +21,6 @@ type WashServerSvc interface {
 }
 
 type Repository interface {
-	GetUserByIdentityID(identityID string) (*entity.User, error)
 	GetWashServer(id string) (*entity.WashServer, error)
 	AddWashServer(s entity.WashServer) error
 	EditWashServer(id string, update vo.WashServerUpdate, editedBy entity.User) error
@@ -29,18 +29,20 @@ type Repository interface {
 }
 
 type Service struct {
-	repo   Repository
-	rsaKey []byte
+	repo    Repository
+	userSvc user.UserSvc
+	rsaKey  []byte
 }
 
-func NewService(repo Repository, kefilePath string) (WashServerSvc, error) {
+func NewService(repo Repository, userSvc user.UserSvc, kefilePath string) (WashServerSvc, error) {
 	content, err := os.ReadFile(kefilePath)
 	if err != nil {
 		return nil, err
 	}
 	return &Service{
-		repo:   repo,
-		rsaKey: content,
+		userSvc: userSvc,
+		repo:    repo,
+		rsaKey:  content,
 	}, nil
 }
 
@@ -53,7 +55,7 @@ func (a *Service) Add(prof entity.IdentityProfile, s entity.WashServer) error {
 }
 
 func (a *Service) Edit(prof entity.IdentityProfile, id string, update vo.WashServerUpdate) error {
-	editor, err := a.repo.GetUserByIdentityID(prof.UID)
+	editor, err := a.userSvc.GetByIdentityID(prof)
 	if err != nil {
 		return err
 	}
@@ -61,7 +63,7 @@ func (a *Service) Edit(prof entity.IdentityProfile, id string, update vo.WashSer
 }
 
 func (a *Service) Delete(prof entity.IdentityProfile, id string) error {
-	editor, err := a.repo.GetUserByIdentityID(prof.UID)
+	editor, err := a.userSvc.GetByIdentityID(prof)
 	if err != nil {
 		return err
 	}
@@ -73,7 +75,7 @@ func (a *Service) List(prof entity.IdentityProfile, filter vo.ListFilter) ([]ent
 }
 
 func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id string) (*string, error) {
-	editor, err := a.repo.GetUserByIdentityID(prof.UID)
+	editor, err := a.userSvc.GetByIdentityID(prof)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +89,7 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		"owner_id":       wash.Owner.ID,
 		"wash_server_id": wash_server_id,
 	})
-	// !!! Где объявить константу с сикрет кеем?
+
 	tokenString, err := token.SignedString(a.rsaKey)
 	if err != nil {
 		return nil, app.ErrGenerateJWT
