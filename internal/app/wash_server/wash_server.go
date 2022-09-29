@@ -6,6 +6,8 @@ import (
 	"wash-bonus/internal/app/entity/vo"
 
 	"github.com/golang-jwt/jwt/v4"
+
+	"os"
 )
 
 type WashServerSvc interface {
@@ -27,11 +29,19 @@ type Repository interface {
 }
 
 type Service struct {
-	repo Repository
+	repo   Repository
+	rsaKey []byte
 }
 
-func NewService(repo Repository) WashServerSvc {
-	return &Service{repo: repo}
+func NewService(repo Repository, kefilePath string) (WashServerSvc, error) {
+	content, err := os.ReadFile(kefilePath)
+	if err != nil {
+		return nil, err
+	}
+	return &Service{
+		repo:   repo,
+		rsaKey: content,
+	}, nil
 }
 
 func (a *Service) Get(prof entity.IdentityProfile, id string) (*entity.WashServer, error) {
@@ -73,12 +83,12 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		return nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodPS256.SigningMethodRSA, jwt.MapClaims{
 		"owner_id":       wash.Owner.ID,
 		"wash_server_id": wash_server_id,
 	})
 	// !!! Где объявить константу с сикрет кеем?
-	tokenString, err := token.SignedString([]byte("sdfghj"))
+	tokenString, err := token.SignedString(a.rsaKey)
 	if err != nil {
 		return nil, app.ErrGenerateJWT
 	}

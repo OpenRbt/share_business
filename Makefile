@@ -31,5 +31,4 @@ build_app:
 run_app:
 	export MSRV_DB_HOST="localhost" && export MSRV_DB_PORT="5432" && export MSRV_DB_USER="postgres" && \
 	export MSRV_DB_PASS="postgres" && export MSRV_DB_NAME="postgres" && export MSRV_PORT="9091" && \
-	export FIREBASE_KEYFILE_PATH="/home/arne/projects/test-auth-key.json" && \
 	go build -o ./bin/wash-bonus ./cmd/main/* && ./bin/wash-bonus

@@ -102,7 +102,11 @@ func runServe(errc chan<- error) {
 	}
 	appl := app.New(r)
 	userSvc := user.NewService(r)
-	washServerSvc := wash_server.NewService(r)
+	washServerSvc, err := wash_server.NewService(r, def.WashServerRSAKeyFilePath)
+	if err != nil {
+		errc <- err
+		return
+	}
 
 	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
 
