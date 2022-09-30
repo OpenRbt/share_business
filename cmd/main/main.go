@@ -5,15 +5,19 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"net"
 	"time"
 	"wash-bonus/internal/app/user"
 	"wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dal"
 	"wash-bonus/internal/firebase_auth"
+	grpc2 "wash-bonus/internal/transport/grpc"
 
 	"wash-bonus/internal/api"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
+
+	"google.golang.org/grpc"
 
 	"github.com/powerman/pqx"
 	"github.com/powerman/structlog"
@@ -70,10 +74,7 @@ func main() {
 	flag.Parse()
 	structlog.DefaultLogger.SetLogLevel(structlog.ParseLevel(cfg.logLevel))
 
-	var err error
-	errc := make(chan error)
-	go runServe(errc)
-	err = <-errc
+	err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -91,25 +92,47 @@ func initDal() (*dal.Repo, error) {
 	return r, nil
 }
 
-func runServe(errc chan<- error) {
+func run() error {
 	log.Info("server started")
 	defer log.Info("server finished")
 
 	r, err := initDal()
 	if err != nil {
-		errc <- err
-		return
+		return err
 	}
 	appl := app.New(r)
 	userSvc := user.NewService(r)
 	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath)
 	if err != nil {
-		errc <- err
-		return
+		return err
 	}
 
 	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
 
+	washServerGRPCConnections := make(map[string]grpc2.WashServerConnection)
+
+	errc := make(chan error)
+	go runGRPCServer(errc, r, washServerGRPCConnections)
+	go runHTTPServer(errc, appl, userSvc, washServerSvc, firebase)
+
+	return <-errc
+}
+
+func runGRPCServer(errc chan<- error, washServerRepo wash_server.Repository, washServerConnections map[string]grpc2.WashServerConnection) {
+	server := grpc.NewServer()
+
+	grpc2.RegisterWashServerServiceServer(server, grpc2.NewWashServerService(washServerRepo, washServerConnections))
+
+	l, err := net.Listen("tcp", ":"+def.GRPCPort)
+	if err != nil {
+		errc <- fmt.Errorf("grpc: %v", err)
+		return
+	}
+
+	errc <- server.Serve(l)
+}
+
+func runHTTPServer(errc chan<- error, appl app.App, userSvc user.UserSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
 	srv, err := api.NewServer(appl, userSvc, washServerSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)

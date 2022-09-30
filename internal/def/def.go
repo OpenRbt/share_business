@@ -59,6 +59,8 @@ var (
 	FirebaseKeyFilePath = pathGetenv("FIREBASE_KEYFILE_PATH", "~/firebase_keyfile.json")
 
 	WashServerRSAKeyFilePath = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "~/wash_server_rsa_keyfile")
+
+	GRPCPort = strGetenv("GRPC_PORT", "8091")
 )
 
 func pathGetenv(name, def string) string {
