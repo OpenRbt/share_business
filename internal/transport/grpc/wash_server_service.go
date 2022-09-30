@@ -1,11 +1,22 @@
 package grpc
 
-import context "context"
+import (
+	context "context"
+
+	uuid "github.com/satori/go.uuid"
+)
 
 type app interface {
-	VerifyClient()
-	SendMessage()
-	SendMessageToOtherClient()
+	VerifyClient(*Verify) (bool, error)
+	SendMessage(WashServerService_SendMessageServer) error
+	SendMessageToOtherClient(WashServerService_SendMessageToOtherClientServer) error
+}
+
+type WashServer struct {
+	ID                             uuid.UUID
+	OwnerID                        uuid.UUID
+	StreamSendMessage              WashServerService_SendMessageServer
+	StreamSendMessageToOtherClient WashServerService_SendMessageToOtherClientServer
 }
 
 type washServerService struct {
@@ -13,18 +24,16 @@ type washServerService struct {
 }
 
 func (svc *washServerService) VerifyClient(ctx context.Context, msg *Verify) (*VerifyAnswer, error) {
-	svc.app.VerifyClient()
-	return nil, nil
+	success, err := svc.app.VerifyClient(msg)
+	return &VerifyAnswer{Success: success}, err
 }
 
 func (svc *washServerService) SendMessage(stream WashServerService_SendMessageServer) error {
-	svc.app.SendMessage()
-	return nil
+	return svc.app.SendMessage(stream)
 }
 
 func (svc *washServerService) SendMessageToOtherClient(stream WashServerService_SendMessageToOtherClientServer) error {
-	svc.app.SendMessageToOtherClient()
-	return nil
+	return svc.app.SendMessageToOtherClient(stream)
 }
 
 func (svc *washServerService) mustEmbedUnimplementedWashServerServiceServer() {}
