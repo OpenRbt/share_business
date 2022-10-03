@@ -1,10 +1,12 @@
 package wash_server
 
 import (
+	"sync"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/app/user"
+	"wash-bonus/internal/transport/grpc"
 
 	"github.com/golang-jwt/jwt/v4"
 
@@ -29,9 +31,11 @@ type Repository interface {
 }
 
 type Service struct {
-	repo    Repository
-	userSvc user.UserSvc
-	rsaKey  []byte
+	repo                           Repository
+	userSvc                        user.UserSvc
+	rsaKey                         []byte
+	washServerGRPCConnectionsMutex sync.Mutex
+	washServerGRPCConnections      map[string]grpc.WashServerConnection
 }
 
 func NewService(repo Repository, userSvc user.UserSvc, kefilePath string) (WashServerSvc, error) {
@@ -101,10 +105,21 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		ServiceKey:  tokenString,
 		OwnerID:     wash.Owner.ID,
 	}, *editor)
-
 	if err != nil {
 		return nil, err
 	}
+
+	wash, err = a.repo.GetWashServer(wash_server_id)
+	if err != nil {
+		return nil, err
+	}
+
+	a.washServerGRPCConnectionsMutex.Lock()
+	a.washServerGRPCConnections[tokenString] = grpc.WashServerConnection{
+		WashServer: *wash,
+		Verify:     false,
+	}
+	a.washServerGRPCConnectionsMutex.Unlock()
 
 	return &tokenString, nil
 }

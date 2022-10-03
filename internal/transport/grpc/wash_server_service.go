@@ -5,8 +5,11 @@ import (
 	"log"
 	"sync"
 	"wash-bonus/internal/app/entity"
-	"wash-bonus/internal/app/wash_server"
 )
+
+type UserRepository interface {
+	GetWashServer(id string) (*entity.WashServer, error)
+}
 
 type WashServerConnection struct {
 	Verify                         bool
@@ -16,12 +19,12 @@ type WashServerConnection struct {
 }
 
 type WashServerService struct {
-	WashServerRepo        wash_server.Repository
-	Mutex                 sync.Mutex
-	WashServerConnections map[string]WashServerConnection
+	WashServerRepo             UserRepository
+	WashServerConnectionsMutex sync.Mutex
+	WashServerConnections      map[string]WashServerConnection
 }
 
-func NewWashServerService(washServerRepo wash_server.Repository, washServerConnections map[string]WashServerConnection) *WashServerService {
+func NewWashServerService(washServerRepo UserRepository, washServerConnections map[string]WashServerConnection) *WashServerService {
 	return &WashServerService{
 		WashServerRepo:        washServerRepo,
 		WashServerConnections: washServerConnections,
@@ -29,7 +32,7 @@ func NewWashServerService(washServerRepo wash_server.Repository, washServerConne
 }
 
 func (svc *WashServerService) VerifyClient(ctx context.Context, msg *Verify) (*VerifyAnswer, error) {
-	svc.Mutex.Lock()
+	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
 
 	var err error
@@ -41,7 +44,7 @@ func (svc *WashServerService) VerifyClient(ctx context.Context, msg *Verify) (*V
 		err = ErrVerifyFailed
 	}
 
-	svc.Mutex.Unlock()
+	svc.WashServerConnectionsMutex.Unlock()
 	return &VerifyAnswer{Success: ok}, err
 }
 
@@ -52,16 +55,16 @@ func (svc *WashServerService) SendMessage(stream WashServerService_SendMessageSe
 		return err
 	}
 
-	svc.Mutex.Lock()
+	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
 	if !ok || !washServer.Verify {
 		log.Println("Verify failed for wash server")
-		svc.Mutex.Unlock()
+		svc.WashServerConnectionsMutex.Unlock()
 		return ErrVerifyFailed
 	}
 	washServer.StreamSendMessage = stream
 	svc.WashServerConnections[msg.ServiceKey] = washServer
-	svc.Mutex.Unlock()
+	svc.WashServerConnectionsMutex.Unlock()
 
 	for {
 		msg, err = stream.Recv()
@@ -86,16 +89,16 @@ func (svc *WashServerService) SendMessageToOtherClient(stream WashServerService_
 		return err
 	}
 
-	svc.Mutex.Lock()
+	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
 	if !ok || !washServer.Verify {
 		log.Println("Verify failed for wash server")
-		svc.Mutex.Unlock()
+		svc.WashServerConnectionsMutex.Unlock()
 		return ErrVerifyFailed
 	}
 	washServer.StreamSendMessageToOtherClient = stream
 	svc.WashServerConnections[msg.ServiceKey] = washServer
-	svc.Mutex.Unlock()
+	svc.WashServerConnectionsMutex.Unlock()
 
 	for {
 		msg, err = stream.Recv()
