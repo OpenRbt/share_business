@@ -60,7 +60,11 @@ var (
 
 	WashServerRSAKeyFilePath = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "~/wash_server_rsa_keyfile")
 
-	GRPCPort = strGetenv("GRPC_PORT", "8091")
+	GRPCPort         = strGetenv("GRPC_PORT", "8091")
+	GRPCEnableTLS    = boolGetenv("GRPC_ENABLE_TLS")
+	ClientCACertFile = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "cert/ca-cert.pem")
+	ServerCertFile   = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "cert/server-cert.pem")
+	ServerKeyFile    = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "cert/server-key.pem")
 )
 
 func pathGetenv(name, def string) string {
