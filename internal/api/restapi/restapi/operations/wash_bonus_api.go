@@ -77,9 +77,6 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		WashServerEditWashServerHandler: wash_server.EditWashServerHandlerFunc(func(params wash_server.EditWashServerParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation wash_server.EditWashServer has not yet been implemented")
 		}),
-		UserGetCurrentUserHandler: user.GetCurrentUserHandlerFunc(func(params user.GetCurrentUserParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation user.GetCurrentUser has not yet been implemented")
-		}),
 		BonusBalanceGetBonusBalanceHandler: bonus_balance.GetBonusBalanceHandlerFunc(func(params bonus_balance.GetBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
 		}),
@@ -168,8 +165,6 @@ type WashBonusAPI struct {
 	UserEditUserHandler user.EditUserHandler
 	// WashServerEditWashServerHandler sets the operation handler for the edit wash server operation
 	WashServerEditWashServerHandler wash_server.EditWashServerHandler
-	// UserGetCurrentUserHandler sets the operation handler for the get current user operation
-	UserGetCurrentUserHandler user.GetCurrentUserHandler
 	// BonusBalanceGetBonusBalanceHandler sets the operation handler for the get bonus balance operation
 	BonusBalanceGetBonusBalanceHandler bonus_balance.GetBonusBalanceHandler
 	// UserGetUserHandler sets the operation handler for the get user operation
@@ -292,12 +287,6 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.WashServerEditWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_server.EditWashServerHandler")
-	}
-	if o.UserGetCurrentUserHandler == nil {
-		unregistered = append(unregistered, "user.GetCurrentUserHandler")
-	}
-	if o.BonusBalanceGetBonusBalanceHandler == nil {
-		unregistered = append(unregistered, "bonus_balance.GetBonusBalanceHandler")
 	}
 	if o.BonusBalanceGetBonusBalanceHandler == nil {
 		unregistered = append(unregistered, "bonus_balance.GetBonusBalanceHandler")
@@ -433,16 +422,11 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
+	o.handlers["DELETE"]["/balance/deleted"] = bonus_balance.NewDeleteBonusBalance(o.context, o.BonusBalanceDeleteBonusBalanceHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
 	o.handlers["DELETE"]["/user/{id}/delete"] = user.NewDeleteUser(o.context, o.UserDeleteUserHandler)
-	o.handlers["DELETE"]["/balance/deleted"] = bonus_balance.NewDeleteBonusBalance(o.context, o.BonusBalanceDeleteBonusBalanceHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
-	o.handlers["DELETE"]["/balance/deleted"] = bonus_balance.NewDeleteBonusBalance(o.context, o.BonusBalanceDeleteBonusBalanceHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
-	o.handlers["DELETE"]["/user/delete"] = user.NewDeleteUser(o.context, o.UserDeleteUserHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
@@ -450,37 +434,23 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
+	o.handlers["PUT"]["/balance/edit"] = bonus_balance.NewEditBonusBalance(o.context, o.BonusBalanceEditBonusBalanceHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
 	o.handlers["PUT"]["/user/{id}/edit"] = user.NewEditUser(o.context, o.UserEditUserHandler)
-	o.handlers["PUT"]["/balance/edit"] = bonus_balance.NewEditBonusBalance(o.context, o.BonusBalanceEditBonusBalanceHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/balance/edit"] = bonus_balance.NewEditBonusBalance(o.context, o.BonusBalanceEditBonusBalanceHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/user/edit"] = user.NewEditUser(o.context, o.UserEditUserHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/washServer/edit"] = wash_server.NewEditWashServer(o.context, o.WashServerEditWashServerHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/user"] = user.NewGetCurrentUser(o.context, o.UserGetCurrentUserHandler)
+	o.handlers["POST"]["/balance/get"] = bonus_balance.NewGetBonusBalance(o.context, o.BonusBalanceGetBonusBalanceHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/user/{id}"] = user.NewGetUser(o.context, o.UserGetUserHandler)
-	o.handlers["POST"]["/balance/get"] = bonus_balance.NewGetBonusBalance(o.context, o.BonusBalanceGetBonusBalanceHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/balance/get"] = bonus_balance.NewGetBonusBalance(o.context, o.BonusBalanceGetBonusBalanceHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/user/get"] = user.NewGetUser(o.context, o.UserGetUserHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

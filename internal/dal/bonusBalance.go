@@ -7,18 +7,11 @@ import (
 	"wash-bonus/internal/app"
 
 	"wash-bonus/internal/app/entity"
-
-	"github.com/google/uuid"
+	"wash-bonus/internal/dal/dbmodel"
 )
 
-type BonusBalance struct {
-	ID      uuid.UUID       `db:"id"`
-	UserID  uuid.UUID       `db:"user_id"`
-	balance sql.NullFloat64 `db:"balance"`
-}
-
 func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
-	var m BonusBalance
+	var m dbmodel.BonusBalance
 	if err := a.db.NamedGet(&m, sqlGetBonusBalance, argGetBonusBalance{
 		ID: newNullUUID(id),
 	}); err != nil {
@@ -74,9 +67,9 @@ func (a *Repo) DeleteBonusBalance(id string, userId string) error {
 	return nil
 }
 
-func appBonusBalance(m BonusBalance) *entity.BonusBalance {
+func appBonusBalance(m dbmodel.BonusBalance) *entity.BonusBalance {
 	return &entity.BonusBalance{
 		UserId:  m.UserID.String(),
-		Balance: m.balance.Float64,
+		Balance: m.Balance.Float64,
 	}
 }

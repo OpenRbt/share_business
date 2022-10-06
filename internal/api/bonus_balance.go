@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/def"
 
 	"github.com/go-openapi/swag"
@@ -10,6 +9,7 @@ import (
 	"wash-bonus/internal/api/restapi/models"
 	balance "wash-bonus/internal/api/restapi/restapi/operations/bonus_balance"
 	"wash-bonus/internal/app"
+	"wash-bonus/internal/dto"
 
 	"strconv"
 
@@ -39,7 +39,7 @@ func (svc *service) GetBonusBalance(params balance.GetBonusBalanceParams, profil
 		})
 	case err == nil:
 		log.Info("GetBonusBalance ok", "id", params.Body.ID)
-		return balance.NewGetBonusBalanceOK().WithPayload(apiBonusBalance(c))
+		return balance.NewGetBonusBalanceOK().WithPayload(dto.ApiBonusBalance(c))
 	}
 }
 
@@ -61,7 +61,7 @@ func (svc *service) AddBonusBalance(params balance.AddBonusBalanceParams, profil
 		})
 	case err == nil:
 		log.Info("AddBonusBalance ok")
-		return balance.NewAddBonusBalanceCreated().WithPayload(apiBonusBalance(c))
+		return balance.NewAddBonusBalanceCreated().WithPayload(dto.ApiBonusBalance(c))
 	}
 }
 
@@ -117,16 +117,5 @@ func (svc *service) DeleteBonusBalance(params balance.DeleteBonusBalanceParams, 
 	case err == nil:
 		log.Info("DeleteBonusBalance ok", "id", params.Body.ID)
 		return balance.NewDeleteBonusBalanceNoContent()
-	}
-}
-
-func apiBonusBalance(a *entity.BonusBalance) *models.Balance {
-	if a == nil {
-		return nil
-	}
-	return &models.Balance{
-		ID:      a.ID,
-		UserID:  a.UserId,
-		Balance: strconv.FormatFloat(a.Balance, 'f', 6, 64),
 	}
 }
