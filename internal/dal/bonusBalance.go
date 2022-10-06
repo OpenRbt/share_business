@@ -8,6 +8,7 @@ import (
 
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/dal/dbmodel"
+	"wash-bonus/internal/dto"
 )
 
 func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
@@ -20,7 +21,7 @@ func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
 		}
 		return nil, err
 	}
-	return appBonusBalance(m), nil
+	return dto.AppBonusBalance(m), nil
 }
 
 func (a *Repo) AddBonusBalance(userID string, balance float64) error {
@@ -65,11 +66,4 @@ func (a *Repo) DeleteBonusBalance(id string, userId string) error {
 	}
 
 	return nil
-}
-
-func appBonusBalance(m dbmodel.BonusBalance) *entity.BonusBalance {
-	return &entity.BonusBalance{
-		UserId:  m.UserID.String(),
-		Balance: m.Balance.Float64,
-	}
 }

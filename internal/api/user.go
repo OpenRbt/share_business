@@ -2,11 +2,12 @@ package api
 
 import (
 	"errors"
-	"github.com/go-openapi/swag"
 	"wash-bonus/internal/api/restapi/restapi/operations"
 	"wash-bonus/internal/def"
 	"wash-bonus/internal/dto"
 	"wash-bonus/internal/firebase_auth"
+
+	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 

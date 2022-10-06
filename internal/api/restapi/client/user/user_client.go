@@ -34,6 +34,8 @@ type ClientService interface {
 
 	EditUser(params *EditUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EditUserOK, error)
 
+	GetCurrentUser(params *GetCurrentUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetCurrentUserOK, error)
+
 	GetUser(params *GetUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserOK, error)
 
 	ListUser(params *ListUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListUserOK, error)
@@ -152,6 +154,44 @@ func (a *Client) EditUser(params *EditUserParams, authInfo runtime.ClientAuthInf
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*EditUserDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GetCurrentUser get current user API
+*/
+func (a *Client) GetCurrentUser(params *GetCurrentUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetCurrentUserOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetCurrentUserParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getCurrentUser",
+		Method:             "GET",
+		PathPattern:        "/user",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetCurrentUserReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetCurrentUserOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GetCurrentUserDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

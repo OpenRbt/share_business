@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app/entity"
+	"wash-bonus/internal/dal/dbmodel"
 )
 
 func ApiBonusBalance(a *entity.BonusBalance) *models.Balance {
@@ -14,5 +15,12 @@ func ApiBonusBalance(a *entity.BonusBalance) *models.Balance {
 		ID:      a.ID,
 		UserID:  a.UserId,
 		Balance: strconv.FormatFloat(a.Balance, 'f', 6, 64),
+	}
+}
+
+func AppBonusBalance(m dbmodel.BonusBalance) *entity.BonusBalance {
+	return &entity.BonusBalance{
+		UserId:  m.UserID.String(),
+		Balance: m.Balance.Float64,
 	}
 }

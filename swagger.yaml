@@ -134,6 +134,21 @@ paths:
           schema:
             $ref: "#/definitions/error"
 
+  /user:
+    get:
+      tags:
+        - User
+      operationId: getCurrentUser
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/user"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
   /user/{id}:
     get:
       tags:

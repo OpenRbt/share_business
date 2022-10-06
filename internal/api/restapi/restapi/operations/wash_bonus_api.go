@@ -80,6 +80,9 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		BonusBalanceGetBonusBalanceHandler: bonus_balance.GetBonusBalanceHandlerFunc(func(params bonus_balance.GetBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
 		}),
+		UserGetCurrentUserHandler: user.GetCurrentUserHandlerFunc(func(params user.GetCurrentUserParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation user.GetCurrentUser has not yet been implemented")
+		}),
 		UserGetUserHandler: user.GetUserHandlerFunc(func(params user.GetUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.GetUser has not yet been implemented")
 		}),
@@ -167,6 +170,8 @@ type WashBonusAPI struct {
 	WashServerEditWashServerHandler wash_server.EditWashServerHandler
 	// BonusBalanceGetBonusBalanceHandler sets the operation handler for the get bonus balance operation
 	BonusBalanceGetBonusBalanceHandler bonus_balance.GetBonusBalanceHandler
+	// UserGetCurrentUserHandler sets the operation handler for the get current user operation
+	UserGetCurrentUserHandler user.GetCurrentUserHandler
 	// UserGetUserHandler sets the operation handler for the get user operation
 	UserGetUserHandler user.GetUserHandler
 	// WashServerGetWashServerHandler sets the operation handler for the get wash server operation
@@ -290,6 +295,9 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.BonusBalanceGetBonusBalanceHandler == nil {
 		unregistered = append(unregistered, "bonus_balance.GetBonusBalanceHandler")
+	}
+	if o.UserGetCurrentUserHandler == nil {
+		unregistered = append(unregistered, "user.GetCurrentUserHandler")
 	}
 	if o.UserGetUserHandler == nil {
 		unregistered = append(unregistered, "user.GetUserHandler")
@@ -447,6 +455,10 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/balance/get"] = bonus_balance.NewGetBonusBalance(o.context, o.BonusBalanceGetBonusBalanceHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/user"] = user.NewGetCurrentUser(o.context, o.UserGetCurrentUserHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

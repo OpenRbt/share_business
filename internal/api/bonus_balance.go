@@ -7,6 +7,8 @@ import (
 	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
+	"wash-bonus/internal/api/restapi/restapi/operations"
+	"wash-bonus/internal/api/restapi/restapi/operations/bonus_balance"
 	balance "wash-bonus/internal/api/restapi/restapi/operations/bonus_balance"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/dto"
@@ -15,6 +17,13 @@ import (
 
 	"github.com/go-openapi/runtime/middleware"
 )
+
+func setBonusBalanceHandlers(api *operations.WashBonusAPI, svc *service) {
+	api.BonusBalanceGetBonusBalanceHandler = bonus_balance.GetBonusBalanceHandlerFunc(svc.GetBonusBalance)
+	api.BonusBalanceAddBonusBalanceHandler = bonus_balance.AddBonusBalanceHandlerFunc(svc.AddBonusBalance)
+	api.BonusBalanceEditBonusBalanceHandler = bonus_balance.EditBonusBalanceHandlerFunc(svc.EditBonusBalance)
+	api.BonusBalanceDeleteBonusBalanceHandler = bonus_balance.DeleteBonusBalanceHandlerFunc(svc.DeleteBonusBalance)
+}
 
 func (svc *service) GetBonusBalance(params balance.GetBonusBalanceParams, profile interface{}) middleware.Responder {
 	c, err := svc.bonusSvc.GetBonusBalance(params.Body.ID)
