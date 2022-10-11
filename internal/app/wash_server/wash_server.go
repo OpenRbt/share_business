@@ -6,7 +6,7 @@ import (
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/app/user"
-	"wash-bonus/internal/transport/grpc"
+	"wash-bonus/transport/grpc"
 
 	"github.com/golang-jwt/jwt/v4"
 

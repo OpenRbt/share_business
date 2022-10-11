@@ -2,7 +2,7 @@ package dto
 
 import (
 	"wash-bonus/internal/app/entity/vo"
-	"wash-bonus/internal/transport/api/restapi/models"
+	"wash-bonus/transport/rest/restapi/models"
 )
 
 func ListFilterFromRest(lf *models.ListParams) vo.ListFilter {

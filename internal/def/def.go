@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"wash-bonus/internal/transport/api/restapi/restapi"
+	"wash-bonus/transport/rest/restapi/restapi"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/swag"

@@ -15,11 +15,11 @@ import (
 	"wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dal"
 	"wash-bonus/internal/firebase_auth"
-	grpc2 "wash-bonus/internal/transport/grpc"
+	grpc2 "wash-bonus/transport/grpc"
 
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
-	"wash-bonus/internal/transport/api"
+	api "wash-bonus/transport/rest"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
