@@ -28,11 +28,13 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	AddWashServer(params *AddWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddWashServerCreated, error)
+	AddWashServer(params *AddWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddWashServerOK, error)
 
 	DeleteWashServer(params *DeleteWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteWashServerNoContent, error)
 
 	EditWashServer(params *EditWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EditWashServerOK, error)
+
+	GenerateKeyWashServer(params *GenerateKeyWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GenerateKeyWashServerOK, error)
 
 	GetWashServer(params *GetWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWashServerOK, error)
 
@@ -42,9 +44,9 @@ type ClientService interface {
 }
 
 /*
-AddWashServer add wash server API
+  AddWashServer add wash server API
 */
-func (a *Client) AddWashServer(params *AddWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddWashServerCreated, error) {
+func (a *Client) AddWashServer(params *AddWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddWashServerOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewAddWashServerParams()
@@ -52,7 +54,7 @@ func (a *Client) AddWashServer(params *AddWashServerParams, authInfo runtime.Cli
 	op := &runtime.ClientOperation{
 		ID:                 "addWashServer",
 		Method:             "POST",
-		PathPattern:        "/washServer/add",
+		PathPattern:        "/washServer",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -70,7 +72,7 @@ func (a *Client) AddWashServer(params *AddWashServerParams, authInfo runtime.Cli
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*AddWashServerCreated)
+	success, ok := result.(*AddWashServerOK)
 	if ok {
 		return success, nil
 	}
@@ -80,7 +82,7 @@ func (a *Client) AddWashServer(params *AddWashServerParams, authInfo runtime.Cli
 }
 
 /*
-DeleteWashServer delete wash server API
+  DeleteWashServer delete wash server API
 */
 func (a *Client) DeleteWashServer(params *DeleteWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteWashServerNoContent, error) {
 	// TODO: Validate the params before sending
@@ -90,7 +92,7 @@ func (a *Client) DeleteWashServer(params *DeleteWashServerParams, authInfo runti
 	op := &runtime.ClientOperation{
 		ID:                 "deleteWashServer",
 		Method:             "DELETE",
-		PathPattern:        "/washServer/delete",
+		PathPattern:        "/washServer/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -118,7 +120,7 @@ func (a *Client) DeleteWashServer(params *DeleteWashServerParams, authInfo runti
 }
 
 /*
-EditWashServer edit wash server API
+  EditWashServer edit wash server API
 */
 func (a *Client) EditWashServer(params *EditWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*EditWashServerOK, error) {
 	// TODO: Validate the params before sending
@@ -128,7 +130,7 @@ func (a *Client) EditWashServer(params *EditWashServerParams, authInfo runtime.C
 	op := &runtime.ClientOperation{
 		ID:                 "editWashServer",
 		Method:             "PUT",
-		PathPattern:        "/washServer/edit",
+		PathPattern:        "/washServer/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -156,7 +158,45 @@ func (a *Client) EditWashServer(params *EditWashServerParams, authInfo runtime.C
 }
 
 /*
-GetWashServer get wash server API
+  GenerateKeyWashServer generate key wash server API
+*/
+func (a *Client) GenerateKeyWashServer(params *GenerateKeyWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GenerateKeyWashServerOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGenerateKeyWashServerParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "generateKeyWashServer",
+		Method:             "PUT",
+		PathPattern:        "/washServer/{id}/generate-key",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GenerateKeyWashServerReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GenerateKeyWashServerOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GenerateKeyWashServerDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+  GetWashServer get wash server API
 */
 func (a *Client) GetWashServer(params *GetWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWashServerOK, error) {
 	// TODO: Validate the params before sending
@@ -165,8 +205,8 @@ func (a *Client) GetWashServer(params *GetWashServerParams, authInfo runtime.Cli
 	}
 	op := &runtime.ClientOperation{
 		ID:                 "getWashServer",
-		Method:             "POST",
-		PathPattern:        "/washServer/get",
+		Method:             "GET",
+		PathPattern:        "/washServer/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -194,7 +234,7 @@ func (a *Client) GetWashServer(params *GetWashServerParams, authInfo runtime.Cli
 }
 
 /*
-ListWashServer list wash server API
+  ListWashServer list wash server API
 */
 func (a *Client) ListWashServer(params *ListWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListWashServerOK, error) {
 	// TODO: Validate the params before sending
@@ -204,7 +244,7 @@ func (a *Client) ListWashServer(params *ListWashServerParams, authInfo runtime.C
 	op := &runtime.ClientOperation{
 		ID:                 "listWashServer",
 		Method:             "POST",
-		PathPattern:        "/washServer/list",
+		PathPattern:        "/washServers",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

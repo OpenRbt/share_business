@@ -6,15 +6,11 @@ package wash_server
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
-	"strconv"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 )
@@ -50,55 +46,24 @@ func NewListWashServerOK() *ListWashServerOK {
 	return &ListWashServerOK{}
 }
 
-/*
-ListWashServerOK describes a response with status code 200, with default header values.
+/* ListWashServerOK describes a response with status code 200, with default header values.
 
 OK
 */
 type ListWashServerOK struct {
-	Payload *ListWashServerOKBody
-}
-
-// IsSuccess returns true when this list wash server o k response has a 2xx status code
-func (o *ListWashServerOK) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this list wash server o k response has a 3xx status code
-func (o *ListWashServerOK) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this list wash server o k response has a 4xx status code
-func (o *ListWashServerOK) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this list wash server o k response has a 5xx status code
-func (o *ListWashServerOK) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this list wash server o k response a status code equal to that given
-func (o *ListWashServerOK) IsCode(code int) bool {
-	return code == 200
+	Payload *models.ListWashServer
 }
 
 func (o *ListWashServerOK) Error() string {
-	return fmt.Sprintf("[POST /washServer/list][%d] listWashServerOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /washServers][%d] listWashServerOK  %+v", 200, o.Payload)
 }
-
-func (o *ListWashServerOK) String() string {
-	return fmt.Sprintf("[POST /washServer/list][%d] listWashServerOK  %+v", 200, o.Payload)
-}
-
-func (o *ListWashServerOK) GetPayload() *ListWashServerOKBody {
+func (o *ListWashServerOK) GetPayload() *models.ListWashServer {
 	return o.Payload
 }
 
 func (o *ListWashServerOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(ListWashServerOKBody)
+	o.Payload = new(models.ListWashServer)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -115,8 +80,7 @@ func NewListWashServerDefault(code int) *ListWashServerDefault {
 	}
 }
 
-/*
-ListWashServerDefault describes a response with status code -1, with default header values.
+/* ListWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -131,39 +95,9 @@ func (o *ListWashServerDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this list wash server default response has a 2xx status code
-func (o *ListWashServerDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this list wash server default response has a 3xx status code
-func (o *ListWashServerDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this list wash server default response has a 4xx status code
-func (o *ListWashServerDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this list wash server default response has a 5xx status code
-func (o *ListWashServerDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this list wash server default response a status code equal to that given
-func (o *ListWashServerDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *ListWashServerDefault) Error() string {
-	return fmt.Sprintf("[POST /washServer/list][%d] listWashServer default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /washServers][%d] listWashServer default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *ListWashServerDefault) String() string {
-	return fmt.Sprintf("[POST /washServer/list][%d] listWashServer default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *ListWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -177,110 +111,5 @@ func (o *ListWashServerDefault) readResponse(response runtime.ClientResponse, co
 		return err
 	}
 
-	return nil
-}
-
-/*
-ListWashServerOKBody list wash server o k body
-swagger:model ListWashServerOKBody
-*/
-type ListWashServerOKBody struct {
-
-	// items
-	Items []*models.WashServer `json:"items"`
-
-	// warnings
-	Warnings []string `json:"warnings"`
-}
-
-// Validate validates this list wash server o k body
-func (o *ListWashServerOKBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateItems(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *ListWashServerOKBody) validateItems(formats strfmt.Registry) error {
-	if swag.IsZero(o.Items) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(o.Items); i++ {
-		if swag.IsZero(o.Items[i]) { // not required
-			continue
-		}
-
-		if o.Items[i] != nil {
-			if err := o.Items[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("listWashServerOK" + "." + "items" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("listWashServerOK" + "." + "items" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// ContextValidate validate this list wash server o k body based on the context it is used
-func (o *ListWashServerOKBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateItems(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *ListWashServerOKBody) contextValidateItems(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(o.Items); i++ {
-
-		if o.Items[i] != nil {
-			if err := o.Items[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("listWashServerOK" + "." + "items" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("listWashServerOK" + "." + "items" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *ListWashServerOKBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *ListWashServerOKBody) UnmarshalBinary(b []byte) error {
-	var res ListWashServerOKBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

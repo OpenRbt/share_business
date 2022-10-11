@@ -9,9 +9,8 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/errors"
-	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/validate"
+	"github.com/go-openapi/strfmt"
 )
 
 // NewDeleteWashServerParams creates a new DeleteWashServerParams object
@@ -32,9 +31,10 @@ type DeleteWashServerParams struct {
 	HTTPRequest *http.Request `json:"-"`
 
 	/*
-	  In: body
+	  Required: true
+	  In: path
 	*/
-	Body DeleteWashServerBody
+	ID string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -46,29 +46,26 @@ func (o *DeleteWashServerParams) BindRequest(r *http.Request, route *middleware.
 
 	o.HTTPRequest = r
 
-	if runtime.HasBody(r) {
-		defer r.Body.Close()
-		var body DeleteWashServerBody
-		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			res = append(res, errors.NewParseError("body", "body", "", err))
-		} else {
-			// validate body object
-			if err := body.Validate(route.Formats); err != nil {
-				res = append(res, err)
-			}
-
-			ctx := validate.WithOperationRequest(r.Context())
-			if err := body.ContextValidate(ctx, route.Formats); err != nil {
-				res = append(res, err)
-			}
-
-			if len(res) == 0 {
-				o.Body = body
-			}
-		}
+	rID, rhkID, _ := route.Params.GetOK("id")
+	if err := o.bindID(rID, rhkID, route.Formats); err != nil {
+		res = append(res, err)
 	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindID binds and validates parameter ID from path.
+func (o *DeleteWashServerParams) bindID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+	// Parameter is provided by construction from the route
+	o.ID = raw
+
 	return nil
 }

@@ -16,8 +16,7 @@ import (
 // EditWashServerOKCode is the HTTP code returned for type EditWashServerOK
 const EditWashServerOKCode int = 200
 
-/*
-EditWashServerOK OK
+/*EditWashServerOK OK
 
 swagger:response editWashServerOK
 */
@@ -38,8 +37,7 @@ func (o *EditWashServerOK) WriteResponse(rw http.ResponseWriter, producer runtim
 	rw.WriteHeader(200)
 }
 
-/*
-EditWashServerDefault error
+/*EditWashServerDefault error
 
 swagger:response editWashServerDefault
 */

@@ -11,4 +11,5 @@ var (
 	ErrNotFoundArrayItem = errors.New("not found array item")
 	ErrDuplicateID       = errors.New("duplicate ID value")
 	ErrAccessDenied      = errors.New("insufficient access rights")
+	ErrGenerateJWT       = errors.New("JWT generation error")
 )

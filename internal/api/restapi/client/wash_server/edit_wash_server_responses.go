@@ -6,14 +6,11 @@ package wash_server
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"fmt"
 	"io"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
 
 	"wash-bonus/internal/api/restapi/models"
 )
@@ -49,45 +46,15 @@ func NewEditWashServerOK() *EditWashServerOK {
 	return &EditWashServerOK{}
 }
 
-/*
-EditWashServerOK describes a response with status code 200, with default header values.
+/* EditWashServerOK describes a response with status code 200, with default header values.
 
 OK
 */
 type EditWashServerOK struct {
 }
 
-// IsSuccess returns true when this edit wash server o k response has a 2xx status code
-func (o *EditWashServerOK) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this edit wash server o k response has a 3xx status code
-func (o *EditWashServerOK) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this edit wash server o k response has a 4xx status code
-func (o *EditWashServerOK) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this edit wash server o k response has a 5xx status code
-func (o *EditWashServerOK) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this edit wash server o k response a status code equal to that given
-func (o *EditWashServerOK) IsCode(code int) bool {
-	return code == 200
-}
-
 func (o *EditWashServerOK) Error() string {
-	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServerOK ", 200)
-}
-
-func (o *EditWashServerOK) String() string {
-	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServerOK ", 200)
+	return fmt.Sprintf("[PUT /washServer/{id}][%d] editWashServerOK ", 200)
 }
 
 func (o *EditWashServerOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -102,8 +69,7 @@ func NewEditWashServerDefault(code int) *EditWashServerDefault {
 	}
 }
 
-/*
-EditWashServerDefault describes a response with status code -1, with default header values.
+/* EditWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -118,39 +84,9 @@ func (o *EditWashServerDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this edit wash server default response has a 2xx status code
-func (o *EditWashServerDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this edit wash server default response has a 3xx status code
-func (o *EditWashServerDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this edit wash server default response has a 4xx status code
-func (o *EditWashServerDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this edit wash server default response has a 5xx status code
-func (o *EditWashServerDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this edit wash server default response a status code equal to that given
-func (o *EditWashServerDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *EditWashServerDefault) Error() string {
-	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServer default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[PUT /washServer/{id}][%d] editWashServer default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *EditWashServerDefault) String() string {
-	return fmt.Sprintf("[PUT /washServer/edit][%d] editWashServer default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *EditWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -164,99 +100,5 @@ func (o *EditWashServerDefault) readResponse(response runtime.ClientResponse, co
 		return err
 	}
 
-	return nil
-}
-
-/*
-EditWashServerBody edit wash server body
-swagger:model EditWashServerBody
-*/
-type EditWashServerBody struct {
-
-	// data
-	Data *models.WashServerAdd `json:"data,omitempty"`
-
-	// id
-	ID string `json:"id,omitempty"`
-}
-
-// Validate validates this edit wash server body
-func (o *EditWashServerBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateData(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *EditWashServerBody) validateData(formats strfmt.Registry) error {
-	if swag.IsZero(o.Data) { // not required
-		return nil
-	}
-
-	if o.Data != nil {
-		if err := o.Data.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "data")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "data")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ContextValidate validate this edit wash server body based on the context it is used
-func (o *EditWashServerBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateData(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *EditWashServerBody) contextValidateData(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.Data != nil {
-		if err := o.Data.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "data")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "data")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *EditWashServerBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *EditWashServerBody) UnmarshalBinary(b []byte) error {
-	var res EditWashServerBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

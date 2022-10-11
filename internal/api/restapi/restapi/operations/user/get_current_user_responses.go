@@ -16,8 +16,7 @@ import (
 // GetCurrentUserOKCode is the HTTP code returned for type GetCurrentUserOK
 const GetCurrentUserOKCode int = 200
 
-/*
-GetCurrentUserOK OK
+/*GetCurrentUserOK OK
 
 swagger:response getCurrentUserOK
 */
@@ -58,8 +57,7 @@ func (o *GetCurrentUserOK) WriteResponse(rw http.ResponseWriter, producer runtim
 	}
 }
 
-/*
-GetCurrentUserDefault error
+/*GetCurrentUserDefault error
 
 swagger:response getCurrentUserDefault
 */

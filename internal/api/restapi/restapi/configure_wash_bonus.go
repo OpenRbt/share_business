@@ -109,6 +109,11 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
 		})
 	}
+	if api.WashServerGenerateKeyWashServerHandler == nil {
+		api.WashServerGenerateKeyWashServerHandler = wash_server.GenerateKeyWashServerHandlerFunc(func(params wash_server.GenerateKeyWashServerParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation wash_server.GenerateKeyWashServer has not yet been implemented")
+		})
+	}
 	if api.UserGetCurrentUserHandler == nil {
 		api.UserGetCurrentUserHandler = user.GetCurrentUserHandlerFunc(func(params user.GetCurrentUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.GetCurrentUser has not yet been implemented")

@@ -3,6 +3,7 @@ package def
 
 import (
 	"os"
+	"os/user"
 	"strconv"
 	"strings"
 	"time"
@@ -55,8 +56,29 @@ var (
 	CORSAllowedOrigins  = os.Getenv("MSRV_CORS_ALLOWED_ORIGINS")
 	DisableCookieSecure = boolGetenv("MSRV_DISABLE_COOKIE_SECURE")
 
-	FirebaseKeyFilePath = strGetenv("FIREBASE_KEYFILE_PATH", "~/firebase_keyfile.json")
+	FirebaseKeyFilePath = pathGetenv("FIREBASE_KEYFILE_PATH", "~/firebase_keyfile.json")
+
+	WashServerRSAKeyFilePath = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "~/wash_server_rsa_keyfile")
+
+	GRPCPort         = strGetenv("GRPC_PORT", "8091")
+	GRPCEnableTLS    = boolGetenv("GRPC_ENABLE_TLS")
+	ClientCACertFile = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "cert/ca-cert.pem")
+	ServerCertFile   = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "cert/server-cert.pem")
+	ServerKeyFile    = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "cert/server-key.pem")
 )
+
+func pathGetenv(name, def string) string {
+	path := strGetenv(name, def)
+
+	if path[0] == '~' {
+		usr, err := user.Current()
+		if err != nil {
+			return path
+		}
+		return usr.HomeDir + path[1:]
+	}
+	return path
+}
 
 func intGetenv(name string, def int) int {
 	value := os.Getenv(name)

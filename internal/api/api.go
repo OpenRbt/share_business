@@ -7,6 +7,7 @@ import (
 	"path"
 	bonus2 "wash-bonus/internal/app/bonusBalance"
 	user2 "wash-bonus/internal/app/user"
+	wash_server2 "wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dto"
 	"wash-bonus/internal/firebase_auth"
 
@@ -15,7 +16,6 @@ import (
 	"wash-bonus/internal/api/restapi/restapi/operations/standard"
 
 	"wash-bonus/internal/api/restapi/models"
-	washServer "wash-bonus/internal/api/restapi/restapi/operations/wash_server"
 
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
@@ -47,18 +47,20 @@ type Config struct {
 }
 
 type service struct {
-	app      app.App
-	bonusSvc bonus2.BonusBalanceSvc
-	userSvc  user2.UserSvc
-	auth     firebase_auth.Service
+	app           app.App
+	bonusSvc      bonus2.BonusBalanceSvc
+	washServerSvc wash_server2.WashServerSvc
+	userSvc       user2.UserSvc
+	auth          firebase_auth.Service
 }
 
-func NewServer(appl app.App, userSvc user2.UserSvc, bonusBalanceSvc bonus2.BonusBalanceSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
+func NewServer(appl app.App, userSvc user2.UserSvc, bonusBalanceSvc bonus2.BonusBalanceSvc, washServerSvc wash_server2.WashServerSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
 	svc := &service{
-		app:      appl,
-		userSvc:  userSvc,
-		auth:     firebase,
-		bonusSvc: bonusBalanceSvc,
+		app:           appl,
+		userSvc:       userSvc,
+		auth:          firebase,
+		bonusSvc:      bonusBalanceSvc,
+		washServerSvc: washServerSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
@@ -81,12 +83,7 @@ func NewServer(appl app.App, userSvc user2.UserSvc, bonusBalanceSvc bonus2.Bonus
 	setBonusBalanceHandlers(api, svc)
 
 	setUserHandlers(api, svc)
-
-	api.WashServerGetWashServerHandler = washServer.GetWashServerHandlerFunc(svc.GetWashServer)
-	api.WashServerAddWashServerHandler = washServer.AddWashServerHandlerFunc(svc.AddWashServer)
-	api.WashServerEditWashServerHandler = washServer.EditWashServerHandlerFunc(svc.EditWashServer)
-	api.WashServerDeleteWashServerHandler = washServer.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
-	api.WashServerListWashServerHandler = washServer.ListWashServerHandlerFunc(svc.ListWashServer)
+	setWashServerHandlers(api, svc)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)

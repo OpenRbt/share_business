@@ -29,10 +29,10 @@ func NewGetCurrentUser(ctx *middleware.Context, handler GetCurrentUserHandler) *
 	return &GetCurrentUser{Context: ctx, Handler: handler}
 }
 
-/*
-	GetCurrentUser swagger:route GET /user User getCurrentUser
+/* GetCurrentUser swagger:route GET /user User getCurrentUser
 
 GetCurrentUser get current user API
+
 */
 type GetCurrentUser struct {
 	Context *middleware.Context

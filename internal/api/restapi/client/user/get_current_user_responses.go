@@ -46,8 +46,7 @@ func NewGetCurrentUserOK() *GetCurrentUserOK {
 	return &GetCurrentUserOK{}
 }
 
-/*
-GetCurrentUserOK describes a response with status code 200, with default header values.
+/* GetCurrentUserOK describes a response with status code 200, with default header values.
 
 OK
 */
@@ -55,39 +54,9 @@ type GetCurrentUserOK struct {
 	Payload *models.User
 }
 
-// IsSuccess returns true when this get current user o k response has a 2xx status code
-func (o *GetCurrentUserOK) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this get current user o k response has a 3xx status code
-func (o *GetCurrentUserOK) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this get current user o k response has a 4xx status code
-func (o *GetCurrentUserOK) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this get current user o k response has a 5xx status code
-func (o *GetCurrentUserOK) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this get current user o k response a status code equal to that given
-func (o *GetCurrentUserOK) IsCode(code int) bool {
-	return code == 200
-}
-
 func (o *GetCurrentUserOK) Error() string {
 	return fmt.Sprintf("[GET /user][%d] getCurrentUserOK  %+v", 200, o.Payload)
 }
-
-func (o *GetCurrentUserOK) String() string {
-	return fmt.Sprintf("[GET /user][%d] getCurrentUserOK  %+v", 200, o.Payload)
-}
-
 func (o *GetCurrentUserOK) GetPayload() *models.User {
 	return o.Payload
 }
@@ -111,8 +80,7 @@ func NewGetCurrentUserDefault(code int) *GetCurrentUserDefault {
 	}
 }
 
-/*
-GetCurrentUserDefault describes a response with status code -1, with default header values.
+/* GetCurrentUserDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -127,39 +95,9 @@ func (o *GetCurrentUserDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this get current user default response has a 2xx status code
-func (o *GetCurrentUserDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this get current user default response has a 3xx status code
-func (o *GetCurrentUserDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this get current user default response has a 4xx status code
-func (o *GetCurrentUserDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this get current user default response has a 5xx status code
-func (o *GetCurrentUserDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this get current user default response a status code equal to that given
-func (o *GetCurrentUserDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *GetCurrentUserDefault) Error() string {
 	return fmt.Sprintf("[GET /user][%d] getCurrentUser default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *GetCurrentUserDefault) String() string {
-	return fmt.Sprintf("[GET /user][%d] getCurrentUser default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *GetCurrentUserDefault) GetPayload() *models.Error {
 	return o.Payload
 }

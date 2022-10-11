@@ -27,7 +27,8 @@ func (svc *FirebaseService) Auth(bearer string) (interface{}, error) {
 		return nil, app.ErrAccessDenied
 	}
 
-	return user, nil
+	prof := FirebaseProfile(*user)
+	return &prof, nil
 }
 
 func (svc *FirebaseService) VerifyClaims(user FirebaseProfile, requiredClaims ...string) error {

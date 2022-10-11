@@ -6,12 +6,16 @@ package wash_server
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/validate"
+
+	"wash-bonus/internal/api/restapi/models"
 )
 
 // NewEditWashServerParams creates a new EditWashServerParams object
@@ -34,7 +38,12 @@ type EditWashServerParams struct {
 	/*
 	  In: body
 	*/
-	Body EditWashServerBody
+	Body *models.WashServerUpdate
+	/*
+	  Required: true
+	  In: path
+	*/
+	ID string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -48,7 +57,7 @@ func (o *EditWashServerParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body EditWashServerBody
+		var body models.WashServerUpdate
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			res = append(res, errors.NewParseError("body", "body", "", err))
 		} else {
@@ -57,18 +66,37 @@ func (o *EditWashServerParams) BindRequest(r *http.Request, route *middleware.Ma
 				res = append(res, err)
 			}
 
-			ctx := validate.WithOperationRequest(r.Context())
+			ctx := validate.WithOperationRequest(context.Background())
 			if err := body.ContextValidate(ctx, route.Formats); err != nil {
 				res = append(res, err)
 			}
 
 			if len(res) == 0 {
-				o.Body = body
+				o.Body = &body
 			}
 		}
+	}
+
+	rID, rhkID, _ := route.Params.GetOK("id")
+	if err := o.bindID(rID, rhkID, route.Formats); err != nil {
+		res = append(res, err)
 	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindID binds and validates parameter ID from path.
+func (o *EditWashServerParams) bindID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+	// Parameter is provided by construction from the route
+	o.ID = raw
+
 	return nil
 }

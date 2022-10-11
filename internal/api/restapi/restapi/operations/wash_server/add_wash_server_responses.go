@@ -13,53 +13,31 @@ import (
 	"wash-bonus/internal/api/restapi/models"
 )
 
-// AddWashServerCreatedCode is the HTTP code returned for type AddWashServerCreated
-const AddWashServerCreatedCode int = 201
+// AddWashServerOKCode is the HTTP code returned for type AddWashServerOK
+const AddWashServerOKCode int = 200
 
-/*
-AddWashServerCreated Created
+/*AddWashServerOK Created
 
-swagger:response addWashServerCreated
+swagger:response addWashServerOK
 */
-type AddWashServerCreated struct {
-
-	/*
-	  In: Body
-	*/
-	Payload *models.WashServer `json:"body,omitempty"`
+type AddWashServerOK struct {
 }
 
-// NewAddWashServerCreated creates AddWashServerCreated with default headers values
-func NewAddWashServerCreated() *AddWashServerCreated {
+// NewAddWashServerOK creates AddWashServerOK with default headers values
+func NewAddWashServerOK() *AddWashServerOK {
 
-	return &AddWashServerCreated{}
-}
-
-// WithPayload adds the payload to the add wash server created response
-func (o *AddWashServerCreated) WithPayload(payload *models.WashServer) *AddWashServerCreated {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the add wash server created response
-func (o *AddWashServerCreated) SetPayload(payload *models.WashServer) {
-	o.Payload = payload
+	return &AddWashServerOK{}
 }
 
 // WriteResponse to the client
-func (o *AddWashServerCreated) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *AddWashServerOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(201)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
-	}
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(200)
 }
 
-/*
-AddWashServerDefault error
+/*AddWashServerDefault error
 
 swagger:response addWashServerDefault
 */

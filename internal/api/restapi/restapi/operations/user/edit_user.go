@@ -29,10 +29,10 @@ func NewEditUser(ctx *middleware.Context, handler EditUserHandler) *EditUser {
 	return &EditUser{Context: ctx, Handler: handler}
 }
 
-/*
-	EditUser swagger:route PUT /user/{id}/edit User editUser
+/* EditUser swagger:route PUT /user/{id}/edit User editUser
 
 EditUser edit user API
+
 */
 type EditUser struct {
 	Context *middleware.Context

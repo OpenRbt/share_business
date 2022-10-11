@@ -52,17 +52,15 @@ func NewGetWashServerParamsWithHTTPClient(client *http.Client) *GetWashServerPar
 	}
 }
 
-/*
-GetWashServerParams contains all the parameters to send to the API endpoint
+/* GetWashServerParams contains all the parameters to send to the API endpoint
+   for the get wash server operation.
 
-	for the get wash server operation.
-
-	Typically these are written to a http.Request.
+   Typically these are written to a http.Request.
 */
 type GetWashServerParams struct {
 
-	// Body.
-	Body GetWashServerBody
+	// ID.
+	ID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +115,15 @@ func (o *GetWashServerParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the get wash server params
-func (o *GetWashServerParams) WithBody(body GetWashServerBody) *GetWashServerParams {
-	o.SetBody(body)
+// WithID adds the id to the get wash server params
+func (o *GetWashServerParams) WithID(id string) *GetWashServerParams {
+	o.SetID(id)
 	return o
 }
 
-// SetBody adds the body to the get wash server params
-func (o *GetWashServerParams) SetBody(body GetWashServerBody) {
-	o.Body = body
+// SetID adds the id to the get wash server params
+func (o *GetWashServerParams) SetID(id string) {
+	o.ID = id
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -135,7 +133,9 @@ func (o *GetWashServerParams) WriteToRequest(r runtime.ClientRequest, reg strfmt
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
 	}
 

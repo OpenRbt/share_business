@@ -54,12 +54,10 @@ func NewListWashServerParamsWithHTTPClient(client *http.Client) *ListWashServerP
 	}
 }
 
-/*
-ListWashServerParams contains all the parameters to send to the API endpoint
+/* ListWashServerParams contains all the parameters to send to the API endpoint
+   for the list wash server operation.
 
-	for the list wash server operation.
-
-	Typically these are written to a http.Request.
+   Typically these are written to a http.Request.
 */
 type ListWashServerParams struct {
 

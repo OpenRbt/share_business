@@ -80,6 +80,9 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		BonusBalanceGetBonusBalanceHandler: bonus_balance.GetBonusBalanceHandlerFunc(func(params bonus_balance.GetBonusBalanceParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
 		}),
+		WashServerGenerateKeyWashServerHandler: wash_server.GenerateKeyWashServerHandlerFunc(func(params wash_server.GenerateKeyWashServerParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation wash_server.GenerateKeyWashServer has not yet been implemented")
+		}),
 		UserGetCurrentUserHandler: user.GetCurrentUserHandlerFunc(func(params user.GetCurrentUserParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation user.GetCurrentUser has not yet been implemented")
 		}),
@@ -170,6 +173,8 @@ type WashBonusAPI struct {
 	WashServerEditWashServerHandler wash_server.EditWashServerHandler
 	// BonusBalanceGetBonusBalanceHandler sets the operation handler for the get bonus balance operation
 	BonusBalanceGetBonusBalanceHandler bonus_balance.GetBonusBalanceHandler
+	// WashServerGenerateKeyWashServerHandler sets the operation handler for the generate key wash server operation
+	WashServerGenerateKeyWashServerHandler wash_server.GenerateKeyWashServerHandler
 	// UserGetCurrentUserHandler sets the operation handler for the get current user operation
 	UserGetCurrentUserHandler user.GetCurrentUserHandler
 	// UserGetUserHandler sets the operation handler for the get user operation
@@ -295,6 +300,9 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.BonusBalanceGetBonusBalanceHandler == nil {
 		unregistered = append(unregistered, "bonus_balance.GetBonusBalanceHandler")
+	}
+	if o.WashServerGenerateKeyWashServerHandler == nil {
+		unregistered = append(unregistered, "wash_server.GenerateKeyWashServerHandler")
 	}
 	if o.UserGetCurrentUserHandler == nil {
 		unregistered = append(unregistered, "user.GetCurrentUserHandler")
@@ -426,7 +434,7 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/washServer/add"] = wash_server.NewAddWashServer(o.context, o.WashServerAddWashServerHandler)
+	o.handlers["POST"]["/washServer"] = wash_server.NewAddWashServer(o.context, o.WashServerAddWashServerHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
@@ -438,7 +446,7 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/washServer/delete"] = wash_server.NewDeleteWashServer(o.context, o.WashServerDeleteWashServerHandler)
+	o.handlers["DELETE"]["/washServer/{id}"] = wash_server.NewDeleteWashServer(o.context, o.WashServerDeleteWashServerHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
@@ -454,7 +462,11 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/balance/get"] = bonus_balance.NewGetBonusBalance(o.context, o.BonusBalanceGetBonusBalanceHandler)
+	o.handlers["PUT"]["/washServer/{id}"] = wash_server.NewEditWashServer(o.context, o.WashServerEditWashServerHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/washServer/{id}/generate-key"] = wash_server.NewGenerateKeyWashServer(o.context, o.WashServerGenerateKeyWashServerHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -463,10 +475,10 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/user/{id}"] = user.NewGetUser(o.context, o.UserGetUserHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/washServer/get"] = wash_server.NewGetWashServer(o.context, o.WashServerGetWashServerHandler)
+	o.handlers["GET"]["/washServer/{id}"] = wash_server.NewGetWashServer(o.context, o.WashServerGetWashServerHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -478,7 +490,7 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/washServer/list"] = wash_server.NewListWashServer(o.context, o.WashServerListWashServerHandler)
+	o.handlers["POST"]["/washServers"] = wash_server.NewListWashServer(o.context, o.WashServerListWashServerHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP
