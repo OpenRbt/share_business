@@ -25,13 +25,11 @@ start_docker:
 	MSRV_DB_USER=$(POSTGRES_USER) MSRV_DB_PASS=$(POSTGRES_PASSWORD) MSRV_DB_NAME=$(POSTGRES_DB) \
 		docker run --rm -it -e MSRV_DB_USER -e MSRV_DB_PASS -e MSRV_DB_NAME --network=host $(DOCKER_IMAGE_NAME)
 
-gen_cert:
-	bash ./gencert
+gen_certs:
+	bash ./gencerts
 
 build_app:
 	go build -o ./bin/wash-bonus ./cmd/main/*
 
 run_app:
-	export MSRV_DB_HOST="localhost" && export MSRV_DB_PORT="5432" && export MSRV_DB_USER="postgres" && \
-	export MSRV_DB_PASS="postgres" && export MSRV_DB_NAME="postgres" && export MSRV_PORT="9091" && export GRPC_ENABLE_TLS="true" && \
 	go build -o ./bin/wash-bonus ./cmd/main/* && ./bin/wash-bonus

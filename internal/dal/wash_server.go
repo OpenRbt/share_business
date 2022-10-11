@@ -92,7 +92,7 @@ func (r *Repo) ListWashServers(filter vo.ListFilter) ([]entity.WashServer, []str
 	ms := []dbmodel.WashServer{}
 	warnings := []string{}
 
-	err := r.db.NamedSelect(&ms, sqlListWashServer, nil)
+	err := r.db.NamedSelect(&ms, sqlListWashServer, argListWashServer{})
 	if err != nil {
 		return nil, nil, err
 	}

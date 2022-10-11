@@ -105,22 +105,26 @@ func run() error {
 	if err != nil {
 		return err
 	}
+	washServerGRPCSvc, err := grpc2.NewWashServerService(r)
+	if err != nil {
+		return err
+	}
+
 	appl := app.New(r)
 	userSvc := user.NewService(r)
 
 	BalanceSvc := Balance.NewService(r)
 
-	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath)
+	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath, washServerGRPCSvc.WashServerConnections)
 	if err != nil {
 		return err
 	}
 
 	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
 
-	washServerGRPCConnections := make(map[string]grpc2.WashServerConnection)
-
 	errc := make(chan error)
-	go runGRPCServer(errc, r, washServerGRPCConnections, def.GRPCEnableTLS)
+
+	go runGRPCServer(errc, washServerGRPCSvc, def.GRPCEnableTLS)
 	go runHTTPServer(errc, appl, userSvc, BalanceSvc, washServerSvc, firebase)
 
 	return <-errc
@@ -145,12 +149,12 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 
 	return credentials.NewTLS(&tls.Config{
 		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.RequireAndVerifyClientCert,
+		ClientAuth:   tls.NoClientCert,
 		ClientCAs:    certPool,
 	}), nil
 }
 
-func runGRPCServer(errc chan<- error, washServerRepo wash_server.Repository, washServerConnections map[string]grpc2.WashServerConnection, enableTLS bool) {
+func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc2.WashServerService, enableTLS bool) {
 	serverOptions := []grpc.ServerOption{}
 
 	if enableTLS {
@@ -164,7 +168,7 @@ func runGRPCServer(errc chan<- error, washServerRepo wash_server.Repository, was
 
 	server := grpc.NewServer(serverOptions...)
 
-	grpc2.RegisterWashServerServiceServer(server, grpc2.NewWashServerService(washServerRepo, washServerConnections))
+	grpc2.RegisterWashServerServiceServer(server, WashServerGRPCService)
 
 	l, err := net.Listen("tcp", ":"+def.GRPCPort)
 	if err != nil {

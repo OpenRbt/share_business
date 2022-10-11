@@ -166,9 +166,7 @@ func (svc *service) ListWashServer(params washServer.ListWashServerParams, profi
 
 func (svc *service) GenerateKeyWashServer(params washServer.GenerateKeyWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
-	fmt.Println("Gen KEy: ", params.ID)
 	key, err := svc.washServerSvc.GenerateServiceKey(dto.ToAppIdentityProfile(*prof), params.ID)
-	fmt.Println("Err: ", err)
 	switch {
 	default:
 		log.PrintErr("GenerateKeyWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)

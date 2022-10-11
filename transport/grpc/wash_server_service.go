@@ -2,13 +2,16 @@ package grpc
 
 import (
 	context "context"
+	"fmt"
 	"log"
 	"sync"
 	"wash-bonus/internal/app/entity"
+	"wash-bonus/internal/app/entity/vo"
 )
 
-type UserRepository interface {
+type WashServerRepository interface {
 	GetWashServer(id string) (*entity.WashServer, error)
+	ListWashServers(filter vo.ListFilter) ([]entity.WashServer, []string, error)
 }
 
 type WashServerConnection struct {
@@ -19,19 +22,37 @@ type WashServerConnection struct {
 }
 
 type WashServerService struct {
-	WashServerRepo             UserRepository
+	WashServerRepo             WashServerRepository
 	WashServerConnectionsMutex sync.Mutex
 	WashServerConnections      map[string]WashServerConnection
 }
 
-func NewWashServerService(washServerRepo UserRepository, washServerConnections map[string]WashServerConnection) *WashServerService {
+func NewWashServerService(washServerRepo WashServerRepository) (*WashServerService, error) {
+	washList, _, err := washServerRepo.ListWashServers(vo.ListFilter{})
+	if err != nil {
+		return nil, err
+	}
+
+	connections := make(map[string]WashServerConnection)
+	for _, v := range washList {
+		fmt.Println("Load: ", v.ID)
+		if v.ServiceKey != "" {
+			connections[v.ServiceKey] = WashServerConnection{
+				WashServer: v,
+				Verify:     false,
+			}
+		}
+	}
+
 	return &WashServerService{
 		WashServerRepo:        washServerRepo,
-		WashServerConnections: washServerConnections,
-	}
+		WashServerConnections: connections,
+	}, nil
 }
 
 func (svc *WashServerService) VerifyClient(ctx context.Context, msg *Verify) (*VerifyAnswer, error) {
+	log.Println("VerifyClient: ", msg.ServiceKey)
+
 	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
 
@@ -54,6 +75,7 @@ func (svc *WashServerService) SendMessage(stream WashServerService_SendMessageSe
 		log.Println("Failed to recv: ", err)
 		return err
 	}
+	log.Println("SendMessage: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
@@ -88,6 +110,7 @@ func (svc *WashServerService) SendMessageToOtherClient(stream WashServerService_
 		log.Println("Failed to recv: ", err)
 		return err
 	}
+	log.Println("SendMessageToOtherClient: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
