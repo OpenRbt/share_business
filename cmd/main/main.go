@@ -17,9 +17,9 @@ import (
 	"wash-bonus/internal/firebase_auth"
 	grpc2 "wash-bonus/internal/transport/grpc"
 
-	"wash-bonus/internal/api"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
+	"wash-bonus/internal/transport/api"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -107,13 +107,9 @@ func run() error {
 	}
 	appl := app.New(r)
 	userSvc := user.NewService(r)
-<<<<<<< HEAD
+
 	bonusBalanceSvc := bonusBalance.NewService(r)
 
-	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
-
-	srv, err := api.NewServer(appl, userSvc, bonusBalanceSvc, cfg.api, firebase)
-=======
 	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath)
 	if err != nil {
 		return err
@@ -125,7 +121,7 @@ func run() error {
 
 	errc := make(chan error)
 	go runGRPCServer(errc, r, washServerGRPCConnections, def.GRPCEnableTLS)
-	go runHTTPServer(errc, appl, userSvc, washServerSvc, firebase)
+	go runHTTPServer(errc, appl, userSvc, bonusBalanceSvc, washServerSvc, firebase)
 
 	return <-errc
 }
@@ -179,9 +175,8 @@ func runGRPCServer(errc chan<- error, washServerRepo wash_server.Repository, was
 	errc <- server.Serve(l)
 }
 
-func runHTTPServer(errc chan<- error, appl app.App, userSvc user.UserSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
-	srv, err := api.NewServer(appl, userSvc, washServerSvc, cfg.api, firebase)
->>>>>>> feature/grpc
+func runHTTPServer(errc chan<- error, appl app.App, userSvc user.UserSvc, bonusBalance bonusBalance.BonusBalanceSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
+	srv, err := api.NewServer(appl, userSvc, bonusBalance, washServerSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)
 		return

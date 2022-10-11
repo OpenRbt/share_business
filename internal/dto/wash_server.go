@@ -1,10 +1,10 @@
 package dto
 
 import (
-	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/dal/dbmodel"
+	"wash-bonus/internal/transport/api/restapi/models"
 
 	"github.com/go-openapi/strfmt"
 	uuid "github.com/satori/go.uuid"

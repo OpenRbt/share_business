@@ -24,15 +24,15 @@ func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
 	return dto.AppBonusBalance(m), nil
 }
 
-func (a *Repo) AddBonusBalance(userID string, balance float64) error {
+func (a *Repo) AddBonusBalance(userID string, balance float64) (*entity.BonusBalance, error) {
 	_, err := a.db.NamedExec(sqlAddBonusBalance, argAddBonusBalance{
 		UserID:  userID,
 		balance: balance,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return a.GetBonusBalance(userID)
 }
 
 func (a *Repo) EditBonusBalance(id string, balance float64) error {

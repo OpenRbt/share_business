@@ -13,6 +13,6 @@ mkdir ./internal/api/restapi
 
 shopt -s expand_aliases
 alias swagger="docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger"
-swagger generate server -t ./internal/api/restapi -f ./swagger.yaml --exclude-main
-swagger generate client -t ./internal/api/restapi -f ./swagger.yaml
+swagger generate server -t ./internal/transport/api/restapi -f ./swagger.yaml --exclude-main
+swagger generate client -t ./internal/transport/api/restapi -f ./swagger.yaml
 sudo chown -R "$USER:$USER" ./internal/api/restapi/*

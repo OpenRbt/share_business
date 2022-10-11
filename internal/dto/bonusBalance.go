@@ -2,9 +2,9 @@ package dto
 
 import (
 	"strconv"
-	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/dal/dbmodel"
+	"wash-bonus/internal/transport/api/restapi/models"
 )
 
 func ApiBonusBalance(a *entity.BonusBalance) *models.Balance {
