@@ -5,7 +5,7 @@ import (
 	"context"
 	"net/http"
 	"path"
-	bonus2 "wash-bonus/internal/app/bonusBalance"
+	bonus2 "wash-bonus/internal/app/Balance"
 	user2 "wash-bonus/internal/app/user"
 	wash_server2 "wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dto"
@@ -48,18 +48,18 @@ type Config struct {
 
 type service struct {
 	app           app.App
-	bonusSvc      bonus2.BonusBalanceSvc
+	bonusSvc      bonus2.BalanceSvc
 	washServerSvc wash_server2.WashServerSvc
 	userSvc       user2.UserSvc
 	auth          firebase_auth.Service
 }
 
-func NewServer(appl app.App, userSvc user2.UserSvc, bonusBalanceSvc bonus2.BonusBalanceSvc, washServerSvc wash_server2.WashServerSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
+func NewServer(appl app.App, userSvc user2.UserSvc, BalanceSvc bonus2.BalanceSvc, washServerSvc wash_server2.WashServerSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
 	svc := &service{
 		app:           appl,
 		userSvc:       userSvc,
 		auth:          firebase,
-		bonusSvc:      bonusBalanceSvc,
+		bonusSvc:      BalanceSvc,
 		washServerSvc: washServerSvc,
 	}
 
@@ -80,7 +80,7 @@ func NewServer(appl app.App, userSvc user2.UserSvc, bonusBalanceSvc bonus2.Bonus
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 	api.StandardAddTestDataHandler = standard.AddTestDataHandlerFunc(svc.addTestData)
 
-	setBonusBalanceHandlers(api, svc)
+	setBalanceHandlers(api, svc)
 
 	setUserHandlers(api, svc)
 	setWashServerHandlers(api, svc)

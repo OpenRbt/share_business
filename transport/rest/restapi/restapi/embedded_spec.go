@@ -56,9 +56,9 @@ func init() {
     "/balance/add": {
       "post": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "addBonusBalance",
+        "operationId": "addBalance",
         "parameters": [
           {
             "name": "body",
@@ -87,9 +87,9 @@ func init() {
     "/balance/deleted": {
       "delete": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "deleteBonusBalance",
+        "operationId": "deleteBalance",
         "parameters": [
           {
             "name": "body",
@@ -123,9 +123,9 @@ func init() {
     "/balance/edit": {
       "put": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "editBonusBalance",
+        "operationId": "editBalance",
         "parameters": [
           {
             "name": "body",
@@ -159,9 +159,9 @@ func init() {
     "/balance/get": {
       "post": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "getBonusBalance",
+        "operationId": "getBalance",
         "parameters": [
           {
             "name": "body",
@@ -875,9 +875,9 @@ func init() {
     "/balance/add": {
       "post": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "addBonusBalance",
+        "operationId": "addBalance",
         "parameters": [
           {
             "name": "body",
@@ -906,9 +906,9 @@ func init() {
     "/balance/deleted": {
       "delete": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "deleteBonusBalance",
+        "operationId": "deleteBalance",
         "parameters": [
           {
             "name": "body",
@@ -942,9 +942,9 @@ func init() {
     "/balance/edit": {
       "put": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "editBonusBalance",
+        "operationId": "editBalance",
         "parameters": [
           {
             "name": "body",
@@ -978,9 +978,9 @@ func init() {
     "/balance/get": {
       "post": {
         "tags": [
-          "BonusBalance"
+          "Balance"
         ],
-        "operationId": "getBonusBalance",
+        "operationId": "getBalance",
         "parameters": [
           {
             "name": "body",

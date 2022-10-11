@@ -6,7 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type BonusBalance struct {
+type Balance struct {
 	ID      uuid.UUID       `db:"id"`
 	UserID  uuid.UUID       `db:"user_id"`
 	Balance sql.NullFloat64 `db:"balance"`

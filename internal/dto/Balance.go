@@ -7,19 +7,19 @@ import (
 	"wash-bonus/transport/rest/restapi/models"
 )
 
-func ApiBonusBalance(a *entity.BonusBalance) *models.Balance {
+func BalanceToRest(a *entity.Balance) *models.Balance {
 	if a == nil {
 		return nil
 	}
 	return &models.Balance{
-		ID:      a.ID,
+		ID:      a.ID.String(),
 		UserID:  a.UserId,
 		Balance: strconv.FormatFloat(a.Balance, 'f', 6, 64),
 	}
 }
 
-func AppBonusBalance(m dbmodel.BonusBalance) *entity.BonusBalance {
-	return &entity.BonusBalance{
+func BalanceFromDB(m dbmodel.Balance) *entity.Balance {
+	return &entity.Balance{
 		UserId:  m.UserID.String(),
 		Balance: m.Balance.Float64,
 	}

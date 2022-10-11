@@ -10,7 +10,7 @@ import (
 	"net"
 	"os"
 	"time"
-	"wash-bonus/internal/app/bonusBalance"
+	"wash-bonus/internal/app/Balance"
 	"wash-bonus/internal/app/user"
 	"wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dal"
@@ -108,7 +108,7 @@ func run() error {
 	appl := app.New(r)
 	userSvc := user.NewService(r)
 
-	bonusBalanceSvc := bonusBalance.NewService(r)
+	BalanceSvc := Balance.NewService(r)
 
 	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath)
 	if err != nil {
@@ -121,7 +121,7 @@ func run() error {
 
 	errc := make(chan error)
 	go runGRPCServer(errc, r, washServerGRPCConnections, def.GRPCEnableTLS)
-	go runHTTPServer(errc, appl, userSvc, bonusBalanceSvc, washServerSvc, firebase)
+	go runHTTPServer(errc, appl, userSvc, BalanceSvc, washServerSvc, firebase)
 
 	return <-errc
 }
@@ -175,8 +175,8 @@ func runGRPCServer(errc chan<- error, washServerRepo wash_server.Repository, was
 	errc <- server.Serve(l)
 }
 
-func runHTTPServer(errc chan<- error, appl app.App, userSvc user.UserSvc, bonusBalance bonusBalance.BonusBalanceSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
-	srv, err := api.NewServer(appl, userSvc, bonusBalance, washServerSvc, cfg.api, firebase)
+func runHTTPServer(errc chan<- error, appl app.App, userSvc user.UserSvc, Balance Balance.BalanceSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
+	srv, err := api.NewServer(appl, userSvc, Balance, washServerSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)
 		return

@@ -11,9 +11,9 @@ import (
 	"wash-bonus/internal/dto"
 )
 
-func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
-	var m dbmodel.BonusBalance
-	if err := a.db.NamedGet(&m, sqlGetBonusBalance, argGetBonusBalance{
+func (a *Repo) GetBalance(id string) (*entity.Balance, error) {
+	var m dbmodel.Balance
+	if err := a.db.NamedGet(&m, sqlGetBalance, argGetBalance{
 		ID: newNullUUID(id),
 	}); err != nil {
 		if err == sql.ErrNoRows {
@@ -21,22 +21,22 @@ func (a *Repo) GetBonusBalance(id string) (*entity.BonusBalance, error) {
 		}
 		return nil, err
 	}
-	return dto.AppBonusBalance(m), nil
+	return dto.BalanceFromDB(m), nil
 }
 
-func (a *Repo) AddBonusBalance(userID string, balance float64) (*entity.BonusBalance, error) {
-	_, err := a.db.NamedExec(sqlAddBonusBalance, argAddBonusBalance{
+func (a *Repo) AddBalance(userID string, balance float64) (*entity.Balance, error) {
+	_, err := a.db.NamedExec(sqlAddBalance, argAddBalance{
 		UserID:  userID,
 		balance: balance,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return a.GetBonusBalance(userID)
+	return a.GetBalance(userID)
 }
 
-func (a *Repo) EditBonusBalance(id string, balance float64) error {
-	res, err := a.db.NamedExec(sqlEditBonusBalance, argEditBonusBalance{
+func (a *Repo) EditBalance(id string, balance float64) error {
+	res, err := a.db.NamedExec(sqlEditBalance, argEditBalance{
 		ID:      id,
 		balance: balance,
 	})
@@ -51,9 +51,9 @@ func (a *Repo) EditBonusBalance(id string, balance float64) error {
 	return nil
 }
 
-func (a *Repo) DeleteBonusBalance(id string, userId string) error {
+func (a *Repo) DeleteBalance(id string, userId string) error {
 	t := time.Now()
-	res, err := a.db.NamedExec(sqlDeleteBonusBalance, argDeleteBonusBalance{
+	res, err := a.db.NamedExec(sqlDeleteBalance, argDeleteBalance{
 		ID:        id,
 		DeletedAt: &t,
 		DeletedBy: userId,

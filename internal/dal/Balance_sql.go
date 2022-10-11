@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	sqlGetBonusBalance = `
+	sqlGetBalance = `
 	SELECT
 		id,
 		user_id,
@@ -18,7 +18,7 @@ const (
 		NOT deleted
 	`
 
-	sqlAddBonusBalance = `
+	sqlAddBalance = `
 	INSERT INTO bonus_balance(
 		user_id,
 		balance,
@@ -30,7 +30,7 @@ const (
 		id
 	`
 
-	sqlDeleteBonusBalance = `
+	sqlDeleteBalance = `
 	UPDATE
 		bonus_balance
 	SET
@@ -42,7 +42,7 @@ const (
 		NOT deleted
 	`
 
-	sqlEditBonusBalance = `
+	sqlEditBalance = `
 	UPDATE
 		bonus_balance
 	SET
@@ -54,20 +54,20 @@ const (
 )
 
 type (
-	argGetBonusBalance struct {
+	argGetBalance struct {
 		ID sql.NullString `db:"id"`
 	}
 
-	argAddBonusBalance struct {
+	argAddBalance struct {
 		UserID  string  `db:"user_id"`
 		balance float64 `db:"balance"`
 	}
 
-	argEditBonusBalance struct {
+	argEditBalance struct {
 		ID      string  `db:"id"`
 		balance float64 `db:"balance"`
 	}
-	argDeleteBonusBalance struct {
+	argDeleteBalance struct {
 		ID        string     `db:"id"`
 		DeletedAt *time.Time `db:"deleted_at"`
 		DeletedBy string     `db:"deleted_by"`

@@ -11,7 +11,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 
 	"wash-bonus/transport/rest/restapi/restapi/operations"
-	"wash-bonus/transport/rest/restapi/restapi/operations/bonus_balance"
+	"wash-bonus/transport/rest/restapi/restapi/operations/balance"
 	"wash-bonus/transport/rest/restapi/restapi/operations/standard"
 	"wash-bonus/transport/rest/restapi/restapi/operations/user"
 	"wash-bonus/transport/rest/restapi/restapi/operations/wash_server"
@@ -54,9 +54,9 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	if api.BonusBalanceAddBonusBalanceHandler == nil {
-		api.BonusBalanceAddBonusBalanceHandler = bonus_balance.AddBonusBalanceHandlerFunc(func(params bonus_balance.AddBonusBalanceParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation bonus_balance.AddBonusBalance has not yet been implemented")
+	if api.BalanceAddBalanceHandler == nil {
+		api.BalanceAddBalanceHandler = balance.AddBalanceHandlerFunc(func(params balance.AddBalanceParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation bonus_balance.AddBalance has not yet been implemented")
 		})
 	}
 	if api.StandardAddTestDataHandler == nil {
@@ -74,9 +74,9 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return middleware.NotImplemented("operation wash_server.AddWashServer has not yet been implemented")
 		})
 	}
-	if api.BonusBalanceDeleteBonusBalanceHandler == nil {
-		api.BonusBalanceDeleteBonusBalanceHandler = bonus_balance.DeleteBonusBalanceHandlerFunc(func(params bonus_balance.DeleteBonusBalanceParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation bonus_balance.DeleteBonusBalance has not yet been implemented")
+	if api.BalanceDeleteBalanceHandler == nil {
+		api.BalanceDeleteBalanceHandler = balance.DeleteBalanceHandlerFunc(func(params balance.DeleteBalanceParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation bonus_balance.DeleteBalance has not yet been implemented")
 		})
 	}
 	if api.UserDeleteUserHandler == nil {
@@ -89,9 +89,9 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return middleware.NotImplemented("operation wash_server.DeleteWashServer has not yet been implemented")
 		})
 	}
-	if api.BonusBalanceEditBonusBalanceHandler == nil {
-		api.BonusBalanceEditBonusBalanceHandler = bonus_balance.EditBonusBalanceHandlerFunc(func(params bonus_balance.EditBonusBalanceParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation bonus_balance.EditBonusBalance has not yet been implemented")
+	if api.BalanceEditBalanceHandler == nil {
+		api.BalanceEditBalanceHandler = balance.EditBalanceHandlerFunc(func(params balance.EditBalanceParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation bonus_balance.EditBalance has not yet been implemented")
 		})
 	}
 	if api.UserEditUserHandler == nil {
@@ -104,9 +104,9 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return middleware.NotImplemented("operation wash_server.EditWashServer has not yet been implemented")
 		})
 	}
-	if api.BonusBalanceGetBonusBalanceHandler == nil {
-		api.BonusBalanceGetBonusBalanceHandler = bonus_balance.GetBonusBalanceHandlerFunc(func(params bonus_balance.GetBonusBalanceParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation bonus_balance.GetBonusBalance has not yet been implemented")
+	if api.BalanceGetBalanceHandler == nil {
+		api.BalanceGetBalanceHandler = balance.GetBalanceHandlerFunc(func(params balance.GetBalanceParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation bonus_balance.GetBalance has not yet been implemented")
 		})
 	}
 	if api.WashServerGenerateKeyWashServerHandler == nil {

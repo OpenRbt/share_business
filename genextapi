@@ -8,8 +8,8 @@ fi
 
 set -x -e -o pipefail
 
-rm -rf ./internal/api/restapi
-mkdir ./internal/api/restapi
+rm -rf ./transport/rest/restapi/restapi/operations/balance
+mkdir ./transport/rest/restapi/restapi/operations/balance
 
 shopt -s expand_aliases
 alias swagger="docker run --rm -it -e GOPATH=$HOME/go:/go -v $HOME:$HOME -w $(pwd) quay.io/goswagger/swagger"
