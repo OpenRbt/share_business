@@ -6,7 +6,6 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
-	"time"
 
 	"wash-bonus/transport/rest/restapi/restapi"
 
@@ -34,46 +33,8 @@ const (
 	LogEventID    = "evID"
 )
 
-/*func initEnv() int {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	return 0
-}*/
-
 var (
 	log = structlog.New()
-
-	oapiHost, oapiPort, oapiBasePath = swaggerEndpoint()
-
-	TestTimeFactor = floatGetenv("GO_TEST_TIME_FACTOR", 1.0)
-	TestSecond     = time.Duration(float64(time.Second) * TestTimeFactor)
-
-	DBHost         = os.Getenv("MSRV_DB_HOST")
-	DBPort         = intGetenv("MSRV_DB_PORT", 5432)
-	DBUser         = os.Getenv("MSRV_DB_USER")
-	DBPass         = os.Getenv("MSRV_DB_PASS")
-	DBName         = os.Getenv("MSRV_DB_NAME")
-	DBSSLModeIsReq = boolGetenv("MSRV_DB_SSL_MODE_IS_REQUIRE")
-	GooseDir       = "./migration"
-	ResetDB        = boolGetenv("MSRV_RESET_DB")
-
-	APIHost             = strGetenv("MSRV_HOST", oapiHost)
-	APIPort             = intGetenv("MSRV_PORT", oapiPort)
-	APIBasePath         = strGetenv("MSRV_BASEPATH", oapiBasePath)
-	CORSAllowedOrigins  = os.Getenv("MSRV_CORS_ALLOWED_ORIGINS")
-	DisableCookieSecure = boolGetenv("MSRV_DISABLE_COOKIE_SECURE")
-
-	FirebaseKeyFilePath = pathGetenv("FIREBASE_KEYFILE_PATH", "~/firebase_keyfile.json")
-
-	WashServerRSAKeyFilePath = pathGetenv("WASH_SERVER_RSA_KEYFILE_PATH", "~/wash_server_rsa_keyfile")
-
-	GRPCPort         = strGetenv("GRPC_PORT", "8091")
-	GRPCEnableTLS    = boolGetenv("GRPC_ENABLE_TLS")
-	ClientCACertFile = pathGetenv("GRPC_CLIENT_CA_CERT_FILE", "~/certs/ca-cert.pem")
-	ServerCertFile   = pathGetenv("GRPC_SERVER_CERT_FILE", "~/certs/server-cert.pem")
-	ServerKeyFile    = pathGetenv("GRPC_SERVER_KEY_FILE", "~/certs/server-key.pem")
 )
 
 func pathGetenv(name, def string) string {

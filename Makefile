@@ -1,3 +1,5 @@
+-include .env
+
 DB_CONTAINER_NAME=test-postgres
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
