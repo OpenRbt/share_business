@@ -106,14 +106,15 @@ func run() error {
 	}
 	appl := app.New(r)
 	userSvc := user.NewService(r)
-	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath)
+
+	washServerGRPCConnections := make(map[string]grpc2.WashServerConnection)
+
+	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath, washServerGRPCConnections)
 	if err != nil {
 		return err
 	}
 
 	firebase := firebase_auth.New(def.FirebaseKeyFilePath)
-
-	washServerGRPCConnections := make(map[string]grpc2.WashServerConnection)
 
 	errc := make(chan error)
 	go runGRPCServer(errc, r, washServerGRPCConnections, def.GRPCEnableTLS)

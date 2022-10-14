@@ -32,6 +32,7 @@ func NewWashServerService(washServerRepo UserRepository, washServerConnections m
 }
 
 func (svc *WashServerService) VerifyClient(ctx context.Context, msg *Verify) (*VerifyAnswer, error) {
+	log.Println("VerifyClient: ", msg.ServiceKey)
 	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
 
@@ -54,6 +55,7 @@ func (svc *WashServerService) SendMessage(stream WashServerService_SendMessageSe
 		log.Println("Failed to recv: ", err)
 		return err
 	}
+	log.Println("SendMessage: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
@@ -88,6 +90,7 @@ func (svc *WashServerService) SendMessageToOtherClient(stream WashServerService_
 		log.Println("Failed to recv: ", err)
 		return err
 	}
+	log.Println("SendMessageToOtherClient: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
 	washServer, ok := svc.WashServerConnections[msg.ServiceKey]

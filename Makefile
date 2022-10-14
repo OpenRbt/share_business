@@ -32,6 +32,4 @@ build_app:
 	go build -o ./bin/wash-bonus ./cmd/main/*
 
 run_app:
-	export MSRV_DB_HOST="localhost" && export MSRV_DB_PORT="5432" && export MSRV_DB_USER="postgres" && \
-	export MSRV_DB_PASS="postgres" && export MSRV_DB_NAME="postgres" && export MSRV_PORT="9091" && export GRPC_ENABLE_TLS="true" && \
 	go build -o ./bin/wash-bonus ./cmd/main/* && ./bin/wash-bonus
