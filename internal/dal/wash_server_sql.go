@@ -113,4 +113,7 @@ type (
 		DeletedAt time.Time     `db:"deleted_at"`
 		DeletedBy uuid.NullUUID `db:"deleted_by"`
 	}
+
+	argListWashServer struct {
+	}
 )
