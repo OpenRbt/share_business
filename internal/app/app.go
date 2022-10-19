@@ -9,24 +9,12 @@ import (
 
 // App provides application features service.
 type App interface {
-	GetWashServer(prof Profile, id string) (*WashServer, error)
-	AddWashServer(prof Profile, m *WashServer) (*WashServer, error)
-	EditWashServer(prof Profile, id string, m *WashServer) error
-	DeleteWashServer(prof Profile, id string) error
-	ListWashServer(prof Profile, params *ListParams) ([]*WashServer, []string, error)
-
 	AddTestData(prof entity.IdentityProfile) error
 }
 
 // Repo interface for data user
 type Repo interface {
-	GetWashServer(id string, isolatedEntityID string) (*WashServer, error)
-	AddWashServer(profileID string, isolatedEntityID string, m *WashServer) (*WashServer, error)
-	EditWashServer(id string, isolatedEntityID string, m *WashServer) error
-	DeleteWashServer(id string, profileID string, isolatedEntityID string) error
-	ListWashServer(isolatedEntityID string, params *ListParams) ([]*WashServer, []string, error)
-
-	AddTestData(profileID, isolatedEntityID string) error
+	//AddTestData(profileID, isolatedEntityID string) error
 }
 
 // TODO: Fully remove this stub
@@ -67,5 +55,6 @@ func (a *app) AddTestData(prof entity.IdentityProfile) error {
 	if true {
 		return ErrAccessDenied
 	}
-	return a.repo.AddTestData("prof_id_stub", "")
+	//return a.repo.AddTestData("prof_id_stub", "")
+	return nil
 }

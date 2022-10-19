@@ -23,8 +23,8 @@ type AddWashServerReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *AddWashServerReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 201:
-		result := NewAddWashServerCreated()
+	case 200:
+		result := NewAddWashServerOK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -41,65 +41,23 @@ func (o *AddWashServerReader) ReadResponse(response runtime.ClientResponse, cons
 	}
 }
 
-// NewAddWashServerCreated creates a AddWashServerCreated with default headers values
-func NewAddWashServerCreated() *AddWashServerCreated {
-	return &AddWashServerCreated{}
+// NewAddWashServerOK creates a AddWashServerOK with default headers values
+func NewAddWashServerOK() *AddWashServerOK {
+	return &AddWashServerOK{}
 }
 
-/*
-AddWashServerCreated describes a response with status code 201, with default header values.
+/* AddWashServerOK describes a response with status code 200, with default header values.
 
 Created
 */
-type AddWashServerCreated struct {
-	Payload *models.WashServer
+type AddWashServerOK struct {
 }
 
-// IsSuccess returns true when this add wash server created response has a 2xx status code
-func (o *AddWashServerCreated) IsSuccess() bool {
-	return true
+func (o *AddWashServerOK) Error() string {
+	return fmt.Sprintf("[POST /washServer][%d] addWashServerOK ", 200)
 }
 
-// IsRedirect returns true when this add wash server created response has a 3xx status code
-func (o *AddWashServerCreated) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this add wash server created response has a 4xx status code
-func (o *AddWashServerCreated) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this add wash server created response has a 5xx status code
-func (o *AddWashServerCreated) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this add wash server created response a status code equal to that given
-func (o *AddWashServerCreated) IsCode(code int) bool {
-	return code == 201
-}
-
-func (o *AddWashServerCreated) Error() string {
-	return fmt.Sprintf("[POST /washServer/add][%d] addWashServerCreated  %+v", 201, o.Payload)
-}
-
-func (o *AddWashServerCreated) String() string {
-	return fmt.Sprintf("[POST /washServer/add][%d] addWashServerCreated  %+v", 201, o.Payload)
-}
-
-func (o *AddWashServerCreated) GetPayload() *models.WashServer {
-	return o.Payload
-}
-
-func (o *AddWashServerCreated) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	o.Payload = new(models.WashServer)
-
-	// response payload
-	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
-		return err
-	}
+func (o *AddWashServerOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -111,8 +69,7 @@ func NewAddWashServerDefault(code int) *AddWashServerDefault {
 	}
 }
 
-/*
-AddWashServerDefault describes a response with status code -1, with default header values.
+/* AddWashServerDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -127,39 +84,9 @@ func (o *AddWashServerDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this add wash server default response has a 2xx status code
-func (o *AddWashServerDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this add wash server default response has a 3xx status code
-func (o *AddWashServerDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this add wash server default response has a 4xx status code
-func (o *AddWashServerDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this add wash server default response has a 5xx status code
-func (o *AddWashServerDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this add wash server default response a status code equal to that given
-func (o *AddWashServerDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *AddWashServerDefault) Error() string {
-	return fmt.Sprintf("[POST /washServer/add][%d] addWashServer default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /washServer][%d] addWashServer default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *AddWashServerDefault) String() string {
-	return fmt.Sprintf("[POST /washServer/add][%d] addWashServer default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *AddWashServerDefault) GetPayload() *models.Error {
 	return o.Payload
 }

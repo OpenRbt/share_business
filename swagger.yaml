@@ -60,7 +60,6 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-
   /user/{id}:
     get:
       tags:
@@ -163,19 +162,17 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /washServer/get:    
-    post: 
+  
+  /washServer/{id}:
+    get: 
       tags:
         - WashServer
       operationId: getWashServer
       parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
+        - name: id
+          in: path
+          type: string
+          required: true
       responses:
         200:
           description: OK
@@ -185,7 +182,43 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /washServer/add:    
+    put: 
+      tags:
+        - WashServer
+      operationId: editWashServer
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/washServerUpdate" 
+      responses:
+        200:
+          description: OK
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+    delete: 
+      tags:
+        - WashServer
+      operationId: deleteWashServer
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: Deleted
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+  /washServer:
     post: 
       tags:
         - WashServer
@@ -196,58 +229,14 @@ paths:
           schema:
                 $ref: "#/definitions/washServerAdd" 
       responses:
-        201:
-          description: Created 
-          schema:
-            $ref: "#/definitions/washServer"
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /washServer/edit:    
-    put: 
-      tags:
-        - WashServer
-      operationId: editWashServer
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-              data:
-                $ref: "#/definitions/washServerAdd" 
-      responses:
         200:
-          description: OK
+          description: Created 
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /washServer/delete:    
-    delete: 
-      tags:
-        - WashServer
-      operationId: deleteWashServer
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              id:
-                type: string 
-      responses:
-        204:
-          description: Deleted
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
-  /washServer/list:    
-    post: 
+  /washServers:    
+    post:
       tags:
         - WashServer
       operationId: listWashServer
@@ -260,20 +249,33 @@ paths:
         200:
           description: OK
           schema:
-            type: object
-            properties:
-              warnings:
-                type: array
-                items:
-                  type: string
-              items:
-                type: array
-                items:
-                  $ref: "#/definitions/washServer"
+            $ref: "#/definitions/listWashServer"
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
+  /washServer/{id}/generate-key:
+    put:
+      tags:
+        - WashServer
+      operationId: generateKeyWashServer
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/washServerGenerateKeyResp" 
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+        
+
+
 definitions:
   error:
     type: object
@@ -287,6 +289,7 @@ definitions:
         format: int32
       message:
         type: string
+  
   user:
     type: object
     description: "user object"
@@ -330,32 +333,62 @@ definitions:
         type: string
         format: date-time
         x-nullable: true
-      key:
-        type: string
-      lastUpdateAt:
-        type: string
-        format: date-time
-        x-nullable: true
       modifiedAt:
         type: string
         format: date-time
         x-nullable: true
+      service_key:
+        type: string
       name:
         type: string
+      description:
+        type: string
+      owner_id:
+        type: string
+  
   washServerAdd:
     type: object
-    description: "washServer model for add and edit methods"
+    description: "washServer model for add methods"
     properties:
-      key:
-        type: string
-      lastUpdateAt:
-        type: string
-        format: date-time
-        x-nullable: true
       name:
         type: string
+      description:
+        type: string
+      owner_id:
+        type: string
  
+  washServerUpdate:
+    type: object
+    description: "washServer model for edit methods"
+    properties:
+      service_key:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      owner_id:
+        type: string
 
+  washServerGenerateKeyResp:
+    type: object
+    description: "washServerGenerateKeyResp object"
+    properties:
+      service_key:
+        type: string
+
+  listWashServer:
+    type: object
+    description: "washServer list object"
+    properties:
+      warnings:
+        type: array
+        items:
+          type: string
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/washServer"
 
   listParams:
     type: object

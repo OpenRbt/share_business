@@ -52,17 +52,15 @@ func NewDeleteWashServerParamsWithHTTPClient(client *http.Client) *DeleteWashSer
 	}
 }
 
-/*
-DeleteWashServerParams contains all the parameters to send to the API endpoint
+/* DeleteWashServerParams contains all the parameters to send to the API endpoint
+   for the delete wash server operation.
 
-	for the delete wash server operation.
-
-	Typically these are written to a http.Request.
+   Typically these are written to a http.Request.
 */
 type DeleteWashServerParams struct {
 
-	// Body.
-	Body DeleteWashServerBody
+	// ID.
+	ID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +115,15 @@ func (o *DeleteWashServerParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the delete wash server params
-func (o *DeleteWashServerParams) WithBody(body DeleteWashServerBody) *DeleteWashServerParams {
-	o.SetBody(body)
+// WithID adds the id to the delete wash server params
+func (o *DeleteWashServerParams) WithID(id string) *DeleteWashServerParams {
+	o.SetID(id)
 	return o
 }
 
-// SetBody adds the body to the delete wash server params
-func (o *DeleteWashServerParams) SetBody(body DeleteWashServerBody) {
-	o.Body = body
+// SetID adds the id to the delete wash server params
+func (o *DeleteWashServerParams) SetID(id string) {
+	o.ID = id
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -135,7 +133,9 @@ func (o *DeleteWashServerParams) WriteToRequest(r runtime.ClientRequest, reg str
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
 	}
 

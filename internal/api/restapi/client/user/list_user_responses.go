@@ -50,8 +50,7 @@ func NewListUserOK() *ListUserOK {
 	return &ListUserOK{}
 }
 
-/*
-ListUserOK describes a response with status code 200, with default header values.
+/* ListUserOK describes a response with status code 200, with default header values.
 
 OK
 */
@@ -59,39 +58,9 @@ type ListUserOK struct {
 	Payload *ListUserOKBody
 }
 
-// IsSuccess returns true when this list user o k response has a 2xx status code
-func (o *ListUserOK) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this list user o k response has a 3xx status code
-func (o *ListUserOK) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this list user o k response has a 4xx status code
-func (o *ListUserOK) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this list user o k response has a 5xx status code
-func (o *ListUserOK) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this list user o k response a status code equal to that given
-func (o *ListUserOK) IsCode(code int) bool {
-	return code == 200
-}
-
 func (o *ListUserOK) Error() string {
 	return fmt.Sprintf("[POST /user/list][%d] listUserOK  %+v", 200, o.Payload)
 }
-
-func (o *ListUserOK) String() string {
-	return fmt.Sprintf("[POST /user/list][%d] listUserOK  %+v", 200, o.Payload)
-}
-
 func (o *ListUserOK) GetPayload() *ListUserOKBody {
 	return o.Payload
 }
@@ -115,8 +84,7 @@ func NewListUserDefault(code int) *ListUserDefault {
 	}
 }
 
-/*
-ListUserDefault describes a response with status code -1, with default header values.
+/* ListUserDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -131,39 +99,9 @@ func (o *ListUserDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this list user default response has a 2xx status code
-func (o *ListUserDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this list user default response has a 3xx status code
-func (o *ListUserDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this list user default response has a 4xx status code
-func (o *ListUserDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this list user default response has a 5xx status code
-func (o *ListUserDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this list user default response a status code equal to that given
-func (o *ListUserDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *ListUserDefault) Error() string {
 	return fmt.Sprintf("[POST /user/list][%d] listUser default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *ListUserDefault) String() string {
-	return fmt.Sprintf("[POST /user/list][%d] listUser default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *ListUserDefault) GetPayload() *models.Error {
 	return o.Payload
 }
@@ -180,8 +118,7 @@ func (o *ListUserDefault) readResponse(response runtime.ClientResponse, consumer
 	return nil
 }
 
-/*
-ListUserOKBody list user o k body
+/*ListUserOKBody list user o k body
 swagger:model ListUserOKBody
 */
 type ListUserOKBody struct {

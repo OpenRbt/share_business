@@ -23,15 +23,11 @@ type WashServer struct {
 	// Format: date-time
 	CreatedAt *strfmt.DateTime `json:"createdAt,omitempty"`
 
+	// description
+	Description string `json:"description,omitempty"`
+
 	// id
 	ID string `json:"id,omitempty"`
-
-	// key
-	Key string `json:"key,omitempty"`
-
-	// last update at
-	// Format: date-time
-	LastUpdateAt *strfmt.DateTime `json:"lastUpdateAt,omitempty"`
 
 	// modified at
 	// Format: date-time
@@ -39,6 +35,12 @@ type WashServer struct {
 
 	// name
 	Name string `json:"name,omitempty"`
+
+	// owner id
+	OwnerID string `json:"owner_id,omitempty"`
+
+	// service key
+	ServiceKey string `json:"service_key,omitempty"`
 }
 
 // Validate validates this wash server
@@ -46,10 +48,6 @@ func (m *WashServer) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCreatedAt(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateLastUpdateAt(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -69,18 +67,6 @@ func (m *WashServer) validateCreatedAt(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("createdAt", "body", "date-time", m.CreatedAt.String(), formats); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *WashServer) validateLastUpdateAt(formats strfmt.Registry) error {
-	if swag.IsZero(m.LastUpdateAt) { // not required
-		return nil
-	}
-
-	if err := validate.FormatOf("lastUpdateAt", "body", "date-time", m.LastUpdateAt.String(), formats); err != nil {
 		return err
 	}
 

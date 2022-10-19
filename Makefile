@@ -24,3 +24,9 @@ start_docker:
 
 	MSRV_DB_USER=$(POSTGRES_USER) MSRV_DB_PASS=$(POSTGRES_PASSWORD) MSRV_DB_NAME=$(POSTGRES_DB) \
 		docker run --rm -it -e MSRV_DB_USER -e MSRV_DB_PASS -e MSRV_DB_NAME --network=host $(DOCKER_IMAGE_NAME)
+
+build_app:
+	go build -o ./bin/wash-bonus ./cmd/main/*
+
+run_app:
+	go build -o ./bin/wash-bonus ./cmd/main/* && ./bin/wash-bonus

@@ -46,44 +46,14 @@ func NewAddUserOK() *AddUserOK {
 	return &AddUserOK{}
 }
 
-/*
-AddUserOK describes a response with status code 200, with default header values.
+/* AddUserOK describes a response with status code 200, with default header values.
 
 Created
 */
 type AddUserOK struct {
 }
 
-// IsSuccess returns true when this add user o k response has a 2xx status code
-func (o *AddUserOK) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this add user o k response has a 3xx status code
-func (o *AddUserOK) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this add user o k response has a 4xx status code
-func (o *AddUserOK) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this add user o k response has a 5xx status code
-func (o *AddUserOK) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this add user o k response a status code equal to that given
-func (o *AddUserOK) IsCode(code int) bool {
-	return code == 200
-}
-
 func (o *AddUserOK) Error() string {
-	return fmt.Sprintf("[POST /user/add][%d] addUserOK ", 200)
-}
-
-func (o *AddUserOK) String() string {
 	return fmt.Sprintf("[POST /user/add][%d] addUserOK ", 200)
 }
 
@@ -99,8 +69,7 @@ func NewAddUserDefault(code int) *AddUserDefault {
 	}
 }
 
-/*
-AddUserDefault describes a response with status code -1, with default header values.
+/* AddUserDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -115,39 +84,9 @@ func (o *AddUserDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this add user default response has a 2xx status code
-func (o *AddUserDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this add user default response has a 3xx status code
-func (o *AddUserDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this add user default response has a 4xx status code
-func (o *AddUserDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this add user default response has a 5xx status code
-func (o *AddUserDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this add user default response a status code equal to that given
-func (o *AddUserDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *AddUserDefault) Error() string {
 	return fmt.Sprintf("[POST /user/add][%d] addUser default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *AddUserDefault) String() string {
-	return fmt.Sprintf("[POST /user/add][%d] addUser default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *AddUserDefault) GetPayload() *models.Error {
 	return o.Payload
 }

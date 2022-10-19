@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"wash-bonus/internal/api/restapi/models"
 )
 
 // NewEditWashServerParams creates a new EditWashServerParams object,
@@ -52,17 +54,18 @@ func NewEditWashServerParamsWithHTTPClient(client *http.Client) *EditWashServerP
 	}
 }
 
-/*
-EditWashServerParams contains all the parameters to send to the API endpoint
+/* EditWashServerParams contains all the parameters to send to the API endpoint
+   for the edit wash server operation.
 
-	for the edit wash server operation.
-
-	Typically these are written to a http.Request.
+   Typically these are written to a http.Request.
 */
 type EditWashServerParams struct {
 
 	// Body.
-	Body EditWashServerBody
+	Body *models.WashServerUpdate
+
+	// ID.
+	ID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -118,14 +121,25 @@ func (o *EditWashServerParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the edit wash server params
-func (o *EditWashServerParams) WithBody(body EditWashServerBody) *EditWashServerParams {
+func (o *EditWashServerParams) WithBody(body *models.WashServerUpdate) *EditWashServerParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the edit wash server params
-func (o *EditWashServerParams) SetBody(body EditWashServerBody) {
+func (o *EditWashServerParams) SetBody(body *models.WashServerUpdate) {
 	o.Body = body
+}
+
+// WithID adds the id to the edit wash server params
+func (o *EditWashServerParams) WithID(id string) *EditWashServerParams {
+	o.SetID(id)
+	return o
+}
+
+// SetID adds the id to the edit wash server params
+func (o *EditWashServerParams) SetID(id string) {
+	o.ID = id
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -135,7 +149,14 @@ func (o *EditWashServerParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
+	}
+
+	// path param id
+	if err := r.SetPathParam("id", o.ID); err != nil {
 		return err
 	}
 

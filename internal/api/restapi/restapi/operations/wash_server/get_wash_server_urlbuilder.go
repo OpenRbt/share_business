@@ -9,11 +9,16 @@ import (
 	"errors"
 	"net/url"
 	golangswaggerpaths "path"
+	"strings"
 )
 
 // GetWashServerURL generates an URL for the get wash server operation
 type GetWashServerURL struct {
+	ID string
+
 	_basePath string
+	// avoid unkeyed usage
+	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -35,7 +40,14 @@ func (o *GetWashServerURL) SetBasePath(bp string) {
 func (o *GetWashServerURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/washServer/get"
+	var _path = "/washServer/{id}"
+
+	id := o.ID
+	if id != "" {
+		_path = strings.Replace(_path, "{id}", id, -1)
+	} else {
+		return nil, errors.New("id is required on GetWashServerURL")
+	}
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)

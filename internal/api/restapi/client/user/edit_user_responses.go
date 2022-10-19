@@ -46,44 +46,14 @@ func NewEditUserOK() *EditUserOK {
 	return &EditUserOK{}
 }
 
-/*
-EditUserOK describes a response with status code 200, with default header values.
+/* EditUserOK describes a response with status code 200, with default header values.
 
 OK
 */
 type EditUserOK struct {
 }
 
-// IsSuccess returns true when this edit user o k response has a 2xx status code
-func (o *EditUserOK) IsSuccess() bool {
-	return true
-}
-
-// IsRedirect returns true when this edit user o k response has a 3xx status code
-func (o *EditUserOK) IsRedirect() bool {
-	return false
-}
-
-// IsClientError returns true when this edit user o k response has a 4xx status code
-func (o *EditUserOK) IsClientError() bool {
-	return false
-}
-
-// IsServerError returns true when this edit user o k response has a 5xx status code
-func (o *EditUserOK) IsServerError() bool {
-	return false
-}
-
-// IsCode returns true when this edit user o k response a status code equal to that given
-func (o *EditUserOK) IsCode(code int) bool {
-	return code == 200
-}
-
 func (o *EditUserOK) Error() string {
-	return fmt.Sprintf("[PUT /user/{id}/edit][%d] editUserOK ", 200)
-}
-
-func (o *EditUserOK) String() string {
 	return fmt.Sprintf("[PUT /user/{id}/edit][%d] editUserOK ", 200)
 }
 
@@ -99,8 +69,7 @@ func NewEditUserDefault(code int) *EditUserDefault {
 	}
 }
 
-/*
-EditUserDefault describes a response with status code -1, with default header values.
+/* EditUserDefault describes a response with status code -1, with default header values.
 
 error
 */
@@ -115,39 +84,9 @@ func (o *EditUserDefault) Code() int {
 	return o._statusCode
 }
 
-// IsSuccess returns true when this edit user default response has a 2xx status code
-func (o *EditUserDefault) IsSuccess() bool {
-	return o._statusCode/100 == 2
-}
-
-// IsRedirect returns true when this edit user default response has a 3xx status code
-func (o *EditUserDefault) IsRedirect() bool {
-	return o._statusCode/100 == 3
-}
-
-// IsClientError returns true when this edit user default response has a 4xx status code
-func (o *EditUserDefault) IsClientError() bool {
-	return o._statusCode/100 == 4
-}
-
-// IsServerError returns true when this edit user default response has a 5xx status code
-func (o *EditUserDefault) IsServerError() bool {
-	return o._statusCode/100 == 5
-}
-
-// IsCode returns true when this edit user default response a status code equal to that given
-func (o *EditUserDefault) IsCode(code int) bool {
-	return o._statusCode == code
-}
-
 func (o *EditUserDefault) Error() string {
 	return fmt.Sprintf("[PUT /user/{id}/edit][%d] editUser default  %+v", o._statusCode, o.Payload)
 }
-
-func (o *EditUserDefault) String() string {
-	return fmt.Sprintf("[PUT /user/{id}/edit][%d] editUser default  %+v", o._statusCode, o.Payload)
-}
-
 func (o *EditUserDefault) GetPayload() *models.Error {
 	return o.Payload
 }

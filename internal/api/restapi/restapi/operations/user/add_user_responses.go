@@ -16,8 +16,7 @@ import (
 // AddUserOKCode is the HTTP code returned for type AddUserOK
 const AddUserOKCode int = 200
 
-/*
-AddUserOK Created
+/*AddUserOK Created
 
 swagger:response addUserOK
 */
@@ -38,8 +37,7 @@ func (o *AddUserOK) WriteResponse(rw http.ResponseWriter, producer runtime.Produ
 	rw.WriteHeader(200)
 }
 
-/*
-AddUserDefault error
+/*AddUserDefault error
 
 swagger:response addUserDefault
 */

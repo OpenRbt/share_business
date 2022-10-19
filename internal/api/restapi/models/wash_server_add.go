@@ -8,51 +8,27 @@ package models
 import (
 	"context"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
-// WashServerAdd washServer model for add and edit methods
+// WashServerAdd washServer model for add methods
 //
 // swagger:model washServerAdd
 type WashServerAdd struct {
 
-	// key
-	Key string `json:"key,omitempty"`
-
-	// last update at
-	// Format: date-time
-	LastUpdateAt *strfmt.DateTime `json:"lastUpdateAt,omitempty"`
+	// description
+	Description string `json:"description,omitempty"`
 
 	// name
 	Name string `json:"name,omitempty"`
+
+	// owner id
+	OwnerID string `json:"owner_id,omitempty"`
 }
 
 // Validate validates this wash server add
 func (m *WashServerAdd) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateLastUpdateAt(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *WashServerAdd) validateLastUpdateAt(formats strfmt.Registry) error {
-	if swag.IsZero(m.LastUpdateAt) { // not required
-		return nil
-	}
-
-	if err := validate.FormatOf("lastUpdateAt", "body", "date-time", m.LastUpdateAt.String(), formats); err != nil {
-		return err
-	}
-
 	return nil
 }
 
