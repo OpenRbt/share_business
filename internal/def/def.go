@@ -12,7 +12,7 @@ import (
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/swag"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/pkg/errors"
 	"github.com/powerman/structlog"
 )
@@ -34,16 +34,15 @@ const (
 	LogEventID    = "evID"
 )
 
-func initEnv() int {
+/*func initEnv() int {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 	return 0
-}
+}*/
 
 var (
-	_   = initEnv()
 	log = structlog.New()
 
 	oapiHost, oapiPort, oapiBasePath = swaggerEndpoint()
@@ -72,9 +71,9 @@ var (
 
 	GRPCPort         = strGetenv("GRPC_PORT", "8091")
 	GRPCEnableTLS    = boolGetenv("GRPC_ENABLE_TLS")
-	ClientCACertFile = pathGetenv("GRPC_CLIENT_CA_CERT_FILE", "cert/ca-cert.pem")
-	ServerCertFile   = pathGetenv("GRPC_SERVER_CERT_FILE", "cert/server-cert.pem")
-	ServerKeyFile    = pathGetenv("GRPC_SERVER_KEY_FILE", "cert/server-key.pem")
+	ClientCACertFile = pathGetenv("GRPC_CLIENT_CA_CERT_FILE", "~/certs/ca-cert.pem")
+	ServerCertFile   = pathGetenv("GRPC_SERVER_CERT_FILE", "~/certs/server-cert.pem")
+	ServerKeyFile    = pathGetenv("GRPC_SERVER_KEY_FILE", "~/certs/server-key.pem")
 )
 
 func pathGetenv(name, def string) string {
