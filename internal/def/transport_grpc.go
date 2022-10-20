@@ -1,5 +1,9 @@
 package def
 
+import (
+	_ "github.com/joho/godotenv/autoload"
+)
+
 var (
 	GRPCPort         = strGetenv("GRPC_PORT", "8091")
 	GRPCEnableTLS    = boolGetenv("GRPC_ENABLE_TLS")

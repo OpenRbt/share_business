@@ -2,6 +2,8 @@ package def
 
 import (
 	"os"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
