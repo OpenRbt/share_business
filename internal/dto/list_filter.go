@@ -1,11 +1,11 @@
 package dto
 
 import (
-	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app/entity/vo"
+	models2 "wash-bonus/internal/transport/rest/restapi/models"
 )
 
-func ListFilterFromRest(lf *models.ListParams) vo.ListFilter {
+func ListFilterFromRest(lf *models2.ListParams) vo.ListFilter {
 	var offset int64 = 0
 	if lf.Offset != nil {
 		offset = *lf.Offset
@@ -19,7 +19,7 @@ func ListFilterFromRest(lf *models.ListParams) vo.ListFilter {
 	}
 }
 
-func filterGroupsFromRest(ff []*models.FilterGroup) []vo.FilterGroup {
+func filterGroupsFromRest(ff []*models2.FilterGroup) []vo.FilterGroup {
 	res := make([]vo.FilterGroup, len(ff))
 
 	for i, f := range ff {
@@ -29,14 +29,14 @@ func filterGroupsFromRest(ff []*models.FilterGroup) []vo.FilterGroup {
 	return res
 }
 
-func filterGroupFromRest(f models.FilterGroup) vo.FilterGroup {
+func filterGroupFromRest(f models2.FilterGroup) vo.FilterGroup {
 	return vo.FilterGroup{
 		Key:         f.Key,
 		LogicFilter: f.LogicFilter,
 		Filters:     filtersFromRest(f.Filters),
 	}
 }
-func filtersFromRest(ff []*models.Filter) []vo.Filter {
+func filtersFromRest(ff []*models2.Filter) []vo.Filter {
 	res := make([]vo.Filter, len(ff))
 
 	for i, f := range ff {

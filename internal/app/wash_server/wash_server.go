@@ -1,12 +1,16 @@
 package wash_server
 
 import (
+	"github.com/golang-jwt/jwt/v4"
+	"sync"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/app/user"
+	"wash-bonus/internal/transport/grpc"
 
-	"github.com/golang-jwt/jwt/v4"
+	"crypto/rand"
+	"crypto/rsa"
 
 	"os"
 )
@@ -29,20 +33,43 @@ type Repository interface {
 }
 
 type Service struct {
-	repo    Repository
-	userSvc user.UserSvc
-	rsaKey  []byte
+	repo                           Repository
+	userSvc                        user.UserSvc
+	rsaPrivateKey                  *rsa.PrivateKey
+	rsaPublicKey                   *rsa.PublicKey
+	washServerGRPCConnectionsMutex sync.Mutex
+	washServerGRPCConnections      map[string]grpc.WashServerConnection
 }
 
-func NewService(repo Repository, userSvc user.UserSvc, kefilePath string) (WashServerSvc, error) {
-	content, err := os.ReadFile(kefilePath)
+func NewService(repo Repository, userSvc user.UserSvc, connections map[string]grpc.WashServerConnection,
+	privateKeyFilePath, publicKeyFilePath string) (WashServerSvc, error) {
+
+	privateKeyContent, err := os.ReadFile(privateKeyFilePath)
 	if err != nil {
 		return nil, err
 	}
+
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKeyContent)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKeyContent, err := os.ReadFile(publicKeyFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyContent)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Service{
-		userSvc: userSvc,
-		repo:    repo,
-		rsaKey:  content,
+		userSvc:                   userSvc,
+		repo:                      repo,
+		rsaPrivateKey:             privateKey,
+		rsaPublicKey:              publicKey,
+		washServerGRPCConnections: connections,
 	}, nil
 }
 
@@ -85,12 +112,12 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		return nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodPS256.SigningMethodRSA, jwt.MapClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"owner_id":       wash.Owner.ID,
-		"wash_server_id": wash_server_id,
+		"wash_server_id": wash.ID,
 	})
 
-	tokenString, err := token.SignedString(a.rsaKey)
+	tokenString, err := token.SignedString(a.rsaPrivateKey)
 	if err != nil {
 		return nil, app.ErrGenerateJWT
 	}
@@ -101,10 +128,21 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		ServiceKey:  tokenString,
 		OwnerID:     wash.Owner.ID,
 	}, *editor)
-
 	if err != nil {
 		return nil, err
 	}
+
+	wash, err = a.repo.GetWashServer(wash_server_id)
+	if err != nil {
+		return nil, err
+	}
+
+	a.washServerGRPCConnectionsMutex.Lock()
+	a.washServerGRPCConnections[tokenString] = grpc.WashServerConnection{
+		WashServer: *wash,
+		Verify:     false,
+	}
+	a.washServerGRPCConnectionsMutex.Unlock()
 
 	return &tokenString, nil
 }

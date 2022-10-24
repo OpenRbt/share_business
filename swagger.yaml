@@ -46,6 +46,94 @@ paths:
           schema:
             $ref: "#/definitions/error"
 
+  /balance/get:    
+    post: 
+      tags:
+        - Balance
+      operationId: getBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                type: string 
+      responses:
+        200:
+          description: OK
+          schema:
+                  $ref: "#/definitions/balance"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+  /balance/add:
+    post: 
+      tags:
+        - Balance
+      operationId: addBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/balanceAdd" 
+      responses:
+        201:
+          description: Created 
+          schema:
+            $ref: "#/definitions/balance"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /balance/edit:
+    put: 
+      tags:
+        - Balance
+      operationId: editBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                 type: string
+              data:
+                $ref: "#/definitions/balanceAdd" 
+      responses:
+        200:
+          description: OK
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /balance/deleted:
+    delete: 
+      tags:
+        - Balance
+      operationId: deleteBalance
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+              user_id:
+                type: string 
+      responses:
+        204:
+          description: Deleted
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
   /user:
     get:
       tags:
@@ -308,17 +396,37 @@ definitions:
         type: string
         format: date-time
         x-nullable: true
-
-  userUpdate:
+  
+  balance:
     type: object
-    description: "user model for edit method"
+    description: "bonus object"
     properties:
-      active:
-        type: boolean
+      id:
+        type: string
+      user_id:
+        type: string
+      balance:
+        type: string
+
+  balanceAdd:
+    type: object
+    description: "bonus model for add and edit methods"
+    properties:
+      balance:
+        type: string
+      user_id:
+        type: string
 
   userAdd:
     type: object
     description: "user model for add method"
+    properties:
+      active:
+        type: boolean
+  
+  userUpdate:
+    type: object
+    description: "user model for edit method"
     properties:
       active:
         type: boolean

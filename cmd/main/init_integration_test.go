@@ -8,7 +8,7 @@ import (
 	"net"
 	"strconv"
 
-	"wash-bonus/internal/api/restapi/client"
+	"wash-bonus/internal/transport/rest/restapi/client"
 
 	"github.com/powerman/gotest/testinit"
 	"github.com/powerman/pqx"

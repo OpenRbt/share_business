@@ -1,13 +1,12 @@
 package dto
 
 import (
-	"wash-bonus/internal/api/restapi/models"
+	"github.com/go-openapi/strfmt"
+	uuid "github.com/satori/go.uuid"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/dal/dbmodel"
-
-	"github.com/go-openapi/strfmt"
-	uuid "github.com/satori/go.uuid"
+	models2 "wash-bonus/internal/transport/rest/restapi/models"
 )
 
 func WashServersFromDB(ss []dbmodel.WashServer) []entity.WashServer {
@@ -32,8 +31,8 @@ func WashServerFromDB(s dbmodel.WashServer) *entity.WashServer {
 	}
 }
 
-func WashServersToRest(ss []entity.WashServer) []*models.WashServer {
-	apiWashServers := make([]*models.WashServer, len(ss))
+func WashServersToRest(ss []entity.WashServer) []*models2.WashServer {
+	apiWashServers := make([]*models2.WashServer, len(ss))
 
 	for i, s := range ss {
 		apiWashServer := WashServerToRest(&s)
@@ -43,8 +42,8 @@ func WashServersToRest(ss []entity.WashServer) []*models.WashServer {
 	return apiWashServers
 }
 
-func WashServerToRest(s *entity.WashServer) *models.WashServer {
-	return &models.WashServer{
+func WashServerToRest(s *entity.WashServer) *models2.WashServer {
+	return &models2.WashServer{
 		ID:          s.ID.String(),
 		ServiceKey:  s.ServiceKey,
 		CreatedAt:   (*strfmt.DateTime)(s.CreatedAt),
@@ -55,7 +54,7 @@ func WashServerToRest(s *entity.WashServer) *models.WashServer {
 	}
 }
 
-func WashServerFromRestAdd(s *models.WashServerAdd) (*entity.WashServer, error) {
+func WashServerFromRestAdd(s *models2.WashServerAdd) (*entity.WashServer, error) {
 	id, err := uuid.FromString(s.OwnerID)
 	if err != nil {
 		return nil, err
@@ -68,7 +67,7 @@ func WashServerFromRestAdd(s *models.WashServerAdd) (*entity.WashServer, error) 
 	}, nil
 }
 
-func WashServerFromRestUpdate(s *models.WashServerUpdate) (*vo.WashServerUpdate, error) {
+func WashServerFromRestUpdate(s *models2.WashServerUpdate) (*vo.WashServerUpdate, error) {
 	id, err := uuid.FromString(s.OwnerID)
 	if err != nil {
 		return nil, err

@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
+	"wash-bonus/internal/transport/rest/restapi/models"
 
 	extauthapi "github.com/mtgroupit/mt-mock-extauthapi"
 

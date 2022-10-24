@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package xgrpc;
+
+option go_package = "./grpc";
+
+service WashServerService{
+    rpc VerifyClient(Verify) returns(VerifyAnswer);
+    rpc SendMessage(stream Message) returns(stream MessageAnswer);
+    rpc SendMessageToOtherClient(stream MessageToOther) returns(stream MessageToOtherAnswer);
+}
+
+message Verify{
+    string serviceKey = 1;
+}
+
+message VerifyAnswer{
+    bool success = 1;
+}
+
+message Message{
+    string serviceKey = 1;
+    string msg = 2;
+}
+
+message MessageAnswer{
+    string msg = 1;
+}
+
+message MessageToOther{
+    string serviceKey = 1;
+    string targetUuid = 2;
+    string msg = 3;
+}
+
+message MessageToOtherAnswer{
+    bool success = 1;
+}
