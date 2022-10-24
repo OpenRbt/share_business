@@ -15,3 +15,7 @@ openssl req  -addext "subjectAltName = DNS:localhost" -newkey rsa:4096 -nodes -k
 openssl x509 -req -in certs/dev-server-req.pem -days 60 -CA certs/dev-ca-cert.pem -CAkey certs/dev-ca-key.pem -CAcreateserial -out certs/dev-server-cert.pem
 echo "Server's signed certificate"
 openssl x509 -in certs/dev-server-cert.pem -noout -text
+
+# 4. RSA for JWT
+openssl genrsa -out certs/wash-server-rsa-keyfile 1024
+openssl rsa -in certs/wash-server-rsa-keyfile -pubout -out certs/wash-server-rsa-keyfile.pub

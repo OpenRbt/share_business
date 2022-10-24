@@ -112,7 +112,8 @@ func run() error {
 	appl := app.New(r)
 	userSvc := user.NewService(r)
 
-	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAKeyFilePath, washServerGRPCSvc.WashServerConnections)
+	washServerSvc, err := wash_server.NewService(r, userSvc, washServerGRPCSvc.WashServerConnections,
+		def.WashServerRSAPrivateKeyFilePath, def.WashServerRSAPublicKeyFilePath)
 	if err != nil {
 		return err
 	}

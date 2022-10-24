@@ -10,7 +10,6 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 
-	"crypto/rand"
 	"crypto/rsa"
 
 	"os"
@@ -36,25 +35,40 @@ type Repository interface {
 type Service struct {
 	repo                           Repository
 	userSvc                        user.UserSvc
-	rsaKey                         *rsa.PrivateKey
+	rsaPrivateKey                  *rsa.PrivateKey
+	rsaPublicKey                   *rsa.PublicKey
 	washServerGRPCConnectionsMutex sync.Mutex
 	washServerGRPCConnections      map[string]grpc.WashServerConnection
 }
 
-func NewService(repo Repository, userSvc user.UserSvc, kefilePath string, connections map[string]grpc.WashServerConnection) (WashServerSvc, error) {
-	file, err := os.Open(kefilePath)
-	defer file.Close()
+func NewService(repo Repository, userSvc user.UserSvc, connections map[string]grpc.WashServerConnection,
+	privateKeyFilePath, publicKeyFilePath string) (WashServerSvc, error) {
+
+	privateKeyContent, err := os.ReadFile(privateKeyFilePath)
 	if err != nil {
 		return nil, err
 	}
-	key, err := rsa.GenerateKey(rand.Reader, 1024)
+
+	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKeyContent)
 	if err != nil {
 		return nil, err
 	}
+
+	publicKeyContent, err := os.ReadFile(publicKeyFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKeyContent)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Service{
 		userSvc:                   userSvc,
 		repo:                      repo,
-		rsaKey:                    key,
+		rsaPrivateKey:             privateKey,
+		rsaPublicKey:              publicKey,
 		washServerGRPCConnections: connections,
 	}, nil
 }
@@ -103,7 +117,7 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 		"wash_server_id": wash.ID,
 	})
 
-	tokenString, err := token.SignedString(a.rsaKey)
+	tokenString, err := token.SignedString(a.rsaPrivateKey)
 	if err != nil {
 		return nil, app.ErrGenerateJWT
 	}
