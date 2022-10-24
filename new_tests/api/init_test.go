@@ -13,9 +13,9 @@ import (
 	"github.com/phayes/freeport"
 	"github.com/powerman/check"
 	"github.com/powerman/gotest/testinit"
-	"wash-bonus/internal/api/restapi/models"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
+	"wash-bonus/internal/transport/rest/restapi/models"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/dal/dbmodel"
-	"wash-bonus/transport/rest/restapi/models"
+	"wash-bonus/internal/transport/rest/restapi/models"
 )
 
 func BalanceToRest(a *entity.Balance) *models.Balance {

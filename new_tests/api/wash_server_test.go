@@ -3,8 +3,8 @@ package api
 import (
 	"testing"
 
-	"wash-bonus/internal/api/restapi/client"
-	washServer "wash-bonus/internal/api/restapi/client/wash_server"
+	"wash-bonus/internal/transport/rest/restapi/client"
+	washServer "wash-bonus/internal/transport/rest/restapi/client/wash_server"
 
 	cl "github.com/go-openapi/runtime/client"
 	"github.com/golang/mock/gomock"

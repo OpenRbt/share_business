@@ -7,22 +7,20 @@ import (
 	"crypto/x509"
 	"flag"
 	"fmt"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"net"
 	"os"
 	"time"
+	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/Balance"
 	"wash-bonus/internal/app/user"
 	"wash-bonus/internal/app/wash_server"
 	"wash-bonus/internal/dal"
-	"wash-bonus/internal/firebase_auth"
-	grpc2 "wash-bonus/transport/grpc"
-
-	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
-	api "wash-bonus/transport/rest"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"wash-bonus/internal/firebase_auth"
+	grpc3 "wash-bonus/internal/transport/grpc"
+	"wash-bonus/internal/transport/rest"
 
 	"github.com/powerman/pqx"
 	"github.com/powerman/structlog"
@@ -105,7 +103,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	washServerGRPCSvc, err := grpc2.NewWashServerService(r)
+	washServerGRPCSvc, err := grpc3.NewWashServerService(r)
 	if err != nil {
 		return err
 	}
@@ -154,7 +152,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	}), nil
 }
 
-func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc2.WashServerService, enableTLS bool) {
+func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc3.WashServerService, enableTLS bool) {
 	serverOptions := []grpc.ServerOption{}
 
 	if enableTLS {
@@ -168,7 +166,7 @@ func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc2.WashServerSer
 
 	server := grpc.NewServer(serverOptions...)
 
-	grpc2.RegisterWashServerServiceServer(server, WashServerGRPCService)
+	grpc3.RegisterWashServerServiceServer(server, WashServerGRPCService)
 
 	l, err := net.Listen("tcp", ":"+def.GRPCPort)
 	if err != nil {
