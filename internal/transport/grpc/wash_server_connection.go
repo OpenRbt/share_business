@@ -36,18 +36,3 @@ func NewWashSession(user entity.User) WashSession {
 		User: user,
 	}
 }
-
-// ???
-// Methods for working with session user bonuses. Interacts with the user repository
-
-func (w *WashSession) AddBonus(value decimal.Decimal) {
-
-}
-
-func (w *WashSession) RemoveBonus(value decimal.Decimal) {
-
-}
-
-func (w *WashSession) SetBonus(value decimal.Decimal) {
-
-}
