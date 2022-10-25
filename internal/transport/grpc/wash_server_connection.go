@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	sync "sync"
 	"wash-bonus/internal/app/entity"
 
 	uuid "github.com/satori/go.uuid"
@@ -19,6 +20,7 @@ type WashServerConnection struct {
 	WashServer                     entity.WashServer
 	StreamSendMessage              WashServerService_SendMessageServer
 	StreamSendMessageToOtherClient WashServerService_SendMessageToOtherClientServer
+	WashSessionsMutex              sync.Mutex
 	WashSessions                   map[string]WashSession
 }
 
