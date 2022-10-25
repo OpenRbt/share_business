@@ -1,7 +1,6 @@
 package wash_server
 
 import (
-	"github.com/golang-jwt/jwt/v4"
 	"sync"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
@@ -9,7 +8,8 @@ import (
 	"wash-bonus/internal/app/user"
 	"wash-bonus/internal/transport/grpc"
 
-	"crypto/rand"
+	"github.com/golang-jwt/jwt/v4"
+
 	"crypto/rsa"
 
 	"os"

@@ -2,7 +2,6 @@ package grpc
 
 import (
 	context "context"
-	"fmt"
 	"log"
 	"sync"
 	"wash-bonus/internal/app/entity"
@@ -12,13 +11,6 @@ import (
 type WashServerRepository interface {
 	GetWashServer(id string) (*entity.WashServer, error)
 	ListWashServers(filter vo.ListFilter) ([]entity.WashServer, []string, error)
-}
-
-type WashServerConnection struct {
-	Verify                         bool
-	WashServer                     entity.WashServer
-	StreamSendMessage              WashServerService_SendMessageServer
-	StreamSendMessageToOtherClient WashServerService_SendMessageToOtherClientServer
 }
 
 type WashServerService struct {
@@ -35,12 +27,8 @@ func NewWashServerService(washServerRepo WashServerRepository) (*WashServerServi
 
 	connections := make(map[string]WashServerConnection)
 	for _, v := range washList {
-		fmt.Println("Load: ", v.ID)
 		if v.ServiceKey != "" {
-			connections[v.ServiceKey] = WashServerConnection{
-				WashServer: v,
-				Verify:     false,
-			}
+			connections[v.ServiceKey] = NewWashServerConnection(v)
 		}
 	}
 
