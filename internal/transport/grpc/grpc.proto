@@ -5,34 +5,70 @@ package xgrpc;
 option go_package = "./grpc";
 
 service WashServerService{
-    rpc VerifyClient(Verify) returns(VerifyAnswer);
-    rpc SendMessage(stream Message) returns(stream MessageAnswer);
-    rpc SendMessageToOtherClient(stream MessageToOther) returns(stream MessageToOtherAnswer);
+    rpc InitConnection(InitConnectionRequest) returns(InitConnectionAnswer);
+    rpc StartSession(stream StartSessionRequest) returns(stream StartSessionAnswer);
+    rpc UpdateSession(stream UpdateSessionRequest) returns(stream UpdateSessionAnswer);
+    rpc ConfirmSession(stream ConfirmSessionRequest) returns(stream ConfirmSessionAnswer);
+    rpc FinishSession(stream FinishSessionRequest) returns(stream FinishSessionAnswer);
 }
 
-message Verify{
+
+message InitConnectionRequest{
     string serviceKey = 1;
 }
 
-message VerifyAnswer{
+message InitConnectionAnswer{
     bool success = 1;
+    string error = 2;
 }
 
-message Message{
+
+message StartSessionRequest{
     string serviceKey = 1;
-    string msg = 2;
+    string sessionID = 2;
+    string postID = 3;
 }
 
-message MessageAnswer{
-    string msg = 1;
-}
-
-message MessageToOther{
-    string serviceKey = 1;
-    string targetUuid = 2;
-    string msg = 3;
-}
-
-message MessageToOtherAnswer{
+message StartSessionAnswer{
     bool success = 1;
+    string error = 2;
+}
+
+
+message UpdateSessionRequest{
+    string serviceKey = 1;
+}
+
+message UpdateSessionAnswer{
+    bool success = 1;
+    string error = 2;
+    string sessionID = 2;
+    string postID = 3;
+    float Amount = 3;
+    float bonusAccrual = 4;
+}
+
+
+message ConfirmSessionRequest{
+    string serviceKey = 1;
+    string sessionID = 2;
+    string postID = 3;
+}
+
+message ConfirmSessionAnswer{
+    bool success = 1;
+    string error = 2;
+}
+
+
+message FinishSessionRequest{
+    string serviceKey = 1;
+    string sessionID = 2;
+    string postID = 3;
+    float amount = 4;
+}
+
+message FinishSessionAnswer{
+    bool success = 1;
+    string error = 2;
 }

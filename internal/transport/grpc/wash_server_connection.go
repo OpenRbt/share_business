@@ -13,6 +13,7 @@ type WashSession struct {
 	User             entity.User
 	Amount           decimal.Decimal
 	MaxConsumeAmount decimal.Decimal
+	Confirm          bool
 }
 
 type WashServerConnection struct {
