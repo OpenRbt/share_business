@@ -8,4 +8,6 @@ import "errors"
 // Errors.
 var (
 	ErrVerifyFailed = errors.New("verify failed")
+	ErrNotFound     = errors.New("not found")
+	ErrBadID        = errors.New("bad id")
 )

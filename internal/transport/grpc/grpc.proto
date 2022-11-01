@@ -6,10 +6,10 @@ option go_package = "./grpc";
 
 service WashServerService{
     rpc InitConnection(InitConnectionRequest) returns(InitConnectionAnswer);
-    rpc StartSession(stream StartSessionRequest) returns(stream StartSessionAnswer);
+    rpc StartSession(StartSessionRequest) returns(StartSessionAnswer);
     rpc UpdateSession(stream UpdateSessionRequest) returns(stream UpdateSessionAnswer);
-    rpc ConfirmSession(stream ConfirmSessionRequest) returns(stream ConfirmSessionAnswer);
-    rpc FinishSession(stream FinishSessionRequest) returns(stream FinishSessionAnswer);
+    rpc ConfirmSession(ConfirmSessionRequest) returns(ConfirmSessionAnswer);
+    rpc FinishSession(FinishSessionRequest) returns(FinishSessionAnswer);
 }
 
 
@@ -19,7 +19,6 @@ message InitConnectionRequest{
 
 message InitConnectionAnswer{
     bool success = 1;
-    string error = 2;
 }
 
 
@@ -31,21 +30,22 @@ message StartSessionRequest{
 
 message StartSessionAnswer{
     bool success = 1;
-    string error = 2;
 }
 
 
 message UpdateSessionRequest{
     string serviceKey = 1;
+    bool success = 2;
+    string error = 3;
 }
 
 message UpdateSessionAnswer{
     bool success = 1;
     string error = 2;
-    string sessionID = 2;
-    string postID = 3;
-    float Amount = 3;
-    float bonusAccrual = 4;
+    string sessionID = 3;
+    string postID = 4;
+    float Amount = 5;
+    float bonusAccrual = 6;
 }
 
 
@@ -57,7 +57,6 @@ message ConfirmSessionRequest{
 
 message ConfirmSessionAnswer{
     bool success = 1;
-    string error = 2;
 }
 
 
@@ -70,5 +69,4 @@ message FinishSessionRequest{
 
 message FinishSessionAnswer{
     bool success = 1;
-    string error = 2;
 }

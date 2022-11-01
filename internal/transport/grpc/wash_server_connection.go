@@ -17,25 +17,16 @@ type WashSession struct {
 }
 
 type WashServerConnection struct {
-	Verify                         bool
-	WashServer                     entity.WashServer
-	StreamSendMessage              WashServerService_SendMessageServer
-	StreamSendMessageToOtherClient WashServerService_SendMessageToOtherClientServer
-	WashSessionsMutex              sync.Mutex
-	WashSessions                   map[string]WashSession
+	Verify              bool
+	WashServer          entity.WashServer
+	StreamUpdateSession WashServerService_UpdateSessionServer
+	WashSessionsMutex   sync.Mutex
+	WashSessions        map[string]WashSession
 }
 
-func NewWashServerConnection(washServer entity.WashServer) WashServerConnection {
-	return WashServerConnection{
-		Verify:       false,
+func NewWashServerConnection(washServer entity.WashServer) *WashServerConnection {
+	return &WashServerConnection{
 		WashServer:   washServer,
 		WashSessions: make(map[string]WashSession),
-	}
-}
-
-func NewWashSession(user entity.User) WashSession {
-	return WashSession{
-		ID:   uuid.NewV4(),
-		User: user,
 	}
 }

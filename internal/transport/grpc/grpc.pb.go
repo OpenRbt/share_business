@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.25.0-devel
 // 	protoc        v3.14.0
-// source: grpc.proto
+// source: internal/transport/grpc/grpc.proto
 
 package grpc
 
@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Verify struct {
+type InitConnectionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -28,23 +28,23 @@ type Verify struct {
 	ServiceKey string `protobuf:"bytes,1,opt,name=serviceKey,proto3" json:"serviceKey,omitempty"`
 }
 
-func (x *Verify) Reset() {
-	*x = Verify{}
+func (x *InitConnectionRequest) Reset() {
+	*x = InitConnectionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_grpc_proto_msgTypes[0]
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *Verify) String() string {
+func (x *InitConnectionRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Verify) ProtoMessage() {}
+func (*InitConnectionRequest) ProtoMessage() {}
 
-func (x *Verify) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_proto_msgTypes[0]
+func (x *InitConnectionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,19 +55,19 @@ func (x *Verify) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Verify.ProtoReflect.Descriptor instead.
-func (*Verify) Descriptor() ([]byte, []int) {
-	return file_grpc_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use InitConnectionRequest.ProtoReflect.Descriptor instead.
+func (*InitConnectionRequest) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Verify) GetServiceKey() string {
+func (x *InitConnectionRequest) GetServiceKey() string {
 	if x != nil {
 		return x.ServiceKey
 	}
 	return ""
 }
 
-type VerifyAnswer struct {
+type InitConnectionAnswer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -75,23 +75,23 @@ type VerifyAnswer struct {
 	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 }
 
-func (x *VerifyAnswer) Reset() {
-	*x = VerifyAnswer{}
+func (x *InitConnectionAnswer) Reset() {
+	*x = InitConnectionAnswer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_grpc_proto_msgTypes[1]
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *VerifyAnswer) String() string {
+func (x *InitConnectionAnswer) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*VerifyAnswer) ProtoMessage() {}
+func (*InitConnectionAnswer) ProtoMessage() {}
 
-func (x *VerifyAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_proto_msgTypes[1]
+func (x *InitConnectionAnswer) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -102,44 +102,45 @@ func (x *VerifyAnswer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use VerifyAnswer.ProtoReflect.Descriptor instead.
-func (*VerifyAnswer) Descriptor() ([]byte, []int) {
-	return file_grpc_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use InitConnectionAnswer.ProtoReflect.Descriptor instead.
+func (*InitConnectionAnswer) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *VerifyAnswer) GetSuccess() bool {
+func (x *InitConnectionAnswer) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-type Message struct {
+type StartSessionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	ServiceKey string `protobuf:"bytes,1,opt,name=serviceKey,proto3" json:"serviceKey,omitempty"`
-	Msg        string `protobuf:"bytes,2,opt,name=msg,proto3" json:"msg,omitempty"`
+	SessionID  string `protobuf:"bytes,2,opt,name=sessionID,proto3" json:"sessionID,omitempty"`
+	PostID     string `protobuf:"bytes,3,opt,name=postID,proto3" json:"postID,omitempty"`
 }
 
-func (x *Message) Reset() {
-	*x = Message{}
+func (x *StartSessionRequest) Reset() {
+	*x = StartSessionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_grpc_proto_msgTypes[2]
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *Message) String() string {
+func (x *StartSessionRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Message) ProtoMessage() {}
+func (*StartSessionRequest) ProtoMessage() {}
 
-func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_proto_msgTypes[2]
+func (x *StartSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -150,136 +151,33 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Message.ProtoReflect.Descriptor instead.
-func (*Message) Descriptor() ([]byte, []int) {
-	return file_grpc_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use StartSessionRequest.ProtoReflect.Descriptor instead.
+func (*StartSessionRequest) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *Message) GetServiceKey() string {
+func (x *StartSessionRequest) GetServiceKey() string {
 	if x != nil {
 		return x.ServiceKey
 	}
 	return ""
 }
 
-func (x *Message) GetMsg() string {
+func (x *StartSessionRequest) GetSessionID() string {
 	if x != nil {
-		return x.Msg
+		return x.SessionID
 	}
 	return ""
 }
 
-type MessageAnswer struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Msg string `protobuf:"bytes,1,opt,name=msg,proto3" json:"msg,omitempty"`
-}
-
-func (x *MessageAnswer) Reset() {
-	*x = MessageAnswer{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_grpc_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MessageAnswer) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MessageAnswer) ProtoMessage() {}
-
-func (x *MessageAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MessageAnswer.ProtoReflect.Descriptor instead.
-func (*MessageAnswer) Descriptor() ([]byte, []int) {
-	return file_grpc_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *MessageAnswer) GetMsg() string {
+func (x *StartSessionRequest) GetPostID() string {
 	if x != nil {
-		return x.Msg
+		return x.PostID
 	}
 	return ""
 }
 
-type MessageToOther struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	ServiceKey string `protobuf:"bytes,1,opt,name=serviceKey,proto3" json:"serviceKey,omitempty"`
-	TargetUuid string `protobuf:"bytes,2,opt,name=targetUuid,proto3" json:"targetUuid,omitempty"`
-	Msg        string `protobuf:"bytes,3,opt,name=msg,proto3" json:"msg,omitempty"`
-}
-
-func (x *MessageToOther) Reset() {
-	*x = MessageToOther{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_grpc_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MessageToOther) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MessageToOther) ProtoMessage() {}
-
-func (x *MessageToOther) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MessageToOther.ProtoReflect.Descriptor instead.
-func (*MessageToOther) Descriptor() ([]byte, []int) {
-	return file_grpc_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *MessageToOther) GetServiceKey() string {
-	if x != nil {
-		return x.ServiceKey
-	}
-	return ""
-}
-
-func (x *MessageToOther) GetTargetUuid() string {
-	if x != nil {
-		return x.TargetUuid
-	}
-	return ""
-}
-
-func (x *MessageToOther) GetMsg() string {
-	if x != nil {
-		return x.Msg
-	}
-	return ""
-}
-
-type MessageToOtherAnswer struct {
+type StartSessionAnswer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -287,23 +185,23 @@ type MessageToOtherAnswer struct {
 	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 }
 
-func (x *MessageToOtherAnswer) Reset() {
-	*x = MessageToOtherAnswer{}
+func (x *StartSessionAnswer) Reset() {
+	*x = StartSessionAnswer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_grpc_proto_msgTypes[5]
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *MessageToOtherAnswer) String() string {
+func (x *StartSessionAnswer) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MessageToOtherAnswer) ProtoMessage() {}
+func (*StartSessionAnswer) ProtoMessage() {}
 
-func (x *MessageToOtherAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_grpc_proto_msgTypes[5]
+func (x *StartSessionAnswer) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -314,103 +212,537 @@ func (x *MessageToOtherAnswer) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MessageToOtherAnswer.ProtoReflect.Descriptor instead.
-func (*MessageToOtherAnswer) Descriptor() ([]byte, []int) {
-	return file_grpc_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use StartSessionAnswer.ProtoReflect.Descriptor instead.
+func (*StartSessionAnswer) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *MessageToOtherAnswer) GetSuccess() bool {
+func (x *StartSessionAnswer) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-var File_grpc_proto protoreflect.FileDescriptor
+type UpdateSessionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
 
-var file_grpc_proto_rawDesc = []byte{
-	0x0a, 0x0a, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x78, 0x67,
-	0x72, 0x70, 0x63, 0x22, 0x28, 0x0a, 0x06, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x12, 0x1e, 0x0a,
+	ServiceKey string `protobuf:"bytes,1,opt,name=serviceKey,proto3" json:"serviceKey,omitempty"`
+	Success    bool   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Error      string `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *UpdateSessionRequest) Reset() {
+	*x = UpdateSessionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSessionRequest) ProtoMessage() {}
+
+func (x *UpdateSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSessionRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSessionRequest) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateSessionRequest) GetServiceKey() string {
+	if x != nil {
+		return x.ServiceKey
+	}
+	return ""
+}
+
+func (x *UpdateSessionRequest) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *UpdateSessionRequest) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type UpdateSessionAnswer struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success      bool    `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Error        string  `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	SessionID    string  `protobuf:"bytes,3,opt,name=sessionID,proto3" json:"sessionID,omitempty"`
+	PostID       string  `protobuf:"bytes,4,opt,name=postID,proto3" json:"postID,omitempty"`
+	Amount       float32 `protobuf:"fixed32,5,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	BonusAccrual float32 `protobuf:"fixed32,6,opt,name=bonusAccrual,proto3" json:"bonusAccrual,omitempty"`
+}
+
+func (x *UpdateSessionAnswer) Reset() {
+	*x = UpdateSessionAnswer{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateSessionAnswer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSessionAnswer) ProtoMessage() {}
+
+func (x *UpdateSessionAnswer) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSessionAnswer.ProtoReflect.Descriptor instead.
+func (*UpdateSessionAnswer) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateSessionAnswer) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *UpdateSessionAnswer) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+func (x *UpdateSessionAnswer) GetSessionID() string {
+	if x != nil {
+		return x.SessionID
+	}
+	return ""
+}
+
+func (x *UpdateSessionAnswer) GetPostID() string {
+	if x != nil {
+		return x.PostID
+	}
+	return ""
+}
+
+func (x *UpdateSessionAnswer) GetAmount() float32 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *UpdateSessionAnswer) GetBonusAccrual() float32 {
+	if x != nil {
+		return x.BonusAccrual
+	}
+	return 0
+}
+
+type ConfirmSessionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ServiceKey string `protobuf:"bytes,1,opt,name=serviceKey,proto3" json:"serviceKey,omitempty"`
+	SessionID  string `protobuf:"bytes,2,opt,name=sessionID,proto3" json:"sessionID,omitempty"`
+	PostID     string `protobuf:"bytes,3,opt,name=postID,proto3" json:"postID,omitempty"`
+}
+
+func (x *ConfirmSessionRequest) Reset() {
+	*x = ConfirmSessionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ConfirmSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmSessionRequest) ProtoMessage() {}
+
+func (x *ConfirmSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmSessionRequest.ProtoReflect.Descriptor instead.
+func (*ConfirmSessionRequest) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ConfirmSessionRequest) GetServiceKey() string {
+	if x != nil {
+		return x.ServiceKey
+	}
+	return ""
+}
+
+func (x *ConfirmSessionRequest) GetSessionID() string {
+	if x != nil {
+		return x.SessionID
+	}
+	return ""
+}
+
+func (x *ConfirmSessionRequest) GetPostID() string {
+	if x != nil {
+		return x.PostID
+	}
+	return ""
+}
+
+type ConfirmSessionAnswer struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+}
+
+func (x *ConfirmSessionAnswer) Reset() {
+	*x = ConfirmSessionAnswer{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ConfirmSessionAnswer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConfirmSessionAnswer) ProtoMessage() {}
+
+func (x *ConfirmSessionAnswer) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConfirmSessionAnswer.ProtoReflect.Descriptor instead.
+func (*ConfirmSessionAnswer) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ConfirmSessionAnswer) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+type FinishSessionRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ServiceKey string  `protobuf:"bytes,1,opt,name=serviceKey,proto3" json:"serviceKey,omitempty"`
+	SessionID  string  `protobuf:"bytes,2,opt,name=sessionID,proto3" json:"sessionID,omitempty"`
+	PostID     string  `protobuf:"bytes,3,opt,name=postID,proto3" json:"postID,omitempty"`
+	Amount     float32 `protobuf:"fixed32,4,opt,name=amount,proto3" json:"amount,omitempty"`
+}
+
+func (x *FinishSessionRequest) Reset() {
+	*x = FinishSessionRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FinishSessionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FinishSessionRequest) ProtoMessage() {}
+
+func (x *FinishSessionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FinishSessionRequest.ProtoReflect.Descriptor instead.
+func (*FinishSessionRequest) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *FinishSessionRequest) GetServiceKey() string {
+	if x != nil {
+		return x.ServiceKey
+	}
+	return ""
+}
+
+func (x *FinishSessionRequest) GetSessionID() string {
+	if x != nil {
+		return x.SessionID
+	}
+	return ""
+}
+
+func (x *FinishSessionRequest) GetPostID() string {
+	if x != nil {
+		return x.PostID
+	}
+	return ""
+}
+
+func (x *FinishSessionRequest) GetAmount() float32 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+type FinishSessionAnswer struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+}
+
+func (x *FinishSessionAnswer) Reset() {
+	*x = FinishSessionAnswer{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_transport_grpc_grpc_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FinishSessionAnswer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FinishSessionAnswer) ProtoMessage() {}
+
+func (x *FinishSessionAnswer) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_transport_grpc_grpc_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FinishSessionAnswer.ProtoReflect.Descriptor instead.
+func (*FinishSessionAnswer) Descriptor() ([]byte, []int) {
+	return file_internal_transport_grpc_grpc_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *FinishSessionAnswer) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+var File_internal_transport_grpc_grpc_proto protoreflect.FileDescriptor
+
+var file_internal_transport_grpc_grpc_proto_rawDesc = []byte{
+	0x0a, 0x22, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x74, 0x72, 0x61, 0x6e, 0x73,
+	0x70, 0x6f, 0x72, 0x74, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x78, 0x67, 0x72, 0x70, 0x63, 0x22, 0x37, 0x0a, 0x15, 0x49,
+	0x6e, 0x69, 0x74, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b,
+	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x4b, 0x65, 0x79, 0x22, 0x30, 0x0a, 0x14, 0x49, 0x6e, 0x69, 0x74, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07,
+	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22, 0x6b, 0x0a, 0x13, 0x53, 0x74, 0x61, 0x72, 0x74, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e, 0x0a,
 	0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x22, 0x28, 0x0a,
-	0x0c, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x18, 0x0a,
-	0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07,
-	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22, 0x3b, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b,
-	0x65, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x03, 0x6d, 0x73, 0x67, 0x22, 0x21, 0x0a, 0x0d, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x41,
-	0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x22, 0x62, 0x0a, 0x0e, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x54, 0x6f, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x73,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x55, 0x75, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x74,
-	0x61, 0x72, 0x67, 0x65, 0x74, 0x55, 0x75, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x6d, 0x73, 0x67,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6d, 0x73, 0x67, 0x22, 0x30, 0x0a, 0x14, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x41, 0x6e, 0x73,
+	0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x12, 0x1c, 0x0a,
+	0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x12, 0x16, 0x0a, 0x06, 0x70,
+	0x6f, 0x73, 0x74, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x6f, 0x73,
+	0x74, 0x49, 0x44, 0x22, 0x2e, 0x0a, 0x12, 0x53, 0x74, 0x61, 0x72, 0x74, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x22, 0x66, 0x0a, 0x14, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x73,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x73,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0xb7, 0x01, 0x0a, 0x13,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73,
 	0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x32, 0xd4, 0x01,
-	0x0a, 0x11, 0x57, 0x61, 0x73, 0x68, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76,
-	0x69, 0x63, 0x65, 0x12, 0x32, 0x0a, 0x0c, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x43, 0x6c, 0x69,
-	0x65, 0x6e, 0x74, 0x12, 0x0d, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x56, 0x65, 0x72, 0x69,
-	0x66, 0x79, 0x1a, 0x13, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x56, 0x65, 0x72, 0x69, 0x66,
-	0x79, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x37, 0x0a, 0x0b, 0x53, 0x65, 0x6e, 0x64, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x0e, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x14, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x28, 0x01, 0x30, 0x01,
-	0x12, 0x52, 0x0a, 0x18, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x54,
-	0x6f, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x15, 0x2e, 0x78,
-	0x67, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x4f, 0x74,
-	0x68, 0x65, 0x72, 0x1a, 0x1b, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x4d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x54, 0x6f, 0x4f, 0x74, 0x68, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72,
-	0x28, 0x01, 0x30, 0x01, 0x42, 0x08, 0x5a, 0x06, 0x2e, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a,
+	0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x72,
+	0x72, 0x6f, 0x72, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49,
+	0x44, 0x12, 0x16, 0x0a, 0x06, 0x70, 0x6f, 0x73, 0x74, 0x49, 0x44, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x70, 0x6f, 0x73, 0x74, 0x49, 0x44, 0x12, 0x16, 0x0a, 0x06, 0x41, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x02, 0x52, 0x06, 0x41, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x12, 0x22, 0x0a, 0x0c, 0x62, 0x6f, 0x6e, 0x75, 0x73, 0x41, 0x63, 0x63, 0x72, 0x75, 0x61,
+	0x6c, 0x18, 0x06, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0c, 0x62, 0x6f, 0x6e, 0x75, 0x73, 0x41, 0x63,
+	0x63, 0x72, 0x75, 0x61, 0x6c, 0x22, 0x6d, 0x0a, 0x15, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1e,
+	0x0a, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x12, 0x1c,
+	0x0a, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x12, 0x16, 0x0a, 0x06,
+	0x70, 0x6f, 0x73, 0x74, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x6f,
+	0x73, 0x74, 0x49, 0x44, 0x22, 0x30, 0x0a, 0x14, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07,
+	0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22, 0x84, 0x01, 0x0a, 0x14, 0x46, 0x69, 0x6e, 0x69, 0x73,
+	0x68, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x1e, 0x0a, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x4b, 0x65, 0x79, 0x12,
+	0x1c, 0x0a, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x44, 0x12, 0x16, 0x0a,
+	0x06, 0x70, 0x6f, 0x73, 0x74, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70,
+	0x6f, 0x73, 0x74, 0x49, 0x44, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x2f, 0x0a,
+	0x13, 0x46, 0x69, 0x6e, 0x69, 0x73, 0x68, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6e,
+	0x73, 0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x32, 0x8c,
+	0x03, 0x0a, 0x11, 0x57, 0x61, 0x73, 0x68, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x53, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x12, 0x4b, 0x0a, 0x0e, 0x49, 0x6e, 0x69, 0x74, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x49,
+	0x6e, 0x69, 0x74, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x49, 0x6e, 0x69,
+	0x74, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77, 0x65,
+	0x72, 0x12, 0x45, 0x0a, 0x0c, 0x53, 0x74, 0x61, 0x72, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x12, 0x1a, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e,
+	0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x53, 0x65, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x4c, 0x0a, 0x0d, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1b, 0x2e, 0x78, 0x67, 0x72, 0x70,
+	0x63, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77,
+	0x65, 0x72, 0x28, 0x01, 0x30, 0x01, 0x12, 0x4b, 0x0a, 0x0e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72,
+	0x6d, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63,
+	0x2e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x72, 0x6d, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73,
+	0x77, 0x65, 0x72, 0x12, 0x48, 0x0a, 0x0d, 0x46, 0x69, 0x6e, 0x69, 0x73, 0x68, 0x53, 0x65, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1b, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x46, 0x69, 0x6e,
+	0x69, 0x73, 0x68, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1a, 0x2e, 0x78, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x46, 0x69, 0x6e, 0x69, 0x73, 0x68,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x42, 0x08, 0x5a,
+	0x06, 0x2e, 0x2f, 0x67, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_grpc_proto_rawDescOnce sync.Once
-	file_grpc_proto_rawDescData = file_grpc_proto_rawDesc
+	file_internal_transport_grpc_grpc_proto_rawDescOnce sync.Once
+	file_internal_transport_grpc_grpc_proto_rawDescData = file_internal_transport_grpc_grpc_proto_rawDesc
 )
 
-func file_grpc_proto_rawDescGZIP() []byte {
-	file_grpc_proto_rawDescOnce.Do(func() {
-		file_grpc_proto_rawDescData = protoimpl.X.CompressGZIP(file_grpc_proto_rawDescData)
+func file_internal_transport_grpc_grpc_proto_rawDescGZIP() []byte {
+	file_internal_transport_grpc_grpc_proto_rawDescOnce.Do(func() {
+		file_internal_transport_grpc_grpc_proto_rawDescData = protoimpl.X.CompressGZIP(file_internal_transport_grpc_grpc_proto_rawDescData)
 	})
-	return file_grpc_proto_rawDescData
+	return file_internal_transport_grpc_grpc_proto_rawDescData
 }
 
-var file_grpc_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_grpc_proto_goTypes = []interface{}{
-	(*Verify)(nil),               // 0: xgrpc.Verify
-	(*VerifyAnswer)(nil),         // 1: xgrpc.VerifyAnswer
-	(*Message)(nil),              // 2: xgrpc.Message
-	(*MessageAnswer)(nil),        // 3: xgrpc.MessageAnswer
-	(*MessageToOther)(nil),       // 4: xgrpc.MessageToOther
-	(*MessageToOtherAnswer)(nil), // 5: xgrpc.MessageToOtherAnswer
+var file_internal_transport_grpc_grpc_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_internal_transport_grpc_grpc_proto_goTypes = []interface{}{
+	(*InitConnectionRequest)(nil), // 0: xgrpc.InitConnectionRequest
+	(*InitConnectionAnswer)(nil),  // 1: xgrpc.InitConnectionAnswer
+	(*StartSessionRequest)(nil),   // 2: xgrpc.StartSessionRequest
+	(*StartSessionAnswer)(nil),    // 3: xgrpc.StartSessionAnswer
+	(*UpdateSessionRequest)(nil),  // 4: xgrpc.UpdateSessionRequest
+	(*UpdateSessionAnswer)(nil),   // 5: xgrpc.UpdateSessionAnswer
+	(*ConfirmSessionRequest)(nil), // 6: xgrpc.ConfirmSessionRequest
+	(*ConfirmSessionAnswer)(nil),  // 7: xgrpc.ConfirmSessionAnswer
+	(*FinishSessionRequest)(nil),  // 8: xgrpc.FinishSessionRequest
+	(*FinishSessionAnswer)(nil),   // 9: xgrpc.FinishSessionAnswer
 }
-var file_grpc_proto_depIdxs = []int32{
-	0, // 0: xgrpc.WashServerService.VerifyClient:input_type -> xgrpc.Verify
-	2, // 1: xgrpc.WashServerService.SendMessage:input_type -> xgrpc.Message
-	4, // 2: xgrpc.WashServerService.SendMessageToOtherClient:input_type -> xgrpc.MessageToOther
-	1, // 3: xgrpc.WashServerService.VerifyClient:output_type -> xgrpc.VerifyAnswer
-	3, // 4: xgrpc.WashServerService.SendMessage:output_type -> xgrpc.MessageAnswer
-	5, // 5: xgrpc.WashServerService.SendMessageToOtherClient:output_type -> xgrpc.MessageToOtherAnswer
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+var file_internal_transport_grpc_grpc_proto_depIdxs = []int32{
+	0, // 0: xgrpc.WashServerService.InitConnection:input_type -> xgrpc.InitConnectionRequest
+	2, // 1: xgrpc.WashServerService.StartSession:input_type -> xgrpc.StartSessionRequest
+	4, // 2: xgrpc.WashServerService.UpdateSession:input_type -> xgrpc.UpdateSessionRequest
+	6, // 3: xgrpc.WashServerService.ConfirmSession:input_type -> xgrpc.ConfirmSessionRequest
+	8, // 4: xgrpc.WashServerService.FinishSession:input_type -> xgrpc.FinishSessionRequest
+	1, // 5: xgrpc.WashServerService.InitConnection:output_type -> xgrpc.InitConnectionAnswer
+	3, // 6: xgrpc.WashServerService.StartSession:output_type -> xgrpc.StartSessionAnswer
+	5, // 7: xgrpc.WashServerService.UpdateSession:output_type -> xgrpc.UpdateSessionAnswer
+	7, // 8: xgrpc.WashServerService.ConfirmSession:output_type -> xgrpc.ConfirmSessionAnswer
+	9, // 9: xgrpc.WashServerService.FinishSession:output_type -> xgrpc.FinishSessionAnswer
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_grpc_proto_init() }
-func file_grpc_proto_init() {
-	if File_grpc_proto != nil {
+func init() { file_internal_transport_grpc_grpc_proto_init() }
+func file_internal_transport_grpc_grpc_proto_init() {
+	if File_internal_transport_grpc_grpc_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_grpc_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Verify); i {
+		file_internal_transport_grpc_grpc_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*InitConnectionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -421,8 +753,8 @@ func file_grpc_proto_init() {
 				return nil
 			}
 		}
-		file_grpc_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*VerifyAnswer); i {
+		file_internal_transport_grpc_grpc_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*InitConnectionAnswer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -433,8 +765,8 @@ func file_grpc_proto_init() {
 				return nil
 			}
 		}
-		file_grpc_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Message); i {
+		file_internal_transport_grpc_grpc_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartSessionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -445,8 +777,8 @@ func file_grpc_proto_init() {
 				return nil
 			}
 		}
-		file_grpc_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageAnswer); i {
+		file_internal_transport_grpc_grpc_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StartSessionAnswer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -457,8 +789,8 @@ func file_grpc_proto_init() {
 				return nil
 			}
 		}
-		file_grpc_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageToOther); i {
+		file_internal_transport_grpc_grpc_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateSessionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -469,8 +801,56 @@ func file_grpc_proto_init() {
 				return nil
 			}
 		}
-		file_grpc_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MessageToOtherAnswer); i {
+		file_internal_transport_grpc_grpc_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateSessionAnswer); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_transport_grpc_grpc_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConfirmSessionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_transport_grpc_grpc_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ConfirmSessionAnswer); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_transport_grpc_grpc_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FinishSessionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_transport_grpc_grpc_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FinishSessionAnswer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -486,18 +866,18 @@ func file_grpc_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_grpc_proto_rawDesc,
+			RawDescriptor: file_internal_transport_grpc_grpc_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_grpc_proto_goTypes,
-		DependencyIndexes: file_grpc_proto_depIdxs,
-		MessageInfos:      file_grpc_proto_msgTypes,
+		GoTypes:           file_internal_transport_grpc_grpc_proto_goTypes,
+		DependencyIndexes: file_internal_transport_grpc_grpc_proto_depIdxs,
+		MessageInfos:      file_internal_transport_grpc_grpc_proto_msgTypes,
 	}.Build()
-	File_grpc_proto = out.File
-	file_grpc_proto_rawDesc = nil
-	file_grpc_proto_goTypes = nil
-	file_grpc_proto_depIdxs = nil
+	File_internal_transport_grpc_grpc_proto = out.File
+	file_internal_transport_grpc_grpc_proto_rawDesc = nil
+	file_internal_transport_grpc_grpc_proto_goTypes = nil
+	file_internal_transport_grpc_grpc_proto_depIdxs = nil
 }

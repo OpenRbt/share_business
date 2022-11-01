@@ -1,11 +1,13 @@
 package grpc
 
 import (
-	context "context"
+	"context"
 	"log"
 	"sync"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 type WashServerRepository interface {
@@ -16,7 +18,7 @@ type WashServerRepository interface {
 type WashServerService struct {
 	WashServerRepo             WashServerRepository
 	WashServerConnectionsMutex sync.Mutex
-	WashServerConnections      map[string]WashServerConnection
+	WashServerConnections      map[string]*WashServerConnection
 }
 
 func NewWashServerService(washServerRepo WashServerRepository) (*WashServerService, error) {
@@ -25,7 +27,7 @@ func NewWashServerService(washServerRepo WashServerRepository) (*WashServerServi
 		return nil, err
 	}
 
-	connections := make(map[string]WashServerConnection)
+	connections := make(map[string]*WashServerConnection)
 	for _, v := range washList {
 		if v.ServiceKey != "" {
 			connections[v.ServiceKey] = NewWashServerConnection(v)
@@ -38,100 +40,92 @@ func NewWashServerService(washServerRepo WashServerRepository) (*WashServerServi
 	}, nil
 }
 
-func (svc *WashServerService) VerifyClient(ctx context.Context, msg *Verify) (*VerifyAnswer, error) {
-	log.Println("VerifyClient: ", msg.ServiceKey)
+func (svc *WashServerService) InitConnection(ctx context.Context, msg *InitConnectionRequest) (*InitConnectionAnswer, error) {
+	log.Println("InitConnection: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
-	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
+	defer svc.WashServerConnectionsMutex.Unlock()
+	washServerConnection, ok := svc.WashServerConnections[msg.ServiceKey]
 
-	var err error
-	if ok {
-		washServer.Verify = true
-		svc.WashServerConnections[msg.ServiceKey] = washServer
-	} else {
-		log.Println("Verify failed for wash server ", msg.ServiceKey)
-		err = ErrVerifyFailed
+	if !ok || washServerConnection.Verify {
+		return nil, ErrVerifyFailed
 	}
 
-	svc.WashServerConnectionsMutex.Unlock()
-	return &VerifyAnswer{Success: ok}, err
+	washServerConnection.Verify = true
+	svc.WashServerConnections[msg.ServiceKey] = washServerConnection
+
+	return &InitConnectionAnswer{Success: true}, nil
 }
 
-func (svc *WashServerService) SendMessage(stream WashServerService_SendMessageServer) error {
-	msg, err := stream.Recv()
-	if err != nil {
-		log.Println("Failed to recv: ", err)
-		return err
-	}
-	log.Println("SendMessage: ", msg.ServiceKey)
+func (svc *WashServerService) StartSession(ctx context.Context, msg *StartSessionRequest) (*StartSessionAnswer, error) {
+	log.Println("StartSession: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
-	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
-	if !ok || !washServer.Verify {
-		log.Println("Verify failed for wash server")
-		svc.WashServerConnectionsMutex.Unlock()
-		return ErrVerifyFailed
-	}
-	washServer.StreamSendMessage = stream
-	svc.WashServerConnections[msg.ServiceKey] = washServer
-	svc.WashServerConnectionsMutex.Unlock()
+	defer svc.WashServerConnectionsMutex.Unlock()
+	washServerConnection, ok := svc.WashServerConnections[msg.ServiceKey]
 
-	for {
-		msg, err = stream.Recv()
-		if err != nil {
-			log.Println("Failed to recv: ", err)
-			return err
-		}
-
-		log.Println("Message received: ", msg.Msg)
-		err = stream.Send(&MessageAnswer{Msg: "Message received: " + msg.Msg})
-		if err != nil {
-			log.Println("Failed to send: ", err)
-			return err
-		}
+	if !ok || washServerConnection.Verify {
+		return nil, ErrNotFound
 	}
+
+	sessionID, err := uuid.FromString(msg.SessionID)
+	if err != nil {
+		return nil, ErrBadID
+	}
+
+	washServerConnection.WashSessionsMutex.Lock()
+	defer washServerConnection.WashSessionsMutex.Unlock()
+	washServerConnection.WashSessions[msg.SessionID] = WashSession{
+		ID: sessionID,
+	}
+
+	return &StartSessionAnswer{Success: true}, nil
 }
 
-func (svc *WashServerService) SendMessageToOtherClient(stream WashServerService_SendMessageToOtherClientServer) error {
-	msg, err := stream.Recv()
-	if err != nil {
-		log.Println("Failed to recv: ", err)
-		return err
-	}
-	log.Println("SendMessageToOtherClient: ", msg.ServiceKey)
+func (svc *WashServerService) ConfirmSession(ctx context.Context, msg *ConfirmSessionRequest) (*ConfirmSessionAnswer, error) {
+	log.Println("ConfirmSession: ", msg.ServiceKey)
 
 	svc.WashServerConnectionsMutex.Lock()
-	washServer, ok := svc.WashServerConnections[msg.ServiceKey]
-	if !ok || !washServer.Verify {
-		log.Println("Verify failed for wash server")
-		svc.WashServerConnectionsMutex.Unlock()
-		return ErrVerifyFailed
+	defer svc.WashServerConnectionsMutex.Unlock()
+	washServerConnection, ok := svc.WashServerConnections[msg.ServiceKey]
+
+	if !ok || washServerConnection.Verify {
+		return nil, ErrNotFound
 	}
-	washServer.StreamSendMessageToOtherClient = stream
-	svc.WashServerConnections[msg.ServiceKey] = washServer
-	svc.WashServerConnectionsMutex.Unlock()
 
-	for {
-		msg, err = stream.Recv()
-		if err != nil {
-			log.Println("Failed to recv: ", err)
-			return err
-		}
-
-		log.Println("Message received: ", msg.Msg, " to user ", msg.TargetUuid)
-
-		washServerFromBD, err := svc.WashServerRepo.GetWashServer(msg.TargetUuid)
-		if err != nil {
-			stream.Send(&MessageToOtherAnswer{Success: false})
-		}
-
-		if washServer, ok := svc.WashServerConnections[washServerFromBD.ServiceKey]; ok && washServer.Verify {
-			washServer.StreamSendMessage.Send(&MessageAnswer{Msg: msg.Msg})
-			stream.Send(&MessageToOtherAnswer{Success: true})
-		} else {
-			stream.Send(&MessageToOtherAnswer{Success: false})
-		}
+	washServerConnection.WashSessionsMutex.Lock()
+	defer washServerConnection.WashSessionsMutex.Unlock()
+	washSeddion, ok := washServerConnection.WashSessions[msg.SessionID]
+	if !ok {
+		return nil, ErrNotFound
 	}
+
+	washSeddion.Confirm = true
+	washServerConnection.WashSessions[msg.SessionID] = washSeddion
+
+	return &ConfirmSessionAnswer{Success: true}, nil
+}
+
+func (svc *WashServerService) FinishSession(ctx context.Context, msg *FinishSessionRequest) (*FinishSessionAnswer, error) {
+	log.Println("FinishSession: ", msg.ServiceKey)
+
+	svc.WashServerConnectionsMutex.Lock()
+	defer svc.WashServerConnectionsMutex.Unlock()
+	washServerConnection, ok := svc.WashServerConnections[msg.ServiceKey]
+
+	if !ok || washServerConnection.Verify {
+		return nil, ErrNotFound
+	}
+
+	washServerConnection.WashSessionsMutex.Lock()
+	defer washServerConnection.WashSessionsMutex.Unlock()
+	delete(washServerConnection.WashSessions, msg.SessionID)
+
+	return &FinishSessionAnswer{Success: true}, nil
+}
+
+func (svc *WashServerService) UpdateSession(stream WashServerService_UpdateSessionServer) error {
+	return nil
 }
 
 func (svc *WashServerService) mustEmbedUnimplementedWashServerServiceServer() {}

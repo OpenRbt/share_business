@@ -21,6 +21,9 @@ start_docker:
 gen_certs:
 	bash ./gencerts
 
+gen_grpc:
+	bash ./gengrpc
+
 build_app:
 	go build -o ./bin/wash-bonus ./cmd/main/*
 

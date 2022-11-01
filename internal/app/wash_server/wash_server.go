@@ -38,10 +38,10 @@ type Service struct {
 	rsaPrivateKey                  *rsa.PrivateKey
 	rsaPublicKey                   *rsa.PublicKey
 	washServerGRPCConnectionsMutex sync.Mutex
-	washServerGRPCConnections      map[string]grpc.WashServerConnection
+	washServerGRPCConnections      map[string]*grpc.WashServerConnection
 }
 
-func NewService(repo Repository, userSvc user.UserSvc, connections map[string]grpc.WashServerConnection,
+func NewService(repo Repository, userSvc user.UserSvc, connections map[string]*grpc.WashServerConnection,
 	privateKeyFilePath, publicKeyFilePath string) (WashServerSvc, error) {
 
 	privateKeyContent, err := os.ReadFile(privateKeyFilePath)
@@ -138,10 +138,7 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 	}
 
 	a.washServerGRPCConnectionsMutex.Lock()
-	a.washServerGRPCConnections[tokenString] = grpc.WashServerConnection{
-		WashServer: *wash,
-		Verify:     false,
-	}
+	a.washServerGRPCConnections[tokenString] = grpc.NewWashServerConnection(*wash)
 	a.washServerGRPCConnectionsMutex.Unlock()
 
 	return &tokenString, nil

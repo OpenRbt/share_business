@@ -18,9 +18,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WashServerServiceClient interface {
-	VerifyClient(ctx context.Context, in *Verify, opts ...grpc.CallOption) (*VerifyAnswer, error)
-	SendMessage(ctx context.Context, opts ...grpc.CallOption) (WashServerService_SendMessageClient, error)
-	SendMessageToOtherClient(ctx context.Context, opts ...grpc.CallOption) (WashServerService_SendMessageToOtherClientClient, error)
+	InitConnection(ctx context.Context, in *InitConnectionRequest, opts ...grpc.CallOption) (*InitConnectionAnswer, error)
+	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionAnswer, error)
+	UpdateSession(ctx context.Context, opts ...grpc.CallOption) (WashServerService_UpdateSessionClient, error)
+	ConfirmSession(ctx context.Context, in *ConfirmSessionRequest, opts ...grpc.CallOption) (*ConfirmSessionAnswer, error)
+	FinishSession(ctx context.Context, in *FinishSessionRequest, opts ...grpc.CallOption) (*FinishSessionAnswer, error)
 }
 
 type washServerServiceClient struct {
@@ -31,84 +33,82 @@ func NewWashServerServiceClient(cc grpc.ClientConnInterface) WashServerServiceCl
 	return &washServerServiceClient{cc}
 }
 
-func (c *washServerServiceClient) VerifyClient(ctx context.Context, in *Verify, opts ...grpc.CallOption) (*VerifyAnswer, error) {
-	out := new(VerifyAnswer)
-	err := c.cc.Invoke(ctx, "/xgrpc.WashServerService/VerifyClient", in, out, opts...)
+func (c *washServerServiceClient) InitConnection(ctx context.Context, in *InitConnectionRequest, opts ...grpc.CallOption) (*InitConnectionAnswer, error) {
+	out := new(InitConnectionAnswer)
+	err := c.cc.Invoke(ctx, "/xgrpc.WashServerService/InitConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *washServerServiceClient) SendMessage(ctx context.Context, opts ...grpc.CallOption) (WashServerService_SendMessageClient, error) {
-	stream, err := c.cc.NewStream(ctx, &WashServerService_ServiceDesc.Streams[0], "/xgrpc.WashServerService/SendMessage", opts...)
+func (c *washServerServiceClient) StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionAnswer, error) {
+	out := new(StartSessionAnswer)
+	err := c.cc.Invoke(ctx, "/xgrpc.WashServerService/StartSession", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &washServerServiceSendMessageClient{stream}
+	return out, nil
+}
+
+func (c *washServerServiceClient) UpdateSession(ctx context.Context, opts ...grpc.CallOption) (WashServerService_UpdateSessionClient, error) {
+	stream, err := c.cc.NewStream(ctx, &WashServerService_ServiceDesc.Streams[0], "/xgrpc.WashServerService/UpdateSession", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &washServerServiceUpdateSessionClient{stream}
 	return x, nil
 }
 
-type WashServerService_SendMessageClient interface {
-	Send(*Message) error
-	Recv() (*MessageAnswer, error)
+type WashServerService_UpdateSessionClient interface {
+	Send(*UpdateSessionRequest) error
+	Recv() (*UpdateSessionAnswer, error)
 	grpc.ClientStream
 }
 
-type washServerServiceSendMessageClient struct {
+type washServerServiceUpdateSessionClient struct {
 	grpc.ClientStream
 }
 
-func (x *washServerServiceSendMessageClient) Send(m *Message) error {
+func (x *washServerServiceUpdateSessionClient) Send(m *UpdateSessionRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *washServerServiceSendMessageClient) Recv() (*MessageAnswer, error) {
-	m := new(MessageAnswer)
+func (x *washServerServiceUpdateSessionClient) Recv() (*UpdateSessionAnswer, error) {
+	m := new(UpdateSessionAnswer)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *washServerServiceClient) SendMessageToOtherClient(ctx context.Context, opts ...grpc.CallOption) (WashServerService_SendMessageToOtherClientClient, error) {
-	stream, err := c.cc.NewStream(ctx, &WashServerService_ServiceDesc.Streams[1], "/xgrpc.WashServerService/SendMessageToOtherClient", opts...)
+func (c *washServerServiceClient) ConfirmSession(ctx context.Context, in *ConfirmSessionRequest, opts ...grpc.CallOption) (*ConfirmSessionAnswer, error) {
+	out := new(ConfirmSessionAnswer)
+	err := c.cc.Invoke(ctx, "/xgrpc.WashServerService/ConfirmSession", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &washServerServiceSendMessageToOtherClientClient{stream}
-	return x, nil
+	return out, nil
 }
 
-type WashServerService_SendMessageToOtherClientClient interface {
-	Send(*MessageToOther) error
-	Recv() (*MessageToOtherAnswer, error)
-	grpc.ClientStream
-}
-
-type washServerServiceSendMessageToOtherClientClient struct {
-	grpc.ClientStream
-}
-
-func (x *washServerServiceSendMessageToOtherClientClient) Send(m *MessageToOther) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *washServerServiceSendMessageToOtherClientClient) Recv() (*MessageToOtherAnswer, error) {
-	m := new(MessageToOtherAnswer)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
+func (c *washServerServiceClient) FinishSession(ctx context.Context, in *FinishSessionRequest, opts ...grpc.CallOption) (*FinishSessionAnswer, error) {
+	out := new(FinishSessionAnswer)
+	err := c.cc.Invoke(ctx, "/xgrpc.WashServerService/FinishSession", in, out, opts...)
+	if err != nil {
 		return nil, err
 	}
-	return m, nil
+	return out, nil
 }
 
 // WashServerServiceServer is the server API for WashServerService service.
 // All implementations must embed UnimplementedWashServerServiceServer
 // for forward compatibility
 type WashServerServiceServer interface {
-	VerifyClient(context.Context, *Verify) (*VerifyAnswer, error)
-	SendMessage(WashServerService_SendMessageServer) error
-	SendMessageToOtherClient(WashServerService_SendMessageToOtherClientServer) error
+	InitConnection(context.Context, *InitConnectionRequest) (*InitConnectionAnswer, error)
+	StartSession(context.Context, *StartSessionRequest) (*StartSessionAnswer, error)
+	UpdateSession(WashServerService_UpdateSessionServer) error
+	ConfirmSession(context.Context, *ConfirmSessionRequest) (*ConfirmSessionAnswer, error)
+	FinishSession(context.Context, *FinishSessionRequest) (*FinishSessionAnswer, error)
 	mustEmbedUnimplementedWashServerServiceServer()
 }
 
@@ -116,14 +116,20 @@ type WashServerServiceServer interface {
 type UnimplementedWashServerServiceServer struct {
 }
 
-func (UnimplementedWashServerServiceServer) VerifyClient(context.Context, *Verify) (*VerifyAnswer, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyClient not implemented")
+func (UnimplementedWashServerServiceServer) InitConnection(context.Context, *InitConnectionRequest) (*InitConnectionAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitConnection not implemented")
 }
-func (UnimplementedWashServerServiceServer) SendMessage(WashServerService_SendMessageServer) error {
-	return status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
+func (UnimplementedWashServerServiceServer) StartSession(context.Context, *StartSessionRequest) (*StartSessionAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
 }
-func (UnimplementedWashServerServiceServer) SendMessageToOtherClient(WashServerService_SendMessageToOtherClientServer) error {
-	return status.Errorf(codes.Unimplemented, "method SendMessageToOtherClient not implemented")
+func (UnimplementedWashServerServiceServer) UpdateSession(WashServerService_UpdateSessionServer) error {
+	return status.Errorf(codes.Unimplemented, "method UpdateSession not implemented")
+}
+func (UnimplementedWashServerServiceServer) ConfirmSession(context.Context, *ConfirmSessionRequest) (*ConfirmSessionAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmSession not implemented")
+}
+func (UnimplementedWashServerServiceServer) FinishSession(context.Context, *FinishSessionRequest) (*FinishSessionAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishSession not implemented")
 }
 func (UnimplementedWashServerServiceServer) mustEmbedUnimplementedWashServerServiceServer() {}
 
@@ -138,74 +144,102 @@ func RegisterWashServerServiceServer(s grpc.ServiceRegistrar, srv WashServerServ
 	s.RegisterService(&WashServerService_ServiceDesc, srv)
 }
 
-func _WashServerService_VerifyClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Verify)
+func _WashServerService_InitConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitConnectionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WashServerServiceServer).VerifyClient(ctx, in)
+		return srv.(WashServerServiceServer).InitConnection(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/xgrpc.WashServerService/VerifyClient",
+		FullMethod: "/xgrpc.WashServerService/InitConnection",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WashServerServiceServer).VerifyClient(ctx, req.(*Verify))
+		return srv.(WashServerServiceServer).InitConnection(ctx, req.(*InitConnectionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WashServerService_SendMessage_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(WashServerServiceServer).SendMessage(&washServerServiceSendMessageServer{stream})
+func _WashServerService_StartSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WashServerServiceServer).StartSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xgrpc.WashServerService/StartSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WashServerServiceServer).StartSession(ctx, req.(*StartSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-type WashServerService_SendMessageServer interface {
-	Send(*MessageAnswer) error
-	Recv() (*Message, error)
+func _WashServerService_UpdateSession_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(WashServerServiceServer).UpdateSession(&washServerServiceUpdateSessionServer{stream})
+}
+
+type WashServerService_UpdateSessionServer interface {
+	Send(*UpdateSessionAnswer) error
+	Recv() (*UpdateSessionRequest, error)
 	grpc.ServerStream
 }
 
-type washServerServiceSendMessageServer struct {
+type washServerServiceUpdateSessionServer struct {
 	grpc.ServerStream
 }
 
-func (x *washServerServiceSendMessageServer) Send(m *MessageAnswer) error {
+func (x *washServerServiceUpdateSessionServer) Send(m *UpdateSessionAnswer) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *washServerServiceSendMessageServer) Recv() (*Message, error) {
-	m := new(Message)
+func (x *washServerServiceUpdateSessionServer) Recv() (*UpdateSessionRequest, error) {
+	m := new(UpdateSessionRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func _WashServerService_SendMessageToOtherClient_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(WashServerServiceServer).SendMessageToOtherClient(&washServerServiceSendMessageToOtherClientServer{stream})
-}
-
-type WashServerService_SendMessageToOtherClientServer interface {
-	Send(*MessageToOtherAnswer) error
-	Recv() (*MessageToOther, error)
-	grpc.ServerStream
-}
-
-type washServerServiceSendMessageToOtherClientServer struct {
-	grpc.ServerStream
-}
-
-func (x *washServerServiceSendMessageToOtherClientServer) Send(m *MessageToOtherAnswer) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *washServerServiceSendMessageToOtherClientServer) Recv() (*MessageToOther, error) {
-	m := new(MessageToOther)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _WashServerService_ConfirmSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmSessionRequest)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(WashServerServiceServer).ConfirmSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xgrpc.WashServerService/ConfirmSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WashServerServiceServer).ConfirmSession(ctx, req.(*ConfirmSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WashServerService_FinishSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinishSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WashServerServiceServer).FinishSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/xgrpc.WashServerService/FinishSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WashServerServiceServer).FinishSession(ctx, req.(*FinishSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // WashServerService_ServiceDesc is the grpc.ServiceDesc for WashServerService service.
@@ -216,23 +250,29 @@ var WashServerService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*WashServerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "VerifyClient",
-			Handler:    _WashServerService_VerifyClient_Handler,
+			MethodName: "InitConnection",
+			Handler:    _WashServerService_InitConnection_Handler,
+		},
+		{
+			MethodName: "StartSession",
+			Handler:    _WashServerService_StartSession_Handler,
+		},
+		{
+			MethodName: "ConfirmSession",
+			Handler:    _WashServerService_ConfirmSession_Handler,
+		},
+		{
+			MethodName: "FinishSession",
+			Handler:    _WashServerService_FinishSession_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SendMessage",
-			Handler:       _WashServerService_SendMessage_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "SendMessageToOtherClient",
-			Handler:       _WashServerService_SendMessageToOtherClient_Handler,
+			StreamName:    "UpdateSession",
+			Handler:       _WashServerService_UpdateSession_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
-	Metadata: "grpc.proto",
+	Metadata: "internal/transport/grpc/grpc.proto",
 }

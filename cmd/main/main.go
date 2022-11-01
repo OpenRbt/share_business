@@ -7,8 +7,6 @@ import (
 	"crypto/x509"
 	"flag"
 	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"net"
 	"os"
 	"time"
@@ -20,7 +18,10 @@ import (
 	"wash-bonus/internal/def"
 	"wash-bonus/internal/firebase_auth"
 	grpc3 "wash-bonus/internal/transport/grpc"
-	"wash-bonus/internal/transport/rest"
+	api "wash-bonus/internal/transport/rest"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/powerman/pqx"
 	"github.com/powerman/structlog"
