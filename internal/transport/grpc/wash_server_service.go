@@ -68,18 +68,24 @@ func (svc *WashServerService) StartSession(ctx context.Context, msg *StartSessio
 		return nil, ErrNotFound
 	}
 
-	sessionID, err := uuid.FromString(msg.SessionID)
+	postID, err := uuid.FromString(msg.PostID)
 	if err != nil {
 		return nil, ErrBadID
 	}
 
+	sessionID := uuid.NewV4()
+
 	washServerConnection.WashSessionsMutex.Lock()
 	defer washServerConnection.WashSessionsMutex.Unlock()
-	washServerConnection.WashSessions[msg.SessionID] = WashSession{
-		ID: sessionID,
+	washServerConnection.WashSessions[sessionID.String()] = WashSession{
+		ID:     sessionID,
+		PostID: postID,
 	}
 
-	return &StartSessionAnswer{Success: true}, nil
+	return &StartSessionAnswer{
+		Success:   true,
+		SessionID: sessionID.String(),
+	}, nil
 }
 
 func (svc *WashServerService) ConfirmSession(ctx context.Context, msg *ConfirmSessionRequest) (*ConfirmSessionAnswer, error) {

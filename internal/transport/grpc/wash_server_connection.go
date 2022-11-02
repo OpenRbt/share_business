@@ -10,6 +10,7 @@ import (
 
 type WashSession struct {
 	ID               uuid.UUID
+	PostID           uuid.UUID
 	User             entity.User
 	Amount           decimal.Decimal
 	MaxConsumeAmount decimal.Decimal
