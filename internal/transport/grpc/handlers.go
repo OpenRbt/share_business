@@ -6,7 +6,7 @@ import (
 
 // InitConnection TODO: Improve logic with case when connection already exists
 func (s *Service) InitConnection(ctx context.Context, request *InitRequest) (*InitAnswer, error) {
-	err := s.createConnectionIfMotExist(request.ServiceKey)
+	err := s.createConnectionIfNotExist(request.ServiceKey)
 	if err != nil {
 		return &InitAnswer{
 			Success: false,
@@ -66,12 +66,22 @@ func (s *Service) Confirm(ctx context.Context, request *ConfirmRequest) (*Confir
 		return &ConfirmAnswer{Success: false}, nil
 	}
 
+	session, err := con.getSession(request.GetSessionID())
+	if err != nil {
+		return &ConfirmAnswer{Success: false}, nil
+	}
+
 	err = con.processSession(request.GetSessionID())
 	if err != nil {
 		return &ConfirmAnswer{Success: false}, nil
 	}
 
-	// TODO: Subtract bonus from user
+	if session.User != nil {
+		err = s.repo.AddBonuses(session.Balance.ID.String(), -session.Amount.InexactFloat64())
+		if err != nil {
+			return &ConfirmAnswer{Success: false}, nil
+		}
+	}
 
 	return &ConfirmAnswer{Success: true}, nil
 }
@@ -83,7 +93,9 @@ func (s *Service) End(ctx context.Context, request *FinishRequest) (*FinishAnswe
 	}
 
 	// TODO: Calculate bonus amount
-	_, err = con.getSession(request.GetSessionID())
+	amount := 0.
+
+	session, err := con.getSession(request.GetSessionID())
 	if err != nil {
 		return &FinishAnswer{Success: false}, nil
 	}
@@ -93,7 +105,12 @@ func (s *Service) End(ctx context.Context, request *FinishRequest) (*FinishAnswe
 		return &FinishAnswer{Success: false}, nil
 	}
 
-	// TODO: Add bonus to user
+	if session.User != nil {
+		err = s.repo.AddBonuses(session.Balance.ID.String(), amount)
+		if err != nil {
+			return &FinishAnswer{Success: false}, nil
+		}
+	}
 
 	return &FinishAnswer{Success: true}, nil
 }

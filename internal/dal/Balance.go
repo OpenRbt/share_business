@@ -67,3 +67,11 @@ func (a *Repo) DeleteBalance(id string, userId string) error {
 
 	return nil
 }
+
+func (a *Repo) AddBonuses(id string, balance float64) error {
+	bonusBalance, err := a.GetBalance(id)
+	if err != nil {
+		return err
+	}
+	return a.EditBalance(id, bonusBalance.Balance+balance)
+}

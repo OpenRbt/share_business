@@ -10,7 +10,7 @@ const (
 	SELECT
 		id,
 		user_id,
-		balance,
+		balance
 	FROM
 		bonus_balance
 	WHERE
@@ -21,10 +21,10 @@ const (
 	sqlAddBalance = `
 	INSERT INTO bonus_balance(
 		user_id,
-		balance,
+		balance
 	) VALUES (
 		:user_id,
-		:balance,
+		:balance
 	)
 	RETURNING
 		id
@@ -46,7 +46,7 @@ const (
 	UPDATE
 		bonus_balance
 	SET
-		balance=:balance,
+		balance=:balance
 	WHERE
 		id=:id AND
 		NOT deleted

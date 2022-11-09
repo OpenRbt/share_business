@@ -5,7 +5,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (s *Service) createConnectionIfMotExist(key string) error {
+func (s *Service) createConnectionIfNotExist(key string) error {
 	s.connectionsMutex.RLock()
 	if _, ok := s.connections[key]; ok {
 		return nil

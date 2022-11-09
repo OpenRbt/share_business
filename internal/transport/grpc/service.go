@@ -1,14 +1,16 @@
 package grpc
 
 import (
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"sync"
 	"wash-bonus/internal/app/entity"
+
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 type Repository interface {
 	GetWashServerByKey(key string) (*entity.WashServer, error)
+	AddBonuses(id string, balance float64) error
 }
 
 type Service struct {
@@ -31,6 +33,7 @@ type Session struct {
 	ID            uuid.UUID
 	PostID        int64
 	User          *entity.User
+	Balance       *entity.Balance
 	Amount        decimal.Decimal
 	ConsumeAmount decimal.Decimal
 	Processed     bool
