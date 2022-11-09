@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 	"time"
+	models2 "wash-bonus/openapi/openapi/models"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/golang/mock/gomock"
@@ -15,7 +16,6 @@ import (
 	"github.com/powerman/gotest/testinit"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/def"
-	"wash-bonus/internal/transport/rest/restapi/models"
 )
 
 var (
@@ -29,7 +29,7 @@ var (
 	}
 
 	testUserID1 = uuid.New().String()
-	testUser1   = &models.User{
+	testUser1   = &models2.User{
 		Active:     true,
 		CreatedAt:  toDateTime("1936-08-27T03:11:30.941Z"),
 		FirebaseID: "amet",
@@ -37,24 +37,24 @@ var (
 		ModifiedAt: toDateTime("1905-08-20T07:59:17.606Z"),
 	}
 	testUserID2 = uuid.New().String()
-	testUser2   = &models.User{
+	testUser2   = &models2.User{
 		Active:     true,
 		CreatedAt:  toDateTime("1924-05-22T12:55:15.083Z"),
 		FirebaseID: "nobis",
 		ID:         testUserID1,
 		ModifiedAt: toDateTime("1984-04-11T07:36:18.998Z"),
 	}
-	testUsers    = []*models.User{testUser1, testUser2}
-	testAddUser1 = &models.UserAdd{
+	testUsers    = []*models2.User{testUser1, testUser2}
+	testAddUser1 = &models2.UserAdd{
 		Active:     false,
 		FirebaseID: "et",
 	}
-	testAddUser2 = &models.UserAdd{
+	testAddUser2 = &models2.UserAdd{
 		Active:     true,
 		FirebaseID: "molestiae",
 	}
 	testWashServerID1 = uuid.New().String()
-	testWashServer1   = &models.WashServer{
+	testWashServer1   = &models2.WashServer{
 		CreatedAt:    toDateTime("1913-09-07T09:28:44.012Z"),
 		ID:           testWashServerID1,
 		Key:          "maiores",
@@ -63,7 +63,7 @@ var (
 		Name:         "soluta",
 	}
 	testWashServerID2 = uuid.New().String()
-	testWashServer2   = &models.WashServer{
+	testWashServer2   = &models2.WashServer{
 		CreatedAt:    toDateTime("1953-01-22T15:18:49.602Z"),
 		ID:           testWashServerID1,
 		Key:          "ut",
@@ -71,13 +71,13 @@ var (
 		ModifiedAt:   toDateTime("1933-10-04T12:19:04.065Z"),
 		Name:         "quae",
 	}
-	testWashServers    = []*models.WashServer{testWashServer1, testWashServer2}
-	testAddWashServer1 = &models.WashServerAdd{
+	testWashServers    = []*models2.WashServer{testWashServer1, testWashServer2}
+	testAddWashServer1 = &models2.WashServerAdd{
 		Key:          "quia",
 		LastUpdateAt: toDateTime("2008-07-07T21:56:05.503Z"),
 		Name:         "dolores",
 	}
-	testAddWashServer2 = &models.WashServerAdd{
+	testAddWashServer2 = &models2.WashServerAdd{
 		Key:          "ratione",
 		LastUpdateAt: toDateTime("1949-12-03T00:54:30.526Z"),
 		Name:         "quidem",
@@ -86,7 +86,7 @@ var (
 	offset int64 = 0
 	limit  int64 = 5
 
-	testList = &models.ListParams{
+	testList = &models2.ListParams{
 		Offset: &offset,
 		Limit:  limit,
 	}

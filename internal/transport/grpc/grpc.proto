@@ -1,69 +1,65 @@
 syntax = "proto3";
 
-package xgrpc;
+package wash_bonus;
 
 option go_package = "./grpc";
 
-service WashServerService{
-    rpc InitConnection(InitConnectionRequest) returns(InitConnectionAnswer);
-    rpc StartSession(StartSessionRequest) returns(StartSessionAnswer);
-    rpc UpdateSession(stream UpdateSessionRequest) returns(stream UpdateSessionAnswer);
-    rpc ConfirmSession(ConfirmSessionRequest) returns(ConfirmSessionAnswer);
-    rpc FinishSession(FinishSessionRequest) returns(FinishSessionAnswer);
+service ServerService{
+  rpc InitConnection(InitRequest) returns(InitAnswer);
 }
 
-
-message InitConnectionRequest{
-    string serviceKey = 1;
+message InitRequest{
+  string serviceKey = 1;
+}
+message InitAnswer{
+  bool success = 1;
+  string error = 2;
 }
 
-message InitConnectionAnswer{
-    bool success = 1;
+service SessionService{
+  rpc Begin(BeginRequest) returns(BeginAnswer);
+  rpc Refresh(RefreshRequest) returns(RefreshAnswer);
+  rpc Confirm(ConfirmRequest) returns(ConfirmAnswer);
+  rpc End(FinishRequest) returns(FinishAnswer);
 }
 
-
-message StartSessionRequest{
-    string serviceKey = 1;
-    string postID = 2;
+message BeginRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+  int64 postID = 3;
+}
+message BeginAnswer{
+  bool success = 1;
+  string error = 2;
 }
 
-message StartSessionAnswer{
-    bool success = 1;
-    string sessionID = 2;
+message RefreshRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+  string enteredAmount = 3;
+}
+message RefreshAnswer{
+  bool success = 1;
+  string error = 2;
+  string userID = 3;
+  string consumeAmount = 4;
 }
 
-
-message UpdateSessionRequest{
-    string serviceKey = 1;
-    bool success = 2;
-    string error = 3;
+message ConfirmRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+}
+message ConfirmAnswer{
+  bool success = 1;
+  string error = 2;
 }
 
-message UpdateSessionAnswer{
-    bool success = 1;
-    string error = 2;
-    string sessionID = 3;
-    float Amount = 4;
-    float bonusAccrual = 5;
+message FinishRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+  string amount = 3;
 }
-
-
-message ConfirmSessionRequest{
-    string serviceKey = 1;
-    string sessionID = 2;
-}
-
-message ConfirmSessionAnswer{
-    bool success = 1;
-}
-
-
-message FinishSessionRequest{
-    string serviceKey = 1;
-    string sessionID = 2;
-    float amount = 3;
-}
-
-message FinishSessionAnswer{
-    bool success = 1;
+message FinishAnswer{
+  bool success = 1;
+  string error = 2;
 }

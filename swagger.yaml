@@ -16,38 +16,26 @@ securityDefinitions:
     in: header
     name: Authorization
 security:
-  - authKey: []
+  - authKey: [ ]
 paths:
   /healthCheck:
     get:
       tags:
         - Standard
       security:
-        - {}
-      operationId: healthCheck 
-      responses:        
+        - { }
+      operationId: healthCheck
+      responses:
         200:
-          description: OK 
+          description: OK
           schema:
             type: object
             properties:
               ok:
                 type: boolean
-  /addTestData:    
-    post:
-      tags:
-        - Standard
-      operationId: addTestData 
-      responses:        
-        200:
-          description: OK 
-        default:
-          description: error
-          schema:
-            $ref: "#/definitions/error"
 
-  /balance/get:    
-    post: 
+  /balance/get:
+    post:
       tags:
         - Balance
       operationId: getBalance
@@ -58,18 +46,19 @@ paths:
             type: object
             properties:
               id:
-                type: string 
+                type: string
       responses:
         200:
           description: OK
           schema:
-                  $ref: "#/definitions/balance"
+            $ref: "#/definitions/balance"
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
+
   /balance/add:
-    post: 
+    post:
       tags:
         - Balance
       operationId: addBalance
@@ -77,10 +66,10 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/balanceAdd" 
+            $ref: "#/definitions/balanceAdd"
       responses:
         201:
-          description: Created 
+          description: Created
           schema:
             $ref: "#/definitions/balance"
         default:
@@ -89,7 +78,7 @@ paths:
             $ref: "#/definitions/error"
 
   /balance/edit:
-    put: 
+    put:
       tags:
         - Balance
       operationId: editBalance
@@ -100,9 +89,9 @@ paths:
             type: object
             properties:
               id:
-                 type: string
+                type: string
               data:
-                $ref: "#/definitions/balanceAdd" 
+                $ref: "#/definitions/balanceAdd"
       responses:
         200:
           description: OK
@@ -112,7 +101,7 @@ paths:
             $ref: "#/definitions/error"
 
   /balance/deleted:
-    delete: 
+    delete:
       tags:
         - Balance
       operationId: deleteBalance
@@ -125,7 +114,7 @@ paths:
               id:
                 type: string
               user_id:
-                type: string 
+                type: string
       responses:
         204:
           description: Deleted
@@ -148,6 +137,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
+
   /user/{id}:
     get:
       tags:
@@ -162,13 +152,14 @@ paths:
         200:
           description: OK
           schema:
-                  $ref: "#/definitions/user"
+            $ref: "#/definitions/user"
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /user/add:    
-    post: 
+
+  /user/add:
+    post:
       tags:
         - User
       operationId: addUser
@@ -176,7 +167,7 @@ paths:
         - name: body
           in: body
           schema:
-                $ref: "#/definitions/userAdd" 
+            $ref: "#/definitions/userAdd"
       responses:
         200:
           description: Created
@@ -184,6 +175,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
+
   /user/{id}/edit:
     put:
       tags:
@@ -205,8 +197,9 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
+
   /user/{id}/delete:
-    delete: 
+    delete:
       tags:
         - User
       operationId: deleteUser
@@ -222,8 +215,9 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /user/list:    
-    post: 
+
+  /user/list:
+    post:
       tags:
         - User
       operationId: listUser
@@ -231,7 +225,7 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/listParams" 
+            $ref: "#/definitions/listParams"
       responses:
         200:
           description: OK
@@ -250,9 +244,9 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-  
+
   /washServer/{id}:
-    get: 
+    get:
       tags:
         - WashServer
       operationId: getWashServer
@@ -265,12 +259,12 @@ paths:
         200:
           description: OK
           schema:
-                  $ref: "#/definitions/washServer"
+            $ref: "#/definitions/washServer"
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
-    put: 
+    put:
       tags:
         - WashServer
       operationId: editWashServer
@@ -282,7 +276,7 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/washServerUpdate" 
+            $ref: "#/definitions/washServerUpdate"
       responses:
         200:
           description: OK
@@ -290,7 +284,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-    delete: 
+    delete:
       tags:
         - WashServer
       operationId: deleteWashServer
@@ -306,8 +300,9 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
+
   /washServer:
-    post: 
+    post:
       tags:
         - WashServer
       operationId: addWashServer
@@ -315,15 +310,16 @@ paths:
         - name: body
           in: body
           schema:
-                $ref: "#/definitions/washServerAdd" 
+            $ref: "#/definitions/washServerAdd"
       responses:
         200:
-          description: Created 
+          description: Created
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
-  /washServers:    
+
+  /washServers:
     post:
       tags:
         - WashServer
@@ -332,7 +328,7 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/listParams" 
+            $ref: "#/definitions/listParams"
       responses:
         200:
           description: OK
@@ -342,6 +338,7 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
+
   /washServer/{id}/generate-key:
     put:
       tags:
@@ -356,12 +353,12 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/washServerGenerateKeyResp" 
+            $ref: "#/definitions/washServerGenerateKeyResp"
         default:
           description: error
           schema:
             $ref: "#/definitions/error"
-        
+
 
 
 definitions:
@@ -464,7 +461,7 @@ definitions:
         type: string
       owner_id:
         type: string
- 
+
   washServerUpdate:
     type: object
     description: "washServer model for edit methods"
@@ -511,12 +508,12 @@ definitions:
       filterGroups:
         type: array
         items:
-          $ref: "#/definitions/filterGroup" 
+          $ref: "#/definitions/filterGroup"
       sortBy:
         type: string
       orderBy:
         type: string
-        enum: [ASC, DESC]
+        enum: [ ASC, DESC ]
 
   filterGroup:
     type: object
@@ -530,8 +527,8 @@ definitions:
       filters:
         type: array
         items:
-          $ref: "#/definitions/filter" 
-      
+          $ref: "#/definitions/filter"
+
   filter:
     type: object
     properties:

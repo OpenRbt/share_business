@@ -6,7 +6,7 @@ import (
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/dal/dbmodel"
-	models2 "wash-bonus/internal/transport/rest/restapi/models"
+	"wash-bonus/openapi/models"
 )
 
 func UsersFromDB(uu []dbmodel.User) []entity.User {
@@ -51,8 +51,8 @@ func UserToDB(u entity.User) dbmodel.User {
 	}
 }
 
-func UserToRest(u entity.User) models2.User {
-	return models2.User{
+func UserToRest(u entity.User) models.User {
+	return models.User{
 		Active:     u.Active,
 		CreatedAt:  (*strfmt.DateTime)(u.CreatedAt),
 		FirebaseID: u.IdentityID,
@@ -61,8 +61,8 @@ func UserToRest(u entity.User) models2.User {
 	}
 }
 
-func UsersToRest(uu []entity.User) []*models2.User {
-	apiUsers := make([]*models2.User, len(uu))
+func UsersToRest(uu []entity.User) []*models.User {
+	apiUsers := make([]*models.User, len(uu))
 
 	for i, u := range uu {
 		apiUser := UserToRest(u)
@@ -71,13 +71,13 @@ func UsersToRest(uu []entity.User) []*models2.User {
 	return apiUsers
 }
 
-func UserFromRestAdd(u models2.UserAdd) entity.User {
+func UserFromRestAdd(u models.UserAdd) entity.User {
 	return entity.User{
 		Active: u.Active,
 	}
 }
 
-func UserFromRestUpdate(u models2.UserUpdate) vo.UserUpdate {
+func UserFromRestUpdate(u models.UserUpdate) vo.UserUpdate {
 	return vo.UserUpdate{
 		Active: u.Active,
 	}

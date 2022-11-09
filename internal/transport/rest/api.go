@@ -8,22 +8,17 @@ import (
 	bonus2 "wash-bonus/internal/app/Balance"
 	user2 "wash-bonus/internal/app/user"
 	wash_server2 "wash-bonus/internal/app/wash_server"
-	"wash-bonus/internal/dto"
 	"wash-bonus/internal/firebase_auth"
-	"wash-bonus/internal/transport/rest/restapi/models"
-	restapi2 "wash-bonus/internal/transport/rest/restapi/restapi"
-	"wash-bonus/internal/transport/rest/restapi/restapi/operations"
-	standard2 "wash-bonus/internal/transport/rest/restapi/restapi/operations/standard"
+	"wash-bonus/openapi/restapi"
+	"wash-bonus/openapi/restapi/operations"
+	"wash-bonus/openapi/restapi/operations/standard"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/swag"
 	"github.com/pkg/errors"
 	"github.com/powerman/structlog"
 	"github.com/rs/cors"
 	"github.com/sebest/xff"
-	"wash-bonus/internal/app"
-	"wash-bonus/internal/def"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
@@ -44,23 +39,21 @@ type Config struct {
 }
 
 type service struct {
-	app           app.App
 	bonusSvc      bonus2.BalanceSvc
 	washServerSvc wash_server2.WashServerSvc
 	userSvc       user2.UserSvc
 	auth          firebase_auth.Service
 }
 
-func NewServer(appl app.App, userSvc user2.UserSvc, BalanceSvc bonus2.BalanceSvc, washServerSvc wash_server2.WashServerSvc, cfg Config, firebase firebase_auth.Service) (*restapi2.Server, error) {
+func NewServer(userSvc user2.UserSvc, BalanceSvc bonus2.BalanceSvc, washServerSvc wash_server2.WashServerSvc, cfg Config, firebase firebase_auth.Service) (*restapi.Server, error) {
 	svc := &service{
-		app:           appl,
 		userSvc:       userSvc,
 		auth:          firebase,
 		bonusSvc:      BalanceSvc,
 		washServerSvc: washServerSvc,
 	}
 
-	swaggerSpec, err := loads.Embedded(restapi2.SwaggerJSON, restapi2.FlatSwaggerJSON)
+	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to load embedded swagger spec")
 	}
@@ -74,15 +67,14 @@ func NewServer(appl app.App, userSvc user2.UserSvc, BalanceSvc bonus2.BalanceSvc
 	api.Logger = structlog.New(structlog.KeyUnit, "swagger").Printf
 	api.AuthKeyAuth = svc.auth.Auth
 
-	api.StandardHealthCheckHandler = standard2.HealthCheckHandlerFunc(healthCheck)
-	api.StandardAddTestDataHandler = standard2.AddTestDataHandlerFunc(svc.addTestData)
+	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 
 	setBalanceHandlers(api, svc)
 
 	setUserHandlers(api, svc)
 	setWashServerHandlers(api, svc)
 
-	server := restapi2.NewServer(api)
+	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)
 	server.Port = int(cfg.Port)
 
@@ -96,7 +88,7 @@ func NewServer(appl app.App, userSvc user2.UserSvc, BalanceSvc bonus2.BalanceSvc
 			SpecURL:  path.Join(cfg.BasePath, "/swagger.json"),
 		}
 		return xffmw.Handler(logger(noCache(recovery(accesslog(
-			middleware.Spec(cfg.BasePath, restapi2.FlatSwaggerJSON,
+			middleware.Spec(cfg.BasePath, restapi.FlatSwaggerJSON,
 				middleware.Redoc(redocOpts,
 					handler)))))))
 	}
@@ -126,28 +118,6 @@ func NewServer(appl app.App, userSvc user2.UserSvc, BalanceSvc bonus2.BalanceSvc
 	return server, nil
 }
 
-func healthCheck(params standard2.HealthCheckParams, profile interface{}) middleware.Responder {
-	return standard2.NewHealthCheckOK().WithPayload(&standard2.HealthCheckOKBody{Ok: true})
-}
-
-func (svc *service) addTestData(params standard2.AddTestDataParams, profile interface{}) middleware.Responder {
-	prof := profile.(*firebase_auth.FirebaseProfile)
-	err := svc.app.AddTestData(dto.ToAppIdentityProfile(*prof))
-	switch {
-	default:
-		log.PrintErr("AddTestData server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return standard2.NewAddTestDataDefault(codeInternal.status).WithPayload(&models.Error{
-			Code:    swag.Int32(codeInternal.extra),
-			Message: swag.String("internal error"),
-		})
-	case errors.Is(err, app.ErrAccessDenied):
-		log.Info("AddTestData client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return standard2.NewAddTestDataDefault(codeForbidden.status).WithPayload(&models.Error{
-			Code:    swag.Int32(codeForbidden.extra),
-			Message: swag.String(err.Error()),
-		})
-	case err == nil:
-		log.Info("AddTestData ok")
-		return standard2.NewAddTestDataOK()
-	}
+func healthCheck(params standard.HealthCheckParams, profile interface{}) middleware.Responder {
+	return standard.NewHealthCheckOK().WithPayload(&standard.HealthCheckOKBody{Ok: true})
 }

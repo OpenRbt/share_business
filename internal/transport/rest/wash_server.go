@@ -10,49 +10,49 @@ import (
 	"wash-bonus/internal/def"
 	"wash-bonus/internal/dto"
 	"wash-bonus/internal/firebase_auth"
-	models2 "wash-bonus/internal/transport/rest/restapi/models"
-	"wash-bonus/internal/transport/rest/restapi/restapi/operations"
-	"wash-bonus/internal/transport/rest/restapi/restapi/operations/wash_server"
+	"wash-bonus/openapi/models"
+	"wash-bonus/openapi/restapi/operations"
+	wash_server2 "wash-bonus/openapi/restapi/operations/wash_server"
 )
 
 func setWashServerHandlers(api *operations.WashBonusAPI, svc *service) {
-	api.WashServerGetWashServerHandler = wash_server.GetWashServerHandlerFunc(svc.GetWashServer)
-	api.WashServerAddWashServerHandler = wash_server.AddWashServerHandlerFunc(svc.AddWashServer)
-	api.WashServerEditWashServerHandler = wash_server.EditWashServerHandlerFunc(svc.EditWashServer)
-	api.WashServerDeleteWashServerHandler = wash_server.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
-	api.WashServerListWashServerHandler = wash_server.ListWashServerHandlerFunc(svc.ListWashServer)
-	api.WashServerGenerateKeyWashServerHandler = wash_server.GenerateKeyWashServerHandlerFunc(svc.GenerateKeyWashServer)
+	api.WashServerGetWashServerHandler = wash_server2.GetWashServerHandlerFunc(svc.GetWashServer)
+	api.WashServerAddWashServerHandler = wash_server2.AddWashServerHandlerFunc(svc.AddWashServer)
+	api.WashServerEditWashServerHandler = wash_server2.EditWashServerHandlerFunc(svc.EditWashServer)
+	api.WashServerDeleteWashServerHandler = wash_server2.DeleteWashServerHandlerFunc(svc.DeleteWashServer)
+	api.WashServerListWashServerHandler = wash_server2.ListWashServerHandlerFunc(svc.ListWashServer)
+	api.WashServerGenerateKeyWashServerHandler = wash_server2.GenerateKeyWashServerHandlerFunc(svc.GenerateKeyWashServer)
 }
 
-func (svc *service) GetWashServer(params wash_server.GetWashServerParams, profile interface{}) middleware.Responder {
+func (svc *service) GetWashServer(params wash_server2.GetWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	s, err := svc.washServerSvc.Get(dto.ToAppIdentityProfile(*prof), params.ID)
 	switch {
 	default:
 		log.PrintErr("GetWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return wash_server.NewGetWashServerDefault(codeInternal.status).WithPayload(&models2.Error{
+		return wash_server2.NewGetWashServerDefault(codeInternal.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeInternal.extra),
 			Message: swag.String("internal error"),
 		})
 	case errors.Is(err, app.ErrAccessDenied):
 		log.Info("GetWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return wash_server.NewGetWashServerDefault(codeForbidden.status).WithPayload(&models2.Error{
+		return wash_server2.NewGetWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeForbidden.extra),
 			Message: swag.String(err.Error()),
 		})
 	case errors.Is(err, app.ErrNotFound):
 		log.Info("GetWashServer client error", def.LogHTTPStatus, codeNotFound.status, "code", codeNotFound.extra, "err", err)
-		return wash_server.NewGetWashServerDefault(codeNotFound.status).WithPayload(&models2.Error{
+		return wash_server2.NewGetWashServerDefault(codeNotFound.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeNotFound.extra),
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
 		log.Info("GetWashServer ok", "id", params.ID)
-		return wash_server.NewGetWashServerOK().WithPayload(dto.WashServerToRest(s))
+		return wash_server2.NewGetWashServerOK().WithPayload(dto.WashServerToRest(s))
 	}
 }
 
-func (svc *service) AddWashServer(params wash_server.AddWashServerParams, profile interface{}) middleware.Responder {
+func (svc *service) AddWashServer(params wash_server2.AddWashServerParams, profile interface{}) middleware.Responder {
 	fmt.Println("AddWashServer: ", params.Body.Name)
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	wash, err := dto.WashServerFromRestAdd(params.Body)
@@ -62,23 +62,23 @@ func (svc *service) AddWashServer(params wash_server.AddWashServerParams, profil
 	switch {
 	default:
 		log.PrintErr("AddWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return wash_server.NewAddWashServerDefault(codeInternal.status).WithPayload(&models2.Error{
+		return wash_server2.NewAddWashServerDefault(codeInternal.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeInternal.extra),
 			Message: swag.String("internal error"),
 		})
 	case errors.Is(err, app.ErrAccessDenied):
 		log.Info("AddWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return wash_server.NewAddWashServerDefault(codeForbidden.status).WithPayload(&models2.Error{
+		return wash_server2.NewAddWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeForbidden.extra),
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
 		log.Info("AddWashServer ok")
-		return wash_server.NewAddWashServerOK()
+		return wash_server2.NewAddWashServerOK()
 	}
 }
 
-func (svc *service) EditWashServer(params wash_server.EditWashServerParams, profile interface{}) middleware.Responder {
+func (svc *service) EditWashServer(params wash_server2.EditWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	wash, err := dto.WashServerFromRestUpdate(params.Body)
 	if err == nil {
@@ -87,100 +87,100 @@ func (svc *service) EditWashServer(params wash_server.EditWashServerParams, prof
 	switch {
 	default:
 		log.PrintErr("EditWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return wash_server.NewEditWashServerDefault(codeInternal.status).WithPayload(&models2.Error{
+		return wash_server2.NewEditWashServerDefault(codeInternal.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeInternal.extra),
 			Message: swag.String("internal error"),
 		})
 	case errors.Is(err, app.ErrAccessDenied):
 		log.Info("EditWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return wash_server.NewEditWashServerDefault(codeForbidden.status).WithPayload(&models2.Error{
+		return wash_server2.NewEditWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeForbidden.extra),
 			Message: swag.String(err.Error()),
 		})
 	case errors.Is(err, app.ErrNotFound):
 		log.Info("EditWashServer client error", def.LogHTTPStatus, codeNotFound.status, "code", codeNotFound.extra, "err", err)
-		return wash_server.NewEditWashServerDefault(codeNotFound.status).WithPayload(&models2.Error{
+		return wash_server2.NewEditWashServerDefault(codeNotFound.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeNotFound.extra),
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
 		log.Info("EditWashServer ok")
-		return wash_server.NewEditWashServerOK()
+		return wash_server2.NewEditWashServerOK()
 	}
 }
 
-func (svc *service) DeleteWashServer(params wash_server.DeleteWashServerParams, profile interface{}) middleware.Responder {
+func (svc *service) DeleteWashServer(params wash_server2.DeleteWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	err := svc.washServerSvc.Delete(dto.ToAppIdentityProfile(*prof), params.ID)
 	switch {
 	default:
 		log.PrintErr("DeleteWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return wash_server.NewDeleteWashServerDefault(codeInternal.status).WithPayload(&models2.Error{
+		return wash_server2.NewDeleteWashServerDefault(codeInternal.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeInternal.extra),
 			Message: swag.String("internal error"),
 		})
 	case errors.Is(err, app.ErrAccessDenied):
 		log.Info("DeleteWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return wash_server.NewDeleteWashServerDefault(codeForbidden.status).WithPayload(&models2.Error{
+		return wash_server2.NewDeleteWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeForbidden.extra),
 			Message: swag.String(err.Error()),
 		})
 	case errors.Is(err, app.ErrNotFound):
 		log.Info("DeleteWashServer client error", def.LogHTTPStatus, codeNotFound.status, "code", codeNotFound.extra, "err", err)
-		return wash_server.NewDeleteWashServerDefault(codeNotFound.status).WithPayload(&models2.Error{
+		return wash_server2.NewDeleteWashServerDefault(codeNotFound.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeNotFound.extra),
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
 		log.Info("DeleteWashServer ok", "id", params.ID)
-		return wash_server.NewDeleteWashServerNoContent()
+		return wash_server2.NewDeleteWashServerNoContent()
 	}
 }
 
-func (svc *service) ListWashServer(params wash_server.ListWashServerParams, profile interface{}) middleware.Responder {
+func (svc *service) ListWashServer(params wash_server2.ListWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	ss, warnings, err := svc.washServerSvc.List(dto.ToAppIdentityProfile(*prof), dto.ListFilterFromRest(params.Body))
 	switch {
 	default:
 		log.PrintErr("ListWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return wash_server.NewListWashServerDefault(codeInternal.status).WithPayload(&models2.Error{
+		return wash_server2.NewListWashServerDefault(codeInternal.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeInternal.extra),
 			Message: swag.String("internal error"),
 		})
 	case errors.Is(err, app.ErrAccessDenied):
 		log.Info("ListWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return wash_server.NewListWashServerDefault(codeForbidden.status).WithPayload(&models2.Error{
+		return wash_server2.NewListWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeForbidden.extra),
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
 		log.Info("ListWashServer ok")
-		return wash_server.NewListWashServerOK().WithPayload(&models2.ListWashServer{
+		return wash_server2.NewListWashServerOK().WithPayload(&models.ListWashServer{
 			Warnings: warnings,
 			Items:    dto.WashServersToRest(ss),
 		})
 	}
 }
 
-func (svc *service) GenerateKeyWashServer(params wash_server.GenerateKeyWashServerParams, profile interface{}) middleware.Responder {
+func (svc *service) GenerateKeyWashServer(params wash_server2.GenerateKeyWashServerParams, profile interface{}) middleware.Responder {
 	prof := profile.(*firebase_auth.FirebaseProfile)
 	key, err := svc.washServerSvc.GenerateServiceKey(dto.ToAppIdentityProfile(*prof), params.ID)
 	switch {
 	default:
 		log.PrintErr("GenerateKeyWashServer server error", def.LogHTTPStatus, codeInternal.status, "code", codeInternal.extra, "err", err)
-		return wash_server.NewEditWashServerDefault(codeInternal.status).WithPayload(&models2.Error{
+		return wash_server2.NewEditWashServerDefault(codeInternal.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeInternal.extra),
 			Message: swag.String("internal error"),
 		})
 	case errors.Is(err, app.ErrAccessDenied):
 		log.Info("GenerateKeyWashServer client error", def.LogHTTPStatus, codeForbidden.status, "code", codeForbidden.extra, "err", err)
-		return wash_server.NewEditWashServerDefault(codeForbidden.status).WithPayload(&models2.Error{
+		return wash_server2.NewEditWashServerDefault(codeForbidden.status).WithPayload(&models.Error{
 			Code:    swag.Int32(codeForbidden.extra),
 			Message: swag.String(err.Error()),
 		})
 	case err == nil:
 		log.Info("GenerateKeyWashServer ok")
-		return wash_server.NewGenerateKeyWashServerOK().WithPayload(&models2.WashServerGenerateKeyResp{
+		return wash_server2.NewGenerateKeyWashServerOK().WithPayload(&models.WashServerGenerateKeyResp{
 			ServiceKey: *key,
 		})
 	}

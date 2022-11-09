@@ -99,3 +99,17 @@ func (r *Repo) ListWashServers(filter vo.ListFilter) ([]entity.WashServer, []str
 
 	return dto.WashServersFromDB(ms), warnings, nil
 }
+
+func (r *Repo) GetWashServerByKey(key string) (*entity.WashServer, error) {
+	var m dbmodel.WashServer
+
+	err := r.db.NamedGet(&m, sqlGetWashServerByKey, argGetWashServerByKey{
+		Key: key,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.WashServerFromDB(m), nil
+}

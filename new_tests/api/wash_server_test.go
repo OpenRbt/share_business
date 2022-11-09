@@ -2,9 +2,8 @@ package api
 
 import (
 	"testing"
-
-	"wash-bonus/internal/transport/rest/restapi/client"
-	washServer "wash-bonus/internal/transport/rest/restapi/client/wash_server"
+	"wash-bonus/openapi/restapi/client"
+	"wash-bonus/openapi/restapi/client/wash_server"
 
 	cl "github.com/go-openapi/runtime/client"
 	"github.com/golang/mock/gomock"
@@ -21,7 +20,7 @@ func TestGetWashServer(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := washServer.NewGetWashServerParams()
+	params := wash_server.NewGetWashServerParams()
 	params.Body.ID = testWashServerID1
 	mockApp.EXPECT().GetWashServer(gomock.Any(), gomock.Any()).Return(appWashServer(testWashServer1), nil)
 
@@ -43,7 +42,7 @@ func TestAddWashServer(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := washServer.NewAddWashServerParams()
+	params := wash_server.NewAddWashServerParams()
 	params.Body = testAddWashServer1
 	mockApp.EXPECT().AddWashServer(gomock.Any(), gomock.Any()).Return(appWashServer(testWashServer1), nil)
 
@@ -65,7 +64,7 @@ func TestEditWashServer(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := washServer.NewEditWashServerParams()
+	params := wash_server.NewEditWashServerParams()
 	params.Body.Data = testAddWashServer1
 	params.Body.ID = testWashServer1.ID
 	mockApp.EXPECT().EditWashServer(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
@@ -86,7 +85,7 @@ func TestDeleteWashServer(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := washServer.NewDeleteWashServerParams()
+	params := wash_server.NewDeleteWashServerParams()
 	params.Body.ID = testWashServer1.ID
 	mockApp.EXPECT().DeleteWashServer(gomock.Any(), gomock.Any()).Return(nil)
 
@@ -107,7 +106,7 @@ func TestListWashServer(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := washServer.NewListWashServerParams()
+	params := wash_server.NewListWashServerParams()
 	params.Body = testList
 	mockApp.EXPECT().ListWashServer(gomock.Any(), gomock.Any()).Return(appWashServers(testWashServers), []string{}, nil)
 

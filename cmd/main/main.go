@@ -7,10 +7,11 @@ import (
 	"crypto/x509"
 	"flag"
 	"fmt"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"net"
 	"os"
 	"time"
-	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/Balance"
 	"wash-bonus/internal/app/user"
 	"wash-bonus/internal/app/wash_server"
@@ -19,9 +20,6 @@ import (
 	"wash-bonus/internal/firebase_auth"
 	grpc3 "wash-bonus/internal/transport/grpc"
 	api "wash-bonus/internal/transport/rest"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 
 	"github.com/powerman/pqx"
 	"github.com/powerman/structlog"
@@ -35,7 +33,6 @@ const (
 
 var (
 	testRepo *dal.Repo
-	testAppl app.App
 
 	log = structlog.New()
 	cfg struct {
@@ -104,18 +101,14 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	washServerGRPCSvc, err := grpc3.NewWashServerService(r)
-	if err != nil {
-		return err
-	}
 
-	appl := app.New(r)
+	grpcSVC := grpc3.NewSvc(r)
+
 	userSvc := user.NewService(r)
 
 	BalanceSvc := Balance.NewService(r)
 
-	washServerSvc, err := wash_server.NewService(r, userSvc, washServerGRPCSvc.WashServerConnections,
-		def.WashServerRSAPrivateKeyFilePath, def.WashServerRSAPublicKeyFilePath)
+	washServerSvc, err := wash_server.NewService(r, userSvc, def.WashServerRSAPrivateKeyFilePath, def.WashServerRSAPublicKeyFilePath)
 	if err != nil {
 		return err
 	}
@@ -124,8 +117,8 @@ func run() error {
 
 	errc := make(chan error)
 
-	go runGRPCServer(errc, washServerGRPCSvc, def.GRPCEnableTLS)
-	go runHTTPServer(errc, appl, userSvc, BalanceSvc, washServerSvc, firebase)
+	go runGRPCServer(errc, grpcSVC, def.GRPCEnableTLS)
+	go runHTTPServer(errc, userSvc, BalanceSvc, washServerSvc, firebase)
 
 	return <-errc
 }
@@ -154,7 +147,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	}), nil
 }
 
-func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc3.WashServerService, enableTLS bool) {
+func runGRPCServer(errc chan<- error, grpcSVC *grpc3.Service, enableTLS bool) {
 	serverOptions := []grpc.ServerOption{}
 
 	if enableTLS {
@@ -168,7 +161,8 @@ func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc3.WashServerSer
 
 	server := grpc.NewServer(serverOptions...)
 
-	grpc3.RegisterWashServerServiceServer(server, WashServerGRPCService)
+	grpc3.RegisterServerServiceServer(server, grpcSVC)
+	grpc3.RegisterSessionServiceServer(server, grpcSVC)
 
 	l, err := net.Listen("tcp", ":"+def.GRPCPort)
 	if err != nil {
@@ -179,8 +173,8 @@ func runGRPCServer(errc chan<- error, WashServerGRPCService *grpc3.WashServerSer
 	errc <- server.Serve(l)
 }
 
-func runHTTPServer(errc chan<- error, appl app.App, userSvc user.UserSvc, Balance Balance.BalanceSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
-	srv, err := api.NewServer(appl, userSvc, Balance, washServerSvc, cfg.api, firebase)
+func runHTTPServer(errc chan<- error, userSvc user.UserSvc, Balance Balance.BalanceSvc, washServerSvc wash_server.WashServerSvc, firebase firebase_auth.Service) {
+	srv, err := api.NewServer(userSvc, Balance, washServerSvc, cfg.api, firebase)
 	if err != nil {
 		errc <- fmt.Errorf("api: %v", err)
 		return

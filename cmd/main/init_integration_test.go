@@ -7,8 +7,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-
-	"wash-bonus/internal/transport/rest/restapi/client"
+	"wash-bonus/openapi/restapi/client"
 
 	"github.com/powerman/gotest/testinit"
 	"github.com/powerman/pqx"

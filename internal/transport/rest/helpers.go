@@ -4,7 +4,7 @@ package api
 import (
 	"strings"
 	"time"
-	models2 "wash-bonus/internal/transport/rest/restapi/models"
+	"wash-bonus/openapi/models"
 
 	"github.com/go-openapi/strfmt"
 	"wash-bonus/internal/app"
@@ -12,7 +12,7 @@ import (
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!
 
-func appListParams(apiLP *models2.ListParams) *app.ListParams {
+func appListParams(apiLP *models.ListParams) *app.ListParams {
 	var offset int64 = 0
 	if apiLP.Offset != nil {
 		offset = *apiLP.Offset
@@ -26,7 +26,7 @@ func appListParams(apiLP *models2.ListParams) *app.ListParams {
 	}
 }
 
-func appFilterGroups(apiFG []*models2.FilterGroup) []*app.FilterGroup {
+func appFilterGroups(apiFG []*models.FilterGroup) []*app.FilterGroup {
 	appFG := []*app.FilterGroup{}
 	for _, fg := range apiFG {
 		appFG = append(appFG, &app.FilterGroup{
@@ -38,7 +38,7 @@ func appFilterGroups(apiFG []*models2.FilterGroup) []*app.FilterGroup {
 	return appFG
 }
 
-func appFilters(apiFP []*models2.Filter) []*app.Filter {
+func appFilters(apiFP []*models.Filter) []*app.Filter {
 	appF := []*app.Filter{}
 	for _, fp := range apiFP {
 		appF = append(appF, &app.Filter{

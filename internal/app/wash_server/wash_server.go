@@ -1,14 +1,11 @@
 package wash_server
 
 import (
-	"sync"
+	"github.com/golang-jwt/jwt/v4"
 	"wash-bonus/internal/app"
 	"wash-bonus/internal/app/entity"
 	"wash-bonus/internal/app/entity/vo"
 	"wash-bonus/internal/app/user"
-	"wash-bonus/internal/transport/grpc"
-
-	"github.com/golang-jwt/jwt/v4"
 
 	"crypto/rsa"
 
@@ -33,15 +30,13 @@ type Repository interface {
 }
 
 type Service struct {
-	repo                           Repository
-	userSvc                        user.UserSvc
-	rsaPrivateKey                  *rsa.PrivateKey
-	rsaPublicKey                   *rsa.PublicKey
-	washServerGRPCConnectionsMutex sync.Mutex
-	washServerGRPCConnections      map[string]*grpc.WashServerConnection
+	repo          Repository
+	userSvc       user.UserSvc
+	rsaPrivateKey *rsa.PrivateKey
+	rsaPublicKey  *rsa.PublicKey
 }
 
-func NewService(repo Repository, userSvc user.UserSvc, connections map[string]*grpc.WashServerConnection,
+func NewService(repo Repository, userSvc user.UserSvc,
 	privateKeyFilePath, publicKeyFilePath string) (WashServerSvc, error) {
 
 	privateKeyContent, err := os.ReadFile(privateKeyFilePath)
@@ -65,11 +60,10 @@ func NewService(repo Repository, userSvc user.UserSvc, connections map[string]*g
 	}
 
 	return &Service{
-		userSvc:                   userSvc,
-		repo:                      repo,
-		rsaPrivateKey:             privateKey,
-		rsaPublicKey:              publicKey,
-		washServerGRPCConnections: connections,
+		userSvc:       userSvc,
+		repo:          repo,
+		rsaPrivateKey: privateKey,
+		rsaPublicKey:  publicKey,
 	}, nil
 }
 
@@ -136,10 +130,6 @@ func (a *Service) GenerateServiceKey(prof entity.IdentityProfile, wash_server_id
 	if err != nil {
 		return nil, err
 	}
-
-	a.washServerGRPCConnectionsMutex.Lock()
-	a.washServerGRPCConnections[tokenString] = grpc.NewWashServerConnection(*wash)
-	a.washServerGRPCConnectionsMutex.Unlock()
 
 	return &tokenString, nil
 }

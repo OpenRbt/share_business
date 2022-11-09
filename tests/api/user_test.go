@@ -2,9 +2,8 @@ package api
 
 import (
 	"testing"
-
-	"wash-bonus/internal/transport/rest/restapi/client"
-	user "wash-bonus/internal/transport/rest/restapi/client/user"
+	user2 "wash-bonus/openapi/openapi/client/user"
+	"wash-bonus/openapi/restapi/client"
 
 	cl "github.com/go-openapi/runtime/client"
 	"github.com/golang/mock/gomock"
@@ -22,7 +21,7 @@ func TestGetUser(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := user.NewGetUserParams()
+	params := user2.NewGetUserParams()
 	params.Body.ID = testUserID1
 	mockApp.EXPECT().GetUser(gomock.Any(), gomock.Any()).Return(appUser(testUser1, true), nil)
 
@@ -44,7 +43,7 @@ func TestAddUser(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := user.NewAddUserParams()
+	params := user2.NewAddUserParams()
 	params.Body = testAddUser1
 	mockApp.EXPECT().AddUser(gomock.Any(), gomock.Any()).Return(appUser(testUser1, true), nil)
 
@@ -66,7 +65,7 @@ func TestEditUser(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := user.NewEditUserParams()
+	params := user2.NewEditUserParams()
 	params.Body.Data = testAddUser1
 	params.Body.ID = testUser1.ID
 	mockApp.EXPECT().EditUser(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
@@ -87,7 +86,7 @@ func TestDeleteUser(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := user.NewDeleteUserParams()
+	params := user2.NewDeleteUserParams()
 	params.Body.ID = testUser1.ID
 	mockApp.EXPECT().DeleteUser(gomock.Any(), gomock.Any()).Return(nil)
 
@@ -108,7 +107,7 @@ func TestListUser(tt *testing.T) {
 	})
 	mockExtAuthSvc.EXPECT().GetUserProfile(gomock.Any(), sess).Return(profile, nil)
 
-	params := user.NewListUserParams()
+	params := user2.NewListUserParams()
 	params.Body = testList
 	mockApp.EXPECT().ListUser(gomock.Any(), gomock.Any()).Return(appUsers(testUsers, true), []string{}, nil)
 

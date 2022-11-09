@@ -27,6 +27,21 @@ const (
 		NOT deleted
 	`
 
+	sqlGetWashServerByKey = `
+	SELECT
+		id,
+		created_at,
+		modified_at,
+		service_key,
+		name,
+		description,
+		owner_id
+	FROM
+		wash_servers
+	WHERE
+		service_key=:service_key AND
+		NOT deleted
+	`
 	sqlAddWashServer = `
 	INSERT INTO wash_servers(
 		name,
@@ -89,6 +104,10 @@ const (
 type (
 	argGetWashServer struct {
 		ID string `db:"id"`
+	}
+
+	argGetWashServerByKey struct {
+		Key string `db:"service_key"`
 	}
 
 	argAddWashServer struct {

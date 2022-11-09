@@ -7,7 +7,7 @@ test-i:
 	go test --tags=integration ./...
 
 db_start:
-	docker run --name $(MSRV_DB_NAME) -e POSTGRES_PASSWORD=$(MSRV_DB_PASS) -e POSTGRES_DB=$(MSRV_DB_NAME) -d -p $(MSRV_DB_PORT):5432 --rm postgres
+	docker run --name $(MSRV_DB_NAME) -e POSTGRES_PASSWORD=$(MSRV_DB_PASS) -e POSTGRES_DB=$(MSRV_DB_NAME) -d -p $(MSRV_DB_PORT):5432 --rm postgres:14.5
 
 db_stop:
 	docker stop $(MSRV_DB_CONTAINER)
@@ -20,9 +20,6 @@ start_docker:
 
 gen_certs:
 	bash ./gencerts
-
-gen_grpc:
-	bash ./gengrpc
 
 build_app:
 	go build -o ./bin/wash-bonus ./cmd/main/*
