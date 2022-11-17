@@ -87,7 +87,6 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-
   /balance/edit:
     put: 
       tags:
@@ -110,7 +109,6 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-
   /balance/deleted:
     delete: 
       tags:

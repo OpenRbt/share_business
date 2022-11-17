@@ -6,7 +6,7 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
-	"wash-bonus/internal/transport/rest/restapi/restapi"
+	"wash-bonus/internal/transport/rest/restapi"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/swag"

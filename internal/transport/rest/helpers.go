@@ -4,7 +4,7 @@ package api
 import (
 	"strings"
 	"time"
-	models2 "wash-bonus/internal/transport/rest/restapi/models"
+	models2 "wash-bonus/internal/transport/rest/models"
 
 	"github.com/go-openapi/strfmt"
 	"wash-bonus/internal/app"

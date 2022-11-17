@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
-	"wash-bonus/internal/transport/rest/restapi/models"
+	"wash-bonus/internal/transport/rest/models"
 
 	"github.com/felixge/httpsnoop"
 	"github.com/go-openapi/swag"
