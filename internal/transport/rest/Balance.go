@@ -3,9 +3,9 @@ package api
 import (
 	"errors"
 	"wash-bonus/internal/def"
-	"wash-bonus/internal/transport/rest/restapi/models"
-	"wash-bonus/internal/transport/rest/restapi/restapi/operations"
-	balance2 "wash-bonus/internal/transport/rest/restapi/restapi/operations/balance"
+	"wash-bonus/internal/transport/rest/models"
+	"wash-bonus/internal/transport/rest/restapi/operations"
+	balance2 "wash-bonus/internal/transport/rest/restapi/operations/balance"
 
 	"github.com/go-openapi/swag"
 

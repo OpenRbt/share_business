@@ -15,4 +15,6 @@
 # vendor/
 bin/
 certs/
-.env
+
+/**/.env
+/**/.idea/
