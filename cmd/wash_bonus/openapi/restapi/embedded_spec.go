@@ -42,7 +42,7 @@ func init() {
           }
         ],
         "tags": [
-          "bonuses"
+          "bonus"
         ],
         "operationId": "cancel",
         "parameters": [
@@ -84,7 +84,7 @@ func init() {
           }
         ],
         "tags": [
-          "bonuses"
+          "bonus"
         ],
         "operationId": "confirm",
         "parameters": [
@@ -330,7 +330,7 @@ func init() {
           }
         ],
         "tags": [
-          "bonuses"
+          "bonus"
         ],
         "operationId": "cancel",
         "parameters": [
@@ -372,7 +372,7 @@ func init() {
           }
         ],
         "tags": [
-          "bonuses"
+          "bonus"
         ],
         "operationId": "confirm",
         "parameters": [

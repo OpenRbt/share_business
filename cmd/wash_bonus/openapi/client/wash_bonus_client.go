@@ -11,7 +11,6 @@ import (
 	"github.com/go-openapi/strfmt"
 
 	"wash_bonus/openapi/client/bonus"
-	"wash_bonus/openapi/client/bonuses"
 	"wash_bonus/openapi/client/standard"
 	"wash_bonus/openapi/client/user"
 )
@@ -59,7 +58,6 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *WashBonus 
 	cli := new(WashBonus)
 	cli.Transport = transport
 	cli.Bonus = bonus.New(transport, formats)
-	cli.Bonuses = bonuses.New(transport, formats)
 	cli.Standard = standard.New(transport, formats)
 	cli.User = user.New(transport, formats)
 	return cli
@@ -108,8 +106,6 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type WashBonus struct {
 	Bonus bonus.ClientService
 
-	Bonuses bonuses.ClientService
-
 	Standard standard.ClientService
 
 	User user.ClientService
@@ -121,7 +117,6 @@ type WashBonus struct {
 func (c *WashBonus) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.Bonus.SetTransport(transport)
-	c.Bonuses.SetTransport(transport)
 	c.Standard.SetTransport(transport)
 	c.User.SetTransport(transport)
 }

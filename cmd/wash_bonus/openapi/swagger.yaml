@@ -84,7 +84,7 @@ paths:
   /confirm-use:
     post:
       tags:
-        - bonuses
+        - bonus
       security:
         - authKey: []
       operationId: confirm
@@ -110,7 +110,7 @@ paths:
   /cancel-use:
     post:
       tags:
-        - bonuses
+        - bonus
       security:
         - authKey: []
       operationId: cancel

@@ -26,6 +26,7 @@ type DBConfig struct {
 }
 
 type WashAdmin struct {
+	FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {

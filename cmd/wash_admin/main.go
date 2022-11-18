@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"wash_admin/internal/firebase_authorization"
+	"wash_admin/internal/transport/rest"
 	"wash_admin/pkg/bootstrap"
 )
 
@@ -31,18 +33,27 @@ func main() {
 
 	l.Debug("connected to db")
 
-	//err = bootstrap.UpMigrations(dbConn.DB, cfg.DB.Database, "migrations")
-	//if err != nil {
-	//	l.Fatalln("up migrations: ", err)
-	//}
+	err = bootstrap.UpMigrations(dbConn.DB, cfg.DB.Database, "migrations")
+	if err != nil {
+		l.Fatalln("up migrations: ", err)
+	}
 
 	l.Debug("applied migrations")
 
-	//init repo
+	authSvc := firebase_authorization.New(cfg.WashAdmin.FirebaseKeyFilePath)
 
-	//init app services
+	// TODO: use repo in services init
+	//repo := dal.New(dbConn, l)
 
-	//init rest
+	server, err := rest.NewServer(cfg, authSvc, l)
+	if err != nil {
+		l.Fatalln("init rest server:", err)
+	}
+
+	err = server.Serve()
+	if err != nil {
+		l.Fatalln("rest api serve:", err)
+	}
 
 	l.Info("started server at: ", cfg.HTTPPort)
 }

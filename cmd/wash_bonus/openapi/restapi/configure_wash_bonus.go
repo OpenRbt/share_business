@@ -12,7 +12,6 @@ import (
 	"wash_bonus/internal/app"
 	"wash_bonus/openapi/restapi/operations"
 	"wash_bonus/openapi/restapi/operations/bonus"
-	"wash_bonus/openapi/restapi/operations/bonuses"
 	"wash_bonus/openapi/restapi/operations/standard"
 	"wash_bonus/openapi/restapi/operations/user"
 )
@@ -54,14 +53,14 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	if api.BonusesCancelHandler == nil {
-		api.BonusesCancelHandler = bonuses.CancelHandlerFunc(func(params bonuses.CancelParams, principal *app.Auth) bonuses.CancelResponder {
-			return bonuses.CancelNotImplemented()
+	if api.BonusCancelHandler == nil {
+		api.BonusCancelHandler = bonus.CancelHandlerFunc(func(params bonus.CancelParams, principal *app.Auth) bonus.CancelResponder {
+			return bonus.CancelNotImplemented()
 		})
 	}
-	if api.BonusesConfirmHandler == nil {
-		api.BonusesConfirmHandler = bonuses.ConfirmHandlerFunc(func(params bonuses.ConfirmParams, principal *app.Auth) bonuses.ConfirmResponder {
-			return bonuses.ConfirmNotImplemented()
+	if api.BonusConfirmHandler == nil {
+		api.BonusConfirmHandler = bonus.ConfirmHandlerFunc(func(params bonus.ConfirmParams, principal *app.Auth) bonus.ConfirmResponder {
+			return bonus.ConfirmNotImplemented()
 		})
 	}
 	if api.UserGetHandler == nil {

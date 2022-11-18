@@ -22,12 +22,17 @@ import (
 type service struct {
 	l    *zap.SugaredLogger
 	auth firebaseauth.Service
+
+	user app.UserService
 }
 
-func NewServer(cfg bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger) (*restapi.Server, error) {
+func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
+	userSvc app.UserService,
+) (*restapi.Server, error) {
 	svc := &service{
 		l:    l,
 		auth: auth,
+		user: userSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
@@ -45,6 +50,8 @@ func NewServer(cfg bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLo
 	api.AuthKeyAuth = svc.auth.Auth
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
+
+	svc.initUserHandlers(api)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)
@@ -77,6 +84,9 @@ func NewServer(cfg bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLo
 	//
 	//	return forbidCSRF(handler)
 	//}
+	middlewares := func(handler http.Handler) http.Handler {
+		return handler
+	}
 
 	newCORS := cors.New(cors.Options{
 		AllowedOrigins:   splitCommaSeparatedStr(cfg.AllowedOrigins),
@@ -89,11 +99,7 @@ func NewServer(cfg bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLo
 	newCORS.Log = cors.Logger(structlog.New(structlog.KeyUnit, "CORS"))
 	handleCORS := newCORS.Handler
 
-	server.SetHandler(handleCORS(globalMiddlewares(api.Serve(func(handler http.Handler) http.Handler {
-		return handler
-	}))))
-
-	//server.SetHandler(handleCORS(globalMiddlewares(api.Serve( /*middlewares*/))))
+	server.SetHandler(handleCORS(globalMiddlewares(api.Serve(middlewares))))
 
 	return server, nil
 }

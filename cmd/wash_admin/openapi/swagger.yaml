@@ -82,6 +82,7 @@ paths:
           description: Internal error
           schema:
             $ref: "#/definitions/error"
+
     patch:
       tags:
         - wash_servers

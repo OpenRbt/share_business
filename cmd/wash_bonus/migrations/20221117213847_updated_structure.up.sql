@@ -3,7 +3,8 @@ create table users
     id       uuid           default gen_random_uuid() not null
         primary key,
     identity text                                     not null,
-    balance  numeric(10, 2) default 0                 not null
+    balance  numeric(10, 2) default 0                 not null,
+    active   boolean        default true              not null
 );
 
 create table wash_admins

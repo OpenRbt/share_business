@@ -2,6 +2,10 @@ package main
 
 import (
 	"log"
+	"wash_bonus/internal/app"
+	"wash_bonus/internal/dal"
+	"wash_bonus/internal/firebase_authorization"
+	"wash_bonus/internal/transport/rest"
 	"wash_bonus/pkg/bootstrap"
 )
 
@@ -38,11 +42,21 @@ func main() {
 
 	l.Debug("applied migrations")
 
-	//init repo
+	authSvc := firebase_authorization.New(cfg.WashBonus.FirebaseKeyFilePath)
 
-	//init app services
+	repo := dal.New(dbConn, l)
 
-	//init rest
+	userSvc := app.NewUserService(l, repo)
+
+	server, err := rest.NewServer(cfg, authSvc, l, userSvc)
+	if err != nil {
+		l.Fatalln("init rest server:", err)
+	}
+
+	err = server.Serve()
+	if err != nil {
+		l.Fatalln("rest api serve:", err)
+	}
 
 	l.Info("started server at: ", cfg.HTTPPort)
 }

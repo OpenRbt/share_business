@@ -21,7 +21,6 @@ import (
 
 	"wash_bonus/internal/app"
 	"wash_bonus/openapi/restapi/operations/bonus"
-	"wash_bonus/openapi/restapi/operations/bonuses"
 	"wash_bonus/openapi/restapi/operations/standard"
 	"wash_bonus/openapi/restapi/operations/user"
 )
@@ -48,11 +47,11 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		BonusesCancelHandler: bonuses.CancelHandlerFunc(func(params bonuses.CancelParams, principal *app.Auth) bonuses.CancelResponder {
-			return bonuses.CancelNotImplemented()
+		BonusCancelHandler: bonus.CancelHandlerFunc(func(params bonus.CancelParams, principal *app.Auth) bonus.CancelResponder {
+			return bonus.CancelNotImplemented()
 		}),
-		BonusesConfirmHandler: bonuses.ConfirmHandlerFunc(func(params bonuses.ConfirmParams, principal *app.Auth) bonuses.ConfirmResponder {
-			return bonuses.ConfirmNotImplemented()
+		BonusConfirmHandler: bonus.ConfirmHandlerFunc(func(params bonus.ConfirmParams, principal *app.Auth) bonus.ConfirmResponder {
+			return bonus.ConfirmNotImplemented()
 		}),
 		UserGetHandler: user.GetHandlerFunc(func(params user.GetParams, principal *app.Auth) user.GetResponder {
 			return user.GetNotImplemented()
@@ -113,10 +112,10 @@ type WashBonusAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// BonusesCancelHandler sets the operation handler for the cancel operation
-	BonusesCancelHandler bonuses.CancelHandler
-	// BonusesConfirmHandler sets the operation handler for the confirm operation
-	BonusesConfirmHandler bonuses.ConfirmHandler
+	// BonusCancelHandler sets the operation handler for the cancel operation
+	BonusCancelHandler bonus.CancelHandler
+	// BonusConfirmHandler sets the operation handler for the confirm operation
+	BonusConfirmHandler bonus.ConfirmHandler
 	// UserGetHandler sets the operation handler for the get operation
 	UserGetHandler user.GetHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
@@ -204,11 +203,11 @@ func (o *WashBonusAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
-	if o.BonusesCancelHandler == nil {
-		unregistered = append(unregistered, "bonuses.CancelHandler")
+	if o.BonusCancelHandler == nil {
+		unregistered = append(unregistered, "bonus.CancelHandler")
 	}
-	if o.BonusesConfirmHandler == nil {
-		unregistered = append(unregistered, "bonuses.ConfirmHandler")
+	if o.BonusConfirmHandler == nil {
+		unregistered = append(unregistered, "bonus.ConfirmHandler")
 	}
 	if o.UserGetHandler == nil {
 		unregistered = append(unregistered, "user.GetHandler")
@@ -321,11 +320,11 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/cancel-use"] = bonuses.NewCancel(o.context, o.BonusesCancelHandler)
+	o.handlers["POST"]["/cancel-use"] = bonus.NewCancel(o.context, o.BonusCancelHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/confirm-use"] = bonuses.NewConfirm(o.context, o.BonusesConfirmHandler)
+	o.handlers["POST"]["/confirm-use"] = bonus.NewConfirm(o.context, o.BonusConfirmHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
