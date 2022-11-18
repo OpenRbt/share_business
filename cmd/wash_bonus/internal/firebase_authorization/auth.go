@@ -3,7 +3,7 @@ package firebase_auth
 import (
 	"context"
 	"strings"
-	"wash_admin/internal/app"
+	"wash_bonus/internal/app"
 )
 
 func (svc *FirebaseService) Auth(bearer string) (*app.Auth, error) {

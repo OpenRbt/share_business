@@ -8,7 +8,7 @@ import (
 	"google.golang.org/api/option"
 	"path/filepath"
 	"time"
-	"wash_admin/internal/app"
+	"wash_bonus/internal/app"
 )
 
 type UID string
