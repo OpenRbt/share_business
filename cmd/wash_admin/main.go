@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"wash_admin/internal/app"
+	"wash_admin/internal/dal"
 	"wash_admin/internal/firebase_authorization"
 	"wash_admin/internal/transport/rest"
 	"wash_admin/pkg/bootstrap"
@@ -43,7 +45,9 @@ func main() {
 	authSvc := firebase_authorization.New(cfg.WashAdmin.FirebaseKeyFilePath)
 
 	// TODO: use repo in services init
-	//repo := dal.New(dbConn, l)
+	repo := dal.New(dbConn, l)
+
+	washSvc := app.NewWashServerService(l, repo)
 
 	server, err := rest.NewServer(cfg, authSvc, l)
 	if err != nil {

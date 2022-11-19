@@ -22,7 +22,7 @@ type WashServerSvc struct {
 	repo Repository
 }
 
-func NewWashServerService(logger *zap.SugaredLogger, repo Repository) *WashServerSvc {
+func NewWashServerService(logger *zap.SugaredLogger, repo Repository) WashServerService {
 	return &WashServerSvc{
 		l: logger,
 		repo: repo, 
