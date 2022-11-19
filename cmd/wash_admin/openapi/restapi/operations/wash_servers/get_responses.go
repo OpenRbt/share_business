@@ -61,6 +61,53 @@ func (o *GetOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer)
 
 func (o *GetOK) GetResponder() {}
 
+// GetBadRequestCode is the HTTP code returned for type GetBadRequest
+const GetBadRequestCode int = 400
+
+/*
+GetBadRequest Bad request
+
+swagger:response getBadRequest
+*/
+type GetBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetBadRequest creates GetBadRequest with default headers values
+func NewGetBadRequest() *GetBadRequest {
+
+	return &GetBadRequest{}
+}
+
+// WithPayload adds the payload to the get bad request response
+func (o *GetBadRequest) WithPayload(payload *models.Error) *GetBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get bad request response
+func (o *GetBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *GetBadRequest) GetResponder() {}
+
 // GetNotFoundCode is the HTTP code returned for type GetNotFound
 const GetNotFoundCode int = 404
 

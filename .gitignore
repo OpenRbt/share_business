@@ -18,3 +18,4 @@ certs/
 
 /**/.env
 /**/.idea/
+/**/.vscode/

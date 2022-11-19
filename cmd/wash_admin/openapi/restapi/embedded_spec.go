@@ -85,6 +85,12 @@ func init() {
               "$ref": "#/definitions/WashServer"
             }
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "404": {
             "description": "WashServer not exists",
             "schema": {
@@ -216,6 +222,9 @@ func init() {
     "WashServer": {
       "type": "object",
       "properties": {
+        "api_key": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -376,6 +385,12 @@ func init() {
               "$ref": "#/definitions/WashServer"
             }
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "404": {
             "description": "WashServer not exists",
             "schema": {
@@ -507,6 +522,9 @@ func init() {
     "WashServer": {
       "type": "object",
       "properties": {
+        "api_key": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },

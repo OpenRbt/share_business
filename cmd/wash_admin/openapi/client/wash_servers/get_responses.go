@@ -29,6 +29,12 @@ func (o *GetReader) ReadResponse(response runtime.ClientResponse, consumer runti
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewGetBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewGetNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -100,6 +106,69 @@ func (o *GetOK) GetPayload() *models.WashServer {
 func (o *GetOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.WashServer)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewGetBadRequest creates a GetBadRequest with default headers values
+func NewGetBadRequest() *GetBadRequest {
+	return &GetBadRequest{}
+}
+
+/*
+GetBadRequest describes a response with status code 400, with default header values.
+
+Bad request
+*/
+type GetBadRequest struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this get bad request response has a 2xx status code
+func (o *GetBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get bad request response has a 3xx status code
+func (o *GetBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get bad request response has a 4xx status code
+func (o *GetBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this get bad request response has a 5xx status code
+func (o *GetBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get bad request response a status code equal to that given
+func (o *GetBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+func (o *GetBadRequest) Error() string {
+	return fmt.Sprintf("[GET /wash-server][%d] getBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *GetBadRequest) String() string {
+	return fmt.Sprintf("[GET /wash-server][%d] getBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *GetBadRequest) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *GetBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

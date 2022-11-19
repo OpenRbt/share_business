@@ -22,7 +22,7 @@ import (
 type service struct {
 	l    *zap.SugaredLogger
 	auth firebaseauth.Service
-	// TODO: extend with services
+	wash_server app.WashServerService
 }
 
 func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
@@ -50,7 +50,7 @@ func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredL
 
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 
-	// TODO: init services handlers
+	svc.initWashServerHandlers(api)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)
