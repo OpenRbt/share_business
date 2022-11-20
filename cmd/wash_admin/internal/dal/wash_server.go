@@ -2,10 +2,14 @@ package dal
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/dal/dbmodels"
 	"wash_admin/internal/entity"
+	"wash_admin/internal/entity/vo"
 
 	"github.com/gocraft/dbr/v2"
 	uuid "github.com/satori/go.uuid"
@@ -27,5 +31,47 @@ func (s *Storage) GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.
 		return entity.WashServer{}, entity.ErrNotFound
 	default:
 		return entity.WashServer{}, err
+	}
+}
+
+func (s *Storage) AddWashServer(ctx context.Context, addWashServer vo.AddWashServer, ownerId uuid.UUID) error {
+	dbAddWashServer := conversions.AddWashServerToDB(addWashServer)
+
+	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+
+	if err != nil {
+		return err
+	}
+
+	var washId uuid.NullUUID
+
+	err = tx.
+		InsertInto("wash_servers").
+		Columns("name", "description").
+		Record(dbAddWashServer).
+		Returning("id").
+		LoadContext(ctx, &washId)
+
+	if err != nil {
+		return err
+	}
+
+	washKey := fmt.Sprintf("%s:%s", ownerId, washId.UUID)
+	h := sha256.New()
+	h.Write([]byte(washKey))
+
+	sha256Hash := hex.EncodeToString(h.Sum(nil))
+
+	_, err = tx.
+		Update("wash_servers").
+		Set("wash_key", sha256Hash).
+		Where("id = ?", washId).
+		ExecContext(ctx)
+
+	switch {
+	case errors.Is(err, dbr.ErrNotFound):
+		return entity.ErrNotFound
+	default:
+		return tx.Commit()
 	}
 }

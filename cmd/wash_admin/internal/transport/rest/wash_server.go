@@ -12,6 +12,7 @@ import (
 
 func (svc *service) initWashServerHandlers(api *operations.WashAdminAPI) {
 	api.WashServersGetHandler = wash_servers.GetHandlerFunc(svc.getWashServer)
+	api.WashServersAddHandler = wash_servers.AddHandlerFunc(svc.addWashServer)
 }
 
 func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth) wash_servers.GetResponder {
@@ -36,5 +37,20 @@ func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth)
 		return wash_servers.NewGetNotFound()
 	default:
 		return wash_servers.NewGetInternalServerError()
+	}
+}
+
+func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth) wash_servers.AddResponder {
+	addWashServerFromRest := conversions.AddWashServerFromRest(*params.Body)
+
+	err := svc.washServers.AddWashServer(params.HTTPRequest.Context(), auth, addWashServerFromRest)
+
+	switch {
+	case err == nil:
+		return wash_servers.NewAddNoContent()
+	case errors.Is(err, entity.ErrNotFound):
+		return wash_servers.NewAddNotFound()
+	default:
+		return wash_servers.NewAddInternalServerError()
 	}
 }

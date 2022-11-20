@@ -7,7 +7,7 @@ import (
 
 func WashAdminFromDB(dbWashAdmin dbmodels.WashAdmin) entity.WashAdmin {
 	return entity.WashAdmin{
-		ID: dbWashAdmin.ID.UUID,
+		ID:       dbWashAdmin.ID.UUID,
 		Identity: dbWashAdmin.Identity,
 	}
 }
