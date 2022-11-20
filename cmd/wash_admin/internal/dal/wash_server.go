@@ -17,7 +17,7 @@ func (s *Storage) GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.
 	err := s.db.NewSession(nil).
 		Select("*").
 		From("wash_servers").
-		Where("id = ?", id).
+		Where("id = ? AND owner = ?", uuid.NullUUID{UUID: id, Valid: true}, uuid.NullUUID{UUID: ownerId, Valid: true}).
 		LoadOneContext(ctx, &dbWashServer)
 
 	switch {
