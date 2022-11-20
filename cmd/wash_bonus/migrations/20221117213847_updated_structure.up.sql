@@ -41,5 +41,7 @@ create table balance_events
     new_amount     numeric(10, 2)                 not null,
     wash_server    uuid                           not null,
     session        text                           not null,
+    status         boolean                        not null,
+    error_msg      text,
     date           timestamp                      not null
 );

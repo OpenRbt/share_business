@@ -9,12 +9,12 @@ import (
 
 type Config struct {
 	HTTPPort       string `env:"HTTP_PORT" envDefault:"80"`
-	BasePath       string `env:"HTTP_BASEPATH" envDefault:""`
+	BasePath       string `env:"HTTP_BASE_PATH" envDefault:""`
 	AllowedOrigins string `env:"HTTP_ALLOWED_ORIGINS" envDefault:"*"`
 	Host           string `env:"HTTP_HOST"  envDefault:""`
 	LogLevel       string `env:"LOG_LEVEL"`
 	DB             DBConfig
-	WashBonus      WashBonus
+	FirebaseConfig FirebaseConfig
 }
 
 type DBConfig struct {
@@ -25,7 +25,7 @@ type DBConfig struct {
 	Password string `env:"DB_PASSWORD"`
 }
 
-type WashBonus struct {
+type FirebaseConfig struct {
 	FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH"`
 }
 

@@ -5,6 +5,7 @@ go 1.19
 require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/felixge/httpsnoop v1.0.1
 	github.com/go-openapi/errors v0.20.3
 	github.com/go-openapi/loads v0.21.2
 	github.com/go-openapi/runtime v0.24.2
@@ -19,10 +20,14 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/powerman/structlog v0.7.3
 	github.com/rs/cors v1.7.0
+	github.com/satori/go.uuid v1.2.0
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
+	github.com/shopspring/decimal v1.2.0
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
 	google.golang.org/api v0.62.0
+	google.golang.org/grpc v1.45.0
+	google.golang.org/protobuf v1.27.1
 )
 
 require (
@@ -51,6 +56,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	go.mongodb.org/mongo-driver v1.10.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
@@ -61,7 +67,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220314164441-57ef72a4c106 // indirect
-	google.golang.org/grpc v1.45.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

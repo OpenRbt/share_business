@@ -2,12 +2,12 @@ package rest
 
 import (
 	"errors"
+	uuid "github.com/satori/go.uuid"
 	"wash_admin/internal/app"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/entity"
 	"wash_admin/openapi/restapi/operations"
 	"wash_admin/openapi/restapi/operations/wash_servers"
-	uuid "github.com/satori/go.uuid"
 )
 
 func (svc *service) initWashServerHandlers(api *operations.WashAdminAPI) {
@@ -25,7 +25,7 @@ func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth)
 		return wash_servers.NewGetBadRequest()
 	}
 
-	res, err := svc.wash_server.GetWashServer(params.HTTPRequest.Context(), auth, id)
+	res, err := svc.washServers.GetWashServer(params.HTTPRequest.Context(), auth, id)
 
 	payload := conversions.WashServerToRest(res)
 

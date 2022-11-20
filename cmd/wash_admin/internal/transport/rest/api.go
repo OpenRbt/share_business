@@ -1,13 +1,6 @@
 package rest
 
 import (
-	"github.com/go-openapi/loads"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/pkg/errors"
-	"github.com/powerman/structlog"
-	"github.com/rs/cors"
-	"github.com/sebest/xff"
-	"go.uber.org/zap"
 	"net/http"
 	"path"
 	"strconv"
@@ -17,19 +10,30 @@ import (
 	"wash_admin/openapi/restapi/operations"
 	"wash_admin/openapi/restapi/operations/standard"
 	"wash_admin/pkg/bootstrap"
+
+	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/pkg/errors"
+	"github.com/powerman/structlog"
+	"github.com/rs/cors"
+	"github.com/sebest/xff"
+	"go.uber.org/zap"
 )
 
 type service struct {
-	l    *zap.SugaredLogger
-	auth firebaseauth.Service
-	wash_server app.WashServerService
+	l           *zap.SugaredLogger
+	auth        firebaseauth.Service
+	washServers app.WashServerService
 }
 
-func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger, washSvc app.WashServerService,
+func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
+	washSvc app.WashServerService,
+	// TODO: extend with services
 ) (*restapi.Server, error) {
 	svc := &service{
-		l:    l,
-		auth: auth,
+		l:           l,
+		auth:        auth,
+		washServers: washSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)

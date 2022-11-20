@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option go_package = "./intapi";
+
+service ServerService{
+  rpc HealthCheck(HealthCheck) returns(stream HealthCheckResponse);
+}
+
+message HealthCheck{
+  bool status = 1;
+  string serviceKey = 2;
+};
+
+message HealthCheckResponse{
+  bool response = 1;
+  string msg = 2;
+}
+
+service SessionService{
+  rpc Begin(BeginRequest) returns(BeginAnswer);
+  rpc Refresh(RefreshRequest) returns(RefreshAnswer);
+  rpc Confirm(ConfirmRequest) returns(ConfirmAnswer);
+  rpc End(FinishRequest) returns(FinishAnswer);
+}
+
+message BeginRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+  int64 postID = 3;
+}
+message BeginAnswer{
+  bool success = 1;
+  string error = 2;
+}
+
+message RefreshRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+  string enteredAmount = 3;
+}
+message RefreshAnswer{
+  bool success = 1;
+  string error = 2;
+  string userID = 3;
+  string consumeAmount = 4;
+}
+
+message ConfirmRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+}
+message ConfirmAnswer{
+  bool success = 1;
+  string error = 2;
+}
+
+message FinishRequest{
+  string serviceKey = 1;
+  string sessionID = 2;
+  string amount = 3;
+}
+message FinishAnswer{
+  bool success = 1;
+  string error = 2;
+}

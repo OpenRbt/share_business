@@ -42,7 +42,7 @@ func main() {
 
 	l.Debug("applied migrations")
 
-	authSvc := firebase_authorization.New(cfg.WashAdmin.FirebaseKeyFilePath)
+	authSvc := firebase_authorization.New(cfg.FirebaseConfig.FirebaseKeyFilePath)
 
 	repo := dal.New(dbConn, l)
 
