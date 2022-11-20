@@ -35,12 +35,12 @@ func main() {
 
 	l.Debug("connected to db")
 
-	err = bootstrap.UpMigrations(dbConn.DB, cfg.DB.Database, "migrations")
-	if err != nil {
-		l.Fatalln("up migrations: ", err)
-	}
+	// err = bootstrap.UpMigrations(dbConn.DB, cfg.DB.Database, "migrations")
+	// if err != nil {
+	// 	l.Fatalln("up migrations: ", err)
+	// }
 
-	l.Debug("applied migrations")
+	// l.Debug("applied migrations")
 
 	authSvc := firebase_authorization.New(cfg.FirebaseConfig.FirebaseKeyFilePath)
 
