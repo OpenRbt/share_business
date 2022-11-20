@@ -25,9 +25,7 @@ type service struct {
 	wash_server app.WashServerService
 }
 
-func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
-
-// TODO: extend with services
+func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger, washSvc app.WashServerService,
 ) (*restapi.Server, error) {
 	svc := &service{
 		l:    l,

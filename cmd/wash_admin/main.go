@@ -44,12 +44,11 @@ func main() {
 
 	authSvc := firebase_authorization.New(cfg.WashAdmin.FirebaseKeyFilePath)
 
-	// TODO: use repo in services init
 	repo := dal.New(dbConn, l)
 
 	washSvc := app.NewWashServerService(l, repo)
 
-	server, err := rest.NewServer(cfg, authSvc, l)
+	server, err := rest.NewServer(cfg, authSvc, l, washSvc)
 	if err != nil {
 		l.Fatalln("init rest server:", err)
 	}
