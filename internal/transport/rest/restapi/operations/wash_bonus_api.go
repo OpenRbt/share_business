@@ -25,7 +25,7 @@ import (
 	"wash-bonus/internal/transport/rest/restapi/operations/wash_server"
 )
 
-// NewWashBonusAPI creates a new WashBonus instance
+// NewWashBonusAPI creates a new FirebaseConfig instance
 func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 	return &WashBonusAPI{
 		handlers:            make(map[string]map[string]http.Handler),

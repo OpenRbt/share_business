@@ -20,18 +20,19 @@ import (
 )
 
 type service struct {
-	l    *zap.SugaredLogger
-	auth firebaseauth.Service
-	wash_server app.WashServerService
+	l           *zap.SugaredLogger
+	auth        firebaseauth.Service
+	washServers app.WashServerService
 }
 
 func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
-
-// TODO: extend with services
+	washSvc app.WashServerService,
+	// TODO: extend with services
 ) (*restapi.Server, error) {
 	svc := &service{
-		l:    l,
-		auth: auth,
+		l:           l,
+		auth:        auth,
+		washServers: washSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)

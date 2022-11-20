@@ -12,6 +12,7 @@ import (
 	"path"
 	"strconv"
 	"wash_bonus/internal/app"
+	"wash_bonus/internal/app/balance"
 	firebaseauth "wash_bonus/internal/firebase_authorization"
 	"wash_bonus/openapi/restapi"
 	"wash_bonus/openapi/restapi/operations"
@@ -27,7 +28,7 @@ type service struct {
 }
 
 func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
-	userSvc app.UserService,
+	userSvc app.UserService, balance balance.Service,
 ) (*restapi.Server, error) {
 	svc := &service{
 		l:    l,

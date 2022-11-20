@@ -11,7 +11,7 @@ type UserService interface {
 }
 
 type Repository interface {
-	GetUser(ctx context.Context, identity string) (entity.User, error)
+	GetProfileOrCreateIfNotExists(ctx context.Context, identity string) (entity.User, error)
 }
 
 type UserSvc struct {
@@ -27,7 +27,7 @@ func NewUserService(logger *zap.SugaredLogger, repo Repository) *UserSvc {
 }
 
 func (u *UserSvc) GetProfile(ctx context.Context, auth *Auth) (entity.User, error) {
-	res, err := u.repo.GetUser(nil, auth.UID)
+	res, err := u.repo.GetProfileOrCreateIfNotExists(nil, auth.UID)
 	if err != nil {
 		u.l.Named("user").Errorw("failed to get user", "firebase_identity", auth.UID)
 		return entity.User{}, err

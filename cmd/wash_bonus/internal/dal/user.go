@@ -9,7 +9,7 @@ import (
 	"wash_bonus/internal/entity"
 )
 
-func (s *Storage) GetUser(ctx context.Context, identity string) (entity.User, error) {
+func (s *Storage) GetProfileOrCreateIfNotExists(ctx context.Context, identity string) (entity.User, error) {
 	var dbUser dbmodels.User
 
 	err := s.db.NewSession(nil).
