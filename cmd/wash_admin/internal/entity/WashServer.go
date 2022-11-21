@@ -7,4 +7,5 @@ type WashServer struct {
 	Name        string
 	Description string
 	APIKey      string
+	Owner       uuid.UUID
 }

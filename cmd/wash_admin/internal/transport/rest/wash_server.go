@@ -2,17 +2,19 @@ package rest
 
 import (
 	"errors"
-	uuid "github.com/satori/go.uuid"
 	"wash_admin/internal/app"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/entity"
 	"wash_admin/openapi/restapi/operations"
 	"wash_admin/openapi/restapi/operations/wash_servers"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func (svc *service) initWashServerHandlers(api *operations.WashAdminAPI) {
 	api.WashServersGetHandler = wash_servers.GetHandlerFunc(svc.getWashServer)
 	api.WashServersAddHandler = wash_servers.AddHandlerFunc(svc.addWashServer)
+	api.WashServersUpdateHandler = wash_servers.UpdateHandlerFunc(svc.updateWashServer)
 }
 
 func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth) wash_servers.GetResponder {
@@ -52,5 +54,24 @@ func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth)
 		return wash_servers.NewAddNotFound()
 	default:
 		return wash_servers.NewAddInternalServerError()
+	}
+}
+
+func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app.Auth) wash_servers.UpdateResponder {
+	updateWashServerFromRest, err := conversions.UpdateWashServerFromRest(*params.Body)
+
+	if err != nil {
+		return wash_servers.NewUpdateInternalServerError()
+	}
+
+	err = svc.washServers.UpdateWashServer(params.HTTPRequest.Context(), auth, updateWashServerFromRest)
+
+	switch {
+	case err == nil:
+		return wash_servers.NewUpdateNoContent()
+	case errors.Is(err, entity.ErrNotFound):
+		return wash_servers.NewUpdateNotFound()
+	default:
+		return wash_servers.NewUpdateInternalServerError()
 	}
 }

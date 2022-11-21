@@ -12,6 +12,7 @@ func WashServerFromDB(dbWashServer dbmodels.WashServer) entity.WashServer {
 		Name:        dbWashServer.Name,
 		Description: dbWashServer.Description,
 		APIKey:      dbWashServer.APIKey,
+		Owner:       dbWashServer.Owner.UUID,
 	}
 }
 

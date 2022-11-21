@@ -75,3 +75,30 @@ func (s *Storage) AddWashServer(ctx context.Context, addWashServer vo.AddWashSer
 		return tx.Commit()
 	}
 }
+
+func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer vo.UpdateWashServer) error {
+	dbUpdateWashServer := conversions.UpdateWashServerToDb(updateWashServer)
+
+	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+
+	if err != nil {
+		return err
+	}
+
+	updateStatement := tx.Update("wash_servers").Where("id = ?", dbUpdateWashServer.ID)
+
+	if dbUpdateWashServer.Name != nil {
+		updateStatement = updateStatement.Set("name", dbUpdateWashServer.Name)
+	}
+	if dbUpdateWashServer.Description != nil {
+		updateStatement = updateStatement.Set("description", dbUpdateWashServer.Description)
+	}
+
+	_, err = updateStatement.ExecContext(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}

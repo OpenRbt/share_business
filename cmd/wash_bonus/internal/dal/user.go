@@ -3,10 +3,11 @@ package dal
 import (
 	"context"
 	"errors"
-	"github.com/gocraft/dbr/v2"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
+
+	"github.com/gocraft/dbr/v2"
 )
 
 func (s *Storage) GetProfileOrCreateIfNotExists(ctx context.Context, identity string) (entity.User, error) {
