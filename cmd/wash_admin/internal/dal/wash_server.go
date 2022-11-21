@@ -102,3 +102,8 @@ func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer vo.Upda
 
 	return tx.Commit()
 }
+
+func (s *Storage) DeleteWashServer(ctx context.Context, id uuid.UUID) error {
+	//TODO: Реализовать метод Delete на уровне БД
+	panic("Реализовать метод Delete на уровне БД")
+}

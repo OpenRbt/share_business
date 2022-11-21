@@ -15,6 +15,7 @@ func (svc *service) initWashServerHandlers(api *operations.WashAdminAPI) {
 	api.WashServersGetHandler = wash_servers.GetHandlerFunc(svc.getWashServer)
 	api.WashServersAddHandler = wash_servers.AddHandlerFunc(svc.addWashServer)
 	api.WashServersUpdateHandler = wash_servers.UpdateHandlerFunc(svc.updateWashServer)
+	api.WashServersDeleteHandler = wash_servers.DeleteHandlerFunc(svc.deleteWashServer)
 }
 
 func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth) wash_servers.GetResponder {
@@ -73,5 +74,24 @@ func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app
 		return wash_servers.NewUpdateNotFound()
 	default:
 		return wash_servers.NewUpdateInternalServerError()
+	}
+}
+
+func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app.Auth) wash_servers.DeleteResponder {
+	deleteWashServerFromRest, err := conversions.DeleteWashServerFromRest(*params.Body)
+
+	if err != nil {
+		return wash_servers.NewDeleteInternalServerError()
+	}
+
+	err = svc.washServers.DeleteWashServer(params.HTTPRequest.Context(), auth, deleteWashServerFromRest)
+
+	switch {
+	case err == nil:
+		return wash_servers.NewDeleteNoContent()
+	case errors.Is(err, entity.ErrNotFound):
+		return wash_servers.NewDeleteNotFound()
+	default:
+		return wash_servers.NewDeleteInternalServerError()
 	}
 }

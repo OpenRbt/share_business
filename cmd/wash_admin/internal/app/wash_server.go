@@ -13,6 +13,7 @@ type WashServerService interface {
 	GetWashServer(ctx context.Context, auth *Auth, id uuid.UUID) (entity.WashServer, error)
 	AddWashServer(ctx context.Context, auth *Auth, addWashServer vo.AddWashServer) error
 	UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer vo.UpdateWashServer) error
+	DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error
 }
 
 type Repository interface {
@@ -20,6 +21,7 @@ type Repository interface {
 	GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.UUID) (entity.WashServer, error)
 	AddWashServer(ctx context.Context, addWashServer vo.AddWashServer, ownerId uuid.UUID) error
 	UpdateWashServer(ctx context.Context, updateWashServer vo.UpdateWashServer) error
+	DeleteWashServer(ctx context.Context, id uuid.UUID) error
 }
 
 type WashServerSvc struct {
@@ -72,4 +74,9 @@ func (wa *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, updat
 	}
 
 	return wa.repo.UpdateWashServer(ctx, updateWashServer)
+}
+
+func (wa *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error {
+	//TODO: Реализовать бизнес-логику метода Delete
+	panic("Реализовать бизнес-логику метода Delete")
 }
