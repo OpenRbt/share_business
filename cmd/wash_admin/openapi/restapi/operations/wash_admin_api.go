@@ -58,6 +58,9 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		StandardHealthCheckHandler: standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
 		}),
+		WashServersListHandler: wash_servers.ListHandlerFunc(func(params wash_servers.ListParams, principal *app.Auth) wash_servers.ListResponder {
+			return wash_servers.ListNotImplemented()
+		}),
 		WashServersUpdateHandler: wash_servers.UpdateHandlerFunc(func(params wash_servers.UpdateParams, principal *app.Auth) wash_servers.UpdateResponder {
 			return wash_servers.UpdateNotImplemented()
 		}),
@@ -119,6 +122,8 @@ type WashAdminAPI struct {
 	WashServersGetHandler wash_servers.GetHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
 	StandardHealthCheckHandler standard.HealthCheckHandler
+	// WashServersListHandler sets the operation handler for the list operation
+	WashServersListHandler wash_servers.ListHandler
 	// WashServersUpdateHandler sets the operation handler for the update operation
 	WashServersUpdateHandler wash_servers.UpdateHandler
 
@@ -213,6 +218,9 @@ func (o *WashAdminAPI) Validate() error {
 	}
 	if o.StandardHealthCheckHandler == nil {
 		unregistered = append(unregistered, "standard.HealthCheckHandler")
+	}
+	if o.WashServersListHandler == nil {
+		unregistered = append(unregistered, "wash_servers.ListHandler")
 	}
 	if o.WashServersUpdateHandler == nil {
 		unregistered = append(unregistered, "wash_servers.UpdateHandler")
@@ -332,6 +340,10 @@ func (o *WashAdminAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/healthCheck"] = standard.NewHealthCheck(o.context, o.StandardHealthCheckHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/wash-server/list"] = wash_servers.NewList(o.context, o.WashServersListHandler)
 	if o.handlers["PATCH"] == nil {
 		o.handlers["PATCH"] = make(map[string]http.Handler)
 	}

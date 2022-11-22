@@ -14,6 +14,7 @@ type WashServerService interface {
 	AddWashServer(ctx context.Context, auth *Auth, addWashServer vo.AddWashServer) error
 	UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer vo.UpdateWashServer) error
 	DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error
+	GetWashServerList(ctx context.Context, auth *Auth, getWashServerList vo.Pagination) ([]entity.WashServer, error)
 }
 
 type Repository interface {
@@ -22,6 +23,7 @@ type Repository interface {
 	AddWashServer(ctx context.Context, addWashServer vo.AddWashServer, ownerId uuid.UUID) error
 	UpdateWashServer(ctx context.Context, updateWashServer vo.UpdateWashServer) error
 	DeleteWashServer(ctx context.Context, id uuid.UUID) error
+	GetWashServerList(ctx context.Context, ownerId uuid.UUID, pagination vo.Pagination) ([]entity.WashServer, error)
 }
 
 type WashServerSvc struct {
@@ -77,6 +79,29 @@ func (wa *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, updat
 }
 
 func (wa *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error {
-	//TODO: Реализовать бизнес-логику метода Delete
-	panic("Реализовать бизнес-логику метода Delete")
+	owner, err := wa.repo.GetWashAdmin(ctx, auth.UID)
+	if err != nil {
+		return err
+	}
+
+	washServer, err := wa.repo.GetWashServer(ctx, owner.ID, id)
+	if err != nil {
+		return err
+	}
+
+	if washServer.Owner != owner.ID {
+		return entity.ErrUserNotOwner
+	}
+
+	return wa.repo.DeleteWashServer(ctx, id)
+}
+
+func (wa *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pagination vo.Pagination) ([]entity.WashServer, error) {
+	owner, err := wa.repo.GetWashAdmin(ctx, auth.UID)
+
+	if err != nil {
+		return []entity.WashServer{}, err
+	}
+
+	return wa.repo.GetWashServerList(ctx, owner.ID, pagination)
 }

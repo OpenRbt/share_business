@@ -29,6 +29,12 @@ func (o *DeleteReader) ReadResponse(response runtime.ClientResponse, consumer ru
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewDeleteBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewDeleteNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -93,6 +99,69 @@ func (o *DeleteNoContent) String() string {
 }
 
 func (o *DeleteNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewDeleteBadRequest creates a DeleteBadRequest with default headers values
+func NewDeleteBadRequest() *DeleteBadRequest {
+	return &DeleteBadRequest{}
+}
+
+/*
+DeleteBadRequest describes a response with status code 400, with default header values.
+
+Bad request
+*/
+type DeleteBadRequest struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this delete bad request response has a 2xx status code
+func (o *DeleteBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this delete bad request response has a 3xx status code
+func (o *DeleteBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this delete bad request response has a 4xx status code
+func (o *DeleteBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this delete bad request response has a 5xx status code
+func (o *DeleteBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this delete bad request response a status code equal to that given
+func (o *DeleteBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+func (o *DeleteBadRequest) Error() string {
+	return fmt.Sprintf("[DELETE /wash-server][%d] deleteBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *DeleteBadRequest) String() string {
+	return fmt.Sprintf("[DELETE /wash-server][%d] deleteBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *DeleteBadRequest) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *DeleteBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

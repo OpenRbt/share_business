@@ -52,7 +52,7 @@ func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth)
 	case err == nil:
 		return wash_servers.NewAddNoContent()
 	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewAddNotFound()
+		return wash_servers.NewAddBadRequest()
 	default:
 		return wash_servers.NewAddInternalServerError()
 	}
@@ -62,7 +62,7 @@ func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app
 	updateWashServerFromRest, err := conversions.UpdateWashServerFromRest(*params.Body)
 
 	if err != nil {
-		return wash_servers.NewUpdateInternalServerError()
+		return wash_servers.NewUpdateBadRequest()
 	}
 
 	err = svc.washServers.UpdateWashServer(params.HTTPRequest.Context(), auth, updateWashServerFromRest)
@@ -81,7 +81,7 @@ func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app
 	deleteWashServerFromRest, err := conversions.DeleteWashServerFromRest(*params.Body)
 
 	if err != nil {
-		return wash_servers.NewDeleteInternalServerError()
+		return wash_servers.NewDeleteBadRequest()
 	}
 
 	err = svc.washServers.DeleteWashServer(params.HTTPRequest.Context(), auth, deleteWashServerFromRest)
@@ -93,5 +93,22 @@ func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app
 		return wash_servers.NewDeleteNotFound()
 	default:
 		return wash_servers.NewDeleteInternalServerError()
+	}
+}
+
+func (svc *service) getWashServerList(params wash_servers.ListParams, auth *app.Auth) wash_servers.ListResponder {
+	paginationFromRest := conversions.PaginationFromRest(*params.Body)
+
+	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, paginationFromRest)
+
+	payload := conversions.WashServerListToRest(res)
+
+	switch {
+	case err == nil:
+		return wash_servers.NewListOK().WithPayload(payload)
+	case errors.Is(err, entity.ErrNotFound):
+		return wash_servers.NewListNotFound()
+	default:
+		return wash_servers.NewListInternalServerError()
 	}
 }

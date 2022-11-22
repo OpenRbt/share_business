@@ -128,8 +128,8 @@ func init() {
           "204": {
             "description": "Success creation"
           },
-          "404": {
-            "description": "WashServer not exists",
+          "400": {
+            "description": "Bad request",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -164,6 +164,12 @@ func init() {
         "responses": {
           "204": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
           },
           "404": {
             "description": "WashServer not exists",
@@ -202,6 +208,63 @@ func init() {
           "204": {
             "description": "Success update"
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "404": {
+            "description": "WashServer not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/wash-server/list": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "wash_servers"
+        ],
+        "operationId": "list",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WashServer"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "404": {
             "description": "WashServer not exists",
             "schema": {
@@ -219,6 +282,20 @@ func init() {
     }
   },
   "definitions": {
+    "Pagination": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "maximum": 100
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "WashServer": {
       "type": "object",
       "properties": {
@@ -428,8 +505,8 @@ func init() {
           "204": {
             "description": "Success creation"
           },
-          "404": {
-            "description": "WashServer not exists",
+          "400": {
+            "description": "Bad request",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -464,6 +541,12 @@ func init() {
         "responses": {
           "204": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
           },
           "404": {
             "description": "WashServer not exists",
@@ -502,6 +585,63 @@ func init() {
           "204": {
             "description": "Success update"
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "404": {
+            "description": "WashServer not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/wash-server/list": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "wash_servers"
+        ],
+        "operationId": "list",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WashServer"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "404": {
             "description": "WashServer not exists",
             "schema": {
@@ -519,6 +659,20 @@ func init() {
     }
   },
   "definitions": {
+    "Pagination": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "maximum": 100
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
     "WashServer": {
       "type": "object",
       "properties": {

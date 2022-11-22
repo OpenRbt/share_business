@@ -41,6 +41,53 @@ func (o *DeleteNoContent) WriteResponse(rw http.ResponseWriter, producer runtime
 
 func (o *DeleteNoContent) DeleteResponder() {}
 
+// DeleteBadRequestCode is the HTTP code returned for type DeleteBadRequest
+const DeleteBadRequestCode int = 400
+
+/*
+DeleteBadRequest Bad request
+
+swagger:response deleteBadRequest
+*/
+type DeleteBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewDeleteBadRequest creates DeleteBadRequest with default headers values
+func NewDeleteBadRequest() *DeleteBadRequest {
+
+	return &DeleteBadRequest{}
+}
+
+// WithPayload adds the payload to the delete bad request response
+func (o *DeleteBadRequest) WithPayload(payload *models.Error) *DeleteBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the delete bad request response
+func (o *DeleteBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DeleteBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *DeleteBadRequest) DeleteResponder() {}
+
 // DeleteNotFoundCode is the HTTP code returned for type DeleteNotFound
 const DeleteNotFoundCode int = 404
 

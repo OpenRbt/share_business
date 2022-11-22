@@ -41,15 +41,15 @@ func (o *AddNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Pr
 
 func (o *AddNoContent) AddResponder() {}
 
-// AddNotFoundCode is the HTTP code returned for type AddNotFound
-const AddNotFoundCode int = 404
+// AddBadRequestCode is the HTTP code returned for type AddBadRequest
+const AddBadRequestCode int = 400
 
 /*
-AddNotFound WashServer not exists
+AddBadRequest Bad request
 
-swagger:response addNotFound
+swagger:response addBadRequest
 */
-type AddNotFound struct {
+type AddBadRequest struct {
 
 	/*
 	  In: Body
@@ -57,27 +57,27 @@ type AddNotFound struct {
 	Payload *models.Error `json:"body,omitempty"`
 }
 
-// NewAddNotFound creates AddNotFound with default headers values
-func NewAddNotFound() *AddNotFound {
+// NewAddBadRequest creates AddBadRequest with default headers values
+func NewAddBadRequest() *AddBadRequest {
 
-	return &AddNotFound{}
+	return &AddBadRequest{}
 }
 
-// WithPayload adds the payload to the add not found response
-func (o *AddNotFound) WithPayload(payload *models.Error) *AddNotFound {
+// WithPayload adds the payload to the add bad request response
+func (o *AddBadRequest) WithPayload(payload *models.Error) *AddBadRequest {
 	o.Payload = payload
 	return o
 }
 
-// SetPayload sets the payload to the add not found response
-func (o *AddNotFound) SetPayload(payload *models.Error) {
+// SetPayload sets the payload to the add bad request response
+func (o *AddBadRequest) SetPayload(payload *models.Error) {
 	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *AddNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *AddBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(404)
+	rw.WriteHeader(400)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {
@@ -86,7 +86,7 @@ func (o *AddNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Pro
 	}
 }
 
-func (o *AddNotFound) AddResponder() {}
+func (o *AddBadRequest) AddResponder() {}
 
 // AddInternalServerErrorCode is the HTTP code returned for type AddInternalServerError
 const AddInternalServerErrorCode int = 500

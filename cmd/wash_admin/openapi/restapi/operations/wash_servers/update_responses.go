@@ -41,6 +41,53 @@ func (o *UpdateNoContent) WriteResponse(rw http.ResponseWriter, producer runtime
 
 func (o *UpdateNoContent) UpdateResponder() {}
 
+// UpdateBadRequestCode is the HTTP code returned for type UpdateBadRequest
+const UpdateBadRequestCode int = 400
+
+/*
+UpdateBadRequest Bad request
+
+swagger:response updateBadRequest
+*/
+type UpdateBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewUpdateBadRequest creates UpdateBadRequest with default headers values
+func NewUpdateBadRequest() *UpdateBadRequest {
+
+	return &UpdateBadRequest{}
+}
+
+// WithPayload adds the payload to the update bad request response
+func (o *UpdateBadRequest) WithPayload(payload *models.Error) *UpdateBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update bad request response
+func (o *UpdateBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *UpdateBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *UpdateBadRequest) UpdateResponder() {}
+
 // UpdateNotFoundCode is the HTTP code returned for type UpdateNotFound
 const UpdateNotFoundCode int = 404
 

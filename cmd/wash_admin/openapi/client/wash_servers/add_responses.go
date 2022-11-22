@@ -29,8 +29,8 @@ func (o *AddReader) ReadResponse(response runtime.ClientResponse, consumer runti
 			return nil, err
 		}
 		return result, nil
-	case 404:
-		result := NewAddNotFound()
+	case 400:
+		result := NewAddBadRequest()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -97,58 +97,58 @@ func (o *AddNoContent) readResponse(response runtime.ClientResponse, consumer ru
 	return nil
 }
 
-// NewAddNotFound creates a AddNotFound with default headers values
-func NewAddNotFound() *AddNotFound {
-	return &AddNotFound{}
+// NewAddBadRequest creates a AddBadRequest with default headers values
+func NewAddBadRequest() *AddBadRequest {
+	return &AddBadRequest{}
 }
 
 /*
-AddNotFound describes a response with status code 404, with default header values.
+AddBadRequest describes a response with status code 400, with default header values.
 
-WashServer not exists
+Bad request
 */
-type AddNotFound struct {
+type AddBadRequest struct {
 	Payload *models.Error
 }
 
-// IsSuccess returns true when this add not found response has a 2xx status code
-func (o *AddNotFound) IsSuccess() bool {
+// IsSuccess returns true when this add bad request response has a 2xx status code
+func (o *AddBadRequest) IsSuccess() bool {
 	return false
 }
 
-// IsRedirect returns true when this add not found response has a 3xx status code
-func (o *AddNotFound) IsRedirect() bool {
+// IsRedirect returns true when this add bad request response has a 3xx status code
+func (o *AddBadRequest) IsRedirect() bool {
 	return false
 }
 
-// IsClientError returns true when this add not found response has a 4xx status code
-func (o *AddNotFound) IsClientError() bool {
+// IsClientError returns true when this add bad request response has a 4xx status code
+func (o *AddBadRequest) IsClientError() bool {
 	return true
 }
 
-// IsServerError returns true when this add not found response has a 5xx status code
-func (o *AddNotFound) IsServerError() bool {
+// IsServerError returns true when this add bad request response has a 5xx status code
+func (o *AddBadRequest) IsServerError() bool {
 	return false
 }
 
-// IsCode returns true when this add not found response a status code equal to that given
-func (o *AddNotFound) IsCode(code int) bool {
-	return code == 404
+// IsCode returns true when this add bad request response a status code equal to that given
+func (o *AddBadRequest) IsCode(code int) bool {
+	return code == 400
 }
 
-func (o *AddNotFound) Error() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addNotFound  %+v", 404, o.Payload)
+func (o *AddBadRequest) Error() string {
+	return fmt.Sprintf("[PUT /wash-server][%d] addBadRequest  %+v", 400, o.Payload)
 }
 
-func (o *AddNotFound) String() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addNotFound  %+v", 404, o.Payload)
+func (o *AddBadRequest) String() string {
+	return fmt.Sprintf("[PUT /wash-server][%d] addBadRequest  %+v", 400, o.Payload)
 }
 
-func (o *AddNotFound) GetPayload() *models.Error {
+func (o *AddBadRequest) GetPayload() *models.Error {
 	return o.Payload
 }
 
-func (o *AddNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *AddBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

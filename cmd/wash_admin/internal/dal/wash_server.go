@@ -21,7 +21,7 @@ func (s *Storage) GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.
 	err := s.db.NewSession(nil).
 		Select("*").
 		From("wash_servers").
-		Where("id = ? AND owner = ?", uuid.NullUUID{UUID: id, Valid: true}, uuid.NullUUID{UUID: ownerId, Valid: true}).
+		Where("id = ? AND owner = ? AND deleted = false", uuid.NullUUID{UUID: id, Valid: true}, uuid.NullUUID{UUID: ownerId, Valid: true}).
 		LoadOneContext(ctx, &dbWashServer)
 
 	switch {
@@ -85,7 +85,9 @@ func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer vo.Upda
 		return err
 	}
 
-	updateStatement := tx.Update("wash_servers").Where("id = ?", dbUpdateWashServer.ID)
+	updateStatement := tx.
+		Update("wash_servers").
+		Where("id = ?", dbUpdateWashServer.ID)
 
 	if dbUpdateWashServer.Name != nil {
 		updateStatement = updateStatement.Set("name", dbUpdateWashServer.Name)
@@ -104,6 +106,47 @@ func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer vo.Upda
 }
 
 func (s *Storage) DeleteWashServer(ctx context.Context, id uuid.UUID) error {
-	//TODO: Реализовать метод Delete на уровне БД
-	panic("Реализовать метод Delete на уровне БД")
+	dbDeleteWashServer := conversions.DeleteWashServerToDB(id)
+
+	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+
+	if err != nil {
+		return err
+	}
+
+	deleteStatement := tx.
+		Update("wash_servers").
+		Where("id = ? AND deleted = false", dbDeleteWashServer.ID)
+
+	_, err = deleteStatement.ExecContext(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s *Storage) GetWashServerList(ctx context.Context, ownerId uuid.UUID, pagination vo.Pagination) ([]entity.WashServer, error) {
+	var dbWashServerList []dbmodels.WashServer
+
+	count, err := s.db.NewSession(nil).
+		Select("*").
+		From("wash_servers").
+		Where("deleted = false AND owner = ?", uuid.NullUUID{UUID: ownerId, Valid: true}).
+		Limit(uint64(pagination.Limit)).
+		Offset(uint64(pagination.Offset)).
+		LoadContext(ctx, &dbWashServerList)
+
+	if err != nil {
+		return []entity.WashServer{}, err
+	}
+
+	if count == 0 {
+		return []entity.WashServer{}, dbr.ErrNotFound
+	}
+
+	washServerListFromDB := conversions.WashServerListFromDB(dbWashServerList)
+
+	return washServerListFromDB, nil
 }

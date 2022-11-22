@@ -29,6 +29,12 @@ func (o *UpdateReader) ReadResponse(response runtime.ClientResponse, consumer ru
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewUpdateBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewUpdateNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -93,6 +99,69 @@ func (o *UpdateNoContent) String() string {
 }
 
 func (o *UpdateNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewUpdateBadRequest creates a UpdateBadRequest with default headers values
+func NewUpdateBadRequest() *UpdateBadRequest {
+	return &UpdateBadRequest{}
+}
+
+/*
+UpdateBadRequest describes a response with status code 400, with default header values.
+
+Bad request
+*/
+type UpdateBadRequest struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this update bad request response has a 2xx status code
+func (o *UpdateBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this update bad request response has a 3xx status code
+func (o *UpdateBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this update bad request response has a 4xx status code
+func (o *UpdateBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this update bad request response has a 5xx status code
+func (o *UpdateBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this update bad request response a status code equal to that given
+func (o *UpdateBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+func (o *UpdateBadRequest) Error() string {
+	return fmt.Sprintf("[PATCH /wash-server][%d] updateBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *UpdateBadRequest) String() string {
+	return fmt.Sprintf("[PATCH /wash-server][%d] updateBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *UpdateBadRequest) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *UpdateBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
