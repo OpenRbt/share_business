@@ -3,10 +3,10 @@ syntax = "proto3";
 option go_package = "./intapi";
 
 service ServerService{
-  rpc HealthCheck(HealthCheck) returns(stream HealthCheckResponse);
+  rpc HealthCheck(HealthCheckRequest) returns(stream HealthCheckResponse);
 }
 
-message HealthCheck{
+message HealthCheckRequest{
   bool status = 1;
   string serviceKey = 2;
 };

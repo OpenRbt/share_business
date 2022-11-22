@@ -6,4 +6,5 @@ type WashServer struct {
 	Id          uuid.UUID
 	Name        string
 	Description string
+	WashKey     string
 }

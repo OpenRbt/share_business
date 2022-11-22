@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServerServiceClient interface {
-	InitConnection(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitAnswer, error)
+	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (ServerService_HealthCheckClient, error)
 }
 
 type serverServiceClient struct {
@@ -33,20 +33,43 @@ func NewServerServiceClient(cc grpc.ClientConnInterface) ServerServiceClient {
 	return &serverServiceClient{cc}
 }
 
-func (c *serverServiceClient) InitConnection(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitAnswer, error) {
-	out := new(InitAnswer)
-	err := c.cc.Invoke(ctx, "/ServerService/InitConnection", in, out, opts...)
+func (c *serverServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (ServerService_HealthCheckClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ServerService_ServiceDesc.Streams[0], "/ServerService/HealthCheck", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &serverServiceHealthCheckClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ServerService_HealthCheckClient interface {
+	Recv() (*HealthCheckResponse, error)
+	grpc.ClientStream
+}
+
+type serverServiceHealthCheckClient struct {
+	grpc.ClientStream
+}
+
+func (x *serverServiceHealthCheckClient) Recv() (*HealthCheckResponse, error) {
+	m := new(HealthCheckResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // ServerServiceServer is the server API for ServerService service.
 // All implementations must embed UnimplementedServerServiceServer
 // for forward compatibility
 type ServerServiceServer interface {
-	InitConnection(context.Context, *InitRequest) (*InitAnswer, error)
+	HealthCheck(*HealthCheckRequest, ServerService_HealthCheckServer) error
 	mustEmbedUnimplementedServerServiceServer()
 }
 
@@ -54,8 +77,8 @@ type ServerServiceServer interface {
 type UnimplementedServerServiceServer struct {
 }
 
-func (UnimplementedServerServiceServer) InitConnection(context.Context, *InitRequest) (*InitAnswer, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InitConnection not implemented")
+func (UnimplementedServerServiceServer) HealthCheck(*HealthCheckRequest, ServerService_HealthCheckServer) error {
+	return status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
 func (UnimplementedServerServiceServer) mustEmbedUnimplementedServerServiceServer() {}
 
@@ -70,22 +93,25 @@ func RegisterServerServiceServer(s grpc.ServiceRegistrar, srv ServerServiceServe
 	s.RegisterService(&ServerService_ServiceDesc, srv)
 }
 
-func _ServerService_InitConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InitRequest)
-	if err := dec(in); err != nil {
-		return nil, err
+func _ServerService_HealthCheck_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(HealthCheckRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
 	}
-	if interceptor == nil {
-		return srv.(ServerServiceServer).InitConnection(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ServerService/InitConnection",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServerServiceServer).InitConnection(ctx, req.(*InitRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+	return srv.(ServerServiceServer).HealthCheck(m, &serverServiceHealthCheckServer{stream})
+}
+
+type ServerService_HealthCheckServer interface {
+	Send(*HealthCheckResponse) error
+	grpc.ServerStream
+}
+
+type serverServiceHealthCheckServer struct {
+	grpc.ServerStream
+}
+
+func (x *serverServiceHealthCheckServer) Send(m *HealthCheckResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // ServerService_ServiceDesc is the grpc.ServiceDesc for ServerService service.
@@ -94,13 +120,14 @@ func _ServerService_InitConnection_Handler(srv interface{}, ctx context.Context,
 var ServerService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "ServerService",
 	HandlerType: (*ServerServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "InitConnection",
-			Handler:    _ServerService_InitConnection_Handler,
+			StreamName:    "HealthCheck",
+			Handler:       _ServerService_HealthCheck_Handler,
+			ServerStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "intapi/grpc.proto",
 }
 

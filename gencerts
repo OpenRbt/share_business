@@ -6,7 +6,7 @@ mkdir ./certs
 # 1. Generate CA's private key and self-signed certificate
 openssl req -addext "subjectAltName = DNS:localhost" -x509 -newkey rsa:4096 -days 365 -nodes -keyout certs/dev-ca-key.pem -out certs/dev-ca-cert.pem -subj "/C=RU/ST=./L=./O=./OU=./CN=localhost/emailAddress=."
 echo "CA's self-signed certificate"
-openssl x509 -in certs/ca-cert.pem -noout -text
+openssl x509 -in certs/dev-ca-cert.pem -noout -text
 
 # 2. Generate web server's private key and certificate signing request (CSR)
 openssl req  -addext "subjectAltName = DNS:localhost" -newkey rsa:4096 -nodes -keyout certs/dev-server-key.pem -out certs/dev-server-req.pem -subj "/C=RU/ST=./L=./O=./OU=./CN=localhost/emailAddress=."

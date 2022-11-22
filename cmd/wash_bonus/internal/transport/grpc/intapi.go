@@ -9,27 +9,27 @@ import (
 	"wash_bonus/internal/entity"
 )
 
-type Service interface {
-}
-
-type service struct {
+type Service struct {
 	l *zap.SugaredLogger
 
 	balanceSvc    balance.Service
 	washServerSvc wash_server.Service
 
-	connectionMutex sync.RWMutex
-	connections     map[string]*entity.WashServerConnection
+	connectionsMutex sync.RWMutex
+	connections      map[string]*entity.WashServerConnection
 	intapi.UnimplementedServerServiceServer
 	intapi.UnimplementedSessionServiceServer
 }
 
-func New(l *zap.SugaredLogger, balanceSvc balance.Service, washServerSvc wash_server.Service) Service {
-	svc := service{
+func New(l *zap.SugaredLogger, balanceSvc balance.Service, washServerSvc wash_server.Service) *Service {
+	svc := Service{
 		l:             l,
 		balanceSvc:    balanceSvc,
 		washServerSvc: washServerSvc,
 		connections:   make(map[string]*entity.WashServerConnection),
 	}
+
+	go svc.cleanupConnections()
+
 	return &svc
 }

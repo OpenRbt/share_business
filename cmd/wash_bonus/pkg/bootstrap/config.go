@@ -15,6 +15,7 @@ type Config struct {
 	LogLevel       string `env:"LOG_LEVEL"`
 	DB             DBConfig
 	FirebaseConfig FirebaseConfig
+	GrpcConfig     GrpcConfig
 }
 
 type DBConfig struct {
@@ -27,6 +28,14 @@ type DBConfig struct {
 
 type FirebaseConfig struct {
 	FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH"`
+}
+
+type GrpcConfig struct {
+	EnableTLS        bool   `env:"GRPC_ENABLE_TLS" envDefault:"false"`
+	Port             string `env:"GRPC_PORT"`
+	ClientCACertFile string `env:"GRPC_CLIENT_CA_CERT_FILE_PATH"`
+	ServerCertFile   string `env:"GRPC_SERVER_CERT_FILE_PATH"`
+	ServerKeyFile    string `env:"GRPC_SERVER_CERT_KEY_FILE_PATH"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {
