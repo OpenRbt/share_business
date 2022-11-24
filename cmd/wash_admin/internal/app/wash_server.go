@@ -24,6 +24,7 @@ type Repository interface {
 	UpdateWashServer(ctx context.Context, updateWashServer vo.UpdateWashServer) error
 	DeleteWashServer(ctx context.Context, id uuid.UUID) error
 	GetWashServerList(ctx context.Context, ownerId uuid.UUID, pagination vo.Pagination) ([]entity.WashServer, error)
+	GetOrCreateAdminIfNotExists(ctx context.Context, identity string) (entity.WashAdmin, error)
 }
 
 type WashServerSvc struct {
@@ -39,7 +40,7 @@ func NewWashServerService(logger *zap.SugaredLogger, repo Repository) WashServer
 }
 
 func (wa *WashServerSvc) GetWashServer(ctx context.Context, auth *Auth, id uuid.UUID) (entity.WashServer, error) {
-	owner, err := wa.repo.GetWashAdmin(ctx, auth.UID)
+	owner, err := wa.repo.GetOrCreateAdminIfNotExists(ctx, auth.UID)
 
 	if err != nil {
 		return entity.WashServer{}, err
@@ -49,7 +50,7 @@ func (wa *WashServerSvc) GetWashServer(ctx context.Context, auth *Auth, id uuid.
 }
 
 func (wa *WashServerSvc) AddWashServer(ctx context.Context, auth *Auth, addWashServer vo.AddWashServer) error {
-	owner, err := wa.repo.GetWashAdmin(ctx, auth.UID)
+	owner, err := wa.repo.GetOrCreateAdminIfNotExists(ctx, auth.UID)
 
 	if err != nil {
 		return err
@@ -97,7 +98,7 @@ func (wa *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id uu
 }
 
 func (wa *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pagination vo.Pagination) ([]entity.WashServer, error) {
-	owner, err := wa.repo.GetWashAdmin(ctx, auth.UID)
+	owner, err := wa.repo.GetOrCreateAdminIfNotExists(ctx, auth.UID)
 
 	if err != nil {
 		return []entity.WashServer{}, err

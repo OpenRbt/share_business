@@ -28,3 +28,39 @@ func (s *Storage) GetWashAdmin(ctx context.Context, identity string) (entity.Was
 		return entity.WashAdmin{}, err
 	}
 }
+
+func (s *Storage) CreateWashAdmin(ctx context.Context, identity string) (entity.WashAdmin, error) {
+	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+
+	if err != nil {
+		return entity.WashAdmin{}, err
+	}
+
+	var dbWashAdmin dbmodels.WashAdmin
+	err = tx.
+		InsertInto("wash_admins").
+		Columns("identity").
+		Values(identity).
+		Returning("id", "identity").
+		LoadContext(ctx, &dbWashAdmin)
+
+	if err != nil {
+		return entity.WashAdmin{}, err
+	}
+
+	return conversions.WashAdminFromDB(dbWashAdmin), tx.Commit()
+}
+
+func (s *Storage) GetOrCreateAdminIfNotExists(ctx context.Context, identity string) (entity.WashAdmin, error) {
+	dbWashAdmin, err := s.GetWashAdmin(ctx, identity)
+
+	if err != nil {
+		if errors.Is(err, entity.ErrNotFound) {
+			return s.CreateWashAdmin(ctx, identity)
+		}
+		
+		return entity.WashAdmin{}, err
+	}
+
+	return dbWashAdmin, err
+}
