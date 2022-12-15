@@ -57,11 +57,12 @@ func main() {
 
 	intapi := grpc.New(l, balanceSvc, washServerSvc)
 
-	errc := make(chan<- error)
+	errc := make(chan error)
 
 	go runHTTPServer(errc, l, cfg, authSvc, userSvc, balanceSvc)
 	go runGRPCServer(errc, l, cfg, intapi)
 
+	err = <-errc
 	if err != nil {
 		l.Fatalln("rest api serve:", err)
 	}
@@ -69,8 +70,12 @@ func main() {
 	l.Info("started server at: ", cfg.HTTPPort)
 }
 
-func runHTTPServer(errc chan<- error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase_authorization.Service, userSvc app.UserService, balanceSvc balance.Service) {
-
+func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase_authorization.Service, userSvc app.UserService, balanceSvc balance.Service) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatalln("panic: ", r)
+		}
+	}()
 	server, err := rest.NewServer(cfg, authSvc, l, userSvc, balanceSvc)
 	if err != nil {
 		l.Fatalln("init rest server:", err)
@@ -79,7 +84,12 @@ func runHTTPServer(errc chan<- error, l *zap.SugaredLogger, cfg *bootstrap.Confi
 	errc <- server.Serve()
 }
 
-func runGRPCServer(errc chan<- error, l *zap.SugaredLogger, cfg *bootstrap.Config, grpcSvc *grpc.Service) {
+func runGRPCServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, grpcSvc *grpc.Service) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatalln("panic: ", r)
+		}
+	}()
 	serverOptions := []grpc2.ServerOption{}
 
 	if cfg.GrpcConfig.EnableTLS {
