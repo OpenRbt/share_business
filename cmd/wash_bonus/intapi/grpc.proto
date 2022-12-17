@@ -29,7 +29,8 @@ message BeginRequest{
 }
 message BeginAnswer{
   string sessionID = 1;
-  ErrorMsg error = 2;
+  string sessionQR = 2;
+  ErrorMsg error = 3;
 }
 
 message RefreshRequest{
