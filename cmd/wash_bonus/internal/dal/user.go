@@ -24,8 +24,25 @@ func (s *Storage) GetProfileOrCreateIfNotExists(ctx context.Context, identity st
 	case err == nil:
 		return conversions.UserFromDb(dbUser), err
 	case errors.Is(err, dbr.ErrNotFound):
-		return entity.User{}, entity.ErrNotFound
+		return s.CreateProfile(ctx, identity)
 	default:
 		return entity.User{}, err
 	}
+}
+
+func (s *Storage) CreateProfile(ctx context.Context, identity string) (entity.User, error) {
+	var dbUser dbmodels.User
+
+	err := s.db.NewSession(nil).
+		InsertInto("users").
+		Columns("identity").
+		Values(identity).
+		Returning("id", "identity", "balance", "active").
+		LoadContext(ctx, &dbUser)
+
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return conversions.UserFromDb(dbUser), nil
 }
