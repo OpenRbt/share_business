@@ -17,8 +17,7 @@ type Service struct {
 
 	connectionsMutex sync.RWMutex
 	connections      map[string]*entity.WashServerConnection
-	intapi.UnimplementedServerServiceServer
-	intapi.UnimplementedSessionServiceServer
+	intapi.UnsafeWashBonusServer
 }
 
 func New(l *zap.SugaredLogger, balanceSvc balance.Service, washServerSvc wash_server.Service) *Service {
@@ -28,8 +27,6 @@ func New(l *zap.SugaredLogger, balanceSvc balance.Service, washServerSvc wash_se
 		washServerSvc: washServerSvc,
 		connections:   make(map[string]*entity.WashServerConnection),
 	}
-
-	go svc.cleanupConnections()
 
 	return &svc
 }

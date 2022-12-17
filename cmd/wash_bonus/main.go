@@ -55,12 +55,12 @@ func main() {
 	balanceSvc := balance.New(l, repo)
 	washServerSvc := wash_server.New(l, repo)
 
-	intapi := grpc.New(l, balanceSvc, washServerSvc)
+	grpcSvc := grpc.New(l, balanceSvc, washServerSvc)
 
 	errc := make(chan error)
 
 	go runHTTPServer(errc, l, cfg, authSvc, userSvc, balanceSvc)
-	go runGRPCServer(errc, l, cfg, intapi)
+	go runGRPCServer(errc, l, cfg, grpcSvc)
 
 	err = <-errc
 	if err != nil {
@@ -90,7 +90,7 @@ func runGRPCServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config,
 			log.Fatalln("panic: ", r)
 		}
 	}()
-	serverOptions := []grpc2.ServerOption{}
+	var serverOptions []grpc2.ServerOption
 
 	if cfg.GrpcConfig.EnableTLS {
 		credentialsTLS, err := loadTLSCredentials(cfg)
@@ -103,8 +103,7 @@ func runGRPCServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config,
 
 	server := grpc2.NewServer(serverOptions...)
 
-	intapi.RegisterServerServiceServer(server, grpcSvc)
-	intapi.RegisterSessionServiceServer(server, grpcSvc)
+	intapi.RegisterWashBonusServer(server, grpcSvc)
 
 	listener, err := net.Listen("tcp", ":"+cfg.GrpcConfig.Port)
 	if err != nil {
