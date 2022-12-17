@@ -18,307 +18,194 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// ServerServiceClient is the client API for ServerService service.
+// WashBonusClient is the client API for WashBonus service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ServerServiceClient interface {
-	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (ServerService_HealthCheckClient, error)
-}
-
-type serverServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewServerServiceClient(cc grpc.ClientConnInterface) ServerServiceClient {
-	return &serverServiceClient{cc}
-}
-
-func (c *serverServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (ServerService_HealthCheckClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ServerService_ServiceDesc.Streams[0], "/ServerService/HealthCheck", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &serverServiceHealthCheckClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type ServerService_HealthCheckClient interface {
-	Recv() (*HealthCheckResponse, error)
-	grpc.ClientStream
-}
-
-type serverServiceHealthCheckClient struct {
-	grpc.ClientStream
-}
-
-func (x *serverServiceHealthCheckClient) Recv() (*HealthCheckResponse, error) {
-	m := new(HealthCheckResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// ServerServiceServer is the server API for ServerService service.
-// All implementations must embed UnimplementedServerServiceServer
-// for forward compatibility
-type ServerServiceServer interface {
-	HealthCheck(*HealthCheckRequest, ServerService_HealthCheckServer) error
-	mustEmbedUnimplementedServerServiceServer()
-}
-
-// UnimplementedServerServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedServerServiceServer struct {
-}
-
-func (UnimplementedServerServiceServer) HealthCheck(*HealthCheckRequest, ServerService_HealthCheckServer) error {
-	return status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
-}
-func (UnimplementedServerServiceServer) mustEmbedUnimplementedServerServiceServer() {}
-
-// UnsafeServerServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ServerServiceServer will
-// result in compilation errors.
-type UnsafeServerServiceServer interface {
-	mustEmbedUnimplementedServerServiceServer()
-}
-
-func RegisterServerServiceServer(s grpc.ServiceRegistrar, srv ServerServiceServer) {
-	s.RegisterService(&ServerService_ServiceDesc, srv)
-}
-
-func _ServerService_HealthCheck_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(HealthCheckRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ServerServiceServer).HealthCheck(m, &serverServiceHealthCheckServer{stream})
-}
-
-type ServerService_HealthCheckServer interface {
-	Send(*HealthCheckResponse) error
-	grpc.ServerStream
-}
-
-type serverServiceHealthCheckServer struct {
-	grpc.ServerStream
-}
-
-func (x *serverServiceHealthCheckServer) Send(m *HealthCheckResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-// ServerService_ServiceDesc is the grpc.ServiceDesc for ServerService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var ServerService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ServerService",
-	HandlerType: (*ServerServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "HealthCheck",
-			Handler:       _ServerService_HealthCheck_Handler,
-			ServerStreams: true,
-		},
-	},
-	Metadata: "intapi/grpc.proto",
-}
-
-// SessionServiceClient is the client API for SessionService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type SessionServiceClient interface {
+type WashBonusClient interface {
+	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	Begin(ctx context.Context, in *BeginRequest, opts ...grpc.CallOption) (*BeginAnswer, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshAnswer, error)
-	Confirm(ctx context.Context, in *ConfirmRequest, opts ...grpc.CallOption) (*ConfirmAnswer, error)
 	End(ctx context.Context, in *FinishRequest, opts ...grpc.CallOption) (*FinishAnswer, error)
 }
 
-type sessionServiceClient struct {
+type washBonusClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewSessionServiceClient(cc grpc.ClientConnInterface) SessionServiceClient {
-	return &sessionServiceClient{cc}
+func NewWashBonusClient(cc grpc.ClientConnInterface) WashBonusClient {
+	return &washBonusClient{cc}
 }
 
-func (c *sessionServiceClient) Begin(ctx context.Context, in *BeginRequest, opts ...grpc.CallOption) (*BeginAnswer, error) {
+func (c *washBonusClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, "/WashBonus/HealthCheck", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *washBonusClient) Begin(ctx context.Context, in *BeginRequest, opts ...grpc.CallOption) (*BeginAnswer, error) {
 	out := new(BeginAnswer)
-	err := c.cc.Invoke(ctx, "/SessionService/Begin", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/WashBonus/Begin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *sessionServiceClient) Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshAnswer, error) {
+func (c *washBonusClient) Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshAnswer, error) {
 	out := new(RefreshAnswer)
-	err := c.cc.Invoke(ctx, "/SessionService/Refresh", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/WashBonus/Refresh", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *sessionServiceClient) Confirm(ctx context.Context, in *ConfirmRequest, opts ...grpc.CallOption) (*ConfirmAnswer, error) {
-	out := new(ConfirmAnswer)
-	err := c.cc.Invoke(ctx, "/SessionService/Confirm", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *sessionServiceClient) End(ctx context.Context, in *FinishRequest, opts ...grpc.CallOption) (*FinishAnswer, error) {
+func (c *washBonusClient) End(ctx context.Context, in *FinishRequest, opts ...grpc.CallOption) (*FinishAnswer, error) {
 	out := new(FinishAnswer)
-	err := c.cc.Invoke(ctx, "/SessionService/End", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/WashBonus/End", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// SessionServiceServer is the server API for SessionService service.
-// All implementations must embed UnimplementedSessionServiceServer
+// WashBonusServer is the server API for WashBonus service.
+// All implementations must embed UnimplementedWashBonusServer
 // for forward compatibility
-type SessionServiceServer interface {
+type WashBonusServer interface {
+	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	Begin(context.Context, *BeginRequest) (*BeginAnswer, error)
 	Refresh(context.Context, *RefreshRequest) (*RefreshAnswer, error)
-	Confirm(context.Context, *ConfirmRequest) (*ConfirmAnswer, error)
 	End(context.Context, *FinishRequest) (*FinishAnswer, error)
-	mustEmbedUnimplementedSessionServiceServer()
+	mustEmbedUnimplementedWashBonusServer()
 }
 
-// UnimplementedSessionServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedSessionServiceServer struct {
+// UnimplementedWashBonusServer must be embedded to have forward compatible implementations.
+type UnimplementedWashBonusServer struct {
 }
 
-func (UnimplementedSessionServiceServer) Begin(context.Context, *BeginRequest) (*BeginAnswer, error) {
+func (UnimplementedWashBonusServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
+func (UnimplementedWashBonusServer) Begin(context.Context, *BeginRequest) (*BeginAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Begin not implemented")
 }
-func (UnimplementedSessionServiceServer) Refresh(context.Context, *RefreshRequest) (*RefreshAnswer, error) {
+func (UnimplementedWashBonusServer) Refresh(context.Context, *RefreshRequest) (*RefreshAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Refresh not implemented")
 }
-func (UnimplementedSessionServiceServer) Confirm(context.Context, *ConfirmRequest) (*ConfirmAnswer, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Confirm not implemented")
-}
-func (UnimplementedSessionServiceServer) End(context.Context, *FinishRequest) (*FinishAnswer, error) {
+func (UnimplementedWashBonusServer) End(context.Context, *FinishRequest) (*FinishAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method End not implemented")
 }
-func (UnimplementedSessionServiceServer) mustEmbedUnimplementedSessionServiceServer() {}
+func (UnimplementedWashBonusServer) mustEmbedUnimplementedWashBonusServer() {}
 
-// UnsafeSessionServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to SessionServiceServer will
+// UnsafeWashBonusServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WashBonusServer will
 // result in compilation errors.
-type UnsafeSessionServiceServer interface {
-	mustEmbedUnimplementedSessionServiceServer()
+type UnsafeWashBonusServer interface {
+	mustEmbedUnimplementedWashBonusServer()
 }
 
-func RegisterSessionServiceServer(s grpc.ServiceRegistrar, srv SessionServiceServer) {
-	s.RegisterService(&SessionService_ServiceDesc, srv)
+func RegisterWashBonusServer(s grpc.ServiceRegistrar, srv WashBonusServer) {
+	s.RegisterService(&WashBonus_ServiceDesc, srv)
 }
 
-func _SessionService_Begin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WashBonus_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WashBonusServer).HealthCheck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/WashBonus/HealthCheck",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WashBonusServer).HealthCheck(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WashBonus_Begin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BeginRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SessionServiceServer).Begin(ctx, in)
+		return srv.(WashBonusServer).Begin(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/SessionService/Begin",
+		FullMethod: "/WashBonus/Begin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SessionServiceServer).Begin(ctx, req.(*BeginRequest))
+		return srv.(WashBonusServer).Begin(ctx, req.(*BeginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SessionService_Refresh_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WashBonus_Refresh_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RefreshRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SessionServiceServer).Refresh(ctx, in)
+		return srv.(WashBonusServer).Refresh(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/SessionService/Refresh",
+		FullMethod: "/WashBonus/Refresh",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SessionServiceServer).Refresh(ctx, req.(*RefreshRequest))
+		return srv.(WashBonusServer).Refresh(ctx, req.(*RefreshRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SessionService_Confirm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ConfirmRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SessionServiceServer).Confirm(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/SessionService/Confirm",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SessionServiceServer).Confirm(ctx, req.(*ConfirmRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _SessionService_End_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WashBonus_End_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FinishRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SessionServiceServer).End(ctx, in)
+		return srv.(WashBonusServer).End(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/SessionService/End",
+		FullMethod: "/WashBonus/End",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SessionServiceServer).End(ctx, req.(*FinishRequest))
+		return srv.(WashBonusServer).End(ctx, req.(*FinishRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// SessionService_ServiceDesc is the grpc.ServiceDesc for SessionService service.
+// WashBonus_ServiceDesc is the grpc.ServiceDesc for WashBonus service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var SessionService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "SessionService",
-	HandlerType: (*SessionServiceServer)(nil),
+var WashBonus_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "WashBonus",
+	HandlerType: (*WashBonusServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "HealthCheck",
+			Handler:    _WashBonus_HealthCheck_Handler,
+		},
+		{
 			MethodName: "Begin",
-			Handler:    _SessionService_Begin_Handler,
+			Handler:    _WashBonus_Begin_Handler,
 		},
 		{
 			MethodName: "Refresh",
-			Handler:    _SessionService_Refresh_Handler,
-		},
-		{
-			MethodName: "Confirm",
-			Handler:    _SessionService_Confirm_Handler,
+			Handler:    _WashBonus_Refresh_Handler,
 		},
 		{
 			MethodName: "End",
-			Handler:    _SessionService_End_Handler,
+			Handler:    _WashBonus_End_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

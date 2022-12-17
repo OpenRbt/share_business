@@ -2,64 +2,51 @@ syntax = "proto3";
 
 option go_package = "./intapi";
 
-service ServerService{
-  rpc HealthCheck(HealthCheckRequest) returns(stream HealthCheckResponse);
+service WashBonus {
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  rpc Begin(BeginRequest) returns(BeginAnswer);
+  rpc Refresh(RefreshRequest) returns(RefreshAnswer);
+  rpc End(FinishRequest) returns(FinishAnswer);
 }
 
-message HealthCheckRequest{
-  bool status = 1;
-  string serviceKey = 2;
-};
-
-message HealthCheckResponse{
-  bool response = 1;
+message ErrorMsg{
+  int64 code = 1;
   string msg = 2;
 }
 
-service SessionService{
-  rpc Begin(BeginRequest) returns(BeginAnswer);
-  rpc Refresh(RefreshRequest) returns(RefreshAnswer);
-  rpc Confirm(ConfirmRequest) returns(ConfirmAnswer);
-  rpc End(FinishRequest) returns(FinishAnswer);
+message HealthCheckRequest{
+  string serviceKey = 1;
+};
+message HealthCheckResponse{
+  bool ok = 1;
+  ErrorMsg error = 2;
 }
 
 message BeginRequest{
   string serviceKey = 1;
-  string sessionID = 2;
-  int64 postID = 3;
+  int64 postID = 2;
 }
 message BeginAnswer{
-  bool success = 1;
-  string error = 2;
+  string sessionID = 1;
+  ErrorMsg error = 2;
 }
 
 message RefreshRequest{
   string serviceKey = 1;
   string sessionID = 2;
-  string enteredAmount = 3;
 }
 message RefreshAnswer{
-  bool success = 1;
-  string error = 2;
-  string userID = 3;
-  string consumeAmount = 4;
-}
-
-message ConfirmRequest{
-  string serviceKey = 1;
-  string sessionID = 2;
-}
-message ConfirmAnswer{
-  bool success = 1;
-  string error = 2;
+  string userID = 1;
+  string addAmount = 2;
+  ErrorMsg error = 3;
 }
 
 message FinishRequest{
   string serviceKey = 1;
   string sessionID = 2;
-  string amount = 3;
+  string unusedBalance = 3;
 }
 message FinishAnswer{
-  bool success = 1;
-  string error = 2;
+  ErrorMsg error = 1;
 }
