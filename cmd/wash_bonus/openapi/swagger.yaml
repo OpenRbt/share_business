@@ -55,84 +55,6 @@ paths:
             schema:
               $ref: "#/definitions/error"
 
-  /use-bonuses:
-      post:
-        tags:
-          - bonus
-        security:
-          - authKey: []
-        operationId: use
-        parameters:
-          - name: body
-            in: body
-            schema: 
-              $ref: "#/definitions/bonusConsume"
-        responses:
-          204:
-            description: OK
-            schema:
-              $ref: "#/definitions/profile"
-          404:
-            description: Profile not exists
-            schema:
-              $ref: "#/definitions/error"
-          500:
-            description: Internal error
-            schema:
-              $ref: "#/definitions/error"
-
-  /confirm-use:
-    post:
-      tags:
-        - bonus
-      security:
-        - authKey: []
-      operationId: confirm
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/bonusConsumeConfirm"
-      responses:
-        204:
-          description: OK
-          schema:
-            $ref: "#/definitions/profile"
-        400:
-          description: Unable to confirm
-          schema:
-            $ref: "#/definitions/error"
-        500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/error"
-
-  /cancel-use:
-    post:
-      tags:
-        - bonus
-      security:
-        - authKey: []
-      operationId: cancel
-      parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/bonusConsumeCancel"
-      responses:
-        204:
-          description: OK
-          schema:
-            $ref: "#/definitions/profile"
-        400:
-          description: Unable to cancel
-          schema:
-            $ref: "#/definitions/error"
-        500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/error"
-
 definitions:
   error:
     type: object
@@ -156,33 +78,4 @@ definitions:
       active:
         type: boolean
       balance:
-        type: string
-        
-  bonusConsume:
-    type: object
-    description: "model for specifying amount of bonuses to consume"
-    properties: 
-      wash_server:
-        type: string
-      wash_session:
-        type: string
-      amount:
-        type: string
-
-  bonusConsumeCancel:
-    type: object
-    description: "model for specifying session to cancel consume"
-    properties:
-      wash_server:
-        type: string
-      wash_session:
-        type: string
-
-  bonusConsumeConfirm:
-    type: object
-    description: "model for specifying session to confirm consume"
-    properties:
-      wash_server:
-        type: string
-      wash_session:
         type: string
