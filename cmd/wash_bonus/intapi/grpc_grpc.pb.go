@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WashBonusClient interface {
+	InitConn(ctx context.Context, in *InitConnRequest, opts ...grpc.CallOption) (*InitConnResponse, error)
 	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	Begin(ctx context.Context, in *BeginRequest, opts ...grpc.CallOption) (*BeginAnswer, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshAnswer, error)
@@ -34,6 +35,15 @@ type washBonusClient struct {
 
 func NewWashBonusClient(cc grpc.ClientConnInterface) WashBonusClient {
 	return &washBonusClient{cc}
+}
+
+func (c *washBonusClient) InitConn(ctx context.Context, in *InitConnRequest, opts ...grpc.CallOption) (*InitConnResponse, error) {
+	out := new(InitConnResponse)
+	err := c.cc.Invoke(ctx, "/WashBonus/InitConn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *washBonusClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
@@ -76,6 +86,7 @@ func (c *washBonusClient) End(ctx context.Context, in *FinishRequest, opts ...gr
 // All implementations must embed UnimplementedWashBonusServer
 // for forward compatibility
 type WashBonusServer interface {
+	InitConn(context.Context, *InitConnRequest) (*InitConnResponse, error)
 	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	Begin(context.Context, *BeginRequest) (*BeginAnswer, error)
 	Refresh(context.Context, *RefreshRequest) (*RefreshAnswer, error)
@@ -87,6 +98,9 @@ type WashBonusServer interface {
 type UnimplementedWashBonusServer struct {
 }
 
+func (UnimplementedWashBonusServer) InitConn(context.Context, *InitConnRequest) (*InitConnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitConn not implemented")
+}
 func (UnimplementedWashBonusServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
@@ -110,6 +124,24 @@ type UnsafeWashBonusServer interface {
 
 func RegisterWashBonusServer(s grpc.ServiceRegistrar, srv WashBonusServer) {
 	s.RegisterService(&WashBonus_ServiceDesc, srv)
+}
+
+func _WashBonus_InitConn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitConnRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WashBonusServer).InitConn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/WashBonus/InitConn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WashBonusServer).InitConn(ctx, req.(*InitConnRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _WashBonus_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -191,6 +223,10 @@ var WashBonus_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "WashBonus",
 	HandlerType: (*WashBonusServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "InitConn",
+			Handler:    _WashBonus_InitConn_Handler,
+		},
 		{
 			MethodName: "HealthCheck",
 			Handler:    _WashBonus_HealthCheck_Handler,

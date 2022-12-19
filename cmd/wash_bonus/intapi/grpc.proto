@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "./intapi";
 
 service WashBonus {
+  rpc InitConn(InitConnRequest) returns (InitConnResponse);
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
 
   rpc Begin(BeginRequest) returns(BeginAnswer);
@@ -15,17 +16,27 @@ message ErrorMsg{
   string msg = 2;
 }
 
+message InitConnRequest{
+  string serviceKey = 1;
+}
+message InitConnResponse{
+  string connectionID = 1;
+  ErrorMsg error = 2;
+}
+
+
 message HealthCheckRequest{
   string serviceKey = 1;
+  optional string connectionID= 2;
 };
 message HealthCheckResponse{
-  bool ok = 1;
-  ErrorMsg error = 2;
+  ErrorMsg error = 1;
 }
 
 message BeginRequest{
   string serviceKey = 1;
-  int64 postID = 2;
+  optional string connectionID = 2;
+  int64 postID = 3;
 }
 message BeginAnswer{
   string sessionID = 1;
@@ -35,18 +46,20 @@ message BeginAnswer{
 
 message RefreshRequest{
   string serviceKey = 1;
-  string sessionID = 2;
+  optional string connectionID = 2;
+  string sessionID = 3;
 }
 message RefreshAnswer{
   string userID = 1;
-  string addAmount = 2;
+  optional string addAmount = 2;
   ErrorMsg error = 3;
 }
 
 message FinishRequest{
   string serviceKey = 1;
-  string sessionID = 2;
-  string unusedBalance = 3;
+  optional string connectionID = 2;
+  string sessionID = 3;
+  string unusedBalance = 4;
 }
 message FinishAnswer{
   ErrorMsg error = 1;
