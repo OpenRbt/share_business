@@ -11,11 +11,11 @@ import (
 	"net"
 	"os"
 	"wash_bonus/intapi"
-	"wash_bonus/internal/app"
-	"wash_bonus/internal/app/balance"
+	"wash_bonus/internal/app/user"
 	"wash_bonus/internal/app/wash_server"
 	"wash_bonus/internal/dal"
-	"wash_bonus/internal/firebase_authorization"
+	user2 "wash_bonus/internal/dal/user"
+	"wash_bonus/internal/infrastructure/firebase"
 	"wash_bonus/internal/transport/grpc"
 	"wash_bonus/internal/transport/rest"
 	"wash_bonus/pkg/bootstrap"
@@ -47,19 +47,20 @@ func main() {
 
 	l.Debug("applied migrations")
 
-	authSvc := firebase_authorization.New(cfg.FirebaseConfig.FirebaseKeyFilePath)
+	authSvc := firebase.New(cfg.FirebaseConfig.FirebaseKeyFilePath)
 
 	repo := dal.New(dbConn, l)
 
-	userSvc := app.NewUserService(l, repo)
-	balanceSvc := balance.New(l, repo)
+	userRepo := user2.NewRepo(l, dbConn)
+
+	userSvc := user.New(l, userRepo)
 	washServerSvc := wash_server.New(l, repo)
 
-	grpcSvc := grpc.New(l, balanceSvc, washServerSvc)
+	grpcSvc := grpc.New(l, userSvc, washServerSvc)
 
 	errc := make(chan error)
 
-	go runHTTPServer(errc, l, cfg, authSvc, userSvc, balanceSvc)
+	go runHTTPServer(errc, l, cfg, authSvc, userSvc)
 	go runGRPCServer(errc, l, cfg, grpcSvc)
 
 	err = <-errc
@@ -70,13 +71,13 @@ func main() {
 	l.Info("started server at: ", cfg.HTTPPort)
 }
 
-func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase_authorization.Service, userSvc app.UserService, balanceSvc balance.Service) {
+func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase.Service, userSvc user.Service) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalln("panic: ", r)
 		}
 	}()
-	server, err := rest.NewServer(cfg, authSvc, l, userSvc, balanceSvc)
+	server, err := rest.NewServer(cfg, authSvc, l, userSvc)
 	if err != nil {
 		l.Fatalln("init rest server:", err)
 	}

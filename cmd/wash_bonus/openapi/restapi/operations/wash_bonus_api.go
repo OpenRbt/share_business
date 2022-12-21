@@ -20,7 +20,6 @@ import (
 	"github.com/go-openapi/swag"
 
 	"wash_bonus/internal/app"
-	"wash_bonus/openapi/restapi/operations/bonus"
 	"wash_bonus/openapi/restapi/operations/standard"
 	"wash_bonus/openapi/restapi/operations/user"
 )
@@ -47,20 +46,11 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		BonusCancelHandler: bonus.CancelHandlerFunc(func(params bonus.CancelParams, principal *app.Auth) bonus.CancelResponder {
-			return bonus.CancelNotImplemented()
-		}),
-		BonusConfirmHandler: bonus.ConfirmHandlerFunc(func(params bonus.ConfirmParams, principal *app.Auth) bonus.ConfirmResponder {
-			return bonus.ConfirmNotImplemented()
-		}),
 		UserGetHandler: user.GetHandlerFunc(func(params user.GetParams, principal *app.Auth) user.GetResponder {
 			return user.GetNotImplemented()
 		}),
 		StandardHealthCheckHandler: standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
-		}),
-		BonusUseHandler: bonus.UseHandlerFunc(func(params bonus.UseParams, principal *app.Auth) bonus.UseResponder {
-			return bonus.UseNotImplemented()
 		}),
 
 		// Applies when the "Authorization" header is set
@@ -112,16 +102,10 @@ type WashBonusAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// BonusCancelHandler sets the operation handler for the cancel operation
-	BonusCancelHandler bonus.CancelHandler
-	// BonusConfirmHandler sets the operation handler for the confirm operation
-	BonusConfirmHandler bonus.ConfirmHandler
 	// UserGetHandler sets the operation handler for the get operation
 	UserGetHandler user.GetHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
 	StandardHealthCheckHandler standard.HealthCheckHandler
-	// BonusUseHandler sets the operation handler for the use operation
-	BonusUseHandler bonus.UseHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -203,20 +187,11 @@ func (o *WashBonusAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
-	if o.BonusCancelHandler == nil {
-		unregistered = append(unregistered, "bonus.CancelHandler")
-	}
-	if o.BonusConfirmHandler == nil {
-		unregistered = append(unregistered, "bonus.ConfirmHandler")
-	}
 	if o.UserGetHandler == nil {
 		unregistered = append(unregistered, "user.GetHandler")
 	}
 	if o.StandardHealthCheckHandler == nil {
 		unregistered = append(unregistered, "standard.HealthCheckHandler")
-	}
-	if o.BonusUseHandler == nil {
-		unregistered = append(unregistered, "bonus.UseHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -317,14 +292,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/cancel-use"] = bonus.NewCancel(o.context, o.BonusCancelHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/confirm-use"] = bonus.NewConfirm(o.context, o.BonusConfirmHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -333,10 +300,6 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/healthCheck"] = standard.NewHealthCheck(o.context, o.StandardHealthCheckHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/use-bonuses"] = bonus.NewUse(o.context, o.BonusUseHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

@@ -1,7 +1,8 @@
 package entity
 
-type WashServerConnection struct {
-	WashServer WashServer
+import uuid "github.com/satori/go.uuid"
 
-	Sessions map[string]*Session
+type WashServerConnection struct {
+	WashServer   WashServer
+	ConnectionID uuid.UUID
 }

@@ -11,12 +11,11 @@ import (
 
 	"wash_bonus/internal/app"
 	"wash_bonus/openapi/restapi/operations"
-	"wash_bonus/openapi/restapi/operations/bonus"
 	"wash_bonus/openapi/restapi/operations/standard"
 	"wash_bonus/openapi/restapi/operations/user"
 )
 
-//go:generate swagger generate server --target ../../openapi --name WashBonus --spec ../swagger.yaml --principal wash_bonus/internal/app.Auth --exclude-main --strict-responders
+//go:generate swagger generate server --target ..\..\openapi --name WashBonus --spec ..\swagger.yaml --principal wash_bonus/internal/app.Auth --exclude-main --strict-responders
 
 func configureFlags(api *operations.WashBonusAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -53,16 +52,6 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	if api.BonusCancelHandler == nil {
-		api.BonusCancelHandler = bonus.CancelHandlerFunc(func(params bonus.CancelParams, principal *app.Auth) bonus.CancelResponder {
-			return bonus.CancelNotImplemented()
-		})
-	}
-	if api.BonusConfirmHandler == nil {
-		api.BonusConfirmHandler = bonus.ConfirmHandlerFunc(func(params bonus.ConfirmParams, principal *app.Auth) bonus.ConfirmResponder {
-			return bonus.ConfirmNotImplemented()
-		})
-	}
 	if api.UserGetHandler == nil {
 		api.UserGetHandler = user.GetHandlerFunc(func(params user.GetParams, principal *app.Auth) user.GetResponder {
 			return user.GetNotImplemented()
@@ -71,11 +60,6 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	if api.StandardHealthCheckHandler == nil {
 		api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
-		})
-	}
-	if api.BonusUseHandler == nil {
-		api.BonusUseHandler = bonus.UseHandlerFunc(func(params bonus.UseParams, principal *app.Auth) bonus.UseResponder {
-			return bonus.UseNotImplemented()
 		})
 	}
 

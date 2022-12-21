@@ -12,8 +12,9 @@ import (
 	"path"
 	"strconv"
 	"wash_bonus/internal/app"
-	"wash_bonus/internal/app/balance"
-	firebaseauth "wash_bonus/internal/firebase_authorization"
+	"wash_bonus/internal/app/user"
+	"wash_bonus/internal/infrastructure/firebase"
+
 	"wash_bonus/openapi/restapi"
 	"wash_bonus/openapi/restapi/operations"
 	"wash_bonus/openapi/restapi/operations/standard"
@@ -22,18 +23,18 @@ import (
 
 type service struct {
 	l    *zap.SugaredLogger
-	auth firebaseauth.Service
+	auth firebase.Service
 
-	user app.UserService
+	userSvc user.Service
 }
 
-func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredLogger,
-	userSvc app.UserService, balance balance.Service,
+func NewServer(cfg *bootstrap.Config, auth firebase.Service, l *zap.SugaredLogger,
+	userSvc user.Service,
 ) (*restapi.Server, error) {
 	svc := &service{
-		l:    l,
-		auth: auth,
-		user: userSvc,
+		l:       l,
+		auth:    auth,
+		userSvc: userSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
