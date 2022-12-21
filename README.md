@@ -31,3 +31,6 @@
     ```bash
     make db_stop
     ```
+## TODO
+ * [ ] Update docker-compose
+ * [ ] Update build script
