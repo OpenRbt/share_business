@@ -6,10 +6,14 @@ import (
 )
 
 type Session struct {
+	ID           uuid.UUID
 	ConnectionID uuid.UUID
-	UserID       *uuid.UUID
+	User         *User
 	Post         int64
 	WashServer   WashServer
 
 	PostBalance decimal.Decimal
+	AddAmount   decimal.Decimal
+
+	Closed bool
 }
