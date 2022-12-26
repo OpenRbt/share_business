@@ -7,6 +7,8 @@ var (
 	ErrAccessDenied    = errors.New("access denied")
 	ErrProfileInactive = errors.New("profile inactive")
 
+	ErrForbidden = errors.New("forbidden operation")
+
 	ErrWashServerConnectionInit = errors.New("failed to init wash server connection")
 	ErrWashServerNotFound       = errors.New("wash server with specified key not exists")
 	ErrEmptyWashServerKey       = errors.New("wash server key must be not empty")

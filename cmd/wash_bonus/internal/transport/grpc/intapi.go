@@ -3,6 +3,7 @@ package grpc
 import (
 	"go.uber.org/zap"
 	"wash_bonus/intapi"
+	"wash_bonus/internal/app/session"
 	"wash_bonus/internal/app/user"
 	"wash_bonus/internal/app/wash_server"
 	"wash_bonus/internal/entity"
@@ -22,17 +23,22 @@ type Service struct {
 	userSvc       user.Service
 	washServerSvc wash_server.Service
 
+	sessionsSvc session.Service
+
 	connectionsCache ConnectionsCache
-	sessionsCache    SessionsCache
 
 	intapi.UnsafeWashBonusServer
+
+	basePath string
 }
 
-func New(l *zap.SugaredLogger, userSvc user.Service, washServerSvc wash_server.Service) *Service {
+func New(l *zap.SugaredLogger, userSvc user.Service, washServerSvc wash_server.Service, sessionSvc session.Service, basePath string) *Service {
 	svc := Service{
 		l:             l,
 		userSvc:       userSvc,
 		washServerSvc: washServerSvc,
+		sessionsSvc:   sessionSvc,
+		basePath:      basePath,
 	}
 
 	return &svc

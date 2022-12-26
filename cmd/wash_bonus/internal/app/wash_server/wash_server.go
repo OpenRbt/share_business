@@ -10,6 +10,5 @@ func (s *service) GetWashServer(ctx context.Context, id uuid.UUID) (entity.WashS
 	return s.repo.GetWashServer(ctx, id)
 }
 func (s *service) GetWashServerByKey(ctx context.Context, key string) (entity.WashServer, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.GetWashServerByKey(ctx, key)
 }

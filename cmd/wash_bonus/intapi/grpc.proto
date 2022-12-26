@@ -40,7 +40,7 @@ message BeginRequest{
 }
 message BeginAnswer{
   string sessionID = 1;
-  string sessionQR = 2;
+  bytes sessionQR = 2;
   ErrorMsg error = 3;
 }
 
@@ -48,10 +48,11 @@ message RefreshRequest{
   string serviceKey = 1;
   optional string connectionID = 2;
   string sessionID = 3;
+  int64 postBalance = 4;
 }
 message RefreshAnswer{
   string userID = 1;
-  optional string addAmount = 2;
+  optional int64 addAmount = 2;
   ErrorMsg error = 3;
 }
 
