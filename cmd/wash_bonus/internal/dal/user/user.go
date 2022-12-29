@@ -73,7 +73,7 @@ func (r *repo) Create(ctx context.Context, identity string) (user entity.User, e
 	return conversions.UserFromDb(dbUser), nil
 }
 
-func (r *repo) UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal.Decimal) (newBalance decimal.Decimal, err error) {
+func (r *repo) UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal.Decimal) (err error) {
 	var tx *dbr.Tx
 
 	defer func() {
@@ -85,31 +85,56 @@ func (r *repo) UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal
 	}()
 
 	tx, err = r.db.NewSession(nil).BeginTx(ctx, nil)
-	if err != nil {
-		return
+
+	dbUUID := uuid.NullUUID{
+		UUID:  user,
+		Valid: true,
+	}
+	dbAmount := decimal.NullDecimal{
+		Decimal: amount,
+		Valid:   true,
 	}
 
-	var oldBalance decimal.NullDecimal
-	err = tx.Select("balance").
-		From("users").
-		Where("id = ?", uuid.NullUUID{UUID: user, Valid: true}).
-		LoadOneContext(ctx, &oldBalance)
-	if err != nil {
-		return
-	}
+	date := time.Now()
+	res := tx.QueryRowContext(ctx, `
+	DO
+$do$
+    DECLARE userBalance numeric(10,2);
 
-	newBalanceDb := decimal.NullDecimal{Decimal: oldBalance.Decimal.Add(amount), Valid: true}
-	err = r.LogBalanceAction(ctx, tx, user, oldBalance, newBalanceDb)
-	if err != nil {
-		return
-	}
+    BEGIN
+        SELECT balance FROM users WHERE id = ? FOR UPDATE INTO userBalance;
+        if ? < 0 THEN
+            IF userBalance < abs(?) THEN
+                RAISE EXCEPTION ?;
+            END IF;
+        end if;
 
-	_, err = tx.Update("user").
-		Where("id = ?", user.String()).
-		Set("balance", newBalanceDb).
-		ExecContext(ctx)
-	if err != nil {
-		return
+        UPDATE users SET balance = userBalance + ? WHERE id = ?;
+        
+        INSERT INTO balance_events(user,old_amount,new_amount,date) values (?, userBalance, userBalance + ?, ?);
+    END;
+$do$
+`,
+		// main args
+		dbUUID,
+		dbAmount,
+		dbAmount,
+		entity.ErrNotEnoughMoney.Error(),
+		dbAmount,
+		dbUUID,
+		//logging args
+		dbUUID, dbAmount, date,
+	)
+	if res.Err() != nil {
+		switch {
+		case errors.Is(err, entity.ErrNotEnoughMoney):
+			err = entity.ErrNotEnoughMoney
+			tx.Rollback()
+			return
+		default:
+			tx.Rollback()
+			return
+		}
 	}
 
 	err = tx.Commit()
@@ -117,11 +142,23 @@ func (r *repo) UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal
 	return
 }
 
-func (r *repo) LogBalanceAction(ctx context.Context, tx *dbr.Tx, user uuid.UUID, oldAmount decimal.NullDecimal, newAmount decimal.NullDecimal) (err error) {
-	_, err = tx.InsertInto("balance_event").
-		Columns("user", "old_amount", "new_amount", "date").
-		Values(uuid.NullUUID{UUID: user, Valid: true}, oldAmount, newAmount, time.Now().UTC()).
-		ExecContext(ctx)
+func (r *repo) GetBalance(ctx context.Context, user uuid.UUID) (balance decimal.Decimal, err error) {
+	defer dal.LogOptionalError(r.l, "user", err)
+
+	dbUUID := uuid.NullUUID{
+		UUID:  user,
+		Valid: true,
+	}
+	var dbBalance decimal.NullDecimal
+
+	err = r.db.NewSession(nil).
+		Select("balance").
+		From("users").
+		Where("id = ?", dbUUID).
+		LoadOneContext(ctx, &dbBalance)
+	if err == nil {
+		balance = dbBalance.Decimal
+	}
 
 	return
 }

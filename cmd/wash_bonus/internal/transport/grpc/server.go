@@ -76,16 +76,13 @@ func (s *Service) HealthCheck(ctx context.Context, request *intapi.HealthCheckRe
 	return
 }
 
-func (s *Service) isValidConnection(serviceKey string, connectionID *string) bool {
+func (s *Service) isValidConnection(serviceKey string, connectionID string) bool {
 	conn := s.connectionsCache.Get(serviceKey)
 	if conn == nil {
 		return false
 	}
 
-	switch {
-	case connectionID == nil:
-		fallthrough
-	case conn.ConnectionID.String() != *connectionID:
+	if conn.ConnectionID.String() != connectionID {
 		return false
 	}
 

@@ -16,5 +16,7 @@ func (s *service) GetByID(ctx context.Context, auth *app.Auth, ID uuid.UUID) (us
 }
 
 func (s *service) UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal.Decimal) (newBalance decimal.Decimal, err error) {
-	return s.userRepo.UpdateBalance(ctx, user, amount)
+	err = s.userRepo.UpdateBalance(ctx, user, amount)
+	newBalance, err = s.userRepo.GetBalance(ctx, user)
+	return
 }

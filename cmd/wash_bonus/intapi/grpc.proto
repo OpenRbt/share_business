@@ -9,6 +9,8 @@ service WashBonus {
   rpc Begin(BeginRequest) returns(BeginAnswer);
   rpc Refresh(RefreshRequest) returns(RefreshAnswer);
   rpc End(FinishRequest) returns(FinishAnswer);
+
+  rpc EnterMoney(EnterMoneyRequest) returns(EnterMoneyAnswer);
 }
 
 message ErrorMsg{
@@ -27,7 +29,7 @@ message InitConnResponse{
 
 message HealthCheckRequest{
   string serviceKey = 1;
-  optional string connectionID= 2;
+  string connectionID = 2;
 };
 message HealthCheckResponse{
   ErrorMsg error = 1;
@@ -35,7 +37,7 @@ message HealthCheckResponse{
 
 message BeginRequest{
   string serviceKey = 1;
-  optional string connectionID = 2;
+  string connectionID = 2;
   int64 postID = 3;
 }
 message BeginAnswer{
@@ -46,22 +48,43 @@ message BeginAnswer{
 
 message RefreshRequest{
   string serviceKey = 1;
-  optional string connectionID = 2;
-  string sessionID = 3;
-  int64 postBalance = 4;
+  string connectionID = 2;
+  map<string, SessionRefreshData> sessions = 3;
 }
+
+message SessionRefreshData{
+  int64 postBalance = 1;
+}
+
 message RefreshAnswer{
   string userID = 1;
-  optional int64 addAmount = 2;
+  map<string, SessionRefreshResponseData> data = 2;
   ErrorMsg error = 3;
+}
+
+message SessionRefreshResponseData{
+  bool  userAssigned = 1;
+  int64 addAmount = 2;
 }
 
 message FinishRequest{
   string serviceKey = 1;
-  optional string connectionID = 2;
+  string connectionID = 2;
   string sessionID = 3;
   string unusedBalance = 4;
 }
 message FinishAnswer{
+  ErrorMsg error = 1;
+}
+
+message EnterMoneyRequest{
+  string  serviceKey = 1;
+  string connectionID = 2;
+  string  sessionID = 3;
+  int64 cashAmount = 4;
+  int64 cardAmount = 5;
+}
+
+message EnterMoneyAnswer{
   ErrorMsg error = 1;
 }

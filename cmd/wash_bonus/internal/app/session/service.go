@@ -26,7 +26,7 @@ type WashRepo interface {
 type UserRepo interface {
 	Get(ctx context.Context, identity string) (user entity.User, err error)
 	GetByID(ctx context.Context, id uuid.UUID) (user entity.User, err error)
-	UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal.Decimal) (newBalance decimal.Decimal, err error)
+	UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal.Decimal) (err error)
 }
 
 type Cache interface {

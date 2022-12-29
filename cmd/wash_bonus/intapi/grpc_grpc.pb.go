@@ -27,6 +27,7 @@ type WashBonusClient interface {
 	Begin(ctx context.Context, in *BeginRequest, opts ...grpc.CallOption) (*BeginAnswer, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*RefreshAnswer, error)
 	End(ctx context.Context, in *FinishRequest, opts ...grpc.CallOption) (*FinishAnswer, error)
+	EnterMoney(ctx context.Context, in *EnterMoneyRequest, opts ...grpc.CallOption) (*EnterMoneyAnswer, error)
 }
 
 type washBonusClient struct {
@@ -82,6 +83,15 @@ func (c *washBonusClient) End(ctx context.Context, in *FinishRequest, opts ...gr
 	return out, nil
 }
 
+func (c *washBonusClient) EnterMoney(ctx context.Context, in *EnterMoneyRequest, opts ...grpc.CallOption) (*EnterMoneyAnswer, error) {
+	out := new(EnterMoneyAnswer)
+	err := c.cc.Invoke(ctx, "/WashBonus/EnterMoney", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WashBonusServer is the server API for WashBonus service.
 // All implementations must embed UnimplementedWashBonusServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type WashBonusServer interface {
 	Begin(context.Context, *BeginRequest) (*BeginAnswer, error)
 	Refresh(context.Context, *RefreshRequest) (*RefreshAnswer, error)
 	End(context.Context, *FinishRequest) (*FinishAnswer, error)
+	EnterMoney(context.Context, *EnterMoneyRequest) (*EnterMoneyAnswer, error)
 	mustEmbedUnimplementedWashBonusServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedWashBonusServer) Refresh(context.Context, *RefreshRequest) (*
 }
 func (UnimplementedWashBonusServer) End(context.Context, *FinishRequest) (*FinishAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method End not implemented")
+}
+func (UnimplementedWashBonusServer) EnterMoney(context.Context, *EnterMoneyRequest) (*EnterMoneyAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnterMoney not implemented")
 }
 func (UnimplementedWashBonusServer) mustEmbedUnimplementedWashBonusServer() {}
 
@@ -216,6 +230,24 @@ func _WashBonus_End_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WashBonus_EnterMoney_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EnterMoneyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WashBonusServer).EnterMoney(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/WashBonus/EnterMoney",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WashBonusServer).EnterMoney(ctx, req.(*EnterMoneyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WashBonus_ServiceDesc is the grpc.ServiceDesc for WashBonus service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var WashBonus_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "End",
 			Handler:    _WashBonus_End_Handler,
+		},
+		{
+			MethodName: "EnterMoney",
+			Handler:    _WashBonus_EnterMoney_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -34,7 +34,7 @@ func (s *Service) Begin(ctx context.Context, request *intapi.BeginRequest) (resp
 		err = fmt.Errorf(msg)
 	}
 
-	connId, err := uuid.FromString(*request.ConnectionID)
+	connId, err := uuid.FromString(request.ConnectionID)
 	if err != nil {
 		code = http.StatusBadRequest
 		msg = "bad request"
@@ -66,8 +66,11 @@ func (s *Service) Begin(ctx context.Context, request *intapi.BeginRequest) (resp
 }
 
 func (s *Service) Refresh(ctx context.Context, request *intapi.RefreshRequest) (response *intapi.RefreshAnswer, err error) {
-	var code int64
-	var msg string
+	var (
+		code         int64
+		msg          string
+		responseData map[string]*intapi.SessionRefreshResponseData
+	)
 
 	defer func() {
 		if err != nil {
@@ -87,39 +90,44 @@ func (s *Service) Refresh(ctx context.Context, request *intapi.RefreshRequest) (
 		err = fmt.Errorf(msg)
 	}
 
-	id, err := uuid.FromString(request.SessionID)
-	if err != nil {
-		code = http.StatusBadRequest
-		msg = "bad session id"
-		err = fmt.Errorf(msg)
-	}
-
-	balance := decimal.NewFromInt(request.PostBalance)
-
-	session, err := s.sessionsSvc.RefreshSession(ctx, id, balance)
-	if err != nil {
-		return
-	}
-
-	var userID string
-	if session.User != nil {
-		userID = session.User.ID.String()
-	}
-	var addAmount *int64
-	if session.AddAmount != decimal.Zero {
-		amount := session.AddAmount.IntPart()
-		addAmount = &amount
-
-		err = s.sessionsSvc.ConsumeMoney(ctx, session.ID)
+	for sessionID, data := range request.Sessions {
+		id, err := uuid.FromString(sessionID)
 		if err != nil {
-			return
+			code = http.StatusBadRequest
+			msg = "bad session id"
+			err = fmt.Errorf(msg)
+			return nil, err
 		}
+
+		balance := decimal.NewFromInt(data.PostBalance)
+
+		session, err := s.sessionsSvc.RefreshSession(ctx, id, balance)
+		if err != nil {
+			return nil, err
+		}
+
+		data := &intapi.SessionRefreshResponseData{}
+
+		if session.User != nil {
+			data.UserAssigned = true
+		}
+
+		if session.AddAmount != decimal.Zero {
+			amount := session.AddAmount.IntPart()
+			data.AddAmount = amount
+
+			err = s.sessionsSvc.ConsumeMoney(ctx, session.ID)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		responseData[sessionID] = data
 	}
 
 	response = &intapi.RefreshAnswer{
-		UserID:    userID,
-		AddAmount: addAmount,
-		Error:     nil,
+		Data:  responseData,
+		Error: nil,
 	}
 
 	return
@@ -199,5 +207,9 @@ func (s *Service) createQR(url string) (qr []byte, err error) {
 		return nil, err
 	}
 
+	return
+}
+
+func (s *Service) EnterMoney(ctx context.Context, request *intapi.EnterMoneyRequest) (response *intapi.EnterMoneyAnswer, err error) {
 	return
 }
