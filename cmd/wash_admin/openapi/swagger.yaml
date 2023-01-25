@@ -76,8 +76,10 @@ paths:
           schema:
             $ref: "#/definitions/WashServerAdd"
       responses:
-        204:
+        200:
           description: Success creation
+          schema:
+            $ref: "#/definitions/WashServer"
         400:
           description: Bad request
           schema:
@@ -197,7 +199,7 @@ definitions:
         type: string
       description:
         type: string
-      api_key:
+      service_key:
         type: string
 
   WashServerGet:
