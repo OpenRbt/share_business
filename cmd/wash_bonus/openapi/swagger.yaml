@@ -116,12 +116,10 @@ paths:
         - name: body
           in: body
           schema:
-            $ref: "#/definitions/session_post"
+            $ref: "#/definitions/bonusCharge"
       responses:
-        200:
+        204:
           description: OK
-          schema:
-            $ref: "#/definitions/profile"
         404:
           description: Unable to cancel
           schema:
