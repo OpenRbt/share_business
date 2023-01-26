@@ -16,6 +16,7 @@ type Config struct {
 	DB             DBConfig
 	FirebaseConfig FirebaseConfig
 	GrpcConfig     GrpcConfig
+	RabbitMQConfig RabbitMQConfig
 }
 
 type DBConfig struct {
@@ -36,6 +37,15 @@ type GrpcConfig struct {
 	ClientCACertFile string `env:"GRPC_CLIENT_CA_CERT_FILE_PATH"`
 	ServerCertFile   string `env:"GRPC_SERVER_CERT_FILE_PATH"`
 	ServerKeyFile    string `env:"GRPC_SERVER_CERT_KEY_FILE_PATH"`
+}
+
+type RabbitMQConfig struct {
+	UseTLS    bool   `env:"RABBIT_USE_TLS" envDefault:"false"`
+	Port      string `env:"RABBIT_SERVICE_PORT" envDefault:"5672"`
+	Url       string `env:"RABBIT_SERVICE" envDefault:"localhost"`
+	CertsPath string `env:"RABBIT_CERTS_PATH" `
+	User      string `env:"RABBIT_SERVICE_USER" envDefault:"localhost"`
+	Password  string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"localhost"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {

@@ -23,8 +23,8 @@ type AddReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *AddReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 204:
-		result := NewAddNoContent()
+	case 200:
+		result := NewAddOK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -46,53 +46,65 @@ func (o *AddReader) ReadResponse(response runtime.ClientResponse, consumer runti
 	}
 }
 
-// NewAddNoContent creates a AddNoContent with default headers values
-func NewAddNoContent() *AddNoContent {
-	return &AddNoContent{}
+// NewAddOK creates a AddOK with default headers values
+func NewAddOK() *AddOK {
+	return &AddOK{}
 }
 
 /*
-AddNoContent describes a response with status code 204, with default header values.
+AddOK describes a response with status code 200, with default header values.
 
 Success creation
 */
-type AddNoContent struct {
+type AddOK struct {
+	Payload *models.WashServer
 }
 
-// IsSuccess returns true when this add no content response has a 2xx status code
-func (o *AddNoContent) IsSuccess() bool {
+// IsSuccess returns true when this add o k response has a 2xx status code
+func (o *AddOK) IsSuccess() bool {
 	return true
 }
 
-// IsRedirect returns true when this add no content response has a 3xx status code
-func (o *AddNoContent) IsRedirect() bool {
+// IsRedirect returns true when this add o k response has a 3xx status code
+func (o *AddOK) IsRedirect() bool {
 	return false
 }
 
-// IsClientError returns true when this add no content response has a 4xx status code
-func (o *AddNoContent) IsClientError() bool {
+// IsClientError returns true when this add o k response has a 4xx status code
+func (o *AddOK) IsClientError() bool {
 	return false
 }
 
-// IsServerError returns true when this add no content response has a 5xx status code
-func (o *AddNoContent) IsServerError() bool {
+// IsServerError returns true when this add o k response has a 5xx status code
+func (o *AddOK) IsServerError() bool {
 	return false
 }
 
-// IsCode returns true when this add no content response a status code equal to that given
-func (o *AddNoContent) IsCode(code int) bool {
-	return code == 204
+// IsCode returns true when this add o k response a status code equal to that given
+func (o *AddOK) IsCode(code int) bool {
+	return code == 200
 }
 
-func (o *AddNoContent) Error() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addNoContent ", 204)
+func (o *AddOK) Error() string {
+	return fmt.Sprintf("[PUT /wash-server][%d] addOK  %+v", 200, o.Payload)
 }
 
-func (o *AddNoContent) String() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addNoContent ", 204)
+func (o *AddOK) String() string {
+	return fmt.Sprintf("[PUT /wash-server][%d] addOK  %+v", 200, o.Payload)
 }
 
-func (o *AddNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *AddOK) GetPayload() *models.WashServer {
+	return o.Payload
+}
+
+func (o *AddOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.WashServer)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

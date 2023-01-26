@@ -6,9 +6,7 @@ package standard
 // Editing this file might prove futile when you re-run the generate command
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
@@ -82,24 +80,6 @@ type HealthCheckOKBody struct {
 
 	// ok
 	Ok bool `json:"ok,omitempty"`
-}
-
-// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
-func (o *HealthCheckOKBody) UnmarshalJSON(data []byte) error {
-	var props struct {
-
-		// ok
-		Ok bool `json:"ok,omitempty"`
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&props); err != nil {
-		return err
-	}
-
-	o.Ok = props.Ok
-	return nil
 }
 
 // Validate validates this health check o k body

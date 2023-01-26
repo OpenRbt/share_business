@@ -14,32 +14,52 @@ import (
 	"wash_admin/openapi/models"
 )
 
-// AddNoContentCode is the HTTP code returned for type AddNoContent
-const AddNoContentCode int = 204
+// AddOKCode is the HTTP code returned for type AddOK
+const AddOKCode int = 200
 
 /*
-AddNoContent Success creation
+AddOK Success creation
 
-swagger:response addNoContent
+swagger:response addOK
 */
-type AddNoContent struct {
+type AddOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.WashServer `json:"body,omitempty"`
 }
 
-// NewAddNoContent creates AddNoContent with default headers values
-func NewAddNoContent() *AddNoContent {
+// NewAddOK creates AddOK with default headers values
+func NewAddOK() *AddOK {
 
-	return &AddNoContent{}
+	return &AddOK{}
+}
+
+// WithPayload adds the payload to the add o k response
+func (o *AddOK) WithPayload(payload *models.WashServer) *AddOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the add o k response
+func (o *AddOK) SetPayload(payload *models.WashServer) {
+	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *AddNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *AddOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
-	rw.WriteHeader(204)
+	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
-func (o *AddNoContent) AddResponder() {}
+func (o *AddOK) AddResponder() {}
 
 // AddBadRequestCode is the HTTP code returned for type AddBadRequest
 const AddBadRequestCode int = 400

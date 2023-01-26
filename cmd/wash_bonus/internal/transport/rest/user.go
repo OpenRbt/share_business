@@ -10,20 +10,33 @@ import (
 )
 
 func (svc *service) initUserHandlers(api *operations.WashBonusAPI) {
-	api.UserGetHandler = user.GetHandlerFunc(svc.getProfile)
+	api.UserGetProfileHandler = user.GetProfileHandlerFunc(svc.getProfile)
+	api.UserGetBalanceHandler = user.GetBalanceHandlerFunc(svc.getBalance)
 }
 
-func (svc *service) getProfile(params user.GetParams, auth *app.Auth) user.GetResponder {
+func (svc *service) getProfile(params user.GetProfileParams, auth *app.Auth) user.GetProfileResponder {
 	res, err := svc.userSvc.Get(params.HTTPRequest.Context(), auth)
 
 	payload := conversions.UserToRest(res)
 
 	switch {
 	case err == nil:
-		return user.NewGetOK().WithPayload(&payload)
+		return user.NewGetProfileOK().WithPayload(&payload)
 	case errors.Is(err, entity.ErrNotFound):
-		return user.NewGetNotFound()
+		return user.NewGetProfileNotFound()
 	default:
-		return user.NewGetInternalServerError()
+		return user.NewGetProfileInternalServerError()
+	}
+}
+
+func (svc *service) getBalance(params user.GetBalanceParams, auth *app.Auth) user.GetBalanceResponder {
+	res, err := svc.userSvc.Get(params.HTTPRequest.Context(), auth)
+	switch {
+	case err == nil:
+		return user.NewGetBalanceOK().WithPayload(&user.GetBalanceOKBody{Balance: res.Balance.IntPart()})
+	case errors.Is(err, entity.ErrNotFound):
+		return user.NewGetBalanceNotFound()
+	default:
+		return user.NewGetBalanceInternalServerError()
 	}
 }

@@ -4,8 +4,8 @@ import uuid "github.com/satori/go.uuid"
 
 type WashServer struct {
 	ID          uuid.UUID
-	Name        string
+	Title       string
 	Description string
-	APIKey      string
+	ServiceKey  string
 	Owner       uuid.UUID
 }

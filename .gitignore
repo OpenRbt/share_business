@@ -19,3 +19,6 @@ certs/
 /**/.env
 /**/.idea/
 /**/.vscode/
+
+# Service environment
+/environment

@@ -30,28 +30,30 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	Get(params *GetParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetOK, error)
+	GetBalance(params *GetBalanceParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetBalanceOK, error)
+
+	GetProfile(params *GetProfileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProfileOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
 
 /*
-Get get API
+GetBalance get balance API
 */
-func (a *Client) Get(params *GetParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetOK, error) {
+func (a *Client) GetBalance(params *GetBalanceParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetBalanceOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewGetParams()
+		params = NewGetBalanceParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "get",
+		ID:                 "getBalance",
 		Method:             "GET",
-		PathPattern:        "/profile",
+		PathPattern:        "/profile/balance",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &GetReader{formats: a.formats},
+		Reader:             &GetBalanceReader{formats: a.formats},
 		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
@@ -64,13 +66,52 @@ func (a *Client) Get(params *GetParams, authInfo runtime.ClientAuthInfoWriter, o
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*GetOK)
+	success, ok := result.(*GetBalanceOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for get: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for getBalance: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+GetProfile get profile API
+*/
+func (a *Client) GetProfile(params *GetProfileParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProfileOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetProfileParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "getProfile",
+		Method:             "GET",
+		PathPattern:        "/profile",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetProfileReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetProfileOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for getProfile: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

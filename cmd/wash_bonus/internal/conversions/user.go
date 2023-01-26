@@ -18,7 +18,7 @@ func UserFromDb(dbUser dbmodels.User) entity.User {
 func UserToRest(user entity.User) models.Profile {
 	return models.Profile{
 		Active:  user.Active,
-		Balance: user.Balance.String(),
+		Balance: user.Balance.IntPart(),
 		ID:      user.ID.String(),
 	}
 }

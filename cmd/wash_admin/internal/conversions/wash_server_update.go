@@ -10,8 +10,8 @@ import (
 
 func UpdateWashServerToDb(entity vo.UpdateWashServer) dbmodels.UpdateWashServer {
 	return dbmodels.UpdateWashServer{
-		ID: uuid.NullUUID{UUID: entity.ID, Valid: true},
-		Name: entity.Name,
+		ID:          uuid.NullUUID{UUID: entity.ID, Valid: true},
+		Name:        entity.Title,
 		Description: entity.Description,
 	}
 }
@@ -24,8 +24,8 @@ func UpdateWashServerFromRest(model models.WashServerUpdate) (vo.UpdateWashServe
 	}
 
 	return vo.UpdateWashServer{
-		ID: id,
-		Name: &model.Name,
+		ID:          id,
+		Title:       &model.Name,
 		Description: &model.Description,
 	}, nil
 }

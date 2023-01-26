@@ -12,6 +12,7 @@ import (
 	"path"
 	"strconv"
 	"wash_bonus/internal/app"
+	"wash_bonus/internal/app/session"
 	"wash_bonus/internal/app/user"
 	"wash_bonus/internal/infrastructure/firebase"
 
@@ -25,7 +26,8 @@ type service struct {
 	l    *zap.SugaredLogger
 	auth firebase.Service
 
-	userSvc user.Service
+	userSvc    user.Service
+	sessionSvc session.Service
 }
 
 func NewServer(cfg *bootstrap.Config, auth firebase.Service, l *zap.SugaredLogger,

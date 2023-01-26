@@ -20,6 +20,7 @@ import (
 	"github.com/go-openapi/swag"
 
 	"wash_bonus/internal/app"
+	"wash_bonus/openapi/restapi/operations/session"
 	"wash_bonus/openapi/restapi/operations/standard"
 	"wash_bonus/openapi/restapi/operations/user"
 )
@@ -46,11 +47,20 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
-		UserGetHandler: user.GetHandlerFunc(func(params user.GetParams, principal *app.Auth) user.GetResponder {
-			return user.GetNotImplemented()
+		UserGetBalanceHandler: user.GetBalanceHandlerFunc(func(params user.GetBalanceParams, principal *app.Auth) user.GetBalanceResponder {
+			return user.GetBalanceNotImplemented()
+		}),
+		UserGetProfileHandler: user.GetProfileHandlerFunc(func(params user.GetProfileParams, principal *app.Auth) user.GetProfileResponder {
+			return user.GetProfileNotImplemented()
+		}),
+		SessionGetSessionHandler: session.GetSessionHandlerFunc(func(params session.GetSessionParams, principal *app.Auth) session.GetSessionResponder {
+			return session.GetSessionNotImplemented()
 		}),
 		StandardHealthCheckHandler: standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
+		}),
+		SessionPostSessionHandler: session.PostSessionHandlerFunc(func(params session.PostSessionParams, principal *app.Auth) session.PostSessionResponder {
+			return session.PostSessionNotImplemented()
 		}),
 
 		// Applies when the "Authorization" header is set
@@ -102,10 +112,16 @@ type WashBonusAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// UserGetHandler sets the operation handler for the get operation
-	UserGetHandler user.GetHandler
+	// UserGetBalanceHandler sets the operation handler for the get balance operation
+	UserGetBalanceHandler user.GetBalanceHandler
+	// UserGetProfileHandler sets the operation handler for the get profile operation
+	UserGetProfileHandler user.GetProfileHandler
+	// SessionGetSessionHandler sets the operation handler for the get session operation
+	SessionGetSessionHandler session.GetSessionHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
 	StandardHealthCheckHandler standard.HealthCheckHandler
+	// SessionPostSessionHandler sets the operation handler for the post session operation
+	SessionPostSessionHandler session.PostSessionHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -187,11 +203,20 @@ func (o *WashBonusAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
-	if o.UserGetHandler == nil {
-		unregistered = append(unregistered, "user.GetHandler")
+	if o.UserGetBalanceHandler == nil {
+		unregistered = append(unregistered, "user.GetBalanceHandler")
+	}
+	if o.UserGetProfileHandler == nil {
+		unregistered = append(unregistered, "user.GetProfileHandler")
+	}
+	if o.SessionGetSessionHandler == nil {
+		unregistered = append(unregistered, "session.GetSessionHandler")
 	}
 	if o.StandardHealthCheckHandler == nil {
 		unregistered = append(unregistered, "standard.HealthCheckHandler")
+	}
+	if o.SessionPostSessionHandler == nil {
+		unregistered = append(unregistered, "session.PostSessionHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -295,11 +320,23 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/profile"] = user.NewGet(o.context, o.UserGetHandler)
+	o.handlers["GET"]["/profile/balance"] = user.NewGetBalance(o.context, o.UserGetBalanceHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/profile"] = user.NewGetProfile(o.context, o.UserGetProfileHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/session/{UID}"] = session.NewGetSession(o.context, o.SessionGetSessionHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/healthCheck"] = standard.NewHealthCheck(o.context, o.StandardHealthCheckHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/session/{UID}"] = session.NewPostSession(o.context, o.SessionPostSessionHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

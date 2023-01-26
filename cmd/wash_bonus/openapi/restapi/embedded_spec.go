@@ -68,7 +68,7 @@ func init() {
         "tags": [
           "user"
         ],
-        "operationId": "get",
+        "operationId": "getProfile",
         "responses": {
           "200": {
             "description": "OK",
@@ -90,9 +90,143 @@ func init() {
           }
         }
       }
+    },
+    "/profile/balance": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "operationId": "getBalance",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "balance": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/session/{UID}": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "session"
+        ],
+        "operationId": "getSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "UID",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/session"
+            }
+          },
+          "404": {
+            "description": "Profile not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "session"
+        ],
+        "operationId": "postSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "UID",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/bonusCharge"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Unable to cancel",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "bonusCharge": {
+      "description": "bonus amount for use in session",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -118,9 +252,36 @@ func init() {
           "type": "boolean"
         },
         "balance": {
-          "type": "string"
+          "type": "integer"
         },
         "id": {
+          "type": "string"
+        }
+      }
+    },
+    "session": {
+      "description": "session",
+      "type": "object",
+      "properties": {
+        "postBalance": {
+          "type": "integer"
+        },
+        "postID": {
+          "type": "integer"
+        },
+        "washServer": {
+          "$ref": "#/definitions/washServer"
+        }
+      }
+    },
+    "washServer": {
+      "description": "wash server info",
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Name": {
           "type": "string"
         }
       }
@@ -191,7 +352,7 @@ func init() {
         "tags": [
           "user"
         ],
-        "operationId": "get",
+        "operationId": "getProfile",
         "responses": {
           "200": {
             "description": "OK",
@@ -213,9 +374,143 @@ func init() {
           }
         }
       }
+    },
+    "/profile/balance": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "operationId": "getBalance",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "balance": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/session/{UID}": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "session"
+        ],
+        "operationId": "getSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "UID",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/session"
+            }
+          },
+          "404": {
+            "description": "Profile not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "session"
+        ],
+        "operationId": "postSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "UID",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/bonusCharge"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Unable to cancel",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "bonusCharge": {
+      "description": "bonus amount for use in session",
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        }
+      }
+    },
     "error": {
       "type": "object",
       "required": [
@@ -241,9 +536,36 @@ func init() {
           "type": "boolean"
         },
         "balance": {
-          "type": "string"
+          "type": "integer"
         },
         "id": {
+          "type": "string"
+        }
+      }
+    },
+    "session": {
+      "description": "session",
+      "type": "object",
+      "properties": {
+        "postBalance": {
+          "type": "integer"
+        },
+        "postID": {
+          "type": "integer"
+        },
+        "washServer": {
+          "$ref": "#/definitions/washServer"
+        }
+      }
+    },
+    "washServer": {
+      "description": "wash server info",
+      "type": "object",
+      "properties": {
+        "Description": {
+          "type": "string"
+        },
+        "Name": {
           "type": "string"
         }
       }

@@ -9,19 +9,19 @@ import (
 
 func PaginationToDB(entity vo.Pagination) dbmodels.Pagination {
 	return dbmodels.Pagination{
-		Limit: entity.Limit,
+		Limit:  entity.Limit,
 		Offset: entity.Offset,
 	}
 }
 
-func PaginationFromRest (model models.Pagination) vo.Pagination {
+func PaginationFromRest(model models.Pagination) vo.Pagination {
 	return vo.Pagination{
-		Limit: model.Limit,
+		Limit:  model.Limit,
 		Offset: model.Offset,
 	}
 }
 
-func WashServerListFromDB (washServerList []dbmodels.WashServer) []entity.WashServer {
+func WashServerListFromDB(washServerList []dbmodels.WashServer) []entity.WashServer {
 	res := make([]entity.WashServer, len(washServerList))
 
 	for i, value := range washServerList {
@@ -31,12 +31,12 @@ func WashServerListFromDB (washServerList []dbmodels.WashServer) []entity.WashSe
 	return res
 }
 
-func WashServerListToRest (washServerEntity []entity.WashServer) []*models.WashServer {
+func WashServerListToRest(washServerEntity []entity.WashServer) []*models.WashServer {
 	res := make([]*models.WashServer, len(washServerEntity))
 
 	for i, value := range washServerEntity {
 		rest := WashServerToRest(value)
-		res[i] = &rest
+		res[i] = rest
 	}
 
 	return res

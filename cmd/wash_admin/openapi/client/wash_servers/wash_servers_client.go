@@ -30,7 +30,7 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	Add(params *AddParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddNoContent, error)
+	Add(params *AddParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddOK, error)
 
 	Delete(params *DeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteNoContent, error)
 
@@ -46,7 +46,7 @@ type ClientService interface {
 /*
 Add add API
 */
-func (a *Client) Add(params *AddParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddNoContent, error) {
+func (a *Client) Add(params *AddParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AddOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewAddParams()
@@ -72,7 +72,7 @@ func (a *Client) Add(params *AddParams, authInfo runtime.ClientAuthInfoWriter, o
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*AddNoContent)
+	success, ok := result.(*AddOK)
 	if ok {
 		return success, nil
 	}

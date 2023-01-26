@@ -5,64 +5,73 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 	"wash_bonus/internal/app"
+	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/entity"
+	"wash_bonus/internal/infrastructure/rabbit/models/vo"
 )
 
-func (s *service) CreateSession(ctx context.Context, connectionID uuid.UUID, postID int64, washKey string) (session entity.Session, err error) {
-	washServer, err := s.washRepo.GetWashServerByKey(ctx, washKey)
+func (s *service) AssignRabbit(handler func(msg interface{}, service string, target string, messageType int) error) {
+	s.rabbitPublisherFunc = handler
+}
+
+func (s *service) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (session entity.Session, err error) {
+	session, err = s.sessionRepo.CreateSession(ctx, serverID)
+	if err != nil {
+		return
+	}
+	eventErr := s.rabbitPublisherFunc(conversions.SessionToRabbit(session), vo.WashBonusService, serverID.String(), int(vo.BonusSessionCreated))
+	if eventErr != nil {
+		s.l.Errorw("failed to send server event", "created session", session, "target server", serverID.String(), "error", eventErr)
+	}
+	return
+}
+
+func (s *service) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Session, error) {
+	return s.sessionRepo.GetSession(ctx, sessionID)
+}
+
+func (s *service) GetUserSession(ctx context.Context, auth *app.Auth, sessionID uuid.UUID) (session entity.Session, err error) {
+	user, err := s.userRepo.Get(ctx, auth.UID)
 	if err != nil {
 		return
 	}
 
-	session = entity.Session{
-		ID:           uuid.NewV4(),
-		ConnectionID: connectionID,
-		User:         nil,
-		Post:         postID,
-		WashServer:   washServer,
-		PostBalance:  decimal.Decimal{},
-	}
-
-	s.cache.SetSession(session)
-
-	return
-}
-
-func (s *service) GetUserSession(ctx context.Context, auth app.Auth, sessionID uuid.UUID) (session entity.Session, err error) {
-	cacheSession := s.cache.GetSession(sessionID)
-	if cacheSession == nil {
-		err = entity.ErrNotFound
-		return
-	}
-
-	if cacheSession.User != nil {
-		if cacheSession.User.Identity != auth.UID {
-			err = entity.ErrForbidden
-			return
-		}
-	}
-
-	err = s.AssignUser(ctx, auth, sessionID)
+	session, err = s.GetSession(ctx, sessionID)
 	if err != nil {
 		return
 	}
 
-	session = *cacheSession
+	switch {
+	case session.User != nil && session.User.Identity != user.Identity:
+		fallthrough
+	case session.Finished:
+		err = entity.ErrForbidden
+		return
+	}
+
+	assignErr := s.AssignSessionUser(ctx, session.WashServer.Id, sessionID, user)
+	if assignErr != nil {
+		s.l.Errorw("failed to assign user to session event", "session", session, "target user", user, "error", assignErr)
+	}
 
 	return
 }
 
-func (s *service) GetSession(ctx context.Context, sessionID uuid.UUID) (session entity.Session, err error) {
-	cacheSession := s.cache.GetSession(sessionID)
-	if cacheSession == nil {
-		err = entity.ErrNotFound
+func (s *service) AssignSessionUser(ctx context.Context, serverID uuid.UUID, sessionID uuid.UUID, user entity.User) (err error) {
+	err = s.sessionRepo.SetSessionUser(ctx, sessionID, user.ID)
+	if err != nil {
 		return
 	}
 
-	return *cacheSession, nil
+	eventErr := s.rabbitPublisherFunc(conversions.SessionUserAssign(sessionID, user), vo.WashBonusService, serverID.String(), int(vo.BonusSessionUserAssign))
+	if eventErr != nil {
+		s.l.Errorw("failed to send server event", "assign session user for session", sessionID.String(), "target user", user, "error", eventErr)
+	}
+
+	return
 }
 
-func (s *service) AssignUser(ctx context.Context, auth app.Auth, sessionID uuid.UUID) (err error) {
+func (s *service) ChargeBonuses(ctx context.Context, auth *app.Auth, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
 	user, err := s.userRepo.Get(ctx, auth.UID)
 	if err != nil {
 		return
@@ -73,77 +82,45 @@ func (s *service) AssignUser(ctx context.Context, auth app.Auth, sessionID uuid.
 		return
 	}
 
-	if session.Closed {
+	if session.User.ID != user.ID {
 		err = entity.ErrForbidden
 		return
 	}
 
-	if session.User != nil {
-		if *session.User != user {
-			err = entity.ErrForbidden
-			return
-		}
-	}
+	subtractAmount := amount.Neg()
 
-	err = s.cache.RefreshSession(session)
+	err = s.userRepo.UpdateBalance(ctx, user.ID, subtractAmount)
 	if err != nil {
 		return
 	}
 
-	session.User = &user
+	err = s.sessionRepo.UpdateSessionBalance(ctx, sessionID, amount)
 
 	return
 }
 
-func (s *service) RefreshSession(ctx context.Context, sessionID uuid.UUID, PostBalance decimal.Decimal) (session entity.Session, err error) {
-	session, err = s.GetSession(ctx, sessionID)
-	if err != nil {
-		return
-	}
-	if session.Closed {
-		err = entity.ErrForbidden
-		return
-	}
+func (s *service) ConfirmBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
+	subtractAmount := amount.Neg()
 
-	session.PostBalance = PostBalance
-
-	err = s.cache.RefreshSession(session)
+	err = s.sessionRepo.UpdateSessionBalance(ctx, sessionID, subtractAmount)
 
 	return
 }
 
-func (s *service) EndSession(ctx context.Context, sessionID uuid.UUID) (err error) {
+func (s *service) DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
+	subtractAmount := amount.Neg()
+
 	session, err := s.GetSession(ctx, sessionID)
 	if err != nil {
 		return
 	}
 
-	if session.Closed {
-		err = entity.ErrForbidden
-		return
-	}
-
-	session.Closed = true
-
-	err = s.cache.RefreshSession(session)
-
-	return
-}
-
-func (s *service) ConsumeMoney(ctx context.Context, sessionID uuid.UUID) (err error) {
-	session, err := s.GetSession(ctx, sessionID)
+	err = s.sessionRepo.UpdateSessionBalance(ctx, sessionID, subtractAmount)
 	if err != nil {
 		return
 	}
 
-	if session.Closed {
-		err = entity.ErrForbidden
-		return
-	}
-
-	session.AddAmount = decimal.Zero
-
-	err = s.cache.RefreshSession(session)
+	err = s.userRepo.UpdateBalance(ctx, session.User.ID, subtractAmount)
 
 	return
 }

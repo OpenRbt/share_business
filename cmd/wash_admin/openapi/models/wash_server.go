@@ -17,9 +17,6 @@ import (
 // swagger:model WashServer
 type WashServer struct {
 
-	// api key
-	APIKey string `json:"api_key,omitempty"`
-
 	// description
 	Description string `json:"description,omitempty"`
 
@@ -28,6 +25,9 @@ type WashServer struct {
 
 	// name
 	Name string `json:"name,omitempty"`
+
+	// service key
+	ServiceKey string `json:"service_key,omitempty"`
 }
 
 // Validate validates this wash server

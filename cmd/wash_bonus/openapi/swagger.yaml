@@ -39,7 +39,7 @@ paths:
         - user
       security:
         - authKey: [ ]
-      operationId: get
+      operationId: getBalance
       responses:
         200:
           description: OK
@@ -62,7 +62,7 @@ paths:
         - user
       security:
         - authKey: [ ]
-      operationId: get
+      operationId: getProfile
       responses:
         200:
           description: OK
@@ -83,7 +83,7 @@ paths:
         - session
       security:
         - authKey: [ ]
-      operationId: session
+      operationId: getSession
       parameters:
         - name: UID
           in: path
@@ -107,7 +107,7 @@ paths:
         - session
       security:
         - authKey: [ ]
-      operationId: post
+      operationId: postSession
       parameters:
         - name: UID
           in: path
@@ -120,8 +120,10 @@ paths:
       responses:
         204:
           description: OK
+        403:
+          description: Forbidden
         404:
-          description: Unable to cancel
+          description: Session not found
           schema:
             $ref: "#/definitions/error"
         500:

@@ -6,9 +6,7 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
@@ -23,36 +21,10 @@ type Profile struct {
 	Active bool `json:"active,omitempty"`
 
 	// balance
-	Balance string `json:"balance,omitempty"`
+	Balance int64 `json:"balance,omitempty"`
 
 	// id
 	ID string `json:"id,omitempty"`
-}
-
-// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
-func (m *Profile) UnmarshalJSON(data []byte) error {
-	var props struct {
-
-		// active
-		Active bool `json:"active,omitempty"`
-
-		// balance
-		Balance string `json:"balance,omitempty"`
-
-		// id
-		ID string `json:"id,omitempty"`
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&props); err != nil {
-		return err
-	}
-
-	m.Active = props.Active
-	m.Balance = props.Balance
-	m.ID = props.ID
-	return nil
 }
 
 // Validate validates this profile

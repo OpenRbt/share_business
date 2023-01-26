@@ -19,8 +19,10 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/powerman/structlog v0.7.3
+	github.com/rabbitmq/amqp091-go v1.6.0
 	github.com/rs/cors v1.7.0
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
+	github.com/wagslane/go-rabbitmq v0.11.1
 	go.uber.org/zap v1.23.0
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
 	google.golang.org/api v0.62.0

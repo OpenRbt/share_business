@@ -15,6 +15,7 @@ type Config struct {
 	LogLevel       string `env:"LOG_LEVEL"`
 	DB             DBConfig
 	FirebaseConfig FirebaseConfig
+	RabbitMQConfig RabbitMQConfig
 }
 
 type DBConfig struct {
@@ -27,6 +28,15 @@ type DBConfig struct {
 
 type FirebaseConfig struct {
 	FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH"`
+}
+
+type RabbitMQConfig struct {
+	UseTLS    bool   `env:"RABBIT_USE_TLS" envDefault:"false"`
+	Port      string `env:"RABBIT_SERVICE_PORT" envDefault:"5672"`
+	Url       string `env:"RABBIT_SERVICE" envDefault:"localhost"`
+	CertsPath string `env:"RABBIT_CERTS_PATH" `
+	User      string `env:"RABBIT_SERVICE_USER" envDefault:"localhost"`
+	Password  string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"localhost"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {

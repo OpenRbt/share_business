@@ -31,11 +31,9 @@ func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth)
 
 	res, err := svc.washServers.GetWashServer(params.HTTPRequest.Context(), auth, id)
 
-	payload := conversions.WashServerToRest(res)
-
 	switch {
 	case err == nil:
-		return wash_servers.NewGetOK().WithPayload(&payload)
+		return wash_servers.NewGetOK().WithPayload(conversions.WashServerToRest(res))
 	case errors.Is(err, entity.ErrNotFound):
 		return wash_servers.NewGetNotFound()
 	default:
@@ -44,13 +42,13 @@ func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth)
 }
 
 func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth) wash_servers.AddResponder {
-	addWashServerFromRest := conversions.AddWashServerFromRest(*params.Body)
+	registerWashServerFromRest := conversions.RegisterWashServerFromRest(*params.Body)
 
-	err := svc.washServers.AddWashServer(params.HTTPRequest.Context(), auth, addWashServerFromRest)
+	newServer, err := svc.washServers.RegisterWashServer(params.HTTPRequest.Context(), auth, registerWashServerFromRest)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewAddNoContent()
+		return wash_servers.NewAddOK().WithPayload(conversions.WashServerToRest(newServer))
 	case errors.Is(err, entity.ErrNotFound):
 		return wash_servers.NewAddBadRequest()
 	default:
@@ -97,9 +95,7 @@ func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app
 }
 
 func (svc *service) getWashServerList(params wash_servers.ListParams, auth *app.Auth) wash_servers.ListResponder {
-	paginationFromRest := conversions.PaginationFromRest(*params.Body)
-
-	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, paginationFromRest)
+	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, conversions.PaginationFromRest(*params.Body))
 
 	payload := conversions.WashServerListToRest(res)
 

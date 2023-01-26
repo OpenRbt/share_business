@@ -125,8 +125,11 @@ func init() {
           }
         ],
         "responses": {
-          "204": {
-            "description": "Success creation"
+          "200": {
+            "description": "Success creation",
+            "schema": {
+              "$ref": "#/definitions/WashServer"
+            }
           },
           "400": {
             "description": "Bad request",
@@ -299,9 +302,6 @@ func init() {
     "WashServer": {
       "type": "object",
       "properties": {
-        "api_key": {
-          "type": "string"
-        },
         "description": {
           "type": "string"
         },
@@ -309,6 +309,9 @@ func init() {
           "type": "string"
         },
         "name": {
+          "type": "string"
+        },
+        "service_key": {
           "type": "string"
         }
       }
@@ -502,8 +505,11 @@ func init() {
           }
         ],
         "responses": {
-          "204": {
-            "description": "Success creation"
+          "200": {
+            "description": "Success creation",
+            "schema": {
+              "$ref": "#/definitions/WashServer"
+            }
           },
           "400": {
             "description": "Bad request",
@@ -676,9 +682,6 @@ func init() {
     "WashServer": {
       "type": "object",
       "properties": {
-        "api_key": {
-          "type": "string"
-        },
         "description": {
           "type": "string"
         },
@@ -686,6 +689,9 @@ func init() {
           "type": "string"
         },
         "name": {
+          "type": "string"
+        },
+        "service_key": {
           "type": "string"
         }
       }

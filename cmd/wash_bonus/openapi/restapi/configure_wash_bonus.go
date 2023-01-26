@@ -11,11 +11,12 @@ import (
 
 	"wash_bonus/internal/app"
 	"wash_bonus/openapi/restapi/operations"
+	"wash_bonus/openapi/restapi/operations/session"
 	"wash_bonus/openapi/restapi/operations/standard"
 	"wash_bonus/openapi/restapi/operations/user"
 )
 
-//go:generate swagger generate server --target ..\..\openapi --name WashBonus --spec ..\swagger.yaml --principal wash_bonus/internal/app.Auth --exclude-main --strict-responders
+//go:generate swagger generate server --target ../../openapi --name WashBonus --spec ../swagger.yaml --principal wash_bonus/internal/app.Auth --exclude-main --strict-responders
 
 func configureFlags(api *operations.WashBonusAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -52,14 +53,29 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	if api.UserGetHandler == nil {
-		api.UserGetHandler = user.GetHandlerFunc(func(params user.GetParams, principal *app.Auth) user.GetResponder {
-			return user.GetNotImplemented()
+	if api.UserGetBalanceHandler == nil {
+		api.UserGetBalanceHandler = user.GetBalanceHandlerFunc(func(params user.GetBalanceParams, principal *app.Auth) user.GetBalanceResponder {
+			return user.GetBalanceNotImplemented()
+		})
+	}
+	if api.UserGetProfileHandler == nil {
+		api.UserGetProfileHandler = user.GetProfileHandlerFunc(func(params user.GetProfileParams, principal *app.Auth) user.GetProfileResponder {
+			return user.GetProfileNotImplemented()
+		})
+	}
+	if api.SessionGetSessionHandler == nil {
+		api.SessionGetSessionHandler = session.GetSessionHandlerFunc(func(params session.GetSessionParams, principal *app.Auth) session.GetSessionResponder {
+			return session.GetSessionNotImplemented()
 		})
 	}
 	if api.StandardHealthCheckHandler == nil {
 		api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
+		})
+	}
+	if api.SessionPostSessionHandler == nil {
+		api.SessionPostSessionHandler = session.PostSessionHandlerFunc(func(params session.PostSessionParams, principal *app.Auth) session.PostSessionResponder {
+			return session.PostSessionNotImplemented()
 		})
 	}
 

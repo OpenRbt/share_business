@@ -1,16 +1,43 @@
 version: "3.8"
 
+networks:
+  rabbitmq_go_net:
+    driver: bridge
+
 services:
+  db_wash_admin:
+    container_name: wash_admin_postgresql
+    image: postgres:14.5
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wash_admin
+    ports:
+      - "8091:5432"
+  
   db_wash_bonus:
     container_name: wash_bonus_postgresql
     image: postgres:14.5
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: back
+      POSTGRES_DB: wash_bonus
     ports:
-      - 8090:5432
-
+      - "8090:5432"
+  rabbit:
+    container_name: wash_bonus_rabbit
+    image: rabbitmq:3.11.6-management
+    restart: always
+    ports:
+      - "5671:5671"
+      - "15672:15672"
+    volumes:
+      - ./environment/certs/test-certs/:/certs/
+      - ./environment/rabbit/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./environment/rabbit/data/:/var/lib/rabbitmq
+      - ./environment/rabbit/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_go_net
 #  back:
 #    build:
 #      context: .

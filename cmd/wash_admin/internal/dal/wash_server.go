@@ -2,8 +2,8 @@ package dal
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"wash_admin/internal/conversions"
@@ -15,13 +15,44 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+func (s *Storage) generateNewServiceKey() string {
+	data := make([]byte, 10)
+
+	_, err := rand.Read(data)
+	if err != nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%x", sha256.Sum256(data))
+}
+
+func (s *Storage) RegisterWashServer(ctx context.Context, owner uuid.UUID, newWashServer vo.RegisterWashServer) (entity.WashServer, error) {
+	var id uuid.NullUUID
+
+	err := s.db.NewSession(nil).
+		InsertInto("wash_server").
+		Record(dbmodels.RegisterWashServer{
+			Title:       newWashServer.Title,
+			Description: newWashServer.Description,
+			Owner:       uuid.NullUUID{},
+			ServiceKey:  s.generateNewServiceKey(),
+		}).Returning("id").
+		LoadContext(ctx, &id)
+
+	if err != nil {
+		return entity.WashServer{}, err
+	}
+
+	return s.GetWashServer(ctx, owner, id.UUID)
+}
+
 func (s *Storage) GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.UUID) (entity.WashServer, error) {
 	var dbWashServer dbmodels.WashServer
 
 	err := s.db.NewSession(nil).
 		Select("*").
 		From("wash_servers").
-		Where("id = ? AND owner = ? AND deleted = false", uuid.NullUUID{UUID: id, Valid: true}, uuid.NullUUID{UUID: ownerId, Valid: true}).
+		Where("id = ? AND owner = ? AND NOT deleted", uuid.NullUUID{UUID: id, Valid: true}, uuid.NullUUID{UUID: ownerId, Valid: true}).
 		LoadOneContext(ctx, &dbWashServer)
 
 	switch {
@@ -31,48 +62,6 @@ func (s *Storage) GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.
 		return entity.WashServer{}, entity.ErrNotFound
 	default:
 		return entity.WashServer{}, err
-	}
-}
-
-func (s *Storage) AddWashServer(ctx context.Context, addWashServer vo.AddWashServer, ownerId uuid.UUID) error {
-	dbAddWashServer := conversions.AddWashServerToDB(addWashServer)
-
-	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
-
-	if err != nil {
-		return err
-	}
-
-	var washId uuid.NullUUID
-
-	err = tx.
-		InsertInto("wash_servers").
-		Columns("name", "description").
-		Record(dbAddWashServer).
-		Returning("id").
-		LoadContext(ctx, &washId)
-
-	if err != nil {
-		return err
-	}
-
-	washKey := fmt.Sprintf("%s:%s", ownerId, washId.UUID)
-	h := sha256.New()
-	h.Write([]byte(washKey))
-
-	sha256Hash := hex.EncodeToString(h.Sum(nil))
-
-	_, err = tx.
-		Update("wash_servers").
-		Set("wash_key", sha256Hash).
-		Where("id = ?", washId).
-		ExecContext(ctx)
-
-	switch {
-	case errors.Is(err, dbr.ErrNotFound):
-		return entity.ErrNotFound
-	default:
-		return tx.Commit()
 	}
 }
 
@@ -116,7 +105,8 @@ func (s *Storage) DeleteWashServer(ctx context.Context, id uuid.UUID) error {
 
 	deleteStatement := tx.
 		Update("wash_servers").
-		Where("id = ? AND deleted = false", dbDeleteWashServer.ID)
+		Where("id = ? AND NOT DELETED", dbDeleteWashServer.ID).
+		Set("deleted", true)
 
 	_, err = deleteStatement.ExecContext(ctx)
 
@@ -133,7 +123,7 @@ func (s *Storage) GetWashServerList(ctx context.Context, ownerId uuid.UUID, pagi
 	count, err := s.db.NewSession(nil).
 		Select("*").
 		From("wash_servers").
-		Where("deleted = false AND owner = ?", uuid.NullUUID{UUID: ownerId, Valid: true}).
+		Where("NOT DELETED AND owner = ?", uuid.NullUUID{UUID: ownerId, Valid: true}).
 		Limit(uint64(pagination.Limit)).
 		Offset(uint64(pagination.Offset)).
 		LoadContext(ctx, &dbWashServerList)

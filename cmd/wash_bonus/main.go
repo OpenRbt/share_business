@@ -1,16 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"fmt"
 	"go.uber.org/zap"
-	grpc2 "google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"log"
-	"net"
-	"os"
-	"wash_bonus/intapi"
+	"wash_bonus/internal/dal/sessions"
+	"wash_bonus/internal/infrastructure/rabbit"
 
 	session_svc "wash_bonus/internal/app/session"
 	user_svc "wash_bonus/internal/app/user"
@@ -19,7 +13,6 @@ import (
 	user_repo "wash_bonus/internal/dal/user"
 	wash_server_repo "wash_bonus/internal/dal/wash_server"
 	"wash_bonus/internal/infrastructure/firebase"
-	"wash_bonus/internal/transport/grpc"
 	"wash_bonus/internal/transport/rest"
 	"wash_bonus/pkg/bootstrap"
 )
@@ -54,17 +47,23 @@ func main() {
 
 	userRepo := user_repo.NewRepo(l, dbConn)
 	washRepo := wash_server_repo.NewRepo(l, dbConn)
+	sessionRepo := sessions.NewRepo(l, dbConn)
 
 	userSvc := user_svc.New(l, userRepo)
 	washServerSvc := wash_server_svc.New(l, washRepo)
-	sessionSvc := session_svc.New(l, washRepo, userRepo, nil)
+	sessionSvc := session_svc.New(l, washRepo, userRepo, sessionRepo)
 
-	grpcSvc := grpc.New(l, userSvc, washServerSvc, sessionSvc, cfg.BasePath)
+	rabbitSvc, err := rabbit.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.CertsPath, washServerSvc, sessionSvc)
+	if err != nil {
+		l.Fatalln("new rabbit conn: ", err)
+	}
+	l.Debug("connected to rabbit")
+
+	sessionSvc.AssignRabbit(rabbitSvc.SendMessage)
 
 	errc := make(chan error)
 
 	go runHTTPServer(errc, l, cfg, authSvc, userSvc)
-	go runGRPCServer(errc, l, cfg, grpcSvc)
 
 	err = <-errc
 	if err != nil {
@@ -86,58 +85,4 @@ func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config,
 	}
 
 	errc <- server.Serve()
-}
-
-func runGRPCServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, grpcSvc *grpc.Service) {
-	defer func() {
-		if r := recover(); r != nil {
-			l.Fatalln("panic: ", r)
-		}
-	}()
-	var serverOptions []grpc2.ServerOption
-
-	if cfg.GrpcConfig.EnableTLS {
-		credentialsTLS, err := loadTLSCredentials(cfg)
-		if err != nil {
-			errc <- fmt.Errorf("grpc: %v", err)
-			return
-		}
-		serverOptions = append(serverOptions, grpc2.Creds(credentialsTLS))
-	}
-
-	server := grpc2.NewServer(serverOptions...)
-
-	intapi.RegisterWashBonusServer(server, grpcSvc)
-
-	listener, err := net.Listen("tcp", ":"+cfg.GrpcConfig.Port)
-	if err != nil {
-		errc <- fmt.Errorf("grpc: %v", err)
-		return
-	}
-
-	errc <- server.Serve(listener)
-}
-
-func loadTLSCredentials(cfg *bootstrap.Config) (credentials.TransportCredentials, error) {
-	pemClientCA, err := os.ReadFile(cfg.GrpcConfig.ClientCACertFile)
-	if err != nil {
-		return nil, err
-	}
-
-	certPool := x509.NewCertPool()
-	if !certPool.AppendCertsFromPEM(pemClientCA) {
-		return nil, fmt.Errorf("failed to add client CA's certificate")
-	}
-
-	// Load server's certificate and private key
-	serverCert, err := tls.LoadX509KeyPair(cfg.GrpcConfig.ServerCertFile, cfg.GrpcConfig.ServerKeyFile)
-	if err != nil {
-		return nil, err
-	}
-
-	return credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.NoClientCert,
-		ClientCAs:    certPool,
-	}), nil
 }
