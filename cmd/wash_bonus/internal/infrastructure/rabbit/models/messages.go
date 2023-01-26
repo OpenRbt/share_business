@@ -20,9 +20,11 @@ type (
 
 	SessionStateChange struct {
 		SessionID      string                 `json:"session_id,omitempty"`
-		State          int                    `json:"state,omitempty"`
+		State          SessionState           `json:"state,omitempty"`
 		AdditionalData map[string]interface{} `json:"additional_data,omitempty"`
 	}
+
+	SessionState int
 
 	SessionUserAssign struct {
 		SessionID string `json:"session_id,omitempty"`
@@ -30,6 +32,16 @@ type (
 	}
 
 	SessionBonusCharge struct {
+		SessionID string `json:"session_id,omitempty"`
+		Amount    int64  `json:"amount,omitempty"`
+	}
+
+	SessionBonusChargeConfirm struct {
+		SessionID string `json:"session_id,omitempty"`
+		Amount    int64  `json:"amount,omitempty"`
+	}
+
+	SessionBonusChargeDiscard struct {
 		SessionID string `json:"session_id,omitempty"`
 		Amount    int64  `json:"amount,omitempty"`
 	}
@@ -53,4 +65,9 @@ type (
 		Description *string `json:"description,omitempty"`
 		Deleted     *bool   `json:"deleted,omitempty"`
 	}
+)
+
+const (
+	SessionStateStart SessionState = iota
+	SessionStateFinish
 )

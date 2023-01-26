@@ -12,6 +12,7 @@ RUN printf "machine github.com\n\tlogin %s\n\tpassword %s" ${GITHUB_USER} ${GITH
 
 WORKDIR /app
 
+COPY cmd/wash_bonus/.env .
 COPY ./ ./
 
 RUN go build -o ./bin/wash-bonus ./cmd/main/*

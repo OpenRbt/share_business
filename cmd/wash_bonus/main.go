@@ -53,7 +53,16 @@ func main() {
 	washServerSvc := wash_server_svc.New(l, washRepo)
 	sessionSvc := session_svc.New(l, washRepo, userRepo, sessionRepo)
 
-	rabbitSvc, err := rabbit.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.CertsPath, washServerSvc, sessionSvc)
+	rabbitSvc, err := rabbit.New(
+		l,
+		cfg.RabbitMQConfig.Url,
+		cfg.RabbitMQConfig.Port,
+		cfg.RabbitMQConfig.CertsPath,
+		cfg.RabbitMQConfig.User,
+		cfg.RabbitMQConfig.Password,
+		washServerSvc,
+		sessionSvc,
+	)
 	if err != nil {
 		l.Fatalln("new rabbit conn: ", err)
 	}

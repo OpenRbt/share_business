@@ -41,7 +41,14 @@ func main() {
 
 	l.Debug("applied migrations")
 
-	rabbitSvc, err := rabbit.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.CertsPath)
+	rabbitSvc, err := rabbit.New(
+		l,
+		cfg.RabbitMQConfig.Url,
+		cfg.RabbitMQConfig.Port,
+		cfg.RabbitMQConfig.CertsPath,
+		cfg.RabbitMQConfig.User,
+		cfg.RabbitMQConfig.Password,
+	)
 	if err != nil {
 		l.Fatalln("new rabbit conn: ", err)
 	}

@@ -19,7 +19,7 @@ type Service struct {
 	eventsPublisher *rabbitmq.Publisher
 }
 
-func New(l *zap.SugaredLogger, url string, port string, certsPath string) (svc *Service, err error) {
+func New(l *zap.SugaredLogger, url, port, certsPath, user, password string) (svc *Service, err error) {
 	svc = &Service{
 		l: l,
 	}
@@ -42,11 +42,6 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string) (svc *
 		ServerName:         "localhost", // Optional
 		InsecureSkipVerify: true,
 	}
-
-	const (
-		user     = "wash_bonus_svc"
-		password = "wash_bonus_svc"
-	)
 
 	connString := fmt.Sprintf("amqps://%s:%s@%s:%s/", user, password, url, port)
 	rabbitConf := rabbitmq.Config{

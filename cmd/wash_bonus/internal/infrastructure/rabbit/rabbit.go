@@ -35,7 +35,7 @@ type Service struct {
 	svcSessions   session.Service
 }
 
-func New(l *zap.SugaredLogger, url string, port string, certsPath string, washServerSvc wash_server.Service, sessionsSvc session.Service) (svc *Service, err error) {
+func New(l *zap.SugaredLogger, url string, port string, certsPath string, user string, password string, washServerSvc wash_server.Service, sessionsSvc session.Service) (svc *Service, err error) {
 	svc = &Service{
 		l:             l,
 		svcWashServer: washServerSvc,
@@ -55,16 +55,11 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, washSe
 	rootCAs.AppendCertsFromPEM(caCert)
 
 	tlsConf := &tls.Config{
-		RootCAs:            rootCAs,
-		Certificates:       []tls.Certificate{cert},
-		ServerName:         "localhost", // Optional
+		RootCAs:      rootCAs,
+		Certificates: []tls.Certificate{cert},
+		//ServerName:         "localhost", // Optional
 		InsecureSkipVerify: true,
 	}
-
-	const (
-		user     = "wash_bonus_svc"
-		password = "wash_bonus_svc"
-	)
 
 	connString := fmt.Sprintf("amqps://%s:%s@%s:%s/", user, password, url, port)
 	rabbitConf := rabbitmq.Config{

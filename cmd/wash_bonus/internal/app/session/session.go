@@ -120,7 +120,7 @@ func (s *service) DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amoun
 		return
 	}
 
-	err = s.userRepo.UpdateBalance(ctx, session.User.ID, subtractAmount)
+	err = s.userRepo.UpdateBalance(ctx, session.User.ID, amount)
 
 	return
 }

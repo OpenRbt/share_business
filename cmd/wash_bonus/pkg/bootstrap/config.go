@@ -8,44 +8,34 @@ import (
 )
 
 type Config struct {
-	HTTPPort       string `env:"HTTP_PORT" envDefault:"80"`
+	HTTPPort       string `env:"HTTP_PORT" envDefault:"8080"`
 	BasePath       string `env:"HTTP_BASE_PATH" envDefault:""`
 	AllowedOrigins string `env:"HTTP_ALLOWED_ORIGINS" envDefault:"*"`
 	Host           string `env:"HTTP_HOST"  envDefault:""`
-	LogLevel       string `env:"LOG_LEVEL"`
+	LogLevel       string `env:"LOG_LEVEL" envDefault:""`
 	DB             DBConfig
 	FirebaseConfig FirebaseConfig
-	GrpcConfig     GrpcConfig
 	RabbitMQConfig RabbitMQConfig
 }
 
 type DBConfig struct {
-	Host     string `env:"DB_HOST"`
-	Port     string `env:"DB_PORT"`
-	Database string `env:"DB_DATABASE"`
-	User     string `env:"DB_USER"`
-	Password string `env:"DB_PASSWORD"`
+	Host     string `env:"DB_HOST" envDefault:"db_wash_bonus"`
+	Port     string `env:"DB_PORT" envDefault:"5432"`
+	Database string `env:"DB_DATABASE" envDefault:"wash_bonus"`
+	User     string `env:"DB_USER" envDefault:"wash_bonus"`
+	Password string `env:"DB_PASSWORD" envDefault:"wash_bonus"`
 }
 
 type FirebaseConfig struct {
-	FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH"`
-}
-
-type GrpcConfig struct {
-	EnableTLS        bool   `env:"GRPC_ENABLE_TLS" envDefault:"false"`
-	Port             string `env:"GRPC_PORT"`
-	ClientCACertFile string `env:"GRPC_CLIENT_CA_CERT_FILE_PATH"`
-	ServerCertFile   string `env:"GRPC_SERVER_CERT_FILE_PATH"`
-	ServerKeyFile    string `env:"GRPC_SERVER_CERT_KEY_FILE_PATH"`
+	FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH" envDefault:"/app/firebase/fb_key.json"`
 }
 
 type RabbitMQConfig struct {
-	UseTLS    bool   `env:"RABBIT_USE_TLS" envDefault:"false"`
-	Port      string `env:"RABBIT_SERVICE_PORT" envDefault:"5672"`
-	Url       string `env:"RABBIT_SERVICE" envDefault:"localhost"`
-	CertsPath string `env:"RABBIT_CERTS_PATH" `
-	User      string `env:"RABBIT_SERVICE_USER" envDefault:"localhost"`
-	Password  string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"localhost"`
+	Port      string `env:"RABBIT_SERVICE_PORT" envDefault:"5671"`
+	Url       string `env:"RABBIT_SERVICE" envDefault:"wash_rabbit"`
+	CertsPath string `env:"RABBIT_CERTS_PATH" envDefault:"/app/certs/"`
+	User      string `env:"RABBIT_SERVICE_USER" envDefault:"wash_bonus_svc"`
+	Password  string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"wash_bonus_svc"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {
