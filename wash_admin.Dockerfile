@@ -25,8 +25,8 @@ RUN apk update --no-cache && apk add --no-cache ca-certificates
 
 WORKDIR /app
 
-COPY environment/certs/ ./app/certs/
-COPY environment/firebase ./app/firebase
+COPY environment/certs/ /app/certs/
+COPY environment/firebase /app/firebase
 
 COPY cmd/wash_admin/migrations /app/migrations
 COPY --from=builder /app/wash_admin /app/wash_admin
