@@ -1,24 +1,16 @@
-version: "3.8"
-
+version: "3.2"
 
 services:
-  db_wash_admin:
-    container_name: wash_admin_postgresql
+  wash_db:
+    container_name: wash_postgresql
     image: postgres:14.5
     restart: always
     environment:
       POSTGRES_USER:  ${WASH_ADMIN_DB_USER:-wash_admin}
       POSTGRES_PASSWORD: ${WASH_ADMIN_DB_PASS:-wash_admin}
-    ports:
-      - "8091:5432"
-  
-  db_wash_bonus:
-    container_name: wash_bonus_postgresql
-    image: postgres:14.5
-    restart: always
-    environment:
-      POSTGRES_USER: ${WASH_BONUS_DB_USER:-wash_bonus}
-      POSTGRES_PASSWORD: ${WASH_BONUS_DB_PASS:-wash_bonus}
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+      - ./postgresql-data:/var/lib/postgresql/data
     ports:
       - "8090:5432"
 
@@ -26,9 +18,9 @@ services:
     container_name: wash_bonus_backend
     restart: always
     ports:
-      - ${WASH_BONUS_HTTP_PORT:-8071}:8071
+      - ${WASH_BONUS_HTTP_PORT:-8071}:8080
     depends_on:
-      - db_wash_bonus
+      - wash_db
       - wash_rabbit
     build:
       context: .
@@ -41,9 +33,9 @@ services:
     container_name: wash_admin_backend
     restart: always
     ports:
-      - ${WASH_ADMIN_HTTP_PORT:-8070}:8070
+      - ${WASH_ADMIN_HTTP_PORT:-8070}:8080
     depends_on:
-      - db_wash_admin
+      - wash_db
       - wash_rabbit
     build:
       context: .
@@ -55,7 +47,8 @@ services:
 
   wash_rabbit:
     container_name: wash_rabbit
-    image: rabbitmq:3.11.6-management
+    user: "rabbitmq"
+    image: rabbitmq:3.11.8-management
     restart: always
     ports:
       - "5671:5671"
@@ -63,5 +56,10 @@ services:
     volumes:
       - ./environment/certs/:/certs/
       - ./environment/rabbit/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
-      - ./environment/rabbit/data/:/var/lib/rabbitmq
-      - ./environment/rabbit/log/:/var/log/rabbitmq
+      - ./environment/rabbit/definitions.json:/etc/rabbitmq/definitions.json
+      - rabbitmq-data:/var/lib/rabbitmq
+      - rabbitmq-log:/var/log/rabbitmq
+      
+volumes:
+  rabbitmq-data:
+  rabbitmq-log:

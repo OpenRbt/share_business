@@ -1,5 +1,5 @@
 alter table sessions
-    add "user" uuid;
+    add "user" text;
 
 alter table sessions
     add constraint sessions_user_fk

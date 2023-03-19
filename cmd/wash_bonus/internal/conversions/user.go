@@ -8,17 +8,14 @@ import (
 
 func UserFromDb(dbUser dbmodels.User) entity.User {
 	return entity.User{
-		Active:   dbUser.Active,
-		Balance:  dbUser.Balance.Decimal,
-		ID:       dbUser.ID.UUID,
-		Identity: dbUser.Identity,
+		Balance: dbUser.Balance.Decimal,
+		ID:      dbUser.ID,
 	}
 }
 
 func UserToRest(user entity.User) models.Profile {
 	return models.Profile{
-		Active:  user.Active,
 		Balance: user.Balance.IntPart(),
-		ID:      user.ID.String(),
+		ID:      user.ID,
 	}
 }

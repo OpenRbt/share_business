@@ -3,31 +3,40 @@ package sessions
 import (
 	"context"
 	"errors"
-	"github.com/gocraft/dbr/v2"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
+	"fmt"
 	"time"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/dal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
+	"wash_bonus/internal/infrastructure/rabbit/models"
+
+	"github.com/gocraft/dbr/v2"
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
-func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID) (entity.Session, error) {
-	var id uuid.NullUUID
+func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (entity.Session, error) {
+	var session dbmodels.Session
+
 	err := r.db.NewSession(nil).
 		InsertInto("sessions").
-		Record(dbmodels.CreateSession{WashServer: uuid.NullUUID{
-			UUID:  serverID,
-			Valid: true,
-		}}).
-		Returning("id").
-		LoadContext(ctx, &id)
+		Columns("wash_server", "post_id").
+		Record(dbmodels.CreateSession{
+			WashServer: uuid.NullUUID{
+				UUID:  serverID,
+				Valid: true,
+			},
+			PostID: postID,
+		}).
+		Returning("id", "wash_server", "user", "post_id", "started", "finished").
+		LoadContext(ctx, &session)
 	if err != nil {
+		fmt.Println(err)
 		return entity.Session{}, err
 	}
 
-	return r.GetSession(ctx, id.UUID)
+	return conversions.SessionFromDB(session), err
 }
 
 func (r *repo) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Session, error) {
@@ -45,34 +54,35 @@ func (r *repo) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Sess
 	return conversions.SessionFromDB(session), err
 }
 
-func (r *repo) SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID uuid.UUID) (err error) {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		}
-	}()
-
-	_, err = tx.ExecContext(ctx,
-		"UPDATE sessions set user = ? where id = ?",
-		uuid.NullUUID{
-			UUID:  userID,
-			Valid: true,
-		},
-		uuid.NullUUID{
+func (r *repo) UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state models.SessionState) (err error) {
+	updateStmt := r.db.NewSession(nil).
+		Update("sessions").
+		Where("id = ?", uuid.NullUUID{
 			UUID:  sessionID,
 			Valid: true,
-		},
-	)
-	if err != nil {
-		return
+		})
+
+	if state == models.SessionStateStart {
+		updateStmt.Set("started", true)
+	} else if state == models.SessionStateFinish {
+		updateStmt.Set("finished", true)
 	}
 
-	err = tx.Commit()
+	_, err = updateStmt.ExecContext(ctx)
+	return
+}
 
+func (r *repo) SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error) {
+	updateStmt := r.db.NewSession(nil).
+		Update("sessions").
+		Where("id = ?", uuid.NullUUID{
+			UUID:  sessionID,
+			Valid: true,
+		})
+
+	updateStmt.Set("user", userID)
+
+	_, err = updateStmt.ExecContext(ctx)
 	return
 }
 

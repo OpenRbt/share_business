@@ -2,13 +2,14 @@ package bootstrap
 
 import (
 	"errors"
+	"os"
+
 	"github.com/caarlos0/env/v6"
 	"github.com/joho/godotenv"
-	"os"
 )
 
 type Config struct {
-	HTTPPort       string `env:"HTTP_PORT" envDefault:"80"`
+	HTTPPort       string `env:"HTTP_PORT" envDefault:"8080"`
 	BasePath       string `env:"HTTP_BASE_PATH" envDefault:""`
 	AllowedOrigins string `env:"HTTP_ALLOWED_ORIGINS" envDefault:"*"`
 	Host           string `env:"HTTP_HOST"  envDefault:""`
@@ -19,7 +20,7 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Host     string `env:"DB_HOST" envDefault:"db_wash_admin"`
+	Host     string `env:"DB_HOST" envDefault:"wash_db"`
 	Port     string `env:"DB_PORT" envDefault:"5432"`
 	Database string `env:"DB_DATABASE" envDefault:"wash_admin"`
 	User     string `env:"DB_USER" envDefault:"wash_admin"`

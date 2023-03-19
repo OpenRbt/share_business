@@ -202,7 +202,48 @@ func init() {
             "description": "Forbidden"
           },
           "404": {
-            "description": "Unable to cancel",
+            "description": "Session not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/session/{sessionId}/assign-user": {
+      "post": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "session"
+        ],
+        "operationId": "assignUserToSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "sessionId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Session not found",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -486,7 +527,48 @@ func init() {
             "description": "Forbidden"
           },
           "404": {
-            "description": "Unable to cancel",
+            "description": "Session not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/session/{sessionId}/assign-user": {
+      "post": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "session"
+        ],
+        "operationId": "assignUserToSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "sessionId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Session not found",
             "schema": {
               "$ref": "#/definitions/error"
             }

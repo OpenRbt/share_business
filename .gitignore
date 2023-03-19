@@ -4,6 +4,8 @@
 *.dll
 *.so
 *.dylib
+wash_bonus
+wash_admin
 
 # Test binary, built with `go test -c`
 *.test

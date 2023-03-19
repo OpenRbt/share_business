@@ -75,6 +75,11 @@ func (o *HealthCheckOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the health check o k response
+func (o *HealthCheckOK) Code() int {
+	return 200
+}
+
 func (o *HealthCheckOK) Error() string {
 	return fmt.Sprintf("[GET /healthCheck][%d] healthCheckOK  %+v", 200, o.Payload)
 }

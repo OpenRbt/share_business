@@ -1,12 +1,13 @@
 package conversions
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/entity/vo"
 	models2 "wash_bonus/internal/infrastructure/rabbit/models"
 	"wash_bonus/openapi/models"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func WashServerFromDB(dbWashServer dbmodels.WashServer) entity.WashServer {

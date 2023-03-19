@@ -2,14 +2,15 @@ package rest
 
 import (
 	"errors"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"wash_bonus/internal/app"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/entity"
 	"wash_bonus/openapi/models"
 	"wash_bonus/openapi/restapi/operations"
 	"wash_bonus/openapi/restapi/operations/session"
+
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (svc *service) initSessionHandlers(api *operations.WashBonusAPI) {
@@ -48,7 +49,7 @@ func (svc *service) chargeBonuses(params session.PostSessionParams, auth *app.Au
 
 	amountD := decimal.NewFromInt(params.Body.Amount)
 
-	err = svc.sessionSvc.ChargeBonuses(params.HTTPRequest.Context(), auth, sessionID, amountD)
+	err = svc.sessionSvc.ChargeBonuses(params.HTTPRequest.Context(), sessionID, auth.UID, amountD)
 
 	switch {
 
@@ -60,6 +61,28 @@ func (svc *service) chargeBonuses(params session.PostSessionParams, auth *app.Au
 		return session.NewPostSessionForbidden()
 	default:
 		return session.NewPostSessionInternalServerError()
+	}
+
+}
+
+func (svc *service) assignUserToSession(params session.AssignUserToSessionParams, auth *app.Auth) session.AssignUserToSessionResponder {
+	sessionID, err := uuid.FromString(params.SessionID)
+	if err != nil {
+		return session.NewAssignUserToSessionInternalServerError()
+	}
+
+	err = svc.sessionSvc.AssignSessionUser(params.HTTPRequest.Context(), sessionID, auth.UID)
+
+	switch {
+
+	case err == nil:
+		return session.NewAssignUserToSessionNoContent()
+	case errors.Is(err, entity.ErrNotFound):
+		return session.NewAssignUserToSessionNotFound()
+	case errors.Is(err, entity.ErrForbidden):
+		return session.NewAssignUserToSessionForbidden()
+	default:
+		return session.NewAssignUserToSessionInternalServerError()
 	}
 
 }

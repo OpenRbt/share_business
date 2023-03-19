@@ -130,6 +130,31 @@ paths:
           description: Internal error
           schema:
             $ref: "#/definitions/error"
+  /session/{sessionId}/assign-user:
+    post:
+      tags:
+        - session
+      security:
+        - authKey: [ ]
+      operationId: assignUserToSession
+      parameters:
+        - name: sessionId
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: OK
+        403:
+          description: Forbidden
+        404:
+          description: Session not found
+          schema:
+            $ref: "#/definitions/error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/error"
 
 definitions:
   error:

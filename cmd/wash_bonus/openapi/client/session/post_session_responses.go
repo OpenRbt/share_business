@@ -90,6 +90,11 @@ func (o *PostSessionNoContent) IsCode(code int) bool {
 	return code == 204
 }
 
+// Code gets the status code for the post session no content response
+func (o *PostSessionNoContent) Code() int {
+	return 204
+}
+
 func (o *PostSessionNoContent) Error() string {
 	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionNoContent ", 204)
 }
@@ -141,6 +146,11 @@ func (o *PostSessionForbidden) IsCode(code int) bool {
 	return code == 403
 }
 
+// Code gets the status code for the post session forbidden response
+func (o *PostSessionForbidden) Code() int {
+	return 403
+}
+
 func (o *PostSessionForbidden) Error() string {
 	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionForbidden ", 403)
 }
@@ -162,7 +172,7 @@ func NewPostSessionNotFound() *PostSessionNotFound {
 /*
 PostSessionNotFound describes a response with status code 404, with default header values.
 
-Unable to cancel
+Session not found
 */
 type PostSessionNotFound struct {
 	Payload *models.Error
@@ -191,6 +201,11 @@ func (o *PostSessionNotFound) IsServerError() bool {
 // IsCode returns true when this post session not found response a status code equal to that given
 func (o *PostSessionNotFound) IsCode(code int) bool {
 	return code == 404
+}
+
+// Code gets the status code for the post session not found response
+func (o *PostSessionNotFound) Code() int {
+	return 404
 }
 
 func (o *PostSessionNotFound) Error() string {
@@ -254,6 +269,11 @@ func (o *PostSessionInternalServerError) IsServerError() bool {
 // IsCode returns true when this post session internal server error response a status code equal to that given
 func (o *PostSessionInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the post session internal server error response
+func (o *PostSessionInternalServerError) Code() int {
+	return 500
 }
 
 func (o *PostSessionInternalServerError) Error() string {

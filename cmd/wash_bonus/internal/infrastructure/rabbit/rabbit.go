@@ -4,12 +4,13 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/wagslane/go-rabbitmq"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"wash_bonus/internal/app/session"
 	"wash_bonus/internal/app/wash_server"
 	"wash_bonus/internal/infrastructure/rabbit/models/vo"
+
+	"github.com/wagslane/go-rabbitmq"
+	"go.uber.org/zap"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -26,6 +27,7 @@ type Service struct {
 	// wash bonus handlers
 	washBonusPub    *rabbitmq.Publisher
 	washBonusSvcSub *rabbitmq.Consumer
+	customConsumers map[string]*rabbitmq.Consumer
 
 	// wash admin handler
 	washServerSub *rabbitmq.Consumer
@@ -55,16 +57,15 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 	rootCAs.AppendCertsFromPEM(caCert)
 
 	tlsConf := &tls.Config{
-		RootCAs:      rootCAs,
-		Certificates: []tls.Certificate{cert},
-		//ServerName:         "localhost", // Optional
+		RootCAs:            rootCAs,
+		Certificates:       []tls.Certificate{cert},
 		InsecureSkipVerify: true,
 	}
 
 	connString := fmt.Sprintf("amqps://%s:%s@%s:%s/", user, password, url, port)
 	rabbitConf := rabbitmq.Config{
 		SASL:            nil,
-		Vhost:           "",
+		Vhost:           "/",
 		ChannelMax:      0,
 		FrameSize:       0,
 		Heartbeat:       0,
@@ -77,7 +78,7 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 	l.Info("conf: %s", rabbitConf)
 	conn, err := rabbitmq.NewConn(
 		connString,
-		//rabbitmq.WithConnectionOptionsConfig(rabbitmq.Config{}),
+		rabbitmq.WithConnectionOptionsConfig(rabbitmq.Config{}),
 		rabbitmq.WithConnectionOptionsLogging,
 		rabbitmq.WithConnectionOptionsConfig(rabbitConf),
 	)
@@ -105,7 +106,6 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
 		rabbitmq.WithConsumerOptionsRoutingKey(vo.BonusSvc),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
-		rabbitmq.WithConsumerOptionsConsumerExclusive,
 	)
 	if err != nil {
 		return

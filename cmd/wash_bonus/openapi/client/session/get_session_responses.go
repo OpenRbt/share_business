@@ -85,6 +85,11 @@ func (o *GetSessionOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the get session o k response
+func (o *GetSessionOK) Code() int {
+	return 200
+}
+
 func (o *GetSessionOK) Error() string {
 	return fmt.Sprintf("[GET /session/{UID}][%d] getSessionOK  %+v", 200, o.Payload)
 }
@@ -148,6 +153,11 @@ func (o *GetSessionNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the get session not found response
+func (o *GetSessionNotFound) Code() int {
+	return 404
+}
+
 func (o *GetSessionNotFound) Error() string {
 	return fmt.Sprintf("[GET /session/{UID}][%d] getSessionNotFound  %+v", 404, o.Payload)
 }
@@ -209,6 +219,11 @@ func (o *GetSessionInternalServerError) IsServerError() bool {
 // IsCode returns true when this get session internal server error response a status code equal to that given
 func (o *GetSessionInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the get session internal server error response
+func (o *GetSessionInternalServerError) Code() int {
+	return 500
 }
 
 func (o *GetSessionInternalServerError) Error() string {

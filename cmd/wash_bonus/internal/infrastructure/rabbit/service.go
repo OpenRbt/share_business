@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
-	"github.com/wagslane/go-rabbitmq"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/infrastructure/rabbit/models"
 	"wash_bonus/internal/infrastructure/rabbit/models/vo"
+
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
+	"github.com/wagslane/go-rabbitmq"
 )
 
 func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
@@ -46,6 +47,10 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 		}
 
 		update, err := conversions.WashServerUpdateFromRabbit(msg)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
 
 		err = s.svcWashServer.UpdateWashServer(ctx, update)
 		if err != nil {
@@ -59,20 +64,17 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
-
-		serverID, err := uuid.FromString(d.RoutingKey)
+		serverID, err := uuid.FromString(d.UserId)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
 		}
 
-		for i := int64(0); i < msg.NewSessionsAmount; i++ {
-			_, err := s.svcSessions.CreateSession(ctx, serverID, msg.PostID)
-			if err != nil {
-				s.l.Errorw("failed to create session", "server", serverID, "post", msg.PostID, "session#", i, "total sessions requested", msg.NewSessionsAmount)
-			}
+		_, err = s.svcSessions.CreateSessionPool(ctx, serverID, msg.PostID, msg.NewSessionsAmount)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
 		}
-
 	case vo.BonusSessionStateChange:
 		var msg models.SessionStateChange
 		err := json.Unmarshal(d.Body, &msg)
@@ -80,19 +82,19 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
-		switch msg.State {
-		case models.SessionStateStart:
-		case models.SessionStateFinish:
 
-		}
-
-		serverID, err := uuid.FromString(d.RoutingKey)
+		sessionID, err := uuid.FromString(msg.SessionID)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
 		}
-		s.l.Info(serverID)
-		//TODO: add session state changes
+
+		err = s.svcSessions.UpdateSessionState(ctx, sessionID, msg.State)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
 	case vo.BonusSessionBonusConfirm:
 		var msg models.SessionBonusChargeConfirm
 		err := json.Unmarshal(d.Body, &msg)
@@ -151,6 +153,7 @@ func (s *Service) SendMessage(msg interface{}, service string, target string, me
 			jsonMsg,
 			[]string{target},
 			rabbitmq.WithPublishOptionsType(vo.MessageType(messageType).String()),
+			rabbitmq.WithPublishOptionsExchange(vo.WashBonusService),
 		)
 	default:
 		return errors.New("unknown Service")

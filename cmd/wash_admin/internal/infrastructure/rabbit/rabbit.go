@@ -4,14 +4,15 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io/ioutil"
+	"wash_admin/internal/infrastructure/rabbit-intapi/client"
+	"wash_admin/internal/infrastructure/rabbit/models/vo"
+
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/wagslane/go-rabbitmq"
 	"go.uber.org/zap"
-	"io/ioutil"
-	"wash_admin/internal/infrastructure/rabbit-intapi/client"
-	"wash_admin/internal/infrastructure/rabbit/models/vo"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )

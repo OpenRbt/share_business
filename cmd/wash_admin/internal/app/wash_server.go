@@ -58,7 +58,6 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 	}
 
 	registered, err := svc.repo.RegisterWashServer(ctx, owner.ID, newServer)
-
 	if err != nil {
 		return entity.WashServer{}, err
 	}

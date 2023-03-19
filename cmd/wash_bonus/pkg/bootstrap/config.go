@@ -2,9 +2,10 @@ package bootstrap
 
 import (
 	"errors"
+	"os"
+
 	"github.com/caarlos0/env/v6"
 	"github.com/joho/godotenv"
-	"os"
 )
 
 type Config struct {
@@ -19,7 +20,7 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Host     string `env:"DB_HOST" envDefault:"db_wash_bonus"`
+	Host     string `env:"DB_HOST" envDefault:"wash_db"`
 	Port     string `env:"DB_PORT" envDefault:"5432"`
 	Database string `env:"DB_DATABASE" envDefault:"wash_bonus"`
 	User     string `env:"DB_USER" envDefault:"wash_bonus"`
@@ -50,5 +51,4 @@ func NewConfig(configFiles ...string) (*Config, error) {
 	return &c, env.Parse(&c, env.Options{
 		RequiredIfNoDef: true,
 	})
-
 }

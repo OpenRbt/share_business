@@ -2,12 +2,13 @@ package wash_server
 
 import (
 	"context"
-	uuid "github.com/satori/go.uuid"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/dal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/entity/vo"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func (r *repo) GetWashServer(ctx context.Context, id uuid.UUID) (e entity.WashServer, err error) {
@@ -32,6 +33,28 @@ func (r *repo) GetWashServer(ctx context.Context, id uuid.UUID) (e entity.WashSe
 	return
 }
 
+func (r *repo) GetWashServers(ctx context.Context) (servers []entity.WashServer, err error) {
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
+	var res []dbmodels.WashServer
+
+	count, err := r.db.NewSession(nil).
+		Select("*").
+		From("wash_servers").
+		LoadContext(ctx, &res)
+	if err != nil {
+		return
+	}
+
+	servers = make([]entity.WashServer, count)
+
+	for i := 0; i < count; i++ {
+		servers[i] = conversions.WashServerFromDB(res[i])
+	}
+
+	return
+}
+
 func (r *repo) CreateWashServer(ctx context.Context, server entity.WashServer) (e entity.WashServer, err error) {
 	defer dal.LogOptionalError(r.l, "wash_server", err)
 
@@ -39,6 +62,7 @@ func (r *repo) CreateWashServer(ctx context.Context, server entity.WashServer) (
 
 	err = r.db.NewSession(nil).
 		InsertInto("wash_servers").
+		Columns("id", "title", "description").
 		Record(dbmodels.WashServer{
 			ID:          uuid.NullUUID{UUID: server.Id, Valid: true},
 			Title:       server.Title,

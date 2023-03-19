@@ -85,6 +85,11 @@ func (o *GetProfileOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the get profile o k response
+func (o *GetProfileOK) Code() int {
+	return 200
+}
+
 func (o *GetProfileOK) Error() string {
 	return fmt.Sprintf("[GET /profile][%d] getProfileOK  %+v", 200, o.Payload)
 }
@@ -148,6 +153,11 @@ func (o *GetProfileNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the get profile not found response
+func (o *GetProfileNotFound) Code() int {
+	return 404
+}
+
 func (o *GetProfileNotFound) Error() string {
 	return fmt.Sprintf("[GET /profile][%d] getProfileNotFound  %+v", 404, o.Payload)
 }
@@ -209,6 +219,11 @@ func (o *GetProfileInternalServerError) IsServerError() bool {
 // IsCode returns true when this get profile internal server error response a status code equal to that given
 func (o *GetProfileInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the get profile internal server error response
+func (o *GetProfileInternalServerError) Code() int {
+	return 500
 }
 
 func (o *GetProfileInternalServerError) Error() string {

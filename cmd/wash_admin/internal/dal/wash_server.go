@@ -27,24 +27,27 @@ func (s *Storage) generateNewServiceKey() string {
 }
 
 func (s *Storage) RegisterWashServer(ctx context.Context, owner uuid.UUID, newWashServer vo.RegisterWashServer) (entity.WashServer, error) {
-	var id uuid.NullUUID
+	var registredServer dbmodels.WashServer
 
 	err := s.db.NewSession(nil).
 		InsertInto("wash_servers").
-		Columns("owner", "title", "description", "service_key").
+		Columns("title", "description", "owner", "service_key").
 		Record(dbmodels.RegisterWashServer{
 			Title:       newWashServer.Title,
 			Description: newWashServer.Description,
-			Owner:       uuid.NullUUID{UUID: owner, Valid: true},
-			ServiceKey:  s.generateNewServiceKey(),
-		}).Returning("id").
-		LoadContext(ctx, &id)
+			Owner: uuid.NullUUID{
+				UUID:  owner,
+				Valid: true,
+			},
+			ServiceKey: s.generateNewServiceKey(),
+		}).Returning("id", "title", "description", "owner", "service_key").
+		LoadContext(ctx, &registredServer)
 
 	if err != nil {
 		return entity.WashServer{}, err
 	}
 
-	return s.GetWashServer(ctx, owner, id.UUID)
+	return conversions.WashServerFromDB(registredServer), err
 }
 
 func (s *Storage) GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.UUID) (entity.WashServer, error) {

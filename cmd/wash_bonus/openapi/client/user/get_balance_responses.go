@@ -89,6 +89,11 @@ func (o *GetBalanceOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the get balance o k response
+func (o *GetBalanceOK) Code() int {
+	return 200
+}
+
 func (o *GetBalanceOK) Error() string {
 	return fmt.Sprintf("[GET /profile/balance][%d] getBalanceOK  %+v", 200, o.Payload)
 }
@@ -152,6 +157,11 @@ func (o *GetBalanceNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the get balance not found response
+func (o *GetBalanceNotFound) Code() int {
+	return 404
+}
+
 func (o *GetBalanceNotFound) Error() string {
 	return fmt.Sprintf("[GET /profile/balance][%d] getBalanceNotFound  %+v", 404, o.Payload)
 }
@@ -213,6 +223,11 @@ func (o *GetBalanceInternalServerError) IsServerError() bool {
 // IsCode returns true when this get balance internal server error response a status code equal to that given
 func (o *GetBalanceInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the get balance internal server error response
+func (o *GetBalanceInternalServerError) Code() int {
+	return 500
 }
 
 func (o *GetBalanceInternalServerError) Error() string {

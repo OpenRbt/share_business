@@ -1,10 +1,11 @@
 package main
 
 import (
-	"go.uber.org/zap"
 	"log"
 	"wash_bonus/internal/dal/sessions"
 	"wash_bonus/internal/infrastructure/rabbit"
+
+	"go.uber.org/zap"
 
 	session_svc "wash_bonus/internal/app/session"
 	user_svc "wash_bonus/internal/app/user"
@@ -33,7 +34,6 @@ func main() {
 		l.Fatalln("new db conn: ", err)
 	}
 	defer dbConn.Close()
-
 	l.Debug("connected to db")
 
 	err = bootstrap.UpMigrations(dbConn.DB, cfg.DB.Database, "migrations")

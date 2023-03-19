@@ -2,12 +2,14 @@ package session
 
 import (
 	"context"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"wash_bonus/internal/app"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/entity"
+	"wash_bonus/internal/infrastructure/rabbit/models"
 	"wash_bonus/internal/infrastructure/rabbit/models/vo"
+
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (s *service) AssignRabbit(handler func(msg interface{}, service string, target string, messageType int) error) {
@@ -15,7 +17,7 @@ func (s *service) AssignRabbit(handler func(msg interface{}, service string, tar
 }
 
 func (s *service) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (session entity.Session, err error) {
-	session, err = s.sessionRepo.CreateSession(ctx, serverID)
+	session, err = s.sessionRepo.CreateSession(ctx, serverID, postID)
 	if err != nil {
 		return
 	}
@@ -26,53 +28,64 @@ func (s *service) CreateSession(ctx context.Context, serverID uuid.UUID, postID 
 	return
 }
 
+func (s *service) CreateSessionPool(ctx context.Context, serverID uuid.UUID, postID int64, sessionsAmount int64) (postSessions models.SessionCreation, err error) {
+	postSessions = models.SessionCreation{
+		NewSessions: make([]string, sessionsAmount),
+		PostID:      postID,
+	}
+
+	for i := int64(0); i < sessionsAmount; i++ {
+		session, err := s.sessionRepo.CreateSession(ctx, serverID, postID)
+		if err != nil {
+			s.l.Errorw("failed to create session", "server", serverID, "post", postID, "session#", i, "total sessions requested", sessionsAmount)
+			break
+		}
+
+		postSessions.NewSessions[i] = session.ID.String()
+	}
+
+	eventErr := s.rabbitPublisherFunc(postSessions, vo.WashBonusService, serverID.String(), int(vo.BonusSessionCreated))
+	if eventErr != nil {
+		s.l.Errorw("failed to send server event", "session pool creation", "target server", serverID.String(), "error", eventErr)
+	}
+
+	return
+}
+
+func (s *service) UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state models.SessionState) error {
+	return s.sessionRepo.UpdateSessionState(ctx, sessionID, state)
+}
+
 func (s *service) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Session, error) {
 	return s.sessionRepo.GetSession(ctx, sessionID)
 }
 
 func (s *service) GetUserSession(ctx context.Context, auth *app.Auth, sessionID uuid.UUID) (session entity.Session, err error) {
-	user, err := s.userRepo.Get(ctx, auth.UID)
+	_, err = s.userRepo.GetByID(ctx, auth.UID)
 	if err != nil {
 		return
 	}
 
 	session, err = s.GetSession(ctx, sessionID)
-	if err != nil {
-		return
-	}
-
-	switch {
-	case session.User != nil && session.User.Identity != user.Identity:
-		fallthrough
-	case session.Finished:
-		err = entity.ErrForbidden
-		return
-	}
-
-	assignErr := s.AssignSessionUser(ctx, session.WashServer.Id, sessionID, user)
-	if assignErr != nil {
-		s.l.Errorw("failed to assign user to session event", "session", session, "target user", user, "error", assignErr)
-	}
-
 	return
 }
 
-func (s *service) AssignSessionUser(ctx context.Context, serverID uuid.UUID, sessionID uuid.UUID, user entity.User) (err error) {
-	err = s.sessionRepo.SetSessionUser(ctx, sessionID, user.ID)
+func (s *service) AssignSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error) {
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err == nil {
+		return s.sessionRepo.SetSessionUser(ctx, sessionID, userID)
+	}
+
+	user, err = s.userRepo.Create(ctx, userID)
 	if err != nil {
-		return
+		return err
 	}
 
-	eventErr := s.rabbitPublisherFunc(conversions.SessionUserAssign(sessionID, user), vo.WashBonusService, serverID.String(), int(vo.BonusSessionUserAssign))
-	if eventErr != nil {
-		s.l.Errorw("failed to send server event", "assign session user for session", sessionID.String(), "target user", user, "error", eventErr)
-	}
-
-	return
+	return s.sessionRepo.SetSessionUser(ctx, sessionID, user.ID)
 }
 
-func (s *service) ChargeBonuses(ctx context.Context, auth *app.Auth, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
-	user, err := s.userRepo.Get(ctx, auth.UID)
+func (s *service) ChargeBonuses(ctx context.Context, sessionID uuid.UUID, userID string, amount decimal.Decimal) (err error) {
+	user, err := s.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return
 	}

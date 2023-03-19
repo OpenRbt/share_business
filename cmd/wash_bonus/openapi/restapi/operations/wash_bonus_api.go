@@ -47,6 +47,9 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		SessionAssignUserToSessionHandler: session.AssignUserToSessionHandlerFunc(func(params session.AssignUserToSessionParams, principal *app.Auth) session.AssignUserToSessionResponder {
+			return session.AssignUserToSessionNotImplemented()
+		}),
 		UserGetBalanceHandler: user.GetBalanceHandlerFunc(func(params user.GetBalanceParams, principal *app.Auth) user.GetBalanceResponder {
 			return user.GetBalanceNotImplemented()
 		}),
@@ -112,6 +115,8 @@ type WashBonusAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// SessionAssignUserToSessionHandler sets the operation handler for the assign user to session operation
+	SessionAssignUserToSessionHandler session.AssignUserToSessionHandler
 	// UserGetBalanceHandler sets the operation handler for the get balance operation
 	UserGetBalanceHandler user.GetBalanceHandler
 	// UserGetProfileHandler sets the operation handler for the get profile operation
@@ -203,6 +208,9 @@ func (o *WashBonusAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
+	if o.SessionAssignUserToSessionHandler == nil {
+		unregistered = append(unregistered, "session.AssignUserToSessionHandler")
+	}
 	if o.UserGetBalanceHandler == nil {
 		unregistered = append(unregistered, "user.GetBalanceHandler")
 	}
@@ -317,6 +325,10 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
 
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/session/{sessionId}/assign-user"] = session.NewAssignUserToSession(o.context, o.SessionAssignUserToSessionHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

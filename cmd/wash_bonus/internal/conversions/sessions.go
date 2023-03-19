@@ -1,18 +1,20 @@
 package conversions
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	models2 "wash_bonus/internal/infrastructure/rabbit/models"
 	"wash_bonus/openapi/models"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func SessionFromDB(db dbmodels.Session) entity.Session {
 	var user *entity.User
-	if db.User.Valid {
+
+	if db.User != nil {
 		user = &entity.User{
-			ID: db.User.UUID,
+			ID: *db.User,
 		}
 	}
 
@@ -43,6 +45,6 @@ func SessionToRest(e entity.Session) *models.Session {
 func SessionUserAssign(sessionID uuid.UUID, user entity.User) models2.SessionUserAssign {
 	return models2.SessionUserAssign{
 		SessionID: sessionID.String(),
-		UserID:    user.ID.String(),
+		UserID:    user.ID,
 	}
 }

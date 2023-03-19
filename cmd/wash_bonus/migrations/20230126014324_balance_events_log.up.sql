@@ -3,7 +3,7 @@ create table balance_events
     id         uuid default gen_random_uuid() not null
         constraint balance_events_pk
             primary key,
-    "user"     uuid                           not null
+    "user"     text                           not null
         constraint balance_events_users_fk
             references users (id),
     old_amount numeric(10, 2)                 not null,

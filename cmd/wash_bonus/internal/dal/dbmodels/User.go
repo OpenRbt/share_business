@@ -1,13 +1,12 @@
 package dbmodels
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 )
 
 type User struct {
-	ID       uuid.NullUUID       `db:"id"`
-	Identity string              `db:"identity"`
-	Balance  decimal.NullDecimal `db:"balance"`
-	Active   bool                `db:"active"`
+	ID      string              `db:"id"`
+	Balance decimal.NullDecimal `db:"balance"`
+	Deleted bool                `db:"deleted"`
+	// TODO: Add user activity management
 }

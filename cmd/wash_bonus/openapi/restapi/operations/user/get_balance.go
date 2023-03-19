@@ -6,7 +6,9 @@ package user
 // Editing this file might prove futile when you re-run the generate command
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-openapi/runtime/middleware"
@@ -80,6 +82,24 @@ type GetBalanceOKBody struct {
 
 	// balance
 	Balance int64 `json:"balance,omitempty"`
+}
+
+// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
+func (o *GetBalanceOKBody) UnmarshalJSON(data []byte) error {
+	var props struct {
+
+		// balance
+		Balance int64 `json:"balance,omitempty"`
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&props); err != nil {
+		return err
+	}
+
+	o.Balance = props.Balance
+	return nil
 }
 
 // Validate validates this get balance o k body

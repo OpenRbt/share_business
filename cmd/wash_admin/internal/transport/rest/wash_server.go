@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"log"
 	"wash_admin/internal/app"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/entity"
@@ -41,6 +42,10 @@ func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth)
 	registerWashServerFromRest := conversions.RegisterWashServerFromRest(*params.Body)
 
 	newServer, err := svc.washServers.RegisterWashServer(params.HTTPRequest.Context(), auth, registerWashServerFromRest)
+
+	if err != nil {
+		log.Println(err)
+	}
 
 	switch {
 	case err == nil:

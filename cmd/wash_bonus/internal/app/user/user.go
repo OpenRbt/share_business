@@ -2,25 +2,21 @@ package user
 
 import (
 	"context"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
-	"wash_bonus/internal/app"
 	"wash_bonus/internal/entity"
+
+	"github.com/shopspring/decimal"
 )
 
-func (s *service) Get(ctx context.Context, auth *app.Auth) (user entity.User, err error) {
-	return s.userRepo.Get(ctx, auth.UID)
-}
-func (s *service) GetByID(ctx context.Context, auth *app.Auth, ID uuid.UUID) (user entity.User, err error) {
-	return s.userRepo.GetByID(ctx, ID)
+func (s *service) GetByID(ctx context.Context, userID string) (user entity.User, err error) {
+	return s.userRepo.GetByID(ctx, userID)
 }
 
-func (s *service) UpdateBalance(ctx context.Context, user uuid.UUID, amount decimal.Decimal) (newBalance decimal.Decimal, err error) {
-	err = s.userRepo.UpdateBalance(ctx, user, amount)
+func (s *service) UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (newBalance decimal.Decimal, err error) {
+	err = s.userRepo.UpdateBalance(ctx, userID, amount)
 	if err != nil {
 		return
 	}
 
-	newBalance, err = s.userRepo.GetBalance(ctx, user)
+	newBalance, err = s.userRepo.GetBalance(ctx, userID)
 	return
 }

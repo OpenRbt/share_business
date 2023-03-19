@@ -72,7 +72,7 @@ func (o *PostSessionForbidden) PostSessionResponder() {}
 const PostSessionNotFoundCode int = 404
 
 /*
-PostSessionNotFound Unable to cancel
+PostSessionNotFound Session not found
 
 swagger:response postSessionNotFound
 */

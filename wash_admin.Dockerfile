@@ -21,6 +21,9 @@ RUN go build -ldflags="-s -w" -o /app/wash_admin .
 
 FROM alpine
 
+RUN rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/*
+
 RUN apk update --no-cache && apk add --no-cache ca-certificates
 
 WORKDIR /app
