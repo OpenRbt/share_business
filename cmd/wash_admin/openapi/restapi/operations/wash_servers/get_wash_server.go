@@ -13,40 +13,40 @@ import (
 	"wash_admin/internal/app"
 )
 
-// GetHandlerFunc turns a function with the right signature into a get handler
-type GetHandlerFunc func(GetParams, *app.Auth) GetResponder
+// GetWashServerHandlerFunc turns a function with the right signature into a get wash server handler
+type GetWashServerHandlerFunc func(GetWashServerParams, *app.Auth) GetWashServerResponder
 
 // Handle executing the request and returning a response
-func (fn GetHandlerFunc) Handle(params GetParams, principal *app.Auth) GetResponder {
+func (fn GetWashServerHandlerFunc) Handle(params GetWashServerParams, principal *app.Auth) GetWashServerResponder {
 	return fn(params, principal)
 }
 
-// GetHandler interface for that can handle valid get params
-type GetHandler interface {
-	Handle(GetParams, *app.Auth) GetResponder
+// GetWashServerHandler interface for that can handle valid get wash server params
+type GetWashServerHandler interface {
+	Handle(GetWashServerParams, *app.Auth) GetWashServerResponder
 }
 
-// NewGet creates a new http.Handler for the get operation
-func NewGet(ctx *middleware.Context, handler GetHandler) *Get {
-	return &Get{Context: ctx, Handler: handler}
+// NewGetWashServer creates a new http.Handler for the get wash server operation
+func NewGetWashServer(ctx *middleware.Context, handler GetWashServerHandler) *GetWashServer {
+	return &GetWashServer{Context: ctx, Handler: handler}
 }
 
 /*
-	Get swagger:route GET /wash-server wash_servers get
+	GetWashServer swagger:route GET /wash-server/{id} wash_servers getWashServer
 
-Get get API
+GetWashServer get wash server API
 */
-type Get struct {
+type GetWashServer struct {
 	Context *middleware.Context
-	Handler GetHandler
+	Handler GetWashServerHandler
 }
 
-func (o *Get) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *GetWashServer) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		*r = *rCtx
 	}
-	var Params = NewGetParams()
+	var Params = NewGetWashServerParams()
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {
 		o.Context.Respond(rw, r, route.Produces, route, err)

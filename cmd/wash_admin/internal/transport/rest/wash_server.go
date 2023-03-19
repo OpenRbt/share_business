@@ -12,32 +12,28 @@ import (
 )
 
 func (svc *service) initWashServerHandlers(api *operations.WashAdminAPI) {
-	api.WashServersGetHandler = wash_servers.GetHandlerFunc(svc.getWashServer)
+	api.WashServersGetWashServerHandler = wash_servers.GetWashServerHandlerFunc(svc.getWashServer)
 	api.WashServersAddHandler = wash_servers.AddHandlerFunc(svc.addWashServer)
 	api.WashServersUpdateHandler = wash_servers.UpdateHandlerFunc(svc.updateWashServer)
 	api.WashServersDeleteHandler = wash_servers.DeleteHandlerFunc(svc.deleteWashServer)
 }
 
-func (svc *service) getWashServer(params wash_servers.GetParams, auth *app.Auth) wash_servers.GetResponder {
-	if params.Body.ID == nil {
-		return wash_servers.NewGetBadRequest()
-	}
-
-	id, err := uuid.FromString(*params.Body.ID)
+func (svc *service) getWashServer(params wash_servers.GetWashServerParams, auth *app.Auth) wash_servers.GetWashServerResponder {
+	id, err := uuid.FromString(params.ID)
 
 	if err != nil {
-		return wash_servers.NewGetBadRequest()
+		return wash_servers.NewGetWashServerBadRequest()
 	}
 
 	res, err := svc.washServers.GetWashServer(params.HTTPRequest.Context(), auth, id)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewGetOK().WithPayload(conversions.WashServerToRest(res))
+		return wash_servers.NewGetWashServerOK().WithPayload(conversions.WashServerToRest(res))
 	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewGetNotFound()
+		return wash_servers.NewGetWashServerNotFound()
 	default:
-		return wash_servers.NewGetInternalServerError()
+		return wash_servers.NewGetWashServerInternalServerError()
 	}
 }
 

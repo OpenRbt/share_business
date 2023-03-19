@@ -32,7 +32,7 @@ func NewAdd(ctx *middleware.Context, handler AddHandler) *Add {
 }
 
 /*
-	Add swagger:route PUT /wash-server wash_servers add
+	Add swagger:route PUT /wash-server/ wash_servers add
 
 Add add API
 */

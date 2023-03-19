@@ -86,11 +86,11 @@ func (o *AddOK) IsCode(code int) bool {
 }
 
 func (o *AddOK) Error() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /wash-server/][%d] addOK  %+v", 200, o.Payload)
 }
 
 func (o *AddOK) String() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /wash-server/][%d] addOK  %+v", 200, o.Payload)
 }
 
 func (o *AddOK) GetPayload() *models.WashServer {
@@ -149,11 +149,11 @@ func (o *AddBadRequest) IsCode(code int) bool {
 }
 
 func (o *AddBadRequest) Error() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[PUT /wash-server/][%d] addBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *AddBadRequest) String() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[PUT /wash-server/][%d] addBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *AddBadRequest) GetPayload() *models.Error {
@@ -212,11 +212,11 @@ func (o *AddInternalServerError) IsCode(code int) bool {
 }
 
 func (o *AddInternalServerError) Error() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PUT /wash-server/][%d] addInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *AddInternalServerError) String() string {
-	return fmt.Sprintf("[PUT /wash-server][%d] addInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PUT /wash-server/][%d] addInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *AddInternalServerError) GetPayload() *models.Error {

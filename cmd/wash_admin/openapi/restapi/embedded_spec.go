@@ -58,53 +58,7 @@ func init() {
         }
       }
     },
-    "/wash-server": {
-      "get": {
-        "security": [
-          {
-            "authKey": []
-          }
-        ],
-        "tags": [
-          "wash_servers"
-        ],
-        "operationId": "get",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/WashServerGet"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/WashServer"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "404": {
-            "description": "WashServer not exists",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      },
+    "/wash-server/": {
       "put": {
         "security": [
           {
@@ -282,6 +236,53 @@ func init() {
           }
         }
       }
+    },
+    "/wash-server/{id}": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "wash_servers"
+        ],
+        "operationId": "getWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/WashServer"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "404": {
+            "description": "WashServer not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -330,17 +331,6 @@ func init() {
       }
     },
     "WashServerDelete": {
-      "type": "object",
-      "required": [
-        "id"
-      ],
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "WashServerGet": {
       "type": "object",
       "required": [
         "id"
@@ -438,53 +428,7 @@ func init() {
         }
       }
     },
-    "/wash-server": {
-      "get": {
-        "security": [
-          {
-            "authKey": []
-          }
-        ],
-        "tags": [
-          "wash_servers"
-        ],
-        "operationId": "get",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/WashServerGet"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/WashServer"
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "404": {
-            "description": "WashServer not exists",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      },
+    "/wash-server/": {
       "put": {
         "security": [
           {
@@ -662,6 +606,53 @@ func init() {
           }
         }
       }
+    },
+    "/wash-server/{id}": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "wash_servers"
+        ],
+        "operationId": "getWashServer",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/WashServer"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "404": {
+            "description": "WashServer not exists",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -710,17 +701,6 @@ func init() {
       }
     },
     "WashServerDelete": {
-      "type": "object",
-      "required": [
-        "id"
-      ],
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      }
-    },
-    "WashServerGet": {
       "type": "object",
       "required": [
         "id"

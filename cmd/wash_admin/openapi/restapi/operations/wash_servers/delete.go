@@ -32,7 +32,7 @@ func NewDelete(ctx *middleware.Context, handler DeleteHandler) *Delete {
 }
 
 /*
-	Delete swagger:route DELETE /wash-server wash_servers delete
+	Delete swagger:route DELETE /wash-server/ wash_servers delete
 
 Delete delete API
 */

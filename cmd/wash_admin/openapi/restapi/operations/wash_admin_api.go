@@ -52,8 +52,8 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		WashServersDeleteHandler: wash_servers.DeleteHandlerFunc(func(params wash_servers.DeleteParams, principal *app.Auth) wash_servers.DeleteResponder {
 			return wash_servers.DeleteNotImplemented()
 		}),
-		WashServersGetHandler: wash_servers.GetHandlerFunc(func(params wash_servers.GetParams, principal *app.Auth) wash_servers.GetResponder {
-			return wash_servers.GetNotImplemented()
+		WashServersGetWashServerHandler: wash_servers.GetWashServerHandlerFunc(func(params wash_servers.GetWashServerParams, principal *app.Auth) wash_servers.GetWashServerResponder {
+			return wash_servers.GetWashServerNotImplemented()
 		}),
 		StandardHealthCheckHandler: standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
@@ -118,8 +118,8 @@ type WashAdminAPI struct {
 	WashServersAddHandler wash_servers.AddHandler
 	// WashServersDeleteHandler sets the operation handler for the delete operation
 	WashServersDeleteHandler wash_servers.DeleteHandler
-	// WashServersGetHandler sets the operation handler for the get operation
-	WashServersGetHandler wash_servers.GetHandler
+	// WashServersGetWashServerHandler sets the operation handler for the get wash server operation
+	WashServersGetWashServerHandler wash_servers.GetWashServerHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
 	StandardHealthCheckHandler standard.HealthCheckHandler
 	// WashServersListHandler sets the operation handler for the list operation
@@ -213,8 +213,8 @@ func (o *WashAdminAPI) Validate() error {
 	if o.WashServersDeleteHandler == nil {
 		unregistered = append(unregistered, "wash_servers.DeleteHandler")
 	}
-	if o.WashServersGetHandler == nil {
-		unregistered = append(unregistered, "wash_servers.GetHandler")
+	if o.WashServersGetWashServerHandler == nil {
+		unregistered = append(unregistered, "wash_servers.GetWashServerHandler")
 	}
 	if o.StandardHealthCheckHandler == nil {
 		unregistered = append(unregistered, "standard.HealthCheckHandler")
@@ -335,7 +335,7 @@ func (o *WashAdminAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/wash-server"] = wash_servers.NewGet(o.context, o.WashServersGetHandler)
+	o.handlers["GET"]["/wash-server/{id}"] = wash_servers.NewGetWashServer(o.context, o.WashServersGetWashServerHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

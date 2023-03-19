@@ -62,9 +62,9 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 			return wash_servers.DeleteNotImplemented()
 		})
 	}
-	if api.WashServersGetHandler == nil {
-		api.WashServersGetHandler = wash_servers.GetHandlerFunc(func(params wash_servers.GetParams, principal *app.Auth) wash_servers.GetResponder {
-			return wash_servers.GetNotImplemented()
+	if api.WashServersGetWashServerHandler == nil {
+		api.WashServersGetWashServerHandler = wash_servers.GetWashServerHandlerFunc(func(params wash_servers.GetWashServerParams, principal *app.Auth) wash_servers.GetWashServerResponder {
+			return wash_servers.GetWashServerNotImplemented()
 		})
 	}
 	if api.StandardHealthCheckHandler == nil {

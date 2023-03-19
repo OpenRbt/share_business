@@ -6,7 +6,9 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -25,6 +27,29 @@ type WashServerAdd struct {
 	// name
 	// Required: true
 	Name *string `json:"name"`
+}
+
+// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
+func (m *WashServerAdd) UnmarshalJSON(data []byte) error {
+	var props struct {
+
+		// description
+		Description string `json:"description,omitempty"`
+
+		// name
+		// Required: true
+		Name *string `json:"name"`
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&props); err != nil {
+		return err
+	}
+
+	m.Description = props.Description
+	m.Name = props.Name
+	return nil
 }
 
 // Validate validates this wash server add

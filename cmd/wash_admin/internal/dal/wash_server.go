@@ -80,7 +80,7 @@ func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer vo.Upda
 		Where("id = ?", dbUpdateWashServer.ID)
 
 	if dbUpdateWashServer.Name != nil {
-		updateStatement = updateStatement.Set("name", dbUpdateWashServer.Name)
+		updateStatement = updateStatement.Set("title", dbUpdateWashServer.Name)
 	}
 	if dbUpdateWashServer.Description != nil {
 		updateStatement = updateStatement.Set("description", dbUpdateWashServer.Description)

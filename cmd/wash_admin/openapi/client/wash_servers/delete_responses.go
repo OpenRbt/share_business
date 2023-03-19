@@ -91,11 +91,11 @@ func (o *DeleteNoContent) IsCode(code int) bool {
 }
 
 func (o *DeleteNoContent) Error() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteNoContent ", 204)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteNoContent ", 204)
 }
 
 func (o *DeleteNoContent) String() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteNoContent ", 204)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteNoContent ", 204)
 }
 
 func (o *DeleteNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -143,11 +143,11 @@ func (o *DeleteBadRequest) IsCode(code int) bool {
 }
 
 func (o *DeleteBadRequest) Error() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *DeleteBadRequest) String() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *DeleteBadRequest) GetPayload() *models.Error {
@@ -206,11 +206,11 @@ func (o *DeleteNotFound) IsCode(code int) bool {
 }
 
 func (o *DeleteNotFound) Error() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteNotFound  %+v", 404, o.Payload)
 }
 
 func (o *DeleteNotFound) String() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteNotFound  %+v", 404, o.Payload)
 }
 
 func (o *DeleteNotFound) GetPayload() *models.Error {
@@ -269,11 +269,11 @@ func (o *DeleteInternalServerError) IsCode(code int) bool {
 }
 
 func (o *DeleteInternalServerError) Error() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *DeleteInternalServerError) String() string {
-	return fmt.Sprintf("[DELETE /wash-server][%d] deleteInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *DeleteInternalServerError) GetPayload() *models.Error {

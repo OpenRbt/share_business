@@ -91,11 +91,11 @@ func (o *UpdateNoContent) IsCode(code int) bool {
 }
 
 func (o *UpdateNoContent) Error() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateNoContent ", 204)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateNoContent ", 204)
 }
 
 func (o *UpdateNoContent) String() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateNoContent ", 204)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateNoContent ", 204)
 }
 
 func (o *UpdateNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -143,11 +143,11 @@ func (o *UpdateBadRequest) IsCode(code int) bool {
 }
 
 func (o *UpdateBadRequest) Error() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *UpdateBadRequest) String() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *UpdateBadRequest) GetPayload() *models.Error {
@@ -206,11 +206,11 @@ func (o *UpdateNotFound) IsCode(code int) bool {
 }
 
 func (o *UpdateNotFound) Error() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateNotFound  %+v", 404, o.Payload)
 }
 
 func (o *UpdateNotFound) String() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateNotFound  %+v", 404, o.Payload)
 }
 
 func (o *UpdateNotFound) GetPayload() *models.Error {
@@ -269,11 +269,11 @@ func (o *UpdateInternalServerError) IsCode(code int) bool {
 }
 
 func (o *UpdateInternalServerError) Error() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *UpdateInternalServerError) String() string {
-	return fmt.Sprintf("[PATCH /wash-server][%d] updateInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *UpdateInternalServerError) GetPayload() *models.Error {
