@@ -103,6 +103,7 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
 		rabbitmq.WithConsumerOptionsExchangeName(vo.WashBonusService),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
+		rabbitmq.WithConsumerOptionsRoutingKey(vo.BonusSvc),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 		rabbitmq.WithConsumerOptionsConsumerExclusive,
 	)
@@ -116,6 +117,7 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
 		rabbitmq.WithConsumerOptionsExchangeName(vo.WashAdminService),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
+		rabbitmq.WithConsumerOptionsRoutingKey(vo.WashAdminSvc),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 	)
 

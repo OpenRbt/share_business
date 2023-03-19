@@ -43,7 +43,7 @@ services:
     ports:
       - ${WASH_ADMIN_HTTP_PORT:-8070}:8070
     depends_on:
-      - db_wash_bonus
+      - db_wash_admin
       - wash_rabbit
     build:
       context: .

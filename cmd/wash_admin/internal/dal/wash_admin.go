@@ -15,8 +15,8 @@ func (s *Storage) GetWashAdmin(ctx context.Context, identity string) (entity.Was
 
 	err := s.db.NewSession(nil).
 		Select("*").
-		From("wash_admins").
-		Where("identity = ?", identity).
+		From("users").
+		Where("identity_uid = ?", identity).
 		LoadOneContext(ctx, &dbWashAdmin)
 
 	switch {
@@ -38,10 +38,10 @@ func (s *Storage) CreateWashAdmin(ctx context.Context, identity string) (entity.
 
 	var dbWashAdmin dbmodels.WashAdmin
 	err = tx.
-		InsertInto("wash_admins").
-		Columns("identity").
+		InsertInto("users").
+		Columns("identity_uid").
 		Values(identity).
-		Returning("id", "identity").
+		Returning("id", "identity_uid").
 		LoadContext(ctx, &dbWashAdmin)
 
 	if err != nil {
@@ -58,7 +58,7 @@ func (s *Storage) GetOrCreateAdminIfNotExists(ctx context.Context, identity stri
 		if errors.Is(err, entity.ErrNotFound) {
 			return s.CreateWashAdmin(ctx, identity)
 		}
-		
+
 		return entity.WashAdmin{}, err
 	}
 

@@ -17,8 +17,6 @@ type WashServerService interface {
 	UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer vo.UpdateWashServer) error
 	DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error
 	GetWashServerList(ctx context.Context, auth *Auth, getWashServerList vo.Pagination) ([]entity.WashServer, error)
-
-	AssignRabbit(func(msg interface{}, service string, target string, messageType int) error)
 }
 
 type Repository interface {
@@ -36,13 +34,19 @@ type WashServerSvc struct {
 	l    *zap.SugaredLogger
 	repo Repository
 
-	rabbitPublisherFunc func(msg interface{}, service string, target string, messageType int) error
+	r RabbitSvc
 }
 
-func NewWashServerService(logger *zap.SugaredLogger, repo Repository) WashServerService {
+type RabbitSvc interface {
+	CreateRabbitUser(userID, userKey string) (err error)
+	SendMessage(msg interface{}, service string, target string, messageType int) error
+}
+
+func NewWashServerService(logger *zap.SugaredLogger, repo Repository, rabbit RabbitSvc) WashServerService {
 	return &WashServerSvc{
 		l:    logger,
 		repo: repo,
+		r:    rabbit,
 	}
 }
 
@@ -59,7 +63,12 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 		return entity.WashServer{}, err
 	}
 
-	eventErr := svc.rabbitPublisherFunc(conversions.WashServerToRabbit(registered), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerRegistered))
+	err = svc.r.CreateRabbitUser(registered.ID.String(), registered.ServiceKey)
+	if err != nil {
+		return entity.WashServer{}, err
+	}
+
+	eventErr := svc.r.SendMessage(conversions.WashServerToRabbit(registered), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerRegistered))
 	if eventErr != nil {
 		svc.l.Errorw("failed to send server event", "registered server", registered, "error", eventErr)
 	}
@@ -99,7 +108,7 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 		return err
 	}
 
-	eventErr := svc.rabbitPublisherFunc(conversions.WashServerUpdateToRabbit(updateWashServer, false), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerUpdated))
+	eventErr := svc.r.SendMessage(conversions.WashServerUpdateToRabbit(updateWashServer, false), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerUpdated))
 	if eventErr != nil {
 		svc.l.Errorw("failed to send server event", "update server", updateWashServer, "error", eventErr)
 	}
@@ -126,7 +135,7 @@ func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id u
 		return err
 	}
 
-	eventErr := svc.rabbitPublisherFunc(conversions.WashServerUpdateToRabbit(vo.UpdateWashServer{ID: id}, true), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerUpdated))
+	eventErr := svc.r.SendMessage(conversions.WashServerUpdateToRabbit(vo.UpdateWashServer{ID: id}, true), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerUpdated))
 	if eventErr != nil {
 		svc.l.Errorw("failed to send server event", "deleted server", id.String(), "error", eventErr)
 	}
@@ -142,8 +151,4 @@ func (svc *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pag
 	}
 
 	return svc.repo.GetWashServerList(ctx, owner.ID, pagination)
-}
-
-func (svc *WashServerSvc) AssignRabbit(handler func(msg interface{}, service string, target string, messageType int) error) {
-	svc.rabbitPublisherFunc = handler
 }

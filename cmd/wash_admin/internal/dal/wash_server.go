@@ -30,11 +30,12 @@ func (s *Storage) RegisterWashServer(ctx context.Context, owner uuid.UUID, newWa
 	var id uuid.NullUUID
 
 	err := s.db.NewSession(nil).
-		InsertInto("wash_server").
+		InsertInto("wash_servers").
+		Columns("owner", "title", "description", "service_key").
 		Record(dbmodels.RegisterWashServer{
 			Title:       newWashServer.Title,
 			Description: newWashServer.Description,
-			Owner:       uuid.NullUUID{},
+			Owner:       uuid.NullUUID{UUID: owner, Valid: true},
 			ServiceKey:  s.generateNewServiceKey(),
 		}).Returning("id").
 		LoadContext(ctx, &id)
