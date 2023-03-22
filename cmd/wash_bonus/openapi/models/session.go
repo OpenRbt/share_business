@@ -6,9 +6,7 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -28,32 +26,6 @@ type Session struct {
 
 	// wash server
 	WashServer *WashServer `json:"washServer,omitempty"`
-}
-
-// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
-func (m *Session) UnmarshalJSON(data []byte) error {
-	var props struct {
-
-		// post balance
-		PostBalance int64 `json:"postBalance,omitempty"`
-
-		// post ID
-		PostID int64 `json:"postID,omitempty"`
-
-		// wash server
-		WashServer *WashServer `json:"washServer,omitempty"`
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&props); err != nil {
-		return err
-	}
-
-	m.PostBalance = props.PostBalance
-	m.PostID = props.PostID
-	m.WashServer = props.WashServer
-	return nil
 }
 
 // Validate validates this session

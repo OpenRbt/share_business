@@ -16,6 +16,7 @@ import (
 func (svc *service) initSessionHandlers(api *operations.WashBonusAPI) {
 	api.SessionGetSessionHandler = session.GetSessionHandlerFunc(svc.getSession)
 	api.SessionPostSessionHandler = session.PostSessionHandlerFunc(svc.chargeBonuses)
+	api.SessionAssignUserToSessionHandler = session.AssignUserToSessionHandlerFunc(svc.assignUserToSession)
 }
 
 func (svc *service) getSession(params session.GetSessionParams, auth *app.Auth) session.GetSessionResponder {

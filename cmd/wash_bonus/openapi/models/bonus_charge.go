@@ -6,9 +6,7 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
@@ -21,24 +19,6 @@ type BonusCharge struct {
 
 	// amount
 	Amount int64 `json:"amount,omitempty"`
-}
-
-// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
-func (m *BonusCharge) UnmarshalJSON(data []byte) error {
-	var props struct {
-
-		// amount
-		Amount int64 `json:"amount,omitempty"`
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&props); err != nil {
-		return err
-	}
-
-	m.Amount = props.Amount
-	return nil
 }
 
 // Validate validates this bonus charge

@@ -81,6 +81,15 @@ func (s *service) AssignSessionUser(ctx context.Context, sessionID uuid.UUID, us
 		return err
 	}
 
+	session, err := s.sessionRepo.GetSession(ctx, sessionID)
+	if err != nil {
+		return err
+	}
+
+	if session.User != nil || session.Finished {
+		return entity.ErrForbidden
+	}
+
 	return s.sessionRepo.SetSessionUser(ctx, sessionID, user.ID)
 }
 
