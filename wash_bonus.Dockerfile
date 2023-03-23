@@ -31,7 +31,7 @@ WORKDIR /app
 COPY environment/certs/ /app/certs/
 COPY environment/firebase /app/firebase
 
-COPY cmd/wash_admin/migrations /app/migrations
+COPY cmd/wash_bonus/migrations /app/migrations
 COPY --from=builder /app/wash_bonus /app/wash_bonus
 
 EXPOSE 8080
