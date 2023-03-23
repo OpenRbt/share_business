@@ -21,12 +21,15 @@ func (r *repo) GetByID(ctx context.Context, userID string) (user entity.User, er
 	err = r.db.NewSession(nil).
 		Select("*").
 		From("users").
-		Where("id", userID).
+		Where("id = ?", userID).
 		LoadOneContext(ctx, &dbUser)
 
 	switch {
 	case err == nil:
 		return conversions.UserFromDb(dbUser), err
+	case errors.Is(err, dbr.ErrNotFound):
+		user, err = r.Create(ctx, userID)
+		return
 	default:
 		return
 	}
