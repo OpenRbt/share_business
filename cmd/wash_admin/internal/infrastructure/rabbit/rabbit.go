@@ -102,7 +102,7 @@ func New(l *zap.SugaredLogger, url, port, certsPath, user, password string) (svc
 		rabbitmq.WithConsumerOptionsConsumerExclusive,
 	)
 
-	intClient := client.New(httptransport.New("127.0.0.1:15672", "", []string{"http"}), strfmt.Default)
+	intClient := client.New(httptransport.New(url+":15672", "", []string{"http"}), strfmt.Default)
 	intAuth := httptransport.BasicAuth(user, password)
 
 	svc.intApi = intClient

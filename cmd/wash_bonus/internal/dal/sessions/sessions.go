@@ -41,7 +41,6 @@ func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID, postID int
 
 func (r *repo) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Session, error) {
 	var session dbmodels.Session
-
 	err := r.db.NewSession(nil).
 		Select("*").
 		From("sessions").

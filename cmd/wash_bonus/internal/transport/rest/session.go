@@ -26,7 +26,7 @@ func (svc *service) getSession(params session.GetSessionParams, auth *app.Auth) 
 	if err != nil {
 		return session.NewGetSessionInternalServerError()
 	}
-	res, err := svc.sessionSvc.GetUserSession(params.HTTPRequest.Context(), auth, sessionUID)
+	res, err := svc.sessionSvc.GetSession(params.HTTPRequest.Context(), sessionUID)
 
 	if err == nil {
 		payload = conversions.SessionToRest(res)

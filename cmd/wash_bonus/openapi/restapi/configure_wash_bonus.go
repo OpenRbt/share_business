@@ -53,6 +53,11 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
+	if api.SessionAssignUserToSessionHandler == nil {
+		api.SessionAssignUserToSessionHandler = session.AssignUserToSessionHandlerFunc(func(params session.AssignUserToSessionParams, principal *app.Auth) session.AssignUserToSessionResponder {
+			return session.AssignUserToSessionNotImplemented()
+		})
+	}
 	if api.UserGetBalanceHandler == nil {
 		api.UserGetBalanceHandler = user.GetBalanceHandlerFunc(func(params user.GetBalanceParams, principal *app.Auth) user.GetBalanceResponder {
 			return user.GetBalanceNotImplemented()

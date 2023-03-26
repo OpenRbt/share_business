@@ -1,13 +1,6 @@
 package rest
 
 import (
-	"github.com/go-openapi/loads"
-	"github.com/go-openapi/runtime/middleware"
-	"github.com/pkg/errors"
-	"github.com/powerman/structlog"
-	"github.com/rs/cors"
-	"github.com/sebest/xff"
-	"go.uber.org/zap"
 	"net/http"
 	"path"
 	"strconv"
@@ -15,6 +8,14 @@ import (
 	"wash_bonus/internal/app/session"
 	"wash_bonus/internal/app/user"
 	"wash_bonus/internal/infrastructure/firebase"
+
+	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/pkg/errors"
+	"github.com/powerman/structlog"
+	"github.com/rs/cors"
+	"github.com/sebest/xff"
+	"go.uber.org/zap"
 
 	"wash_bonus/openapi/restapi"
 	"wash_bonus/openapi/restapi/operations"
@@ -31,12 +32,13 @@ type service struct {
 }
 
 func NewServer(cfg *bootstrap.Config, auth firebase.Service, l *zap.SugaredLogger,
-	userSvc user.Service,
+	userSvc user.Service, sessionSvc session.Service,
 ) (*restapi.Server, error) {
 	svc := &service{
-		l:       l,
-		auth:    auth,
-		userSvc: userSvc,
+		l:          l,
+		auth:       auth,
+		userSvc:    userSvc,
+		sessionSvc: sessionSvc,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
@@ -56,6 +58,7 @@ func NewServer(cfg *bootstrap.Config, auth firebase.Service, l *zap.SugaredLogge
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 
 	svc.initUserHandlers(api)
+	svc.initSessionHandlers(api)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)

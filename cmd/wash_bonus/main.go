@@ -72,7 +72,7 @@ func main() {
 
 	errc := make(chan error)
 
-	go runHTTPServer(errc, l, cfg, authSvc, userSvc)
+	go runHTTPServer(errc, l, cfg, authSvc, userSvc, sessionSvc)
 
 	err = <-errc
 	if err != nil {
@@ -82,13 +82,13 @@ func main() {
 	l.Info("started server at: ", cfg.HTTPPort)
 }
 
-func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase.Service, userSvc user_svc.Service) {
+func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase.Service, userSvc user_svc.Service, sessionSvc session_svc.Service) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalln("panic: ", r)
 		}
 	}()
-	server, err := rest.NewServer(cfg, authSvc, l, userSvc)
+	server, err := rest.NewServer(cfg, authSvc, l, userSvc, sessionSvc)
 	if err != nil {
 		l.Fatalln("init rest server:", err)
 	}
