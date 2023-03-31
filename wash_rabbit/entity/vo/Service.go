@@ -4,5 +4,5 @@ type Service string
 
 const (
 	WashAdminService Service = "wash_admin_service"
-	WashBonusService         = "wash_bonus_service"
+	WashBonusService Service = "wash_bonus_service"
 )
