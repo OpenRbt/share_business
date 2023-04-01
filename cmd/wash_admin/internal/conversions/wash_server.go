@@ -1,10 +1,10 @@
 package conversions
 
 import (
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/admin"
 	"wash_admin/internal/dal/dbmodels"
 	"wash_admin/internal/entity"
 	"wash_admin/internal/entity/vo"
-	models2 "wash_admin/internal/infrastructure/rabbit/models"
 	"wash_admin/openapi/models"
 )
 
@@ -34,25 +34,25 @@ func RegisterWashServerFromRest(rest models.WashServerAdd) vo.RegisterWashServer
 	}
 }
 
-func WashServerToRabbit(e entity.WashServer) models2.ServerRegistered {
-	return models2.ServerRegistered{
+func WashServerToRabbit(e entity.WashServer) admin.ServerRegistered {
+	return admin.ServerRegistered{
 		ID:          e.ID.String(),
 		Title:       e.Title,
 		Description: e.Description,
 	}
 }
 
-func WashServerUpdateToRabbit(e vo.UpdateWashServer, deleted bool) models2.ServerUpdate {
-	var delete *bool
+func WashServerUpdateToRabbit(e vo.UpdateWashServer, deleted bool) admin.ServerUpdate {
+	var del *bool
 	if deleted {
 		t := true
-		delete = &t
+		del = &t
 	}
 
-	return models2.ServerUpdate{
+	return admin.ServerUpdate{
 		ID:          e.ID.String(),
 		Title:       e.Title,
 		Description: e.Description,
-		Deleted:     delete,
+		Deleted:     del,
 	}
 }

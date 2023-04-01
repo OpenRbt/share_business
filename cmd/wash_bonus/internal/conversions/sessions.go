@@ -1,9 +1,10 @@
 package conversions
 
 import (
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/session"
+	"github.com/shopspring/decimal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
-	models2 "wash_bonus/internal/infrastructure/rabbit/models"
 	"wash_bonus/openapi/models"
 
 	uuid "github.com/satori/go.uuid"
@@ -27,8 +28,8 @@ func SessionFromDB(db dbmodels.Session) entity.Session {
 	}
 }
 
-func SessionToRabbit(e entity.Session) models2.NewSession {
-	return models2.NewSession{
+func SessionToRabbit(e entity.Session) session.NewSession {
+	return session.NewSession{
 		ID:     e.ID.String(),
 		PostID: e.Post,
 	}
@@ -42,9 +43,16 @@ func SessionToRest(e entity.Session) *models.Session {
 	}
 }
 
-func SessionUserAssign(sessionID uuid.UUID, user entity.User) models2.SessionUserAssign {
-	return models2.SessionUserAssign{
+func SessionUserAssign(sessionID uuid.UUID, user entity.User) session.UserAssign {
+	return session.UserAssign{
 		SessionID: sessionID.String(),
 		UserID:    user.ID,
+	}
+}
+
+func SessionBonusCharge(e entity.Session, amount decimal.Decimal) session.BonusCharge {
+	return session.BonusCharge{
+		SessionID: e.ID.String(),
+		Amount:    amount.IntPart(),
 	}
 }

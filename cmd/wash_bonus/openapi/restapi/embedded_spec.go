@@ -168,7 +168,9 @@ func init() {
             }
           }
         }
-      },
+      }
+    },
+    "/session/{UID}/bonuses": {
       "post": {
         "security": [
           {
@@ -493,7 +495,9 @@ func init() {
             }
           }
         }
-      },
+      }
+    },
+    "/session/{UID}/bonuses": {
       "post": {
         "security": [
           {

@@ -32,7 +32,7 @@ func NewPostSession(ctx *middleware.Context, handler PostSessionHandler) *PostSe
 }
 
 /*
-	PostSession swagger:route POST /session/{UID} session postSession
+	PostSession swagger:route POST /session/{UID}/bonuses session postSession
 
 PostSession post session API
 */

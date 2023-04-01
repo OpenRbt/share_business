@@ -15,6 +15,7 @@ type Service interface {
 
 type Repo interface {
 	GetByID(ctx context.Context, userID string) (user entity.User, err error)
+	Create(ctx context.Context, userID string) (user entity.User, err error)
 	UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (err error)
 	GetBalance(ctx context.Context, userID string) (balance decimal.Decimal, err error)
 }

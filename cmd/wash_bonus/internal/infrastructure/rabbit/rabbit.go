@@ -4,13 +4,12 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	"github.com/wagslane/go-rabbitmq"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"wash_bonus/internal/app/session"
 	"wash_bonus/internal/app/wash_server"
-	"wash_bonus/internal/infrastructure/rabbit/models/vo"
-
-	"github.com/wagslane/go-rabbitmq"
-	"go.uber.org/zap"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -90,7 +89,7 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 	svc.washBonusPub, err = rabbitmq.NewPublisher(conn,
 		rabbitmq.WithPublisherOptionsLogging,
 		rabbitmq.WithPublisherOptionsExchangeDeclare,
-		rabbitmq.WithPublisherOptionsExchangeName(vo.WashBonusService),
+		rabbitmq.WithPublisherOptionsExchangeName(string(vo.WashBonusService)),
 		rabbitmq.WithPublisherOptionsExchangeKind("direct"),
 		rabbitmq.WithPublisherOptionsExchangeDurable,
 	)
@@ -100,11 +99,11 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 
 	svc.washBonusSvcSub, err = rabbitmq.NewConsumer(conn,
 		svc.ProcessMessage,
-		vo.BonusSvc,
+		string(vo.WashBonusRoutingKey),
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
-		rabbitmq.WithConsumerOptionsExchangeName(vo.WashBonusService),
+		rabbitmq.WithConsumerOptionsExchangeName(string(vo.WashBonusService)),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
-		rabbitmq.WithConsumerOptionsRoutingKey(vo.BonusSvc),
+		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashBonusRoutingKey)),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 	)
 	if err != nil {
@@ -113,11 +112,11 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 
 	svc.washServerSub, err = rabbitmq.NewConsumer(conn,
 		svc.ProcessMessage,
-		vo.WashAdminServers,
+		string(vo.WashAdminServesEventsRoutingKey),
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
-		rabbitmq.WithConsumerOptionsExchangeName(vo.WashAdminService),
+		rabbitmq.WithConsumerOptionsExchangeName(string(vo.WashAdminService)),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
-		rabbitmq.WithConsumerOptionsRoutingKey(vo.WashAdminSvc),
+		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashAdminRoutingKey)),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 	)
 

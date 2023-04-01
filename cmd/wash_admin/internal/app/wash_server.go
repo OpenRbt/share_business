@@ -2,13 +2,12 @@ package app
 
 import (
 	"context"
+	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	uuid "github.com/satori/go.uuid"
+	"go.uber.org/zap"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/entity"
 	"wash_admin/internal/entity/vo"
-	vo2 "wash_admin/internal/infrastructure/rabbit/models/vo"
-
-	uuid "github.com/satori/go.uuid"
-	"go.uber.org/zap"
 )
 
 type WashServerService interface {
@@ -39,7 +38,7 @@ type WashServerSvc struct {
 
 type RabbitSvc interface {
 	CreateRabbitUser(userID, userKey string) (err error)
-	SendMessage(msg interface{}, service string, target string, messageType int) error
+	SendMessage(msg interface{}, service rabbit_vo.Service, routingKey rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) error
 }
 
 func NewWashServerService(logger *zap.SugaredLogger, repo Repository, rabbit RabbitSvc) WashServerService {
@@ -67,7 +66,7 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 		return entity.WashServer{}, err
 	}
 
-	eventErr := svc.r.SendMessage(conversions.WashServerToRabbit(registered), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerRegistered))
+	eventErr := svc.r.SendMessage(conversions.WashServerToRabbit(registered), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerRegisteredMessageType)
 	if eventErr != nil {
 		svc.l.Errorw("failed to send server event", "registered server", registered, "error", eventErr)
 	}
@@ -107,7 +106,7 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 		return err
 	}
 
-	eventErr := svc.r.SendMessage(conversions.WashServerUpdateToRabbit(updateWashServer, false), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerUpdated))
+	eventErr := svc.r.SendMessage(conversions.WashServerUpdateToRabbit(updateWashServer, false), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
 	if eventErr != nil {
 		svc.l.Errorw("failed to send server event", "update server", updateWashServer, "error", eventErr)
 	}
@@ -134,7 +133,7 @@ func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id u
 		return err
 	}
 
-	eventErr := svc.r.SendMessage(conversions.WashServerUpdateToRabbit(vo.UpdateWashServer{ID: id}, true), vo2.WashAdminService, vo2.WashAdminServers, int(vo2.WashAdminServerUpdated))
+	eventErr := svc.r.SendMessage(conversions.WashServerUpdateToRabbit(vo.UpdateWashServer{ID: id}, true), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
 	if eventErr != nil {
 		svc.l.Errorw("failed to send server event", "deleted server", id.String(), "error", eventErr)
 	}

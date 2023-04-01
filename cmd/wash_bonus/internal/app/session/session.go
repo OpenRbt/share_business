@@ -2,17 +2,16 @@ package session
 
 import (
 	"context"
+	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 	"wash_bonus/internal/app"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/infrastructure/rabbit/models"
-	"wash_bonus/internal/infrastructure/rabbit/models/vo"
-
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 )
 
-func (s *service) AssignRabbit(handler func(msg interface{}, service string, target string, messageType int) error) {
+func (s *service) AssignRabbit(handler func(msg interface{}, service rabbit_vo.Service, target rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) error) {
 	s.rabbitPublisherFunc = handler
 }
 
@@ -21,10 +20,12 @@ func (s *service) CreateSession(ctx context.Context, serverID uuid.UUID, postID 
 	if err != nil {
 		return
 	}
-	eventErr := s.rabbitPublisherFunc(conversions.SessionToRabbit(session), vo.WashBonusService, serverID.String(), int(vo.BonusSessionCreated))
+
+	eventErr := s.rabbitPublisherFunc(conversions.SessionToRabbit(session), rabbit_vo.WashBonusService, rabbit_vo.RoutingKey(serverID.String()), rabbit_vo.SessionCreatedMessageType)
 	if eventErr != nil {
 		s.l.Errorw("failed to send server event", "created session", session, "target server", serverID.String(), "error", eventErr)
 	}
+
 	return
 }
 
@@ -44,7 +45,7 @@ func (s *service) CreateSessionPool(ctx context.Context, serverID uuid.UUID, pos
 		postSessions.NewSessions[i] = session.ID.String()
 	}
 
-	eventErr := s.rabbitPublisherFunc(postSessions, vo.WashBonusService, serverID.String(), int(vo.BonusSessionCreated))
+	eventErr := s.rabbitPublisherFunc(postSessions, rabbit_vo.WashBonusService, rabbit_vo.RoutingKey(serverID.String()), rabbit_vo.SessionCreatedMessageType)
 	if eventErr != nil {
 		s.l.Errorw("failed to send server event", "session pool creation", "target server", serverID.String(), "error", eventErr)
 	}
@@ -117,6 +118,11 @@ func (s *service) ChargeBonuses(ctx context.Context, sessionID uuid.UUID, userID
 	}
 
 	err = s.sessionRepo.UpdateSessionBalance(ctx, sessionID, amount)
+
+	eventErr := s.rabbitPublisherFunc(conversions.SessionBonusCharge(session, amount), rabbit_vo.WashBonusService, rabbit_vo.RoutingKey(session.WashServer.Id.String()), rabbit_vo.SessionBonusChargeMessageType)
+	if eventErr != nil {
+		s.l.Errorw("failed to send charge bonuses event", "session", session.ID.String(), "amount", amount.String(), "error", eventErr)
+	}
 
 	return
 }

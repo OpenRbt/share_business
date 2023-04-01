@@ -348,7 +348,7 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/session/{UID}"] = session.NewPostSession(o.context, o.SessionPostSessionHandler)
+	o.handlers["POST"]["/session/{UID}/bonuses"] = session.NewPostSession(o.context, o.SessionPostSessionHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

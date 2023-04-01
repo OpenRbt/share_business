@@ -102,6 +102,8 @@ paths:
           description: Internal error
           schema:
             $ref: "#/definitions/error"
+
+  /session/{UID}/bonuses:
     post:
       tags:
         - session

@@ -40,7 +40,7 @@ func (o *PostSessionURL) SetBasePath(bp string) {
 func (o *PostSessionURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/session/{UID}"
+	var _path = "/session/{UID}/bonuses"
 
 	uid := o.UID
 	if uid != "" {

@@ -4,23 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"wash_bonus/internal/conversions"
-	"wash_bonus/internal/infrastructure/rabbit/models"
-	"wash_bonus/internal/infrastructure/rabbit/models/vo"
-
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/admin"
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/session"
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 	"github.com/wagslane/go-rabbitmq"
+	"wash_bonus/internal/conversions"
+	"wash_bonus/internal/infrastructure/rabbit/models"
 )
 
 func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 	// TODO: use context with timeout
 	ctx := context.Background()
 
-	messageType := vo.MessageTypeFromString(d.Type)
-	switch messageType {
-	case vo.WashAdminServerRegistered:
-		var msg models.ServerRegistered
+	switch vo.MessageType(d.Type) {
+	case vo.AdminServerRegisteredMessageType:
+		var msg admin.ServerRegistered
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -38,8 +38,8 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.WashAdminServerUpdated:
-		var msg models.ServerUpdate
+	case vo.AdminServerUpdatedMessageType:
+		var msg admin.ServerUpdate
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -57,8 +57,8 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.BonusSessionRequest:
-		var msg models.SessionRequest
+	case vo.SessionRequestMessageType:
+		var msg session.RequestSessions
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -75,8 +75,8 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.BonusSessionStateChange:
-		var msg models.SessionStateChange
+	case vo.SessionStateMessageType:
+		var msg session.StateChange
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -89,14 +89,13 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.UpdateSessionState(ctx, sessionID, msg.State)
+		err = s.svcSessions.UpdateSessionState(ctx, sessionID, models.SessionState(msg.State))
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
 		}
-
-	case vo.BonusSessionBonusConfirm:
-		var msg models.SessionBonusChargeConfirm
+	case vo.SessionBonusConfirmMessageType:
+		var msg session.BonusChargeConfirm
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -114,9 +113,8 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
-
-	case vo.BonusSessionBonusDiscard:
-		var msg models.SessionBonusChargeDiscard
+	case vo.SessionBonusDiscardMessageType:
+		var msg session.BonusChargeDiscard
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -134,6 +132,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			action = rabbitmq.NackDiscard
 			return
 		}
+
 	default:
 		action = rabbitmq.NackDiscard
 	}
@@ -141,7 +140,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 	return
 }
 
-func (s *Service) SendMessage(msg interface{}, service string, target string, messageType int) (err error) {
+func (s *Service) SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error) {
 	jsonMsg, err := json.Marshal(msg)
 	if err != nil {
 		return
@@ -151,9 +150,9 @@ func (s *Service) SendMessage(msg interface{}, service string, target string, me
 	case vo.WashBonusService:
 		return s.washBonusPub.Publish(
 			jsonMsg,
-			[]string{target},
-			rabbitmq.WithPublishOptionsType(vo.MessageType(messageType).String()),
-			rabbitmq.WithPublishOptionsExchange(vo.WashBonusService),
+			[]string{string(routingKey)},
+			rabbitmq.WithPublishOptionsType(string(messageType)),
+			rabbitmq.WithPublishOptionsExchange(string(service)),
 		)
 	default:
 		return errors.New("unknown Service")

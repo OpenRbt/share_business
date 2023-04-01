@@ -4,15 +4,14 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
-	"wash_admin/internal/infrastructure/rabbit-intapi/client"
-	"wash_admin/internal/infrastructure/rabbit/models/vo"
-
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/wagslane/go-rabbitmq"
 	"go.uber.org/zap"
+	"io/ioutil"
+	"wash_admin/internal/infrastructure/rabbit-intapi/client"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -80,7 +79,7 @@ func New(l *zap.SugaredLogger, url, port, certsPath, user, password string) (svc
 	svc.eventsPublisher, err = rabbitmq.NewPublisher(conn,
 		rabbitmq.WithPublisherOptionsLogging,
 		rabbitmq.WithPublisherOptionsExchangeDeclare,
-		rabbitmq.WithPublisherOptionsExchangeName(vo.WashAdminService),
+		rabbitmq.WithPublisherOptionsExchangeName(string(vo.WashAdminService)),
 		rabbitmq.WithPublisherOptionsExchangeKind("direct"),
 		rabbitmq.WithPublisherOptionsExchangeDurable,
 	)
@@ -89,15 +88,15 @@ func New(l *zap.SugaredLogger, url, port, certsPath, user, password string) (svc
 	}
 	svc.eventsConsumer, err = rabbitmq.NewConsumer(conn,
 		func(d rabbitmq.Delivery) (action rabbitmq.Action) {
-			l.Error("received unexpected message with type: ", vo.MessageTypeFromString(d.Type))
+			l.Error("received unexpected message with type: ", vo.MessageType(d.Type))
 
 			return rabbitmq.NackDiscard
 		},
-		vo.WashAdminSvc,
+		string(vo.WashAdminRoutingKey),
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
-		rabbitmq.WithConsumerOptionsExchangeName(vo.WashAdminService),
+		rabbitmq.WithConsumerOptionsExchangeName(string(vo.WashAdminService)),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
-		rabbitmq.WithConsumerOptionsRoutingKey(vo.WashAdminSvc),
+		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashAdminRoutingKey)),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 		rabbitmq.WithConsumerOptionsConsumerExclusive,
 	)

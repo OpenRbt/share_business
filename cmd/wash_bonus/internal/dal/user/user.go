@@ -28,7 +28,7 @@ func (r *repo) GetByID(ctx context.Context, userID string) (user entity.User, er
 	case err == nil:
 		return conversions.UserFromDb(dbUser), err
 	case errors.Is(err, dbr.ErrNotFound):
-		user, err = r.Create(ctx, userID)
+		err = entity.ErrNotFound
 		return
 	default:
 		return
@@ -67,51 +67,30 @@ func (r *repo) UpdateBalance(ctx context.Context, userID string, amount decimal.
 
 	tx, err = r.db.NewSession(nil).BeginTx(ctx, nil)
 
-	dbAmount := decimal.NullDecimal{
-		Decimal: amount,
-		Valid:   true,
+	date := time.Now()
+
+	var userBalance decimal.NullDecimal
+
+	err = tx.SelectBySql("SELECT balance FROM users WHERE  id = ? FOR UPDATE", userID).LoadOneContext(ctx, &userBalance)
+	if err != nil {
+		return
 	}
 
-	date := time.Now()
-	res := tx.QueryRowContext(ctx, `
-	DO
-$do$
-    DECLARE userBalance numeric(10,2);
+	if amount.LessThan(decimal.Zero) && amount.GreaterThan(userBalance.Decimal) {
+		err = entity.ErrNotEnoughMoney
+		return
+	}
 
-    BEGIN
-        SELECT balance FROM users WHERE id = ? FOR UPDATE INTO userBalance;
-        if ? < 0 THEN
-            IF userBalance < abs(?) THEN
-                RAISE EXCEPTION ?;
-            END IF;
-        end if;
+	newAmount := userBalance.Decimal.Add(amount)
 
-        UPDATE users SET balance = userBalance + ? WHERE id = ?;
-        
-        INSERT INTO balance_events(user,old_amount,new_amount,date) values (?, userBalance, userBalance + ?, ?);
-    END;
-$do$
-`,
-		// main args
-		userID,
-		dbAmount,
-		dbAmount,
-		entity.ErrNotEnoughMoney.Error(),
-		dbAmount,
-		userID,
-		//logging args
-		userID, dbAmount, date,
-	)
-	if res.Err() != nil {
-		switch {
-		case errors.Is(err, entity.ErrNotEnoughMoney):
-			err = entity.ErrNotEnoughMoney
-			tx.Rollback()
-			return
-		default:
-			tx.Rollback()
-			return
-		}
+	_, err = tx.Update("users").Set("balance", decimal.NullDecimal{Decimal: newAmount, Valid: true}).ExecContext(ctx)
+	if err != nil {
+		return
+	}
+
+	_, err = tx.InsertInto("balance_events").Columns("user", "old_amount", "new_amount", "date").Values(userID, userBalance, newAmount, date).ExecContext(ctx)
+	if err != nil {
+		return
 	}
 
 	err = tx.Commit()

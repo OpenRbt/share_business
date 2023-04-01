@@ -1,10 +1,10 @@
 package conversions
 
 import (
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/admin"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/entity/vo"
-	models2 "wash_bonus/internal/infrastructure/rabbit/models"
 	"wash_bonus/openapi/models"
 
 	uuid "github.com/satori/go.uuid"
@@ -18,7 +18,7 @@ func WashServerFromDB(dbWashServer dbmodels.WashServer) entity.WashServer {
 	}
 }
 
-func WashServerCreationFromRabbit(m models2.ServerRegistered) (e entity.WashServer, err error) {
+func WashServerCreationFromRabbit(m admin.ServerRegistered) (e entity.WashServer, err error) {
 	id, err := uuid.FromString(m.ID)
 	if err != nil {
 		return
@@ -38,7 +38,7 @@ func WashServerToRest(e entity.WashServer) *models.WashServer {
 	}
 }
 
-func WashServerUpdateFromRabbit(m models2.ServerUpdate) (v vo.WashServerUpdate, err error) {
+func WashServerUpdateFromRabbit(m admin.ServerUpdate) (v vo.WashServerUpdate, err error) {
 	id, err := uuid.FromString(m.ID)
 	if err != nil {
 		return

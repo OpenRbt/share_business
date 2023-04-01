@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	"wash_bonus/internal/app"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/infrastructure/rabbit/models"
@@ -12,7 +13,7 @@ import (
 )
 
 type Service interface {
-	AssignRabbit(func(msg interface{}, service string, target string, messageType int) error)
+	AssignRabbit(func(msg interface{}, service rabbit_vo.Service, target rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) error)
 	CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (session entity.Session, err error)
 	CreateSessionPool(ctx context.Context, serverID uuid.UUID, postID int64, sessionsAmount int64) (postSessions models.SessionCreation, err error)
 	UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state models.SessionState) error
@@ -50,7 +51,7 @@ type service struct {
 	washRepo    WashRepo
 	userRepo    UserRepo
 
-	rabbitPublisherFunc func(msg interface{}, service string, target string, messageType int) error
+	rabbitPublisherFunc func(msg interface{}, service rabbit_vo.Service, target rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) error
 }
 
 func New(l *zap.SugaredLogger, washRepo WashRepo, userRepo UserRepo, sessionRepo Repo) Service {
