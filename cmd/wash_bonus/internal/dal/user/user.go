@@ -76,7 +76,7 @@ func (r *repo) UpdateBalance(ctx context.Context, userID string, amount decimal.
 		return
 	}
 
-	if amount.LessThan(decimal.Zero) && amount.GreaterThan(userBalance.Decimal) {
+	if amount.LessThan(decimal.Zero) && amount.Add(userBalance.Decimal).LessThan(decimal.Zero) {
 		err = entity.ErrNotEnoughMoney
 		return
 	}
