@@ -2,13 +2,16 @@ package session
 
 import (
 	"context"
-	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"wash_bonus/internal/app"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/infrastructure/rabbit/models"
+
+	rabbit_session "github.com/OpenRbt/share_business/wash_rabbit/entity/session"
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (s *service) AssignRabbit(handler func(msg interface{}, service rabbit_vo.Service, target rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) error) {
@@ -85,13 +88,11 @@ func (s *service) GetUserSession(ctx context.Context, auth *app.Auth, sessionID 
 
 func (s *service) AssignSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error) {
 	user, err := s.userRepo.GetByID(ctx, userID)
-	if err == nil {
-		return s.sessionRepo.SetSessionUser(ctx, sessionID, userID)
-	}
-
-	user, err = s.userRepo.Create(ctx, userID)
 	if err != nil {
-		return err
+		user, err = s.userRepo.Create(ctx, userID)
+		if err != nil {
+			return err
+		}
 	}
 
 	session, err := s.sessionRepo.GetSession(ctx, sessionID)
@@ -101,6 +102,16 @@ func (s *service) AssignSessionUser(ctx context.Context, sessionID uuid.UUID, us
 
 	if session.User != nil || session.Finished {
 		return entity.ErrForbidden
+	}
+
+	assignUser := rabbit_session.UserAssign{
+		SessionID: sessionID.String(),
+		UserID:    userID,
+	}
+
+	eventErr := s.rabbitPublisherFunc(assignUser, vo.WashBonusService, rabbit_vo.RoutingKey(session.WashServer.Id.String()), rabbit_vo.SessionUserMessageType)
+	if eventErr != nil {
+		s.l.Errorw("failed to send server event", "session pool creation", "target server", session.WashServer.Id.String(), "error", eventErr)
 	}
 
 	return s.sessionRepo.SetSessionUser(ctx, sessionID, user.ID)
