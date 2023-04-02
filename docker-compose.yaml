@@ -29,6 +29,7 @@ services:
       LOG_LEVEL: "info"
       DB_USER: ${WASH_BONUS_DB_USER:-wash_bonus}
       DB_PASSWORD: ${WASH_BONUS_DB_PASS:-wash_bonus}
+      
   wash_admin_back:
     container_name: wash_admin_backend
     restart: always
@@ -58,8 +59,10 @@ services:
       - ./environment/rabbit/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
       - ./environment/rabbit/definitions.json:/etc/rabbitmq/definitions.json
       - rabbitmq-data:/var/lib/rabbitmq
-      - rabbitmq-log:/var/log/rabbitmq
-      
+      - rabbitmq-logs:/var/log/rabbitmq
+
 volumes:
   rabbitmq-data:
-  rabbitmq-log:
+    driver: local
+  rabbitmq-logs:
+    driver: local
