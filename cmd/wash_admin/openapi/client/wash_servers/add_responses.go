@@ -85,6 +85,11 @@ func (o *AddOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the add o k response
+func (o *AddOK) Code() int {
+	return 200
+}
+
 func (o *AddOK) Error() string {
 	return fmt.Sprintf("[PUT /wash-server/][%d] addOK  %+v", 200, o.Payload)
 }
@@ -148,6 +153,11 @@ func (o *AddBadRequest) IsCode(code int) bool {
 	return code == 400
 }
 
+// Code gets the status code for the add bad request response
+func (o *AddBadRequest) Code() int {
+	return 400
+}
+
 func (o *AddBadRequest) Error() string {
 	return fmt.Sprintf("[PUT /wash-server/][%d] addBadRequest  %+v", 400, o.Payload)
 }
@@ -209,6 +219,11 @@ func (o *AddInternalServerError) IsServerError() bool {
 // IsCode returns true when this add internal server error response a status code equal to that given
 func (o *AddInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the add internal server error response
+func (o *AddInternalServerError) Code() int {
+	return 500
 }
 
 func (o *AddInternalServerError) Error() string {

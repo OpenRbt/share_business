@@ -91,6 +91,11 @@ func (o *ListOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the list o k response
+func (o *ListOK) Code() int {
+	return 200
+}
+
 func (o *ListOK) Error() string {
 	return fmt.Sprintf("[GET /wash-server/list][%d] listOK  %+v", 200, o.Payload)
 }
@@ -150,6 +155,11 @@ func (o *ListBadRequest) IsServerError() bool {
 // IsCode returns true when this list bad request response a status code equal to that given
 func (o *ListBadRequest) IsCode(code int) bool {
 	return code == 400
+}
+
+// Code gets the status code for the list bad request response
+func (o *ListBadRequest) Code() int {
+	return 400
 }
 
 func (o *ListBadRequest) Error() string {
@@ -215,6 +225,11 @@ func (o *ListNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the list not found response
+func (o *ListNotFound) Code() int {
+	return 404
+}
+
 func (o *ListNotFound) Error() string {
 	return fmt.Sprintf("[GET /wash-server/list][%d] listNotFound  %+v", 404, o.Payload)
 }
@@ -276,6 +291,11 @@ func (o *ListInternalServerError) IsServerError() bool {
 // IsCode returns true when this list internal server error response a status code equal to that given
 func (o *ListInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the list internal server error response
+func (o *ListInternalServerError) Code() int {
+	return 500
 }
 
 func (o *ListInternalServerError) Error() string {

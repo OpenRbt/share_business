@@ -90,6 +90,11 @@ func (o *DeleteNoContent) IsCode(code int) bool {
 	return code == 204
 }
 
+// Code gets the status code for the delete no content response
+func (o *DeleteNoContent) Code() int {
+	return 204
+}
+
 func (o *DeleteNoContent) Error() string {
 	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteNoContent ", 204)
 }
@@ -140,6 +145,11 @@ func (o *DeleteBadRequest) IsServerError() bool {
 // IsCode returns true when this delete bad request response a status code equal to that given
 func (o *DeleteBadRequest) IsCode(code int) bool {
 	return code == 400
+}
+
+// Code gets the status code for the delete bad request response
+func (o *DeleteBadRequest) Code() int {
+	return 400
 }
 
 func (o *DeleteBadRequest) Error() string {
@@ -205,6 +215,11 @@ func (o *DeleteNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the delete not found response
+func (o *DeleteNotFound) Code() int {
+	return 404
+}
+
 func (o *DeleteNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /wash-server/][%d] deleteNotFound  %+v", 404, o.Payload)
 }
@@ -266,6 +281,11 @@ func (o *DeleteInternalServerError) IsServerError() bool {
 // IsCode returns true when this delete internal server error response a status code equal to that given
 func (o *DeleteInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the delete internal server error response
+func (o *DeleteInternalServerError) Code() int {
+	return 500
 }
 
 func (o *DeleteInternalServerError) Error() string {

@@ -116,7 +116,7 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
 		rabbitmq.WithConsumerOptionsExchangeName(string(vo.WashAdminService)),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
-		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashAdminRoutingKey)),
+		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashAdminServesEventsRoutingKey)),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 	)
 

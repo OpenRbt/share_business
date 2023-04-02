@@ -58,7 +58,19 @@ func (s *service) UpdateSessionState(ctx context.Context, sessionID uuid.UUID, s
 }
 
 func (s *service) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Session, error) {
-	return s.sessionRepo.GetSession(ctx, sessionID)
+	session, err := s.sessionRepo.GetSession(ctx, sessionID)
+	if err != nil {
+		return entity.Session{}, err
+	}
+
+	washServer, err := s.washRepo.GetWashServer(ctx, session.WashServer.Id)
+	if err != nil {
+		return entity.Session{}, err
+	}
+
+	session.WashServer = washServer
+
+	return session, nil
 }
 
 func (s *service) GetUserSession(ctx context.Context, auth *app.Auth, sessionID uuid.UUID) (session entity.Session, err error) {

@@ -87,6 +87,11 @@ func (o *CreateUserCreated) IsCode(code int) bool {
 	return code == 201
 }
 
+// Code gets the status code for the create user created response
+func (o *CreateUserCreated) Code() int {
+	return 201
+}
+
 func (o *CreateUserCreated) Error() string {
 	return fmt.Sprintf("[PUT /api/users/{user_id}][%d] createUserCreated ", 201)
 }
@@ -136,6 +141,11 @@ func (o *CreateUserNoContent) IsServerError() bool {
 // IsCode returns true when this create user no content response a status code equal to that given
 func (o *CreateUserNoContent) IsCode(code int) bool {
 	return code == 204
+}
+
+// Code gets the status code for the create user no content response
+func (o *CreateUserNoContent) Code() int {
+	return 204
 }
 
 func (o *CreateUserNoContent) Error() string {
@@ -189,6 +199,11 @@ func (o *CreateUserBadRequest) IsCode(code int) bool {
 	return code == 400
 }
 
+// Code gets the status code for the create user bad request response
+func (o *CreateUserBadRequest) Code() int {
+	return 400
+}
+
 func (o *CreateUserBadRequest) Error() string {
 	return fmt.Sprintf("[PUT /api/users/{user_id}][%d] createUserBadRequest ", 400)
 }
@@ -238,6 +253,11 @@ func (o *CreateUserInternalServerError) IsServerError() bool {
 // IsCode returns true when this create user internal server error response a status code equal to that given
 func (o *CreateUserInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the create user internal server error response
+func (o *CreateUserInternalServerError) Code() int {
+	return 500
 }
 
 func (o *CreateUserInternalServerError) Error() string {

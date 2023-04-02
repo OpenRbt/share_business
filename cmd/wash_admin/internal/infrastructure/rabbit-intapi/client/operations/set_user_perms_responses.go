@@ -87,6 +87,11 @@ func (o *SetUserPermsCreated) IsCode(code int) bool {
 	return code == 201
 }
 
+// Code gets the status code for the set user perms created response
+func (o *SetUserPermsCreated) Code() int {
+	return 201
+}
+
 func (o *SetUserPermsCreated) Error() string {
 	return fmt.Sprintf("[PUT /api/permissions/{vhost}/{user_id}][%d] setUserPermsCreated ", 201)
 }
@@ -136,6 +141,11 @@ func (o *SetUserPermsNoContent) IsServerError() bool {
 // IsCode returns true when this set user perms no content response a status code equal to that given
 func (o *SetUserPermsNoContent) IsCode(code int) bool {
 	return code == 204
+}
+
+// Code gets the status code for the set user perms no content response
+func (o *SetUserPermsNoContent) Code() int {
+	return 204
 }
 
 func (o *SetUserPermsNoContent) Error() string {
@@ -189,6 +199,11 @@ func (o *SetUserPermsBadRequest) IsCode(code int) bool {
 	return code == 400
 }
 
+// Code gets the status code for the set user perms bad request response
+func (o *SetUserPermsBadRequest) Code() int {
+	return 400
+}
+
 func (o *SetUserPermsBadRequest) Error() string {
 	return fmt.Sprintf("[PUT /api/permissions/{vhost}/{user_id}][%d] setUserPermsBadRequest ", 400)
 }
@@ -238,6 +253,11 @@ func (o *SetUserPermsInternalServerError) IsServerError() bool {
 // IsCode returns true when this set user perms internal server error response a status code equal to that given
 func (o *SetUserPermsInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the set user perms internal server error response
+func (o *SetUserPermsInternalServerError) Code() int {
+	return 500
 }
 
 func (o *SetUserPermsInternalServerError) Error() string {

@@ -90,6 +90,11 @@ func (o *UpdateNoContent) IsCode(code int) bool {
 	return code == 204
 }
 
+// Code gets the status code for the update no content response
+func (o *UpdateNoContent) Code() int {
+	return 204
+}
+
 func (o *UpdateNoContent) Error() string {
 	return fmt.Sprintf("[PATCH /wash-server/][%d] updateNoContent ", 204)
 }
@@ -140,6 +145,11 @@ func (o *UpdateBadRequest) IsServerError() bool {
 // IsCode returns true when this update bad request response a status code equal to that given
 func (o *UpdateBadRequest) IsCode(code int) bool {
 	return code == 400
+}
+
+// Code gets the status code for the update bad request response
+func (o *UpdateBadRequest) Code() int {
+	return 400
 }
 
 func (o *UpdateBadRequest) Error() string {
@@ -205,6 +215,11 @@ func (o *UpdateNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the update not found response
+func (o *UpdateNotFound) Code() int {
+	return 404
+}
+
 func (o *UpdateNotFound) Error() string {
 	return fmt.Sprintf("[PATCH /wash-server/][%d] updateNotFound  %+v", 404, o.Payload)
 }
@@ -266,6 +281,11 @@ func (o *UpdateInternalServerError) IsServerError() bool {
 // IsCode returns true when this update internal server error response a status code equal to that given
 func (o *UpdateInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the update internal server error response
+func (o *UpdateInternalServerError) Code() int {
+	return 500
 }
 
 func (o *UpdateInternalServerError) Error() string {

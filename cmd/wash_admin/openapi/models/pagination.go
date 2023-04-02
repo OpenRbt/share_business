@@ -6,9 +6,7 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -27,29 +25,6 @@ type Pagination struct {
 
 	// offset
 	Offset int64 `json:"offset,omitempty"`
-}
-
-// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
-func (m *Pagination) UnmarshalJSON(data []byte) error {
-	var props struct {
-
-		// limit
-		// Maximum: 100
-		Limit int64 `json:"limit,omitempty"`
-
-		// offset
-		Offset int64 `json:"offset,omitempty"`
-	}
-
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&props); err != nil {
-		return err
-	}
-
-	m.Limit = props.Limit
-	m.Offset = props.Offset
-	return nil
 }
 
 // Validate validates this pagination

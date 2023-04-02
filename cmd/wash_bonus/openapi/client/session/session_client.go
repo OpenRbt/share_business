@@ -128,7 +128,7 @@ func (a *Client) PostSession(params *PostSessionParams, authInfo runtime.ClientA
 	op := &runtime.ClientOperation{
 		ID:                 "postSession",
 		Method:             "POST",
-		PathPattern:        "/session/{UID}",
+		PathPattern:        "/session/{UID}/bonuses",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

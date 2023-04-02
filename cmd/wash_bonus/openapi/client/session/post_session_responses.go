@@ -96,11 +96,11 @@ func (o *PostSessionNoContent) Code() int {
 }
 
 func (o *PostSessionNoContent) Error() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionNoContent ", 204)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionNoContent ", 204)
 }
 
 func (o *PostSessionNoContent) String() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionNoContent ", 204)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionNoContent ", 204)
 }
 
 func (o *PostSessionNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -152,11 +152,11 @@ func (o *PostSessionForbidden) Code() int {
 }
 
 func (o *PostSessionForbidden) Error() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionForbidden ", 403)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionForbidden ", 403)
 }
 
 func (o *PostSessionForbidden) String() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionForbidden ", 403)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionForbidden ", 403)
 }
 
 func (o *PostSessionForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -209,11 +209,11 @@ func (o *PostSessionNotFound) Code() int {
 }
 
 func (o *PostSessionNotFound) Error() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionNotFound  %+v", 404, o.Payload)
 }
 
 func (o *PostSessionNotFound) String() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionNotFound  %+v", 404, o.Payload)
 }
 
 func (o *PostSessionNotFound) GetPayload() *models.Error {
@@ -277,11 +277,11 @@ func (o *PostSessionInternalServerError) Code() int {
 }
 
 func (o *PostSessionInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *PostSessionInternalServerError) String() string {
-	return fmt.Sprintf("[POST /session/{UID}][%d] postSessionInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *PostSessionInternalServerError) GetPayload() *models.Error {

@@ -28,7 +28,7 @@ require (
 	google.golang.org/api v0.62.0
 )
 
-require github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230331123331-dd816969c391 // indirect
+require github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230331123331-dd816969c391
 
 require (
 	cloud.google.com/go v0.99.0 // indirect

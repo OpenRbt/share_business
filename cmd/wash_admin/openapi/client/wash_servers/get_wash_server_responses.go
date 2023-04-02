@@ -91,6 +91,11 @@ func (o *GetWashServerOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the get wash server o k response
+func (o *GetWashServerOK) Code() int {
+	return 200
+}
+
 func (o *GetWashServerOK) Error() string {
 	return fmt.Sprintf("[GET /wash-server/{id}][%d] getWashServerOK  %+v", 200, o.Payload)
 }
@@ -152,6 +157,11 @@ func (o *GetWashServerBadRequest) IsServerError() bool {
 // IsCode returns true when this get wash server bad request response a status code equal to that given
 func (o *GetWashServerBadRequest) IsCode(code int) bool {
 	return code == 400
+}
+
+// Code gets the status code for the get wash server bad request response
+func (o *GetWashServerBadRequest) Code() int {
+	return 400
 }
 
 func (o *GetWashServerBadRequest) Error() string {
@@ -217,6 +227,11 @@ func (o *GetWashServerNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the get wash server not found response
+func (o *GetWashServerNotFound) Code() int {
+	return 404
+}
+
 func (o *GetWashServerNotFound) Error() string {
 	return fmt.Sprintf("[GET /wash-server/{id}][%d] getWashServerNotFound  %+v", 404, o.Payload)
 }
@@ -278,6 +293,11 @@ func (o *GetWashServerInternalServerError) IsServerError() bool {
 // IsCode returns true when this get wash server internal server error response a status code equal to that given
 func (o *GetWashServerInternalServerError) IsCode(code int) bool {
 	return code == 500
+}
+
+// Code gets the status code for the get wash server internal server error response
+func (o *GetWashServerInternalServerError) Code() int {
+	return 500
 }
 
 func (o *GetWashServerInternalServerError) Error() string {
