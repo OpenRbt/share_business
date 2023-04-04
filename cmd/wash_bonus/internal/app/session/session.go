@@ -175,3 +175,19 @@ func (s *service) DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amoun
 
 	return
 }
+
+func (s *service) RewardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
+	session, err := s.GetSession(ctx, sessionID)
+	if err != nil {
+		return err
+	}
+
+	if session.User != nil {
+		err = s.sessionRepo.UpdateSessionBalance(ctx, sessionID, amount.Neg())
+		if err != nil {
+			return
+		}
+		err = s.userRepo.UpdateBalance(ctx, session.User.ID, amount)
+	}
+	return
+}

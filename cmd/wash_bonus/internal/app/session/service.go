@@ -25,6 +25,7 @@ type Service interface {
 	ChargeBonuses(ctx context.Context, sessionID uuid.UUID, userID string, amount decimal.Decimal) (err error)
 	ConfirmBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
 	DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
+	RewardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
 }
 
 type Repo interface {

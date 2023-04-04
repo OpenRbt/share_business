@@ -14,9 +14,8 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type WorkerService interface {
-	ProcessBonusMessage(msg any, target string) (err error)
-	SendMessage(msg any, target string) (err error)
+type Rabbit interface {
+	SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error)
 }
 
 type Service struct {

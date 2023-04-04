@@ -2,7 +2,6 @@ package sessions
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 	"wash_bonus/internal/conversions"
@@ -102,51 +101,33 @@ func (r *repo) UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, am
 		UUID:  sessionID,
 		Valid: true,
 	}
-	dbAmount := decimal.NullDecimal{
-		Decimal: amount,
+	date := time.Now()
+
+	var sessionBalance decimal.NullDecimal
+
+	err = tx.SelectBySql("SELECT balance FROM users WHERE id = ? FOR UPDATE", dbUUID).LoadOneContext(ctx, &sessionBalance)
+
+	if amount.LessThan(decimal.Zero) && amount.Add(sessionBalance.Decimal).LessThan(decimal.Zero) {
+		err = entity.ErrNotEnoughMoney
+		return
+	}
+
+	newDbAmount := decimal.NullDecimal{
+		Decimal: sessionBalance.Decimal.Add(amount),
 		Valid:   true,
 	}
-	date := time.Now()
-	res := tx.QueryRowContext(ctx, `
-	DO
-$do$
-    DECLARE sessionBalance numeric(10,2);
 
-    BEGIN
-        SELECT balance FROM users WHERE id = ? FOR UPDATE INTO sessionBalance;
-        if ? < 0 THEN
-            IF sessionBalance < abs(?) THEN
-                RAISE EXCEPTION ?;
-            END IF;
-        end if;
+	_, err = tx.Update("sessions").
+		Where("id = ?", dbUUID).
+		Set("balance", newDbAmount).
+		ExecContext(ctx)
 
-        UPDATE sessions SET balance = sessionBalance + ? WHERE id = ?;
-        
-        INSERT INTO sessions_balance_events(session,old_amount,new_amount,date) values (?, sessionBalance, sessionBalance + ?, ?);
-    END;
-$do$
-`,
-		// main args
-		dbUUID,
-		dbAmount,
-		dbAmount,
-		entity.ErrNotEnoughMoney.Error(),
-		dbAmount,
-		dbUUID,
-		//logging args
-		dbUUID, dbAmount, date,
-	)
-
-	if res.Err() != nil {
-		switch {
-		case errors.Is(err, entity.ErrNotEnoughMoney):
-			err = entity.ErrNotEnoughMoney
-			tx.Rollback()
-			return
-		default:
-			tx.Rollback()
-			return
-		}
+	_, err = tx.InsertInto("sessions_balance_events").
+		Columns("session", "old_amount", "new_amount", "date").
+		Values(dbUUID, sessionBalance, newDbAmount, date).
+		ExecContext(ctx)
+	if err != nil {
+		return
 	}
 
 	err = tx.Commit()

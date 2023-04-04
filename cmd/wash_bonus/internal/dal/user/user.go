@@ -83,7 +83,10 @@ func (r *repo) UpdateBalance(ctx context.Context, userID string, amount decimal.
 
 	newAmount := userBalance.Decimal.Add(amount)
 
-	_, err = tx.Update("users").Set("balance", decimal.NullDecimal{Decimal: newAmount, Valid: true}).ExecContext(ctx)
+	_, err = tx.Update("users").
+		Where("id = ?", userID).
+		Set("balance", decimal.NullDecimal{Decimal: newAmount, Valid: true}).
+		ExecContext(ctx)
 	if err != nil {
 		return
 	}

@@ -108,7 +108,13 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.ConfirmBonuses(ctx, sessionID, decimal.NewFromInt(msg.Amount))
+		amount := decimal.NewFromInt(int64(msg.Amount))
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
+		err = s.svcSessions.ConfirmBonuses(ctx, sessionID, amount)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -127,12 +133,42 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.DiscardBonuses(ctx, sessionID, decimal.NewFromInt(msg.Amount))
+		amount := decimal.NewFromInt(int64(msg.Amount))
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
 		}
 
+		err = s.svcSessions.DiscardBonuses(ctx, sessionID, amount)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+	case vo.SessionBonusRewardMessageType:
+		var msg session.BonusReward
+		err := json.Unmarshal(d.Body, &msg)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
+		sessionID, err := uuid.FromString(msg.SessionID)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
+		amount := decimal.NewFromInt(int64(msg.Amount))
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
+		err = s.svcSessions.RewardBonuses(ctx, sessionID, amount)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
 	default:
 		action = rabbitmq.NackDiscard
 	}
