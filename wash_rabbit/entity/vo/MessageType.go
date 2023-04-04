@@ -13,6 +13,7 @@ const (
 	SessionBonusChargeMessageType  MessageType = "bonus_service/session/bonus/charge"
 	SessionBonusConfirmMessageType MessageType = "bonus_service/session/bonus/confirm"
 	SessionBonusDiscardMessageType MessageType = "bonus_service/session/bonus/discard"
+	SessionBonusReward             MessageType = "bonus_service/session/bonus/reward"
 
 	AdminServerRegisteredMessageType MessageType = "admin_service/server/registered"
 	AdminServerUpdatedMessageType    MessageType = "admin_service/server/updated"
