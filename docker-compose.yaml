@@ -48,6 +48,7 @@ services:
 
   wash_rabbit:
     container_name: wash_rabbit
+    hostname: 'wash_rabbit'
     user: "rabbitmq"
     image: rabbitmq:3.11.8-management
     restart: always

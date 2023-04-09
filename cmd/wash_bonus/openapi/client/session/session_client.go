@@ -34,7 +34,7 @@ type ClientService interface {
 
 	GetSession(params *GetSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetSessionOK, error)
 
-	PostSession(params *PostSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostSessionNoContent, error)
+	PostSession(params *PostSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostSessionOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -120,7 +120,7 @@ func (a *Client) GetSession(params *GetSessionParams, authInfo runtime.ClientAut
 /*
 PostSession post session API
 */
-func (a *Client) PostSession(params *PostSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostSessionNoContent, error) {
+func (a *Client) PostSession(params *PostSessionParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostSessionOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewPostSessionParams()
@@ -146,7 +146,7 @@ func (a *Client) PostSession(params *PostSessionParams, authInfo runtime.ClientA
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*PostSessionNoContent)
+	success, ok := result.(*PostSessionOK)
 	if ok {
 		return success, nil
 	}

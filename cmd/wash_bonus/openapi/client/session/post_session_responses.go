@@ -23,8 +23,8 @@ type PostSessionReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *PostSessionReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
-	case 204:
-		result := NewPostSessionNoContent()
+	case 200:
+		result := NewPostSessionOK()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -52,58 +52,70 @@ func (o *PostSessionReader) ReadResponse(response runtime.ClientResponse, consum
 	}
 }
 
-// NewPostSessionNoContent creates a PostSessionNoContent with default headers values
-func NewPostSessionNoContent() *PostSessionNoContent {
-	return &PostSessionNoContent{}
+// NewPostSessionOK creates a PostSessionOK with default headers values
+func NewPostSessionOK() *PostSessionOK {
+	return &PostSessionOK{}
 }
 
 /*
-PostSessionNoContent describes a response with status code 204, with default header values.
+PostSessionOK describes a response with status code 200, with default header values.
 
 OK
 */
-type PostSessionNoContent struct {
+type PostSessionOK struct {
+	Payload *models.BonusCharge
 }
 
-// IsSuccess returns true when this post session no content response has a 2xx status code
-func (o *PostSessionNoContent) IsSuccess() bool {
+// IsSuccess returns true when this post session o k response has a 2xx status code
+func (o *PostSessionOK) IsSuccess() bool {
 	return true
 }
 
-// IsRedirect returns true when this post session no content response has a 3xx status code
-func (o *PostSessionNoContent) IsRedirect() bool {
+// IsRedirect returns true when this post session o k response has a 3xx status code
+func (o *PostSessionOK) IsRedirect() bool {
 	return false
 }
 
-// IsClientError returns true when this post session no content response has a 4xx status code
-func (o *PostSessionNoContent) IsClientError() bool {
+// IsClientError returns true when this post session o k response has a 4xx status code
+func (o *PostSessionOK) IsClientError() bool {
 	return false
 }
 
-// IsServerError returns true when this post session no content response has a 5xx status code
-func (o *PostSessionNoContent) IsServerError() bool {
+// IsServerError returns true when this post session o k response has a 5xx status code
+func (o *PostSessionOK) IsServerError() bool {
 	return false
 }
 
-// IsCode returns true when this post session no content response a status code equal to that given
-func (o *PostSessionNoContent) IsCode(code int) bool {
-	return code == 204
+// IsCode returns true when this post session o k response a status code equal to that given
+func (o *PostSessionOK) IsCode(code int) bool {
+	return code == 200
 }
 
-// Code gets the status code for the post session no content response
-func (o *PostSessionNoContent) Code() int {
-	return 204
+// Code gets the status code for the post session o k response
+func (o *PostSessionOK) Code() int {
+	return 200
 }
 
-func (o *PostSessionNoContent) Error() string {
-	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionNoContent ", 204)
+func (o *PostSessionOK) Error() string {
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionOK  %+v", 200, o.Payload)
 }
 
-func (o *PostSessionNoContent) String() string {
-	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionNoContent ", 204)
+func (o *PostSessionOK) String() string {
+	return fmt.Sprintf("[POST /session/{UID}/bonuses][%d] postSessionOK  %+v", 200, o.Payload)
 }
 
-func (o *PostSessionNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+func (o *PostSessionOK) GetPayload() *models.BonusCharge {
+	return o.Payload
+}
+
+func (o *PostSessionOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.BonusCharge)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

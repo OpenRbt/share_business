@@ -55,7 +55,7 @@ func (svc *service) chargeBonuses(params session.PostSessionParams, auth *app.Au
 	switch {
 
 	case err == nil:
-		return session.NewPostSessionNoContent()
+		return session.NewPostSessionOK().WithPayload(&models.BonusCharge{Amount: params.Body.Amount})
 	case errors.Is(err, entity.ErrNotFound):
 		return session.NewPostSessionNotFound()
 	case errors.Is(err, entity.ErrForbidden):

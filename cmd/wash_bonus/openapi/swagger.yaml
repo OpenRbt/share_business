@@ -122,8 +122,10 @@ paths:
           schema:
             $ref: "#/definitions/bonusCharge"
       responses:
-        204:
+        200:
           description: OK
+          schema:
+            $ref: "#/definitions/bonusCharge"
         403:
           description: Forbidden
         404:

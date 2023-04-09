@@ -14,32 +14,52 @@ import (
 	"wash_bonus/openapi/models"
 )
 
-// PostSessionNoContentCode is the HTTP code returned for type PostSessionNoContent
-const PostSessionNoContentCode int = 204
+// PostSessionOKCode is the HTTP code returned for type PostSessionOK
+const PostSessionOKCode int = 200
 
 /*
-PostSessionNoContent OK
+PostSessionOK OK
 
-swagger:response postSessionNoContent
+swagger:response postSessionOK
 */
-type PostSessionNoContent struct {
+type PostSessionOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.BonusCharge `json:"body,omitempty"`
 }
 
-// NewPostSessionNoContent creates PostSessionNoContent with default headers values
-func NewPostSessionNoContent() *PostSessionNoContent {
+// NewPostSessionOK creates PostSessionOK with default headers values
+func NewPostSessionOK() *PostSessionOK {
 
-	return &PostSessionNoContent{}
+	return &PostSessionOK{}
+}
+
+// WithPayload adds the payload to the post session o k response
+func (o *PostSessionOK) WithPayload(payload *models.BonusCharge) *PostSessionOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the post session o k response
+func (o *PostSessionOK) SetPayload(payload *models.BonusCharge) {
+	o.Payload = payload
 }
 
 // WriteResponse to the client
-func (o *PostSessionNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *PostSessionOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
-	rw.WriteHeader(204)
+	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
-func (o *PostSessionNoContent) PostSessionResponder() {}
+func (o *PostSessionOK) PostSessionResponder() {}
 
 // PostSessionForbiddenCode is the HTTP code returned for type PostSessionForbidden
 const PostSessionForbiddenCode int = 403

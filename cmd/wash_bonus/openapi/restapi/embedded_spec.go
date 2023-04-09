@@ -200,8 +200,11 @@ func init() {
           }
         ],
         "responses": {
-          "204": {
-            "description": "OK"
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/bonusCharge"
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -530,8 +533,11 @@ func init() {
           }
         ],
         "responses": {
-          "204": {
-            "description": "OK"
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/bonusCharge"
+            }
           },
           "403": {
             "description": "Forbidden"
