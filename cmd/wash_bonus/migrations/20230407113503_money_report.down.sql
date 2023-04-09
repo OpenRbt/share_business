@@ -1,0 +1,1 @@
+drop table session_money_report;

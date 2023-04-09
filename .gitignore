@@ -15,4 +15,10 @@
 # vendor/
 bin/
 certs/
-.env
+
+/**/.env
+/**/.idea/
+/**/.vscode/
+
+# Service environment
+/environment
