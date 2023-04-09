@@ -15,7 +15,7 @@ func (svc *service) initUserHandlers(api *operations.WashBonusAPI) {
 }
 
 func (svc *service) getProfile(params user.GetProfileParams, auth *app.Auth) user.GetProfileResponder {
-	res, err := svc.userSvc.GetByID(params.HTTPRequest.Context(), auth.UID)
+	res, err := svc.userUseCase.Get(params.HTTPRequest.Context(), auth.UID)
 
 	payload := conversions.UserToRest(res)
 
@@ -30,7 +30,8 @@ func (svc *service) getProfile(params user.GetProfileParams, auth *app.Auth) use
 }
 
 func (svc *service) getBalance(params user.GetBalanceParams, auth *app.Auth) user.GetBalanceResponder {
-	res, err := svc.userSvc.GetByID(params.HTTPRequest.Context(), auth.UID)
+	res, err := svc.userUseCase.Get(params.HTTPRequest.Context(), auth.UID)
+
 	switch {
 	case err == nil:
 		return user.NewGetBalanceOK().WithPayload(&user.GetBalanceOKBody{Balance: res.Balance.IntPart()})

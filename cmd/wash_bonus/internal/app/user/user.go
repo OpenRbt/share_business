@@ -8,7 +8,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-func (s *service) GetByID(ctx context.Context, userID string) (user entity.User, err error) {
+func (s *service) Get(ctx context.Context, userID string) (user entity.User, err error) {
 	user, err = s.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
@@ -27,4 +27,8 @@ func (s *service) UpdateBalance(ctx context.Context, userID string, amount decim
 
 	newBalance, err = s.userRepo.GetBalance(ctx, userID)
 	return
+}
+
+func (s *service) Create(ctx context.Context, userID string) (user entity.User, err error) {
+	return s.userRepo.Create(ctx, userID)
 }

@@ -29,6 +29,12 @@ func (o *GetSessionReader) ReadResponse(response runtime.ClientResponse, consume
 			return nil, err
 		}
 		return result, nil
+	case 403:
+		result := NewGetSessionForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewGetSessionNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -110,6 +116,62 @@ func (o *GetSessionOK) readResponse(response runtime.ClientResponse, consumer ru
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
+
+	return nil
+}
+
+// NewGetSessionForbidden creates a GetSessionForbidden with default headers values
+func NewGetSessionForbidden() *GetSessionForbidden {
+	return &GetSessionForbidden{}
+}
+
+/*
+GetSessionForbidden describes a response with status code 403, with default header values.
+
+Forbidden
+*/
+type GetSessionForbidden struct {
+}
+
+// IsSuccess returns true when this get session forbidden response has a 2xx status code
+func (o *GetSessionForbidden) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get session forbidden response has a 3xx status code
+func (o *GetSessionForbidden) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get session forbidden response has a 4xx status code
+func (o *GetSessionForbidden) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this get session forbidden response has a 5xx status code
+func (o *GetSessionForbidden) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get session forbidden response a status code equal to that given
+func (o *GetSessionForbidden) IsCode(code int) bool {
+	return code == 403
+}
+
+// Code gets the status code for the get session forbidden response
+func (o *GetSessionForbidden) Code() int {
+	return 403
+}
+
+func (o *GetSessionForbidden) Error() string {
+	return fmt.Sprintf("[GET /session/{UID}][%d] getSessionForbidden ", 403)
+}
+
+func (o *GetSessionForbidden) String() string {
+	return fmt.Sprintf("[GET /session/{UID}][%d] getSessionForbidden ", 403)
+}
+
+func (o *GetSessionForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

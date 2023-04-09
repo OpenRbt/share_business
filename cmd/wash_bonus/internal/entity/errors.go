@@ -7,6 +7,8 @@ var (
 	ErrAccessDenied    = errors.New("access denied")
 	ErrProfileInactive = errors.New("profile inactive")
 
+	ErrBadValue = errors.New("bad value")
+
 	ErrForbidden      = errors.New("forbidden operation")
 	ErrNotEnoughMoney = errors.New("not enough money")
 

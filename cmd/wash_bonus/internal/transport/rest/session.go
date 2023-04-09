@@ -26,15 +26,15 @@ func (svc *service) getSession(params session.GetSessionParams, auth *app.Auth) 
 	if err != nil {
 		return session.NewGetSessionInternalServerError()
 	}
-	res, err := svc.sessionSvc.GetSession(params.HTTPRequest.Context(), sessionUID)
 
-	if err == nil {
-		payload = conversions.SessionToRest(res)
-	}
+	res, err := svc.sessionUseCase.Get(params.HTTPRequest.Context(), sessionUID, auth.UID)
 
 	switch {
 	case err == nil:
+		payload = conversions.SessionToRest(res)
 		return session.NewGetSessionOK().WithPayload(payload)
+	case errors.Is(err, entity.ErrForbidden):
+		return session.NewGetSessionForbidden()
 	case errors.Is(err, entity.ErrNotFound):
 		return session.NewGetSessionNotFound()
 	default:
@@ -50,7 +50,7 @@ func (svc *service) chargeBonuses(params session.PostSessionParams, auth *app.Au
 
 	amountD := decimal.NewFromInt(params.Body.Amount)
 
-	err = svc.sessionSvc.ChargeBonuses(params.HTTPRequest.Context(), sessionID, auth.UID, amountD)
+	err = svc.sessionUseCase.ChargeBonuses(params.HTTPRequest.Context(), sessionID, auth.UID, amountD)
 
 	switch {
 
@@ -72,7 +72,7 @@ func (svc *service) assignUserToSession(params session.AssignUserToSessionParams
 		return session.NewAssignUserToSessionInternalServerError()
 	}
 
-	err = svc.sessionSvc.AssignSessionUser(params.HTTPRequest.Context(), sessionID, auth.UID)
+	err = svc.sessionUseCase.AssignUser(params.HTTPRequest.Context(), sessionID, auth.UID)
 
 	switch {
 

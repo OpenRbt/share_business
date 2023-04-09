@@ -9,14 +9,15 @@ import (
 )
 
 type Config struct {
-	HTTPPort       string `env:"HTTP_PORT" envDefault:"8080"`
-	BasePath       string `env:"HTTP_BASE_PATH" envDefault:""`
-	AllowedOrigins string `env:"HTTP_ALLOWED_ORIGINS" envDefault:"*"`
-	Host           string `env:"HTTP_HOST"  envDefault:""`
-	LogLevel       string `env:"LOG_LEVEL" envDefault:""`
-	DB             DBConfig
-	FirebaseConfig FirebaseConfig
-	RabbitMQConfig RabbitMQConfig
+	HTTPPort        string `env:"HTTP_PORT" envDefault:"8080"`
+	BasePath        string `env:"HTTP_BASE_PATH" envDefault:""`
+	AllowedOrigins  string `env:"HTTP_ALLOWED_ORIGINS" envDefault:"*"`
+	Host            string `env:"HTTP_HOST"  envDefault:""`
+	LogLevel        string `env:"LOG_LEVEL" envDefault:""`
+	DB              DBConfig
+	FirebaseConfig  FirebaseConfig
+	RabbitMQConfig  RabbitMQConfig
+	SchedulerConfig SchedulerConfig
 }
 
 type DBConfig struct {
@@ -37,6 +38,10 @@ type RabbitMQConfig struct {
 	CertsPath string `env:"RABBIT_CERTS_PATH" envDefault:"/app/certs/"`
 	User      string `env:"RABBIT_SERVICE_USER" envDefault:"wash_bonus_svc"`
 	Password  string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"wash_bonus_svc"`
+}
+
+type SchedulerConfig struct {
+	DelayMinutes int `env:"SCHEDULER_DELAY_MINUTES" envDefault:"1"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {

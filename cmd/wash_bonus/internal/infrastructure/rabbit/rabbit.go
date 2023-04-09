@@ -8,14 +8,17 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 	"go.uber.org/zap"
 	"io/ioutil"
-	"wash_bonus/internal/app/session"
-	"wash_bonus/internal/app/wash_server"
+	"wash_bonus/internal/usecase/rabbit"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Rabbit interface {
 	SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error)
+}
+
+type UseCase interface {
+	ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 }
 
 type Service struct {
@@ -25,21 +28,17 @@ type Service struct {
 	// wash bonus handlers
 	washBonusPub    *rabbitmq.Publisher
 	washBonusSvcSub *rabbitmq.Consumer
-	customConsumers map[string]*rabbitmq.Consumer
 
 	// wash admin handler
 	washServerSub *rabbitmq.Consumer
 
-	//worker services
-	svcWashServer wash_server.Service
-	svcSessions   session.Service
+	useCase rabbit.UseCase
 }
 
-func New(l *zap.SugaredLogger, url string, port string, certsPath string, user string, password string, washServerSvc wash_server.Service, sessionsSvc session.Service) (svc *Service, err error) {
+func New(l *zap.SugaredLogger, url string, port string, certsPath string, user string, password string, useCase rabbit.UseCase) (svc *Service, err error) {
 	svc = &Service{
-		l:             l,
-		svcWashServer: washServerSvc,
-		svcSessions:   sessionsSvc,
+		l:       l,
+		useCase: useCase,
 	}
 
 	caCert, err := ioutil.ReadFile(certsPath + "root_ca.pem")

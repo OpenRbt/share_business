@@ -1,20 +1,21 @@
 package main
 
 import (
-	"log"
-	"wash_bonus/internal/dal/sessions"
-	"wash_bonus/internal/infrastructure/rabbit"
-
 	"go.uber.org/zap"
-
-	session_svc "wash_bonus/internal/app/session"
-	user_svc "wash_bonus/internal/app/user"
-	wash_server_svc "wash_bonus/internal/app/wash_server"
-
-	user_repo "wash_bonus/internal/dal/user"
-	wash_server_repo "wash_bonus/internal/dal/wash_server"
+	"log"
+	"wash_bonus/internal/app/scheduler"
+	sessionSvc "wash_bonus/internal/app/session"
+	userSvc "wash_bonus/internal/app/user"
+	washserverSvc "wash_bonus/internal/app/wash_server"
+	sessionsRepo "wash_bonus/internal/dal/sessions"
+	userRepo "wash_bonus/internal/dal/user"
+	washRepo "wash_bonus/internal/dal/wash_server"
 	"wash_bonus/internal/infrastructure/firebase"
+	"wash_bonus/internal/infrastructure/rabbit"
 	"wash_bonus/internal/transport/rest"
+	rabbitUseCase "wash_bonus/internal/usecase/rabbit"
+	sessionUseCase "wash_bonus/internal/usecase/session"
+	userUseCase "wash_bonus/internal/usecase/user"
 	"wash_bonus/pkg/bootstrap"
 )
 
@@ -45,34 +46,31 @@ func main() {
 
 	authSvc := firebase.New(cfg.FirebaseConfig.FirebaseKeyFilePath)
 
-	userRepo := user_repo.NewRepo(l, dbConn)
-	washRepo := wash_server_repo.NewRepo(l, dbConn)
-	sessionRepo := sessions.NewRepo(l, dbConn)
+	userRepo := userRepo.NewRepo(l, dbConn)
+	washRepo := washRepo.NewRepo(l, dbConn)
+	sessionRepo := sessionsRepo.NewRepo(l, dbConn)
 
-	userSvc := user_svc.New(l, userRepo)
-	washServerSvc := wash_server_svc.New(l, washRepo)
-	sessionSvc := session_svc.New(l, washRepo, userRepo, sessionRepo)
+	userSvc := userSvc.New(l, userRepo)
+	washServerSvc := washserverSvc.New(l, washRepo)
+	sessionSvc := sessionSvc.New(l, userRepo, sessionRepo)
 
-	rabbitSvc, err := rabbit.New(
-		l,
-		cfg.RabbitMQConfig.Url,
-		cfg.RabbitMQConfig.Port,
-		cfg.RabbitMQConfig.CertsPath,
-		cfg.RabbitMQConfig.User,
-		cfg.RabbitMQConfig.Password,
-		washServerSvc,
-		sessionSvc,
-	)
+	rabbitUseCase := rabbitUseCase.New(l, sessionSvc, userSvc, washServerSvc)
+
+	rabbitSvc, err := rabbit.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.CertsPath, cfg.RabbitMQConfig.User, cfg.RabbitMQConfig.Password, rabbitUseCase)
 	if err != nil {
 		l.Fatalln("new rabbit conn: ", err)
 	}
 	l.Debug("connected to rabbit")
 
-	sessionSvc.AssignRabbit(rabbitSvc.SendMessage)
+	sessionUseCase := sessionUseCase.New(l, sessionSvc, userSvc, washServerSvc, rabbitSvc)
+	userUseCase := userUseCase.New(l, userSvc)
+
+	schedulerSvc := scheduler.New(l, sessionSvc)
+	schedulerSvc.Run(cfg.SchedulerConfig.DelayMinutes)
 
 	errc := make(chan error)
 
-	go runHTTPServer(errc, l, cfg, authSvc, userSvc, sessionSvc)
+	go runHTTPServer(errc, l, cfg, authSvc, sessionUseCase, userUseCase)
 
 	err = <-errc
 	if err != nil {
@@ -82,13 +80,13 @@ func main() {
 	l.Info("started server at: ", cfg.HTTPPort)
 }
 
-func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase.Service, userSvc user_svc.Service, sessionSvc session_svc.Service) {
+func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config, authSvc firebase.Service, sessionUseCase sessionUseCase.UseCase, userUseCase userUseCase.UseCase) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalln("panic: ", r)
 		}
 	}()
-	server, err := rest.NewServer(cfg, authSvc, l, userSvc, sessionSvc)
+	server, err := rest.NewServer(cfg, authSvc, l, sessionUseCase, userUseCase)
 	if err != nil {
 		l.Fatalln("init rest server:", err)
 	}

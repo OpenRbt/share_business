@@ -9,7 +9,8 @@ import (
 )
 
 type Service interface {
-	GetByID(ctx context.Context, userID string) (user entity.User, err error)
+	Create(ctx context.Context, userID string) (user entity.User, err error)
+	Get(ctx context.Context, userID string) (user entity.User, err error)
 	UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (newBalance decimal.Decimal, err error)
 }
 

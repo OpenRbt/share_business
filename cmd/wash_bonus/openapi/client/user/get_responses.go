@@ -15,7 +15,7 @@ import (
 	"wash_bonus/openapi/models"
 )
 
-// GetReader is a Reader for the Get structure.
+// GetReader is a Reader for the GetSession structure.
 type GetReader struct {
 	formats strfmt.Registry
 }

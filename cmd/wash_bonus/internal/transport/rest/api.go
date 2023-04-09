@@ -5,9 +5,9 @@ import (
 	"path"
 	"strconv"
 	"wash_bonus/internal/app"
-	"wash_bonus/internal/app/session"
-	"wash_bonus/internal/app/user"
 	"wash_bonus/internal/infrastructure/firebase"
+	sessionUsecase "wash_bonus/internal/usecase/session"
+	userUsecase "wash_bonus/internal/usecase/user"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime/middleware"
@@ -27,18 +27,17 @@ type service struct {
 	l    *zap.SugaredLogger
 	auth firebase.Service
 
-	userSvc    user.Service
-	sessionSvc session.Service
+	sessionUseCase sessionUsecase.UseCase
+	userUseCase    userUsecase.UseCase
 }
 
-func NewServer(cfg *bootstrap.Config, auth firebase.Service, l *zap.SugaredLogger,
-	userSvc user.Service, sessionSvc session.Service,
-) (*restapi.Server, error) {
+// TODO: use sessionUseCase
+func NewServer(cfg *bootstrap.Config, auth firebase.Service, l *zap.SugaredLogger, useCase sessionUsecase.UseCase, userUseCase userUsecase.UseCase) (*restapi.Server, error) {
 	svc := &service{
-		l:          l,
-		auth:       auth,
-		userSvc:    userSvc,
-		sessionSvc: sessionSvc,
+		l:              l,
+		auth:           auth,
+		sessionUseCase: useCase,
+		userUseCase:    userUseCase,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)

@@ -11,10 +11,9 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/wagslane/go-rabbitmq"
 	"wash_bonus/internal/conversions"
-	"wash_bonus/internal/infrastructure/rabbit/models"
 )
 
-func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
+func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 	// TODO: use context with timeout
 	ctx := context.Background()
 
@@ -33,7 +32,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		_, err = s.svcWashServer.CreateWashServer(ctx, created)
+		_, err = svc.useCase.CreateWashServer(ctx, created)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -52,7 +51,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcWashServer.UpdateWashServer(ctx, update)
+		err = svc.useCase.UpdateWashServer(ctx, update)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -70,7 +69,13 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		_, err = s.svcSessions.CreateSessionPool(ctx, serverID, msg.PostID, msg.NewSessionsAmount)
+		pool, err := svc.useCase.CreatePool(ctx, serverID, msg.PostID, msg.NewSessionsAmount)
+
+		eventErr := svc.SendMessage(pool, vo.WashBonusService, vo.RoutingKey(serverID.String()), vo.SessionCreatedMessageType)
+		if eventErr != nil {
+			svc.l.Errorw("failed to send server event", "session pool creation", "target server", serverID.String(), "error", eventErr)
+		}
+
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -89,7 +94,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.UpdateSessionState(ctx, sessionID, models.SessionState(msg.State))
+		err = svc.useCase.UpdateState(ctx, sessionID, msg.State)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -114,7 +119,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.ConfirmBonuses(ctx, sessionID, amount)
+		err = svc.useCase.ConfirmBonuses(ctx, sessionID, amount)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -139,7 +144,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.DiscardBonuses(ctx, sessionID, amount)
+		err = svc.useCase.DiscardBonuses(ctx, sessionID, amount)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -164,7 +169,22 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 			return
 		}
 
-		err = s.svcSessions.RewardBonuses(ctx, sessionID, amount)
+		err = svc.useCase.RewardBonuses(ctx, sessionID, amount)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+	case vo.SessionMoneyReportMessageType:
+		var msg session.MoneyReport
+		err := json.Unmarshal(d.Body, &msg)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
+		report := conversions.MoneyReportFromRabbit(msg)
+
+		err = svc.useCase.SaveMoneyReport(ctx, report)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -176,7 +196,7 @@ func (s *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
 	return
 }
 
-func (s *Service) SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error) {
+func (svc *Service) SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error) {
 	jsonMsg, err := json.Marshal(msg)
 	if err != nil {
 		return
@@ -184,7 +204,7 @@ func (s *Service) SendMessage(msg interface{}, service vo.Service, routingKey vo
 
 	switch service {
 	case vo.WashBonusService:
-		return s.washBonusPub.Publish(
+		return svc.washBonusPub.Publish(
 			jsonMsg,
 			[]string{string(routingKey)},
 			rabbitmq.WithPublishOptionsType(string(messageType)),

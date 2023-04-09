@@ -61,6 +61,33 @@ func (o *GetSessionOK) WriteResponse(rw http.ResponseWriter, producer runtime.Pr
 
 func (o *GetSessionOK) GetSessionResponder() {}
 
+// GetSessionForbiddenCode is the HTTP code returned for type GetSessionForbidden
+const GetSessionForbiddenCode int = 403
+
+/*
+GetSessionForbidden Forbidden
+
+swagger:response getSessionForbidden
+*/
+type GetSessionForbidden struct {
+}
+
+// NewGetSessionForbidden creates GetSessionForbidden with default headers values
+func NewGetSessionForbidden() *GetSessionForbidden {
+
+	return &GetSessionForbidden{}
+}
+
+// WriteResponse to the client
+func (o *GetSessionForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
+	rw.WriteHeader(403)
+}
+
+func (o *GetSessionForbidden) GetSessionResponder() {}
+
 // GetSessionNotFoundCode is the HTTP code returned for type GetSessionNotFound
 const GetSessionNotFoundCode int = 404
 

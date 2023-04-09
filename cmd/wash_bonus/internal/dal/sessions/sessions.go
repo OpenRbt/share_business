@@ -3,16 +3,15 @@ package sessions
 import (
 	"context"
 	"fmt"
+	"github.com/gocraft/dbr/v2"
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 	"time"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/dal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
-	"wash_bonus/internal/infrastructure/rabbit/models"
-
-	"github.com/gocraft/dbr/v2"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
+	"wash_bonus/internal/entity/vo"
 )
 
 func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (entity.Session, error) {
@@ -52,7 +51,7 @@ func (r *repo) GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Sess
 	return conversions.SessionFromDB(session), err
 }
 
-func (r *repo) UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state models.SessionState) (err error) {
+func (r *repo) UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) (err error) {
 	updateStmt := r.db.NewSession(nil).
 		Update("sessions").
 		Where("id = ?", uuid.NullUUID{
@@ -60,9 +59,10 @@ func (r *repo) UpdateSessionState(ctx context.Context, sessionID uuid.UUID, stat
 			Valid: true,
 		})
 
-	if state == models.SessionStateStart {
+	switch state {
+	case vo.SessionStateStart:
 		updateStmt.Set("started", true)
-	} else if state == models.SessionStateFinish {
+	case vo.SessionStateFinish:
 		updateStmt.Set("finished", true)
 	}
 
@@ -88,10 +88,10 @@ func (r *repo) UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, am
 	var tx *dbr.Tx
 
 	defer func() {
-		dal.LogOptionalError(r.l, "user", err)
+		dal.LogOptionalError(r.l, "session", err)
 		if err != nil && tx != nil {
 			err = tx.Rollback()
-			dal.LogOptionalError(r.l, "user", err)
+			dal.LogOptionalError(r.l, "session", err)
 		}
 	}()
 
@@ -131,6 +131,61 @@ func (r *repo) UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, am
 	}
 
 	err = tx.Commit()
+
+	return
+}
+
+func (r *repo) SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error) {
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+	}()
+
+	dbReport := conversions.MoneyReportToDB(report)
+
+	_, err = r.db.NewSession(nil).
+		InsertInto("session_money_report").
+		Columns("station_id", "banknotes", "cars_total", "coins", "electronical", "service", "session_id", "bonuses", "processed").
+		Record(dbReport).
+		ExecContext(ctx)
+
+	return
+}
+
+func (r *repo) UpdateMoneyReport(ctx context.Context, id int64, processed bool) (err error) {
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+	}()
+
+	_, err = r.db.NewSession(nil).
+		Update("session_money_report").
+		Set("processed", processed).
+		Where("id = ?", id).
+		ExecContext(ctx)
+
+	return
+}
+
+func (r *repo) GetUnprocessedMoneyReports(ctx context.Context) (reports []entity.UserMoneyReport, err error) {
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+	}()
+
+	var dbReports []dbmodels.UserMoneyReport
+
+	_, err = r.db.NewSession(nil).
+		SelectBySql(`
+select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".processed, "s".user
+from session_money_report "reports"
+left join sessions "s" on "reports".session_id = "s".id
+where "reports".processed = false and "reports".session_id is not null AND  "s".user is not null
+`).
+		LoadContext(ctx, &dbReports)
+
+	if err != nil {
+		return
+	}
+
+	reports = conversions.UserMoneyReportsFromDB(dbReports)
 
 	return
 }

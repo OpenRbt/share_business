@@ -155,6 +155,9 @@ func init() {
               "$ref": "#/definitions/session"
             }
           },
+          "403": {
+            "description": "Forbidden"
+          },
           "404": {
             "description": "Profile not exists",
             "schema": {
@@ -481,6 +484,9 @@ func init() {
             "schema": {
               "$ref": "#/definitions/session"
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Profile not exists",
