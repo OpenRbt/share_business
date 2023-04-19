@@ -61,9 +61,12 @@ services:
       - ./environment/rabbit/definitions.json:/etc/rabbitmq/definitions.json
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
+      - rabbitmq_conf:/etc/rabbitmq
 
 volumes:
   rabbitmq-data:
     driver: local
   rabbitmq-logs:
+    driver: local
+  rabbitmq_conf:
     driver: local
