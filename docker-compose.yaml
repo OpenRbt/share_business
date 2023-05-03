@@ -53,10 +53,9 @@ services:
     image: rabbitmq:3.11.8-management
     restart: always
     ports:
-      - "5671:5671"
+      - "5672:5672"
       - "15672:15672"
     volumes:
-      - ./environment/certs/:/certs/
       - ./environment/rabbit/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
       - ./environment/rabbit/definitions.json:/etc/rabbitmq/definitions.json
       - rabbitmq-data:/var/lib/rabbitmq
