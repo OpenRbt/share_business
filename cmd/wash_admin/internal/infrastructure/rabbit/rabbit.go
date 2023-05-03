@@ -1,17 +1,15 @@
 package rabbit
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
+	"wash_admin/internal/infrastructure/rabbit-intapi/client"
+
 	"github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/wagslane/go-rabbitmq"
 	"go.uber.org/zap"
-	"io/ioutil"
-	"wash_admin/internal/infrastructure/rabbit-intapi/client"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -33,36 +31,21 @@ func New(l *zap.SugaredLogger, url, port, certsPath, user, password string) (svc
 		l: l,
 	}
 
-	caCert, err := ioutil.ReadFile(certsPath + "root_ca.pem")
-	if err != nil {
-		return nil, err
-	}
-
-	cert, err := tls.LoadX509KeyPair(certsPath+"client.pem", certsPath+"client_key.pem")
-	if err != nil {
-		return nil, err
-	}
-	rootCAs := x509.NewCertPool()
-	rootCAs.AppendCertsFromPEM(caCert)
-
-	tlsConf := &tls.Config{
-		RootCAs:            rootCAs,
-		Certificates:       []tls.Certificate{cert},
-		ServerName:         "localhost", // Optional
-		InsecureSkipVerify: true,
-	}
-
 	connString := fmt.Sprintf("amqps://%s:%s@%s:%s/", user, password, url, port)
 	rabbitConf := rabbitmq.Config{
-		SASL:            nil,
-		Vhost:           "",
-		ChannelMax:      0,
-		FrameSize:       0,
-		Heartbeat:       0,
-		TLSClientConfig: tlsConf,
-		Properties:      nil,
-		Locale:          "",
-		Dial:            nil,
+		SASL: []amqp.Authentication{
+			&amqp.PlainAuth{
+				Username: user,
+				Password: password,
+			},
+		},
+		Vhost:      "/",
+		ChannelMax: 0,
+		FrameSize:  0,
+		Heartbeat:  0,
+		Properties: nil,
+		Locale:     "",
+		Dial:       nil,
 	}
 
 	l.Info("conf: %s", rabbitConf)
