@@ -39,7 +39,7 @@ func New(l *zap.SugaredLogger, url string, port string, certsPath string, user s
 		useCase: useCase,
 	}
 
-	connString := fmt.Sprintf("amqps://%s:%s@%s:%s/", user, password, url, port)
+	connString := fmt.Sprintf("amqp://%s:%s@%s:%s/", user, password, url, port)
 	rabbitConf := rabbitmq.Config{
 		SASL: []amqp.Authentication{
 			&amqp.PlainAuth{
