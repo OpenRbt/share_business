@@ -2,12 +2,13 @@ package app
 
 import (
 	"context"
-	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
-	uuid "github.com/satori/go.uuid"
-	"go.uber.org/zap"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/entity"
 	"wash_admin/internal/entity/vo"
+
+	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	uuid "github.com/satori/go.uuid"
+	"go.uber.org/zap"
 )
 
 type WashServerService interface {
@@ -16,6 +17,8 @@ type WashServerService interface {
 	UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer vo.UpdateWashServer) error
 	DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error
 	GetWashServerList(ctx context.Context, auth *Auth, getWashServerList vo.Pagination) ([]entity.WashServer, error)
+
+	UserAnAdmin(ctx context.Context, user entity.WashAdmin) bool
 }
 
 type Repository interface {
@@ -56,6 +59,12 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 		return entity.WashServer{}, err
 	}
 
+	admin := svc.UserAnAdmin(ctx, owner)
+
+	if !admin {
+		return entity.WashServer{}, ErrAccessDenied
+	}
+
 	registered, err := svc.repo.RegisterWashServer(ctx, owner.ID, newServer)
 	if err != nil {
 		return entity.WashServer{}, err
@@ -91,6 +100,12 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 		return err
 	}
 
+	admin := svc.UserAnAdmin(ctx, owner)
+
+	if !admin {
+		return ErrAccessDenied
+	}
+
 	washServer, err := svc.repo.GetWashServer(ctx, owner.ID, updateWashServer.ID)
 
 	if err != nil {
@@ -118,6 +133,12 @@ func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id u
 	owner, err := svc.repo.GetWashAdmin(ctx, auth.UID)
 	if err != nil {
 		return err
+	}
+
+	admin := svc.UserAnAdmin(ctx, owner)
+
+	if !admin {
+		return ErrAccessDenied
 	}
 
 	washServer, err := svc.repo.GetWashServer(ctx, owner.ID, id)
@@ -149,4 +170,12 @@ func (svc *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pag
 	}
 
 	return svc.repo.GetWashServerList(ctx, owner.ID, pagination)
+}
+
+func (svc *WashServerSvc) UserAnAdmin(ctx context.Context, user entity.WashAdmin) bool {
+	role := user.Role
+	if role == "Admin" {
+		return true
+	}
+	return false
 }

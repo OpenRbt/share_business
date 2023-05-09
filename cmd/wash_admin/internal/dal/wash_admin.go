@@ -39,9 +39,9 @@ func (s *Storage) CreateWashAdmin(ctx context.Context, identity string) (entity.
 	var dbWashAdmin dbmodels.WashAdmin
 	err = tx.
 		InsertInto("users").
-		Columns("identity_uid").
-		Values(identity).
-		Returning("id", "identity_uid").
+		Columns("identity_uid", "role").
+		Values(identity, "user").
+		Returning("id", "identity_uid", "role").
 		LoadContext(ctx, &dbWashAdmin)
 
 	if err != nil {
