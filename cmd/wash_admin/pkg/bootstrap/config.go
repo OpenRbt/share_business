@@ -20,8 +20,8 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Host     string `env:"DB_HOST" envDefault:"localhost"`
-	Port     string `env:"DB_PORT" envDefault:"8090"`
+	Host     string `env:"DB_HOST" envDefault:"wash_db"`
+	Port     string `env:"DB_PORT" envDefault:"5432"`
 	Database string `env:"DB_DATABASE" envDefault:"wash_admin"`
 	User     string `env:"DB_USER" envDefault:"wash_admin"`
 	Password string `env:"DB_PASSWORD" envDefault:"wash_admin"`
