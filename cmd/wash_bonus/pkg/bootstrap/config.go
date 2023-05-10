@@ -33,11 +33,10 @@ type FirebaseConfig struct {
 }
 
 type RabbitMQConfig struct {
-	Port      string `env:"RABBIT_SERVICE_PORT" envDefault:"5672"`
-	Url       string `env:"RABBIT_SERVICE" envDefault:"wash_rabbit"`
-	CertsPath string `env:"RABBIT_CERTS_PATH" envDefault:"/app/certs/"`
-	User      string `env:"RABBIT_SERVICE_USER" envDefault:"wash_bonus_svc"`
-	Password  string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"wash_bonus_svc"`
+	Port     string `env:"RABBIT_SERVICE_PORT" envDefault:"5672"`
+	Url      string `env:"RABBIT_SERVICE" envDefault:"wash_rabbit"`
+	User     string `env:"RABBIT_SERVICE_USER" envDefault:"wash_bonus_svc"`
+	Password string `env:"RABBIT_SERVICE_PASSWORD" envDefault:"wash_bonus_svc"`
 }
 
 type SchedulerConfig struct {

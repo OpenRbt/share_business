@@ -1,7 +1,6 @@
 package main
 
 import (
-	"go.uber.org/zap"
 	"log"
 	"wash_bonus/internal/app/scheduler"
 	sessionSvc "wash_bonus/internal/app/session"
@@ -17,6 +16,8 @@ import (
 	sessionUseCase "wash_bonus/internal/usecase/session"
 	userUseCase "wash_bonus/internal/usecase/user"
 	"wash_bonus/pkg/bootstrap"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -56,7 +57,7 @@ func main() {
 
 	rabbitUseCase := rabbitUseCase.New(l, sessionSvc, userSvc, washServerSvc)
 
-	rabbitSvc, err := rabbit.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.CertsPath, cfg.RabbitMQConfig.User, cfg.RabbitMQConfig.Password, rabbitUseCase)
+	rabbitSvc, err := rabbit.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.User, cfg.RabbitMQConfig.Password, rabbitUseCase)
 	if err != nil {
 		l.Fatalln("new rabbit conn: ", err)
 	}

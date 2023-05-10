@@ -33,7 +33,7 @@ type Service struct {
 	useCase rabbit.UseCase
 }
 
-func New(l *zap.SugaredLogger, url string, port string, certsPath string, user string, password string, useCase rabbit.UseCase) (svc *Service, err error) {
+func New(l *zap.SugaredLogger, url string, port string, user string, password string, useCase rabbit.UseCase) (svc *Service, err error) {
 	svc = &Service{
 		l:       l,
 		useCase: useCase,

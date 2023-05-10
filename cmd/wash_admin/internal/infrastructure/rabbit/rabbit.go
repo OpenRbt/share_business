@@ -26,7 +26,7 @@ type Service struct {
 
 //go:generate rm -rf ../rabbit-intapi/model ../rabbit-intapi/client
 //go:generate swagger generate client -t ../rabbit-intapi -f ../rabbit-intapi/swagger.yaml --strict-responders --strict-additional-properties
-func New(l *zap.SugaredLogger, url, port, certsPath, user, password string) (svc *Service, err error) {
+func New(l *zap.SugaredLogger, url, port, user, password string) (svc *Service, err error) {
 	svc = &Service{
 		l: l,
 	}

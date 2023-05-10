@@ -45,7 +45,6 @@ func main() {
 		l,
 		cfg.RabbitMQConfig.Url,
 		cfg.RabbitMQConfig.Port,
-		cfg.RabbitMQConfig.CertsPath,
 		cfg.RabbitMQConfig.User,
 		cfg.RabbitMQConfig.Password,
 	)
