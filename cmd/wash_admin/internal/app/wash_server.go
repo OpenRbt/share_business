@@ -58,7 +58,7 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 	}
 
 	switch user.Role {
-	case RoleAdmin:
+	case string(AdminRole):
 		registered, err := svc.repo.RegisterWashServer(ctx, user.ID, newServer)
 		if err != nil {
 			return entity.WashServer{}, err
@@ -98,7 +98,7 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 	}
 
 	switch user.Role {
-	case RoleAdmin:
+	case string(AdminRole):
 
 		washServer, err := svc.repo.GetWashServer(ctx, user.ID, updateWashServer.ID)
 
@@ -134,7 +134,7 @@ func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id u
 	}
 
 	switch user.Role {
-	case RoleAdmin:
+	case string(AdminRole):
 		washServer, err := svc.repo.GetWashServer(ctx, user.ID, id)
 		if err != nil {
 			return err
