@@ -12,3 +12,7 @@ type AuthUserMeta struct {
 
 	LastRefreshTimestamp int64
 }
+
+const RoleAdmin = "admin"
+const RoleUser = "user"
+const RoleEngineer = "engineer"
