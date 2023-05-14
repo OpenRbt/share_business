@@ -1,2 +1,2 @@
 ALTER TABLE users
-    ADD COLUMN role text;
+    ADD COLUMN role text default "user";

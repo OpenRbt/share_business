@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"wash_admin/internal/app/role"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/entity"
 	"wash_admin/internal/entity/vo"
@@ -20,8 +21,8 @@ type WashServerService interface {
 }
 
 type Repository interface {
-	GetOrCreateAdminIfNotExists(ctx context.Context, identity string) (entity.WashAdmin, error)
-	GetWashAdmin(ctx context.Context, identity string) (entity.WashAdmin, error)
+	GetOrCreateUserIfNotExists(ctx context.Context, identity string) (entity.WashUser, error)
+	GetWashUser(ctx context.Context, identity string) (entity.WashUser, error)
 	GetWashServer(ctx context.Context, ownerId uuid.UUID, id uuid.UUID) (entity.WashServer, error)
 
 	RegisterWashServer(ctx context.Context, owner uuid.UUID, newServer vo.RegisterWashServer) (entity.WashServer, error)
@@ -51,14 +52,14 @@ func NewWashServerService(logger *zap.SugaredLogger, repo Repository, rabbit Rab
 }
 
 func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, newServer vo.RegisterWashServer) (entity.WashServer, error) {
-	user, err := svc.repo.GetOrCreateAdminIfNotExists(ctx, auth.UID)
+	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
 
 	if err != nil {
 		return entity.WashServer{}, err
 	}
 
 	switch user.Role {
-	case string(AdminRole):
+	case role.AdminRole:
 		registered, err := svc.repo.RegisterWashServer(ctx, user.ID, newServer)
 		if err != nil {
 			return entity.WashServer{}, err
@@ -81,7 +82,7 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 }
 
 func (svc *WashServerSvc) GetWashServer(ctx context.Context, auth *Auth, id uuid.UUID) (entity.WashServer, error) {
-	user, err := svc.repo.GetOrCreateAdminIfNotExists(ctx, auth.UID)
+	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
 
 	if err != nil {
 		return entity.WashServer{}, err
@@ -91,14 +92,14 @@ func (svc *WashServerSvc) GetWashServer(ctx context.Context, auth *Auth, id uuid
 }
 
 func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer vo.UpdateWashServer) error {
-	user, err := svc.repo.GetWashAdmin(ctx, auth.UID)
+	user, err := svc.repo.GetWashUser(ctx, auth.UID)
 
 	if err != nil {
 		return err
 	}
 
 	switch user.Role {
-	case string(AdminRole):
+	case role.AdminRole:
 
 		washServer, err := svc.repo.GetWashServer(ctx, user.ID, updateWashServer.ID)
 
@@ -128,13 +129,13 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 }
 
 func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error {
-	user, err := svc.repo.GetWashAdmin(ctx, auth.UID)
+	user, err := svc.repo.GetWashUser(ctx, auth.UID)
 	if err != nil {
 		return err
 	}
 
 	switch user.Role {
-	case string(AdminRole):
+	case role.AdminRole:
 		washServer, err := svc.repo.GetWashServer(ctx, user.ID, id)
 		if err != nil {
 			return err
@@ -161,7 +162,7 @@ func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id u
 }
 
 func (svc *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pagination vo.Pagination) ([]entity.WashServer, error) {
-	user, err := svc.repo.GetOrCreateAdminIfNotExists(ctx, auth.UID)
+	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
 
 	if err != nil {
 		return []entity.WashServer{}, err
