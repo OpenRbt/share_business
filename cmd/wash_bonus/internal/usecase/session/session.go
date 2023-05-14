@@ -90,7 +90,7 @@ func (u *useCase) ChargeBonuses(ctx context.Context, sessionID uuid.UUID, userID
 		return
 	}
 
-	if session.User == nil || session.User.ID != user.ID {
+	if session.User == nil || session.User.ID != user.ID || session.Finished {
 		return entity.ErrForbidden
 	}
 
