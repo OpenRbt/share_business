@@ -4,8 +4,7 @@ import (
 	"errors"
 	"log"
 	"wash_admin/internal/app"
-	"wash_admin/internal/conversions"
-	"wash_admin/internal/entity"
+
 	"wash_admin/openapi/restapi/operations"
 	"wash_admin/openapi/restapi/operations/wash_servers"
 
@@ -30,8 +29,8 @@ func (svc *service) getWashServer(params wash_servers.GetWashServerParams, auth 
 
 	switch {
 	case err == nil:
-		return wash_servers.NewGetWashServerOK().WithPayload(conversions.WashServerToRest(res))
-	case errors.Is(err, entity.ErrNotFound):
+		return wash_servers.NewGetWashServerOK().WithPayload(WashServerToRest(res))
+	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewGetWashServerNotFound()
 	default:
 		return wash_servers.NewGetWashServerInternalServerError()
@@ -39,7 +38,7 @@ func (svc *service) getWashServer(params wash_servers.GetWashServerParams, auth 
 }
 
 func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth) wash_servers.AddResponder {
-	registerWashServerFromRest := conversions.RegisterWashServerFromRest(*params.Body)
+	registerWashServerFromRest := RegisterWashServerFromRest(*params.Body)
 
 	newServer, err := svc.washServers.RegisterWashServer(params.HTTPRequest.Context(), auth, registerWashServerFromRest)
 
@@ -49,8 +48,8 @@ func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewAddOK().WithPayload(conversions.WashServerToRest(newServer))
-	case errors.Is(err, entity.ErrNotFound):
+		return wash_servers.NewAddOK().WithPayload(WashServerToRest(newServer))
+	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewAddBadRequest()
 	default:
 		return wash_servers.NewAddInternalServerError()
@@ -58,7 +57,7 @@ func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth)
 }
 
 func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app.Auth) wash_servers.UpdateResponder {
-	updateWashServerFromRest, err := conversions.UpdateWashServerFromRest(*params.Body)
+	updateWashServerFromRest, err := UpdateWashServerFromRest(*params.Body)
 
 	if err != nil {
 		return wash_servers.NewUpdateBadRequest()
@@ -69,7 +68,7 @@ func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app
 	switch {
 	case err == nil:
 		return wash_servers.NewUpdateNoContent()
-	case errors.Is(err, entity.ErrNotFound):
+	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewUpdateNotFound()
 	default:
 		return wash_servers.NewUpdateInternalServerError()
@@ -77,7 +76,7 @@ func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app
 }
 
 func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app.Auth) wash_servers.DeleteResponder {
-	deleteWashServerFromRest, err := conversions.DeleteWashServerFromRest(*params.Body)
+	deleteWashServerFromRest, err := DeleteWashServerFromRest(*params.Body)
 
 	if err != nil {
 		return wash_servers.NewDeleteBadRequest()
@@ -88,7 +87,7 @@ func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app
 	switch {
 	case err == nil:
 		return wash_servers.NewDeleteNoContent()
-	case errors.Is(err, entity.ErrNotFound):
+	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewDeleteNotFound()
 	default:
 		return wash_servers.NewDeleteInternalServerError()
@@ -96,14 +95,14 @@ func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app
 }
 
 func (svc *service) getWashServerList(params wash_servers.ListParams, auth *app.Auth) wash_servers.ListResponder {
-	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, conversions.PaginationFromRest(*params.Body))
+	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, PaginationFromRest(*params.Body))
 
-	payload := conversions.WashServerListToRest(res)
+	payload := WashServerListToRest(res)
 
 	switch {
 	case err == nil:
 		return wash_servers.NewListOK().WithPayload(payload)
-	case errors.Is(err, entity.ErrNotFound):
+	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewListNotFound()
 	default:
 		return wash_servers.NewListInternalServerError()

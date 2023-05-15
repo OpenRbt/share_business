@@ -3,14 +3,14 @@ package dal
 import (
 	"context"
 	"errors"
+	"wash_admin/internal/app"
 	"wash_admin/internal/conversions"
 	"wash_admin/internal/dal/dbmodels"
-	"wash_admin/internal/entity"
 
 	"github.com/gocraft/dbr/v2"
 )
 
-func (s *Storage) GetWashUser(ctx context.Context, identity string) (entity.WashUser, error) {
+func (s *Storage) GetWashUser(ctx context.Context, identity string) (app.WashUser, error) {
 	var dbWashUser dbmodels.WashUser
 
 	err := s.db.NewSession(nil).
@@ -23,17 +23,17 @@ func (s *Storage) GetWashUser(ctx context.Context, identity string) (entity.Wash
 	case err == nil:
 		return conversions.WashUserFromDB(dbWashUser), err
 	case errors.Is(err, dbr.ErrNotFound):
-		return entity.WashUser{}, entity.ErrNotFound
+		return app.WashUser{}, app.ErrNotFound
 	default:
-		return entity.WashUser{}, err
+		return app.WashUser{}, err
 	}
 }
 
-func (s *Storage) CreateWashUser(ctx context.Context, identity string) (entity.WashUser, error) {
+func (s *Storage) CreateWashUser(ctx context.Context, identity string) (app.WashUser, error) {
 	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
 
 	if err != nil {
-		return entity.WashUser{}, err
+		return app.WashUser{}, err
 	}
 
 	var dbWashUser dbmodels.WashUser
@@ -45,21 +45,21 @@ func (s *Storage) CreateWashUser(ctx context.Context, identity string) (entity.W
 		LoadContext(ctx, &dbWashUser)
 
 	if err != nil {
-		return entity.WashUser{}, err
+		return app.WashUser{}, err
 	}
 
 	return conversions.WashUserFromDB(dbWashUser), tx.Commit()
 }
 
-func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity string) (entity.WashUser, error) {
+func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity string) (app.WashUser, error) {
 	dbWashUser, err := s.GetWashUser(ctx, identity)
 
 	if err != nil {
-		if errors.Is(err, entity.ErrNotFound) {
+		if errors.Is(err, app.ErrNotFound) {
 			return s.CreateWashUser(ctx, identity)
 		}
 
-		return entity.WashUser{}, err
+		return app.WashUser{}, err
 	}
 
 	return dbWashUser, err

@@ -1,15 +1,25 @@
 package conversions
 
 import (
-	"wash_admin/internal/app/role"
+	"wash_admin/internal/app"
 	"wash_admin/internal/dal/dbmodels"
-	"wash_admin/internal/entity"
 )
 
-func WashUserFromDB(dbWashUser dbmodels.WashUser) entity.WashUser {
-	return entity.WashUser{
+func WashUserFromDB(dbWashUser dbmodels.WashUser) app.WashUser {
+	r := app.AdminRole
+	switch dbWashUser.Role {
+	case string(app.AdminRole):
+		r = app.AdminRole
+	case string(app.EngineerRole):
+		r = app.EngineerRole
+	case string(app.UserRole):
+		r = app.UserRole
+	default:
+		panic(1)
+	}
+	return app.WashUser{
 		ID:       dbWashUser.ID.UUID,
 		Identity: dbWashUser.Identity,
-		Role:     role.Role(dbWashUser.Role),
+		Role:     r,
 	}
 }
