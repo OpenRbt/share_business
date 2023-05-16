@@ -54,7 +54,6 @@ services:
     restart: always
     ports:
       - "5672:5672"
-      - "15672:15672"
     volumes:
       - ./environment/rabbit/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
       - ./environment/rabbit/definitions.json:/etc/rabbitmq/definitions.json
