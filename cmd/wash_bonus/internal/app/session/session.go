@@ -37,12 +37,27 @@ func (s *service) SaveMoneyReport(ctx context.Context, report entity.MoneyReport
 }
 
 func (s *service) ProcessMoneyReports(ctx context.Context) (err error) {
-	reports, err := s.sessionRepo.GetUnprocessedMoneyReports(ctx)
+	lastID := int64(0)
 
-	for _, report := range reports {
-		err = s.processMoneyReport(ctx, report)
+	for {
+		reports, err := s.sessionRepo.GetUnprocessedMoneyReports(ctx, lastID, s.reportsProcessingDelayInMinutes)
+
 		if err != nil {
+			return err
+		}
+
+		if len(reports) == 0 {
 			break
+		}
+
+		lastID = reports[len(reports)-1].ID
+
+		for _, report := range reports {
+			err = s.processMoneyReport(ctx, report)
+			if err != nil {
+				s.l.Warn("failed to process money report with id", report.ID, "error", err)
+				break
+			}
 		}
 	}
 
@@ -54,7 +69,7 @@ func (s *service) processMoneyReport(ctx context.Context, report entity.UserMone
 	banknotes := decimal.NewFromInt(int64(report.Banknotes))
 	electonical := decimal.NewFromInt(int64(report.Electronical))
 
-	percent := decimal.NewFromInt(5) //TODO: GET VALUE FROM CONFIGURATION
+	percent := decimal.NewFromInt(s.moneyReportsRewardPercentDefault)
 
 	divider := decimal.NewFromInt(100)
 

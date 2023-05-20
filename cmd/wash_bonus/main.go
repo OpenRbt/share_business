@@ -53,7 +53,7 @@ func main() {
 
 	userSvc := userSvc.New(l, userRepo)
 	washServerSvc := washserverSvc.New(l, washRepo)
-	sessionSvc := sessionSvc.New(l, userRepo, sessionRepo)
+	sessionSvc := sessionSvc.New(l, userRepo, sessionRepo, cfg.SessionsConfig.ReportsProcessingDelayInMinutes, cfg.SessionsConfig.MoneyReportRewardPercentDefault)
 
 	rabbitUseCase := rabbitUseCase.New(l, sessionSvc, userSvc, washServerSvc)
 

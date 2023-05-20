@@ -30,7 +30,7 @@ type Repo interface {
 	UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
 
 	SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
-	GetUnprocessedMoneyReports(ctx context.Context) (reports []entity.UserMoneyReport, err error)
+	GetUnprocessedMoneyReports(ctx context.Context, lastId int64, olderThenNMinutes int64) (reports []entity.UserMoneyReport, err error)
 	UpdateMoneyReport(ctx context.Context, id int64, processed bool) (err error)
 }
 
@@ -42,12 +42,18 @@ type service struct {
 	l           *zap.SugaredLogger
 	sessionRepo Repo
 	userRepo    UserRepo
+
+	reportsProcessingDelayInMinutes  int64
+	moneyReportsRewardPercentDefault int64
 }
 
-func New(l *zap.SugaredLogger, userRepo UserRepo, sessionRepo Repo) Service {
+func New(l *zap.SugaredLogger, userRepo UserRepo, sessionRepo Repo, reportsProcessingDelayInMinutes int64, moneyReportsRewardPercent int64) Service {
+
 	return &service{
-		l:           l,
-		sessionRepo: sessionRepo,
-		userRepo:    userRepo,
+		l:                                l,
+		sessionRepo:                      sessionRepo,
+		userRepo:                         userRepo,
+		reportsProcessingDelayInMinutes:  reportsProcessingDelayInMinutes,
+		moneyReportsRewardPercentDefault: moneyReportsRewardPercent,
 	}
 }

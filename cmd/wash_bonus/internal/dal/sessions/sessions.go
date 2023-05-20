@@ -2,6 +2,7 @@ package sessions
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gocraft/dbr/v2"
 	uuid "github.com/satori/go.uuid"
@@ -165,7 +166,7 @@ func (r *repo) UpdateMoneyReport(ctx context.Context, id int64, processed bool) 
 	return
 }
 
-func (r *repo) GetUnprocessedMoneyReports(ctx context.Context) (reports []entity.UserMoneyReport, err error) {
+func (r *repo) GetUnprocessedMoneyReports(ctx context.Context, lastId int64, olderThenNMinutes int64) (reports []entity.UserMoneyReport, err error) {
 	defer func() {
 		dal.LogOptionalError(r.l, "session", err)
 	}()
@@ -177,11 +178,20 @@ func (r *repo) GetUnprocessedMoneyReports(ctx context.Context) (reports []entity
 select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".processed, "s".user
 from session_money_report "reports"
 left join sessions "s" on "reports".session_id = "s".id
-where "reports".processed = false and "reports".session_id is not null AND  "s".user is not null
-`).
+where "reports".processed = false 
+  	and "reports".session_id is not null 
+  	and  "s".user is not null  
+  	and "reports".id > ? 
+    and date_part('minute', now()::timestamp- "reports".ctime) > ?
+`, lastId, olderThenNMinutes).
 		LoadContext(ctx, &dbReports)
 
 	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			err = nil
+			return
+		}
+
 		return
 	}
 
