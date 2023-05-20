@@ -183,6 +183,8 @@ where "reports".processed = false
   	and  "s".user is not null  
   	and "reports".id > ? 
     and date_part('minute', now()::timestamp- "reports".ctime) > ?
+order by "reports".id
+limit 100
 `, lastId, olderThenNMinutes).
 		LoadContext(ctx, &dbReports)
 
