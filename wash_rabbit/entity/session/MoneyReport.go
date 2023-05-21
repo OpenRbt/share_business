@@ -9,4 +9,5 @@ type MoneyReport struct {
 	Service      int
 	Bonuses      int
 	SessionID    string
+	UUID         string
 }
