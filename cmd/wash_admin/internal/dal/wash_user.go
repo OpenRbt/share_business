@@ -64,3 +64,25 @@ func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity strin
 
 	return dbWashUser, err
 }
+
+func (s *Storage) UpdateUserRole(ctx context.Context, updateUser app.UpdateUser) error {
+	dbUpdateUser := conversions.WashUserToDB(updateUser)
+
+	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+
+	if err != nil {
+		return err
+	}
+
+	updateStatement := tx.
+		Update("users").
+		Where("id = ?", dbUpdateUser.ID).Set("role", dbUpdateUser.Role)
+
+	_, err = updateStatement.ExecContext(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}

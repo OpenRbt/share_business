@@ -9,3 +9,14 @@ type WashUser struct {
 	Identity string        `db:"identity"`
 	Role     string        `db:"role"`
 }
+
+const (
+	AdminRole    string = "admin"
+	UserRole     string = "user"
+	EngineerRole string = "engineer"
+)
+
+type UpdateUser struct {
+	ID   uuid.NullUUID `db:"id"`
+	Role string        `db:"role"`
+}

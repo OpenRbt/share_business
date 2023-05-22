@@ -25,7 +25,7 @@ func (s *Storage) generateNewServiceKey() string {
 	return fmt.Sprintf("%x", sha256.Sum256(data))
 }
 
-func (s *Storage) RegisterWashServer(ctx context.Context, owner uuid.UUID, newWashServer app.RegisterWashServer) (app.WashServer, error) {
+func (s *Storage) RegisterWashServer(ctx context.Context, user uuid.UUID, newWashServer app.RegisterWashServer) (app.WashServer, error) {
 	var registredServer dbmodels.WashServer
 
 	err := s.db.NewSession(nil).
@@ -35,7 +35,7 @@ func (s *Storage) RegisterWashServer(ctx context.Context, owner uuid.UUID, newWa
 			Title:       newWashServer.Title,
 			Description: newWashServer.Description,
 			Owner: uuid.NullUUID{
-				UUID:  owner,
+				UUID:  user,
 				Valid: true,
 			},
 			ServiceKey: s.generateNewServiceKey(),
