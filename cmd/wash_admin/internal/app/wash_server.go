@@ -15,7 +15,7 @@ type WashServerService interface {
 	DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error
 	GetWashServerList(ctx context.Context, auth *Auth, getWashServerList Pagination) ([]WashServer, error)
 
-	UpdateUser(ctx context.Context, auth *Auth, user UpdateUser) error
+	UpdateUserRole(ctx context.Context, auth *Auth, user UpdateUser) error
 }
 
 type Repository interface {

@@ -76,7 +76,7 @@ func (s *Storage) UpdateUserRole(ctx context.Context, updateUser app.UpdateUser)
 
 	updateStatement := tx.
 		Update("users").
-		Where("id = ?", dbUpdateUser.ID).Set("role", dbUpdateUser.Role)
+		Where("identity_uid = ?", dbUpdateUser.Identity).Set("role", dbUpdateUser.Role)
 
 	_, err = updateStatement.ExecContext(ctx)
 

@@ -19,8 +19,9 @@ func WashUserFromDB(dbWashUser dbmodels.WashUser) app.WashUser {
 func WashUserToDB(user app.UpdateUser) dbmodels.UpdateUser {
 	role := RoleSelectionDB(user.Role)
 	return dbmodels.UpdateUser{
-		ID:   uuid.NullUUID{UUID: user.ID, Valid: true},
-		Role: role,
+		ID:       uuid.NullUUID{UUID: user.ID, Valid: true},
+		Identity: user.Identity,
+		Role:     role,
 	}
 }
 
@@ -34,7 +35,7 @@ func RoleSelectionApp(dbRole string) app.Role {
 	case dbmodels.UserRole:
 		role = app.UserRole
 	default:
-		panic("Unknown role from db")
+		panic("Unknown role from db, dbRole - " + dbRole)
 	}
 	return role
 }
@@ -49,7 +50,7 @@ func RoleSelectionDB(appRole app.Role) string {
 	case app.UserRole:
 		role = dbmodels.UserRole
 	default:
-		panic("Unknown role from app")
+		panic("Unknown role from app, appRole - " + appRole)
 	}
 	return role
 }

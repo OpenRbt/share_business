@@ -17,6 +17,7 @@ const (
 )
 
 type UpdateUser struct {
-	ID   uuid.NullUUID `db:"id"`
-	Role string        `db:"role"`
+	ID       uuid.NullUUID `db:"id"`
+	Identity string        `db:"identity"`
+	Role     string        `db:"role"`
 }

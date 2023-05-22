@@ -18,7 +18,7 @@ type UpdateUser struct {
 	Role     Role
 }
 
-func (svc *WashServerSvc) UpdateUser(ctx context.Context, auth *Auth, userUpdate UpdateUser) error {
+func (svc *WashServerSvc) UpdateUserRole(ctx context.Context, auth *Auth, userUpdate UpdateUser) error {
 	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
 
 	if err != nil {
@@ -28,7 +28,7 @@ func (svc *WashServerSvc) UpdateUser(ctx context.Context, auth *Auth, userUpdate
 	switch user.Role {
 	case AdminRole:
 
-		_, err := svc.repo.GetOrCreateUserIfNotExists(ctx, userUpdate.Identity)
+		_, err := svc.repo.GetWashUser(ctx, userUpdate.Identity)
 
 		if err != nil {
 			return err
