@@ -15,7 +15,10 @@ type Service interface {
 
 	UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) error
 	SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error)
-	UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
+
+	ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
+	DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
+	ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
 
 	SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
 	ProcessMoneyReports(ctx context.Context) (err error)
@@ -27,7 +30,10 @@ type Repo interface {
 
 	UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) error
 	SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error)
-	UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
+
+	ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
+	DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
+	ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
 
 	SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
 	GetUnprocessedMoneyReports(ctx context.Context, lastId int64, olderThenNMinutes int64) (reports []entity.UserMoneyReport, err error)
@@ -35,7 +41,7 @@ type Repo interface {
 }
 
 type UserRepo interface {
-	UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (err error)
+	AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error)
 }
 
 type service struct {

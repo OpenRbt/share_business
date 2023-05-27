@@ -113,7 +113,7 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			return
 		}
 
-		amount := decimal.NewFromInt(int64(msg.Amount))
+		amount := decimal.NewFromInt(msg.Amount)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -138,7 +138,7 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			return
 		}
 
-		amount := decimal.NewFromInt(int64(msg.Amount))
+		amount := decimal.NewFromInt(msg.Amount)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -182,7 +182,7 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			return
 		}
 
-		report := conversions.MoneyReportFromRabbit(msg)
+		report, _ := conversions.MoneyReportFromRabbit(msg)
 
 		err = svc.useCase.SaveMoneyReport(ctx, report)
 		if err != nil {

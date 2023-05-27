@@ -12,4 +12,5 @@ type MoneyReport struct {
 	Bonuses      int
 	SessionID    *uuid.UUID
 	Processed    bool
+	UUID         uuid.UUID
 }

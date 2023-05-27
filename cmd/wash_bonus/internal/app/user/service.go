@@ -11,13 +11,13 @@ import (
 type Service interface {
 	Create(ctx context.Context, userID string) (user entity.User, err error)
 	Get(ctx context.Context, userID string) (user entity.User, err error)
-	UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (newBalance decimal.Decimal, err error)
+	AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error)
 }
 
 type Repo interface {
 	GetByID(ctx context.Context, userID string) (user entity.User, err error)
 	Create(ctx context.Context, userID string) (user entity.User, err error)
-	UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (err error)
+	AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error)
 	GetBalance(ctx context.Context, userID string) (balance decimal.Decimal, err error)
 }
 

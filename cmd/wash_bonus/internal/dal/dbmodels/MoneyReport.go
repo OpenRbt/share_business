@@ -12,4 +12,5 @@ type MoneyReport struct {
 	Bonuses      int           `db:"bonuses"`
 	SessionID    uuid.NullUUID `db:"session_id"`
 	Processed    bool          `db:"processed"`
+	UUID         uuid.NullUUID `db:"uuid"`
 }

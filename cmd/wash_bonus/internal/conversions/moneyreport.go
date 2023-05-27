@@ -7,8 +7,13 @@ import (
 	"wash_bonus/internal/entity"
 )
 
-func MoneyReportFromRabbit(r session.MoneyReport) (e entity.MoneyReport) {
+func MoneyReportFromRabbit(r session.MoneyReport) (e entity.MoneyReport, err error) {
 	sessionID, err := uuid.FromString(r.SessionID)
+
+	reportUUID, err := uuid.FromString(r.UUID)
+	if err != nil {
+		return
+	}
 
 	e = entity.MoneyReport{
 		StationID:    r.StationID,
@@ -18,6 +23,7 @@ func MoneyReportFromRabbit(r session.MoneyReport) (e entity.MoneyReport) {
 		Electronical: r.Electronical,
 		Service:      r.Service,
 		Bonuses:      r.Bonuses,
+		UUID:         reportUUID,
 	}
 	if err == nil {
 		e.SessionID = &sessionID
@@ -36,6 +42,7 @@ func MoneyReportFromDB(db dbmodels.MoneyReport) (e entity.MoneyReport) {
 		Service:      db.Service,
 		Bonuses:      db.Bonuses,
 		Processed:    db.Processed,
+		UUID:         db.UUID.UUID,
 	}
 
 	if db.SessionID.Valid {
@@ -52,8 +59,12 @@ func MoneyReportToDB(e entity.MoneyReport) (db dbmodels.MoneyReport) {
 		Coins:        e.Coins,
 		Electronical: e.Electronical,
 		Service:      e.Service,
-		Bonuses:      0,
+		Bonuses:      e.Bonuses,
 		Processed:    e.Processed,
+		UUID: uuid.NullUUID{
+			UUID:  e.UUID,
+			Valid: true,
+		},
 	}
 
 	if e.SessionID != nil {
