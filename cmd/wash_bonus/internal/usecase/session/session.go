@@ -68,10 +68,28 @@ func (u *useCase) AssignUser(ctx context.Context, sessionID uuid.UUID, userID st
 }
 
 func (u *useCase) ChargeBonuses(ctx context.Context, sessionID uuid.UUID, userID string, amount decimal.Decimal) (err error) {
+	user, err := u.UserSvc.Get(ctx, userID)
+	_, err = u.UserSvc.Get(ctx, userID)
+	if err != nil {
+		if errors.Is(err, entity.ErrNotFound) {
+			_, err = u.UserSvc.Create(ctx, userID)
+			if err != nil {
+				return err
+			}
+		} else {
+			return
+		}
+	}
+
 	session, err := u.SessionSvc.Get(ctx, sessionID)
 	if err != nil {
 		return
 	}
+
+	if session.User == nil || session.User.ID != user.ID || session.Finished {
+		return entity.ErrForbidden
+	}
+
 	err = u.SessionSvc.ChargeBonuses(ctx, amount, sessionID, userID)
 	if err != nil {
 		return
