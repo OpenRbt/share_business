@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230521233546-9127ef9ba68c
+	github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230531081845-5b5c1deeccad
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/go-openapi/errors v0.20.3

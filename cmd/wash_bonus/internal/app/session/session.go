@@ -91,3 +91,7 @@ func (s *service) DiscardBonuses(ctx context.Context, amount decimal.Decimal, se
 func (s *service) ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
 	return s.sessionRepo.ConfirmBonuses(ctx, amount, sessionID)
 }
+
+func (s *service) LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error) {
+	return s.sessionRepo.LogRewardBonuses(ctx, sessionID, payload, messageUuid)
+}

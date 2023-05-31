@@ -136,6 +136,10 @@ github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230409133455-70a4b62d0ada
 github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230409133455-70a4b62d0ada/go.mod h1:wHiw3GqLVMbuLTETv6zaXmy1JEa5Wgj4RBSJW2arV+Y=
 github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230521233546-9127ef9ba68c h1:lX/7c7DipGAIH9ToYXrX5af0Z+sN6W4wSEihXpwr/zI=
 github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230521233546-9127ef9ba68c/go.mod h1:wHiw3GqLVMbuLTETv6zaXmy1JEa5Wgj4RBSJW2arV+Y=
+github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230531080801-6813875620c7 h1:KxxpooWsGPXjJ7dRvPXxBObHnCNRVuOfpNHkxrldgBI=
+github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230531080801-6813875620c7/go.mod h1:wHiw3GqLVMbuLTETv6zaXmy1JEa5Wgj4RBSJW2arV+Y=
+github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230531081845-5b5c1deeccad h1:+Qj3j6DULJKcUhSa3YPiP4ZdAV88eRGEhgkTM/DjI6Y=
+github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230531081845-5b5c1deeccad/go.mod h1:wHiw3GqLVMbuLTETv6zaXmy1JEa5Wgj4RBSJW2arV+Y=
 github.com/PuerkitoBio/purell v1.0.0/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20160726150825-5bd2802263f2/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=

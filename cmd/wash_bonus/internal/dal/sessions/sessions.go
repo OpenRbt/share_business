@@ -408,3 +408,14 @@ func (r *repo) ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessi
 
 	return
 }
+func (r *repo) LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error) {
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+	}()
+	_, err = r.db.NewSession(nil).
+		InsertInto("bonus_reward_log").
+		Columns("session_id", "payload", "uuid").
+		Values(uuid.NullUUID{UUID: sessionID, Valid: true}, payload, uuid.NullUUID{UUID: messageUuid, Valid: true}).
+		ExecContext(ctx)
+	return
+}

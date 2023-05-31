@@ -169,7 +169,13 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			return
 		}
 
-		err = svc.useCase.RewardBonuses(ctx, sessionID, amount)
+		messageUuid, err := uuid.FromString(msg.UUID)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+
+		err = svc.useCase.RewardBonuses(ctx, d.Body, sessionID, amount, messageUuid)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return

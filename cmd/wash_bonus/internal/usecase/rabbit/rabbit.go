@@ -59,7 +59,7 @@ func (u *useCase) DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amoun
 	return u.SessionSvc.DiscardBonuses(ctx, amount, sessionID)
 }
 
-func (u *useCase) RewardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
+func (u *useCase) RewardBonuses(ctx context.Context, payload []byte, sessionID uuid.UUID, amount decimal.Decimal, messageUUID uuid.UUID) (err error) {
 	session, err := u.SessionSvc.Get(ctx, sessionID)
 	if err != nil {
 		return
@@ -67,6 +67,10 @@ func (u *useCase) RewardBonuses(ctx context.Context, sessionID uuid.UUID, amount
 
 	if session.User == nil {
 		return entity.ErrSessionNoUser
+	}
+
+	if err := u.SessionSvc.LogRewardBonuses(ctx, sessionID, payload, messageUUID); err != nil {
+		return entity.ErrMessageDuplicate
 	}
 
 	return u.UserSvc.AddBonuses(ctx, amount, session.User.ID)
