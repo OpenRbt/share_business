@@ -53,49 +53,48 @@ func NewWashServerService(logger *zap.SugaredLogger, repo Repository, rabbit Rab
 
 func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, newServer RegisterWashServer) (WashServer, error) {
 	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
+
 	if err != nil {
 		return WashServer{}, err
 	}
 
-	if !checkAccess(user, roleAdmin) {
+	switch user.Role {
+	case AdminRole:
+		registered, err := svc.repo.RegisterWashServer(ctx, user.ID, newServer)
+		if err != nil {
+			return WashServer{}, err
+		}
+
+		err = svc.r.CreateRabbitUser(registered.ID.String(), registered.ServiceKey)
+		if err != nil {
+			return WashServer{}, err
+		}
+
+		eventErr := svc.r.SendMessage(WashServerToRabbit(registered), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerRegisteredMessageType)
+		if eventErr != nil {
+			svc.l.Errorw("failed to send server event", "registered server", registered, "error", eventErr)
+			return WashServer{}, eventErr
+		}
+
+		return registered, nil
+	default:
 		return WashServer{}, ErrAccessDenied
 	}
-
-	registered, err := svc.repo.RegisterWashServer(ctx, user.ID, newServer)
-	if err != nil {
-		return WashServer{}, err
-	}
-
-	err = svc.r.CreateRabbitUser(registered.ID.String(), registered.ServiceKey)
-	if err != nil {
-		return WashServer{}, err
-	}
-
-	eventErr := svc.r.SendMessage(WashServerToRabbit(registered), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerRegisteredMessageType)
-	if eventErr != nil {
-		svc.l.Errorw("failed to send server event", "registered server", registered, "error", eventErr)
-		return WashServer{}, eventErr
-	}
-
-	return registered, nil
 }
 
 func (svc *WashServerSvc) GetWashServer(ctx context.Context, auth *Auth, id uuid.UUID) (WashServer, error) {
 	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
+
 	if err != nil {
 		return WashServer{}, err
 	}
 
-	server, err := svc.repo.GetWashServer(ctx, id)
-	if err != nil {
-		return WashServer{}, err
-	}
-
-	if !checkAccess(user, anyRule(userIsOwner(server), roleAdmin)) {
+	switch user.Role {
+	case AdminRole:
+		return svc.repo.GetWashServer(ctx, id)
+	default:
 		return WashServer{}, ErrAccessDenied
 	}
-
-	return server, nil
 }
 
 func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer UpdateWashServer) error {
@@ -105,68 +104,75 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 		return err
 	}
 
-	server, err := svc.repo.GetWashServer(ctx, updateWashServer.ID)
-	if err != nil {
-		return err
-	}
+	switch user.Role {
+	case AdminRole:
 
-	if !checkAccess(user, anyRule(userIsOwner(server), roleAdmin)) {
+		_, err := svc.repo.GetWashServer(ctx, updateWashServer.ID)
+
+		if err != nil {
+			return err
+		}
+
+		err = svc.repo.UpdateWashServer(ctx, updateWashServer)
+		if err != nil {
+			return err
+		}
+
+		eventErr := svc.r.SendMessage(WashServerUpdateToRabbit(updateWashServer, false), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
+		if eventErr != nil {
+			svc.l.Errorw("failed to send server event", "update server", updateWashServer, "error", eventErr)
+			return eventErr
+		}
+
+		return nil
+
+	default:
 		return ErrAccessDenied
 	}
-
-	err = svc.repo.UpdateWashServer(ctx, updateWashServer)
-	if err != nil {
-		return err
-	}
-
-	eventErr := svc.r.SendMessage(WashServerUpdateToRabbit(updateWashServer, false), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
-	if eventErr != nil {
-		svc.l.Errorw("failed to send server event", "update server", updateWashServer, "error", eventErr)
-		return eventErr
-	}
-
-	return nil
 }
 
-func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, serverID uuid.UUID) error {
+func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error {
 	user, err := svc.repo.GetWashUser(ctx, auth.UID)
 	if err != nil {
 		return err
 	}
 
-	server, err := svc.repo.GetWashServer(ctx, serverID)
-	if err != nil {
-		return err
-	}
+	switch user.Role {
+	case AdminRole:
+		_, err := svc.repo.GetWashServer(ctx, id)
+		if err != nil {
+			return err
+		}
 
-	if !checkAccess(user, anyRule(userIsOwner(server), roleAdmin)) {
+		err = svc.repo.DeleteWashServer(ctx, id)
+		if err != nil {
+			return err
+		}
+
+		eventErr := svc.r.SendMessage(WashServerUpdateToRabbit(UpdateWashServer{ID: id}, true), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
+		if eventErr != nil {
+			svc.l.Errorw("failed to send server event", "deleted server", id.String(), "error", eventErr)
+			return eventErr
+		}
+
+		return nil
+
+	default:
 		return ErrAccessDenied
 	}
-
-	err = svc.repo.DeleteWashServer(ctx, serverID)
-	if err != nil {
-		return err
-	}
-
-	eventErr := svc.r.SendMessage(WashServerUpdateToRabbit(UpdateWashServer{ID: serverID}, true), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
-	if eventErr != nil {
-		svc.l.Errorw("failed to send server event", "deleted server", serverID.String(), "error", eventErr)
-		return eventErr
-	}
-
-	return nil
-
 }
 
 func (svc *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pagination Pagination) ([]WashServer, error) {
 	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
-	if err != nil {
-		return nil, err
-	}
 
-	if !checkAccess(user, roleAdmin) {
+	switch user.Role {
+	case AdminRole:
+		if err != nil {
+			return []WashServer{}, err
+		}
+
+		return svc.repo.GetWashServerList(ctx, pagination)
+	default:
 		return []WashServer{}, ErrAccessDenied
 	}
-
-	return svc.repo.GetWashServerList(ctx, pagination)
 }
