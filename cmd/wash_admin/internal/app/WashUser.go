@@ -20,28 +20,18 @@ type UpdateUser struct {
 
 func (svc *WashServerSvc) UpdateUserRole(ctx context.Context, auth *Auth, userUpdate UpdateUser) error {
 	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
-
 	if err != nil {
 		return err
 	}
 
-	switch user.Role {
-	case AdminRole:
-
-		_, err := svc.repo.GetWashUser(ctx, userUpdate.Identity)
-
-		if err != nil {
-			return err
-		}
-
-		err = svc.repo.UpdateUserRole(ctx, userUpdate)
-
-		if err != nil {
-			return err
-		}
-
-		return nil
-	default:
+	if !checkAccess(user, roleAdmin) {
 		return ErrAccessDenied
 	}
+
+	_, err = svc.repo.GetWashUser(ctx, userUpdate.Identity)
+	if err != nil {
+		return err
+	}
+
+	return svc.repo.UpdateUserRole(ctx, userUpdate)
 }
