@@ -14,4 +14,5 @@ type UserMoneyReport struct {
 	SessionID    uuid.NullUUID `db:"session_id"`
 	User         string        `db:"user"`
 	Processed    bool          `db:"processed"`
+	UUID         uuid.NullUUID `db:"uuid"`
 }

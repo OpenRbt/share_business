@@ -19,14 +19,8 @@ func (s *service) Get(ctx context.Context, userID string) (user entity.User, err
 	return
 }
 
-func (s *service) UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (newBalance decimal.Decimal, err error) {
-	err = s.userRepo.UpdateBalance(ctx, userID, amount)
-	if err != nil {
-		return
-	}
-
-	newBalance, err = s.userRepo.GetBalance(ctx, userID)
-	return
+func (s *service) AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error) {
+	return s.userRepo.AddBonuses(ctx, amount, userID)
 }
 
 func (s *service) Create(ctx context.Context, userID string) (user entity.User, err error) {

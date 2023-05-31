@@ -54,7 +54,7 @@ func (r *repo) Create(ctx context.Context, userID string) (user entity.User, err
 	return conversions.UserFromDb(dbUser), nil
 }
 
-func (r *repo) UpdateBalance(ctx context.Context, userID string, amount decimal.Decimal) (err error) {
+func (r *repo) AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error) {
 	var tx *dbr.Tx
 
 	defer func() {
@@ -65,39 +65,44 @@ func (r *repo) UpdateBalance(ctx context.Context, userID string, amount decimal.
 		}
 	}()
 
+	if amount.LessThan(decimal.Zero) {
+		return entity.ErrBadValue
+	}
+
 	tx, err = r.db.NewSession(nil).BeginTx(ctx, nil)
 
 	date := time.Now()
 
-	var userBalance decimal.NullDecimal
+	var (
+		userBalance        decimal.NullDecimal
+		updatedUserBalance decimal.NullDecimal
+	)
 
 	err = tx.SelectBySql("SELECT balance FROM users WHERE  id = ? FOR UPDATE", userID).LoadOneContext(ctx, &userBalance)
 	if err != nil {
 		return
 	}
 
-	if amount.LessThan(decimal.Zero) && amount.Add(userBalance.Decimal).LessThan(decimal.Zero) {
-		err = entity.ErrNotEnoughMoney
-		return
-	}
-
-	newAmount := userBalance.Decimal.Add(amount)
+	updatedUserBalance.Decimal = userBalance.Decimal.Add(amount)
+	updatedUserBalance.Valid = true
 
 	_, err = tx.Update("users").
 		Where("id = ?", userID).
-		Set("balance", decimal.NullDecimal{Decimal: newAmount, Valid: true}).
+		Set("balance", updatedUserBalance).
 		ExecContext(ctx)
 	if err != nil {
 		return
 	}
 
-	_, err = tx.InsertInto("balance_events").Columns("user", "old_amount", "new_amount", "date").Values(userID, userBalance, newAmount, date).ExecContext(ctx)
+	_, err = tx.InsertInto("balance_events").
+		Columns("user", "old_amount", "new_amount", "date").
+		Values(userID, userBalance, updatedUserBalance, date).
+		ExecContext(ctx)
 	if err != nil {
 		return
 	}
 
 	err = tx.Commit()
-
 	return
 }
 

@@ -1,0 +1,1 @@
+drop table bonus_reward_log;

@@ -28,21 +28,32 @@ func (s *service) SetSessionUser(ctx context.Context, sessionID uuid.UUID, userI
 	return s.sessionRepo.SetSessionUser(ctx, sessionID, userID)
 }
 
-func (s *service) UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
-	return s.sessionRepo.UpdateSessionBalance(ctx, sessionID, amount)
-}
-
 func (s *service) SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error) {
 	return s.sessionRepo.SaveMoneyReport(ctx, report)
 }
 
 func (s *service) ProcessMoneyReports(ctx context.Context) (err error) {
-	reports, err := s.sessionRepo.GetUnprocessedMoneyReports(ctx)
+	lastID := int64(0)
 
-	for _, report := range reports {
-		err = s.processMoneyReport(ctx, report)
+	for {
+		reports, err := s.sessionRepo.GetUnprocessedMoneyReports(ctx, lastID, s.reportsProcessingDelayInMinutes)
+
 		if err != nil {
+			return err
+		}
+
+		if len(reports) == 0 {
 			break
+		}
+
+		lastID = reports[len(reports)-1].ID
+
+		for _, report := range reports {
+			err = s.processMoneyReport(ctx, report)
+			if err != nil {
+				s.l.Warn("failed to process money report with id", report.ID, "error", err)
+				break
+			}
 		}
 	}
 
@@ -54,7 +65,7 @@ func (s *service) processMoneyReport(ctx context.Context, report entity.UserMone
 	banknotes := decimal.NewFromInt(int64(report.Banknotes))
 	electonical := decimal.NewFromInt(int64(report.Electronical))
 
-	percent := decimal.NewFromInt(5) //TODO: GET VALUE FROM CONFIGURATION
+	percent := decimal.NewFromInt(s.moneyReportsRewardPercentDefault)
 
 	divider := decimal.NewFromInt(100)
 
@@ -62,7 +73,7 @@ func (s *service) processMoneyReport(ctx context.Context, report entity.UserMone
 	addAmount = addAmount.Add(banknotes.Div(divider).Mul(percent))
 	addAmount = addAmount.Add(electonical.Div(divider).Mul(percent))
 
-	err = s.userRepo.UpdateBalance(ctx, report.User, addAmount)
+	err = s.userRepo.AddBonuses(ctx, addAmount, report.User)
 	if err != nil {
 		return
 	}
@@ -70,4 +81,17 @@ func (s *service) processMoneyReport(ctx context.Context, report entity.UserMone
 	err = s.sessionRepo.UpdateMoneyReport(ctx, report.ID, true)
 
 	return
+}
+func (s *service) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
+	return s.sessionRepo.ChargeBonuses(ctx, amount, sessionID, userID)
+}
+func (s *service) DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
+	return s.sessionRepo.DiscardBonuses(ctx, amount, sessionID)
+}
+func (s *service) ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
+	return s.sessionRepo.ConfirmBonuses(ctx, amount, sessionID)
+}
+
+func (s *service) LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error) {
+	return s.sessionRepo.LogRewardBonuses(ctx, sessionID, payload, messageUuid)
 }

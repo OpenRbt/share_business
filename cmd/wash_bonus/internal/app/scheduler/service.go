@@ -30,17 +30,14 @@ func (s *service) Run(delayMinutes int) {
 func (s *service) ProcessMoneyReports(delay time.Duration) {
 	l := s.l.Named("ProcessMoneyReports")
 
-	ticker := time.NewTicker(delay)
-	defer ticker.Stop()
-
 	for {
-		<-ticker.C
-
 		ctx := context.TODO()
 
 		err := s.sessionSvc.ProcessMoneyReports(ctx)
 		if err != nil {
 			l.Error(err)
 		}
+
+		time.Sleep(delay)
 	}
 }

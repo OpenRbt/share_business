@@ -34,54 +34,46 @@ func (u *useCase) UpdateState(ctx context.Context, sessionID uuid.UUID, state ra
 }
 
 func (u *useCase) ConfirmBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
-	subtractAmount := amount.Neg()
-
 	session, err := u.SessionSvc.Get(ctx, sessionID)
 	if err != nil {
 		return
 	}
+
 	if session.User == nil {
-		return entity.ErrForbidden
+		return entity.ErrSessionNoUser
 	}
 
-	err = u.SessionSvc.UpdateSessionBalance(ctx, sessionID, subtractAmount)
-
-	return
+	return u.SessionSvc.ConfirmBonuses(ctx, amount, sessionID)
 }
 
 func (u *useCase) DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
-	subtractAmount := amount.Neg()
-
 	session, err := u.SessionSvc.Get(ctx, sessionID)
 	if err != nil {
 		return
 	}
 
 	if session.User == nil {
-		return entity.ErrForbidden
+		return entity.ErrSessionNoUser
 	}
 
-	err = u.SessionSvc.UpdateSessionBalance(ctx, sessionID, subtractAmount)
+	return u.SessionSvc.DiscardBonuses(ctx, amount, sessionID)
+}
+
+func (u *useCase) RewardBonuses(ctx context.Context, payload []byte, sessionID uuid.UUID, amount decimal.Decimal, messageUUID uuid.UUID) (err error) {
+	session, err := u.SessionSvc.Get(ctx, sessionID)
 	if err != nil {
 		return
 	}
 
-	_, err = u.UserSvc.UpdateBalance(ctx, session.User.ID, amount)
-
-	return
-}
-
-func (u *useCase) RewardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
-	session, err := u.SessionSvc.Get(ctx, sessionID)
-	if err != nil {
-		return err
+	if session.User == nil {
+		return entity.ErrSessionNoUser
 	}
 
-	if session.User != nil {
-		_, err = u.UserSvc.UpdateBalance(ctx, session.User.ID, amount)
+	if err := u.SessionSvc.LogRewardBonuses(ctx, sessionID, payload, messageUUID); err != nil {
+		return entity.ErrMessageDuplicate
 	}
 
-	return
+	return u.UserSvc.AddBonuses(ctx, amount, session.User.ID)
 }
 
 func (u *useCase) CreateWashServer(ctx context.Context, server entity.WashServer) (entity.WashServer, error) {

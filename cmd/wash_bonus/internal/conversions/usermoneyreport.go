@@ -28,5 +28,6 @@ func UserMoneyReportFromDB(db dbmodels.UserMoneyReport) entity.UserMoneyReport {
 		SessionID:    db.SessionID.UUID,
 		User:         db.User,
 		Processed:    db.Processed,
+		UUID:         db.UUID.UUID,
 	}
 }

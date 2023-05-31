@@ -20,7 +20,7 @@ type UseCase interface {
 
 	ConfirmBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
 	DiscardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
-	RewardBonuses(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error)
+	RewardBonuses(ctx context.Context, payload []byte, sessionID uuid.UUID, amount decimal.Decimal, messageUUID uuid.UUID) (err error)
 
 	SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
 

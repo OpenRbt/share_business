@@ -14,4 +14,5 @@ type UserMoneyReport struct {
 	SessionID    uuid.UUID
 	User         string
 	Processed    bool
+	UUID         uuid.UUID
 }

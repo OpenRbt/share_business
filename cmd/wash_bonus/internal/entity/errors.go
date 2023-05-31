@@ -9,8 +9,11 @@ var (
 
 	ErrBadValue = errors.New("bad value")
 
+	ErrMessageDuplicate = errors.New("duplicate message")
+
 	ErrForbidden      = errors.New("forbidden operation")
 	ErrNotEnoughMoney = errors.New("not enough money")
+	ErrSessionNoUser  = errors.New("session without user")
 
 	ErrWashServerConnectionInit = errors.New("failed to init wash server connection")
 	ErrWashServerNotFound       = errors.New("wash server with specified key not exists")

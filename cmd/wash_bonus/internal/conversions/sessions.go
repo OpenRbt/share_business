@@ -43,16 +43,16 @@ func SessionToRest(e entity.Session) *models.Session {
 	}
 }
 
-func SessionUserAssign(sessionID uuid.UUID, user entity.User) session.UserAssign {
+func SessionUserAssign(sessionID uuid.UUID, userID string) session.UserAssign {
 	return session.UserAssign{
 		SessionID: sessionID.String(),
-		UserID:    user.ID,
+		UserID:    userID,
 	}
 }
 
-func SessionBonusCharge(e entity.Session, amount decimal.Decimal) session.BonusCharge {
+func SessionBonusCharge(sessionID uuid.UUID, amount decimal.Decimal) session.BonusCharge {
 	return session.BonusCharge{
-		SessionID: e.ID.String(),
+		SessionID: sessionID.String(),
 		Amount:    amount.IntPart(),
 	}
 }
