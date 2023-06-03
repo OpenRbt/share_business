@@ -128,7 +128,7 @@ func (s *Storage) GetWashServerList(ctx context.Context, pagination app.Paginati
 	}
 
 	if count == 0 {
-		return []app.WashServer{}, dbr.ErrNotFound
+		return []app.WashServer{}, app.ErrNotFound
 	}
 
 	washServerListFromDB := conversions.WashServerListFromDB(dbWashServerList)

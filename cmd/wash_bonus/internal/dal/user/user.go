@@ -71,7 +71,7 @@ func (r *repo) AddBonuses(ctx context.Context, amount decimal.Decimal, userID st
 
 	tx, err = r.db.NewSession(nil).BeginTx(ctx, nil)
 
-	date := time.Now()
+	date := time.Now().UTC()
 
 	var (
 		userBalance        decimal.NullDecimal

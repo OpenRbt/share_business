@@ -31,9 +31,14 @@ type Repository interface {
 	GetWashServerList(ctx context.Context, pagination Pagination) ([]WashServer, error)
 }
 
+type RabbitWorker interface {
+	PrepareMessage(messageType rabbit_vo.MessageType, payload interface{}) error
+}
+
 type WashServerSvc struct {
-	l    *zap.SugaredLogger
-	repo Repository
+	l            *zap.SugaredLogger
+	repo         Repository
+	rabbitWorker RabbitWorker
 
 	r RabbitSvc
 }
@@ -43,11 +48,12 @@ type RabbitSvc interface {
 	SendMessage(msg interface{}, service rabbit_vo.Service, routingKey rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) error
 }
 
-func NewWashServerService(logger *zap.SugaredLogger, repo Repository, rabbit RabbitSvc) WashServerService {
+func NewWashServerService(logger *zap.SugaredLogger, repo Repository, rabbit RabbitSvc, rabbitWorker RabbitWorker) WashServerService {
 	return &WashServerSvc{
-		l:    logger,
-		repo: repo,
-		r:    rabbit,
+		l:            logger,
+		repo:         repo,
+		r:            rabbit,
+		rabbitWorker: rabbitWorker,
 	}
 }
 
@@ -70,9 +76,9 @@ func (svc *WashServerSvc) RegisterWashServer(ctx context.Context, auth *Auth, ne
 			return WashServer{}, err
 		}
 
-		eventErr := svc.r.SendMessage(WashServerToRabbit(registered), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerRegisteredMessageType)
+		eventErr := svc.rabbitWorker.PrepareMessage(rabbit_vo.AdminServerRegisteredMessageType, WashServerToRabbit(registered))
 		if eventErr != nil {
-			svc.l.Errorw("failed to send server event", "registered server", registered, "error", eventErr)
+			svc.l.Errorw("failed to prepare server event", "registered server", registered, "error", eventErr)
 		}
 
 		return registered, nil
@@ -114,9 +120,9 @@ func (svc *WashServerSvc) UpdateWashServer(ctx context.Context, auth *Auth, upda
 			return err
 		}
 
-		eventErr := svc.r.SendMessage(WashServerUpdateToRabbit(updateWashServer, false), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
+		eventErr := svc.rabbitWorker.PrepareMessage(rabbit_vo.AdminServerUpdatedMessageType, WashServerUpdateToRabbit(updateWashServer, false))
 		if eventErr != nil {
-			svc.l.Errorw("failed to send server event", "update server", updateWashServer, "error", eventErr)
+			svc.l.Errorw("failed to prepare server event", "update server", updateWashServer, "error", eventErr)
 		}
 
 		return nil
@@ -144,7 +150,7 @@ func (svc *WashServerSvc) DeleteWashServer(ctx context.Context, auth *Auth, id u
 			return err
 		}
 
-		eventErr := svc.r.SendMessage(WashServerUpdateToRabbit(UpdateWashServer{ID: id}, true), rabbit_vo.WashAdminService, rabbit_vo.WashAdminServesEventsRoutingKey, rabbit_vo.AdminServerUpdatedMessageType)
+		eventErr := svc.rabbitWorker.PrepareMessage(rabbit_vo.AdminServerUpdatedMessageType, WashServerUpdateToRabbit(UpdateWashServer{ID: id}, true))
 		if eventErr != nil {
 			svc.l.Errorw("failed to send server event", "deleted server", id.String(), "error", eventErr)
 		}
