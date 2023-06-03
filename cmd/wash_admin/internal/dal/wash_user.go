@@ -10,56 +10,51 @@ import (
 	"github.com/gocraft/dbr/v2"
 )
 
-func (s *Storage) GetWashUser(ctx context.Context, identity string) (app.WashUser, error) {
-	var dbWashUser dbmodels.WashUser
+func (s *Storage) GetUser(ctx context.Context, identity string) (app.User, error) {
+	var dbWashUser dbmodels.User
 
 	err := s.db.NewSession(nil).
 		Select("*").
 		From("users").
-		Where("identity_uid = ?", identity).
+		Where("id = ?", identity).
 		LoadOneContext(ctx, &dbWashUser)
 
 	switch {
 	case err == nil:
 		return conversions.WashUserFromDB(dbWashUser), err
 	case errors.Is(err, dbr.ErrNotFound):
-		return app.WashUser{}, app.ErrNotFound
+		return app.User{}, app.ErrNotFound
 	default:
-		return app.WashUser{}, err
+		return app.User{}, err
 	}
 }
 
-func (s *Storage) CreateWashUser(ctx context.Context, identity string) (app.WashUser, error) {
-	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+func (s *Storage) CreateWashUser(ctx context.Context, id string) (app.User, error) {
+	var dbWashUser dbmodels.User
 
-	if err != nil {
-		return app.WashUser{}, err
-	}
-
-	var dbWashUser dbmodels.WashUser
-	err = tx.
+	err := s.db.NewSession(nil).
 		InsertInto("users").
-		Columns("identity_uid", "role").
-		Values(identity, "user").
-		Returning("id", "identity_uid", "role").
+		Columns("id", "role").
+		Values(id, "user").
+		Returning("id", "role").
 		LoadContext(ctx, &dbWashUser)
 
 	if err != nil {
-		return app.WashUser{}, err
+		return app.User{}, nil
 	}
 
-	return conversions.WashUserFromDB(dbWashUser), tx.Commit()
+	return conversions.WashUserFromDB(dbWashUser), nil
 }
 
-func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity string) (app.WashUser, error) {
-	dbWashUser, err := s.GetWashUser(ctx, identity)
+func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity string) (app.User, error) {
+	dbWashUser, err := s.GetUser(ctx, identity)
 
 	if err != nil {
 		if errors.Is(err, app.ErrNotFound) {
 			return s.CreateWashUser(ctx, identity)
 		}
 
-		return app.WashUser{}, err
+		return app.User{}, err
 	}
 
 	return dbWashUser, err
@@ -68,21 +63,11 @@ func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity strin
 func (s *Storage) UpdateUserRole(ctx context.Context, updateUser app.UpdateUser) error {
 	dbUpdateUser := conversions.WashUserToDB(updateUser)
 
-	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
-
-	if err != nil {
-		return err
-	}
-
-	updateStatement := tx.
+	_, err := s.db.NewSession(nil).
 		Update("users").
-		Where("identity_uid = ?", dbUpdateUser.Identity).Set("role", dbUpdateUser.Role)
+		Where("id = ?", dbUpdateUser.ID).
+		Set("role", dbUpdateUser.Role).
+		ExecContext(ctx)
 
-	_, err = updateStatement.ExecContext(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	return tx.Commit()
+	return err
 }

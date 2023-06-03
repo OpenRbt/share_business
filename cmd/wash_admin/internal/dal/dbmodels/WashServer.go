@@ -6,6 +6,6 @@ type WashServer struct {
 	ID          uuid.NullUUID `db:"id"`
 	Title       string        `db:"title"`
 	Description string        `db:"description"`
-	Owner       uuid.NullUUID `db:"owner"`
+	CreatedBy   string        `db:"created_by"`
 	ServiceKey  string        `db:"service_key"`
 }

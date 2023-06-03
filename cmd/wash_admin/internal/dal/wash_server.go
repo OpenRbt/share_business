@@ -25,28 +25,25 @@ func (s *Storage) generateNewServiceKey() string {
 	return fmt.Sprintf("%x", sha256.Sum256(data))
 }
 
-func (s *Storage) RegisterWashServer(ctx context.Context, user uuid.UUID, newWashServer app.RegisterWashServer) (app.WashServer, error) {
-	var registredServer dbmodels.WashServer
+func (s *Storage) RegisterWashServer(ctx context.Context, userID string, newServer app.RegisterWashServer) (app.WashServer, error) {
+	var server dbmodels.WashServer
 
 	err := s.db.NewSession(nil).
 		InsertInto("wash_servers").
-		Columns("title", "description", "owner", "service_key").
+		Columns("title", "description", "service_key", "created_by").
 		Record(dbmodels.RegisterWashServer{
-			Title:       newWashServer.Title,
-			Description: newWashServer.Description,
-			Owner: uuid.NullUUID{
-				UUID:  user,
-				Valid: true,
-			},
-			ServiceKey: s.generateNewServiceKey(),
-		}).Returning("id", "title", "description", "owner", "service_key").
-		LoadContext(ctx, &registredServer)
+			Title:       newServer.Title,
+			Description: newServer.Description,
+			ServiceKey:  s.generateNewServiceKey(),
+			CreatedBy:   userID,
+		}).Returning("id", "title", "description", "service_key", "created_by").
+		LoadContext(ctx, &server)
 
 	if err != nil {
 		return app.WashServer{}, err
 	}
 
-	return conversions.WashServerFromDB(registredServer), err
+	return conversions.WashServerFromDB(server), err
 }
 
 func (s *Storage) GetWashServer(ctx context.Context, id uuid.UUID) (app.WashServer, error) {
@@ -71,13 +68,9 @@ func (s *Storage) GetWashServer(ctx context.Context, id uuid.UUID) (app.WashServ
 func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer app.UpdateWashServer) error {
 	dbUpdateWashServer := conversions.UpdateWashServerToDb(updateWashServer)
 
-	tx, err := s.db.NewSession(nil).BeginTx(ctx, nil)
+	session := s.db.NewSession(nil)
 
-	if err != nil {
-		return err
-	}
-
-	updateStatement := tx.
+	updateStatement := session.
 		Update("wash_servers").
 		Where("id = ?", dbUpdateWashServer.ID)
 
@@ -88,13 +81,12 @@ func (s *Storage) UpdateWashServer(ctx context.Context, updateWashServer app.Upd
 		updateStatement = updateStatement.Set("description", dbUpdateWashServer.Description)
 	}
 
-	_, err = updateStatement.ExecContext(ctx)
-
+	_, err := updateStatement.ExecContext(ctx)
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return nil
 }
 
 func (s *Storage) DeleteWashServer(ctx context.Context, id uuid.UUID) error {

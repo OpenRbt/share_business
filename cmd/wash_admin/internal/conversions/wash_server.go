@@ -10,7 +10,7 @@ func WashServerFromDB(dbWashServer dbmodels.WashServer) app.WashServer {
 		ID:          dbWashServer.ID.UUID,
 		Title:       dbWashServer.Title,
 		Description: dbWashServer.Description,
-		Owner:       dbWashServer.Owner.UUID,
+		CreatedBy:   dbWashServer.CreatedBy,
 		ServiceKey:  dbWashServer.ServiceKey,
 	}
 }

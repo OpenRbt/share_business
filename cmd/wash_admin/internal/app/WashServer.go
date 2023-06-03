@@ -10,7 +10,7 @@ type WashServer struct {
 	Title       string
 	Description string
 	ServiceKey  string
-	Owner       uuid.UUID
+	CreatedBy   string
 }
 
 type RegisterWashServer struct {

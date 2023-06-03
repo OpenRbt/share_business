@@ -3,25 +3,21 @@ package conversions
 import (
 	"wash_admin/internal/app"
 	"wash_admin/internal/dal/dbmodels"
-
-	uuid "github.com/satori/go.uuid"
 )
 
-func WashUserFromDB(dbWashUser dbmodels.WashUser) app.WashUser {
+func WashUserFromDB(dbWashUser dbmodels.User) app.User {
 	role := RoleSelectionApp(dbWashUser.Role)
-	return app.WashUser{
-		ID:       dbWashUser.ID.UUID,
-		Identity: dbWashUser.Identity,
-		Role:     role,
+	return app.User{
+		ID:   dbWashUser.ID,
+		Role: role,
 	}
 }
 
 func WashUserToDB(user app.UpdateUser) dbmodels.UpdateUser {
 	role := RoleSelectionDB(user.Role)
 	return dbmodels.UpdateUser{
-		ID:       uuid.NullUUID{UUID: user.ID, Valid: true},
-		Identity: user.Identity,
-		Role:     role,
+		ID:   user.ID,
+		Role: role,
 	}
 }
 

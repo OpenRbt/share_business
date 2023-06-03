@@ -2,40 +2,32 @@ package app
 
 import (
 	"context"
-
-	uuid "github.com/satori/go.uuid"
 )
 
-type WashUser struct {
-	ID       uuid.UUID
-	Identity string
-	Role     Role
+type User struct {
+	ID   string
+	Role Role
 }
 
 type UpdateUser struct {
-	ID       uuid.UUID
-	Identity string
-	Role     Role
+	ID   string
+	Role Role
 }
 
 func (svc *WashServerSvc) UpdateUserRole(ctx context.Context, auth *Auth, userUpdate UpdateUser) error {
 	user, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
-
 	if err != nil {
 		return err
 	}
 
 	switch user.Role {
 	case AdminRole:
-
-		_, err := svc.repo.GetWashUser(ctx, userUpdate.Identity)
-
+		_, err = svc.repo.GetUser(ctx, userUpdate.ID)
 		if err != nil {
 			return err
 		}
 
 		err = svc.repo.UpdateUserRole(ctx, userUpdate)
-
 		if err != nil {
 			return err
 		}
