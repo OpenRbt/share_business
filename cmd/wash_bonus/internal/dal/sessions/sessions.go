@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gocraft/dbr/v2"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"time"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/dal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/entity/vo"
+
+	"github.com/gocraft/dbr/v2"
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (entity.Session, error) {

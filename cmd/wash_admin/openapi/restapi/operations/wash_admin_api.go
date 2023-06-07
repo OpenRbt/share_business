@@ -21,6 +21,7 @@ import (
 
 	"wash_admin/internal/app"
 	"wash_admin/openapi/restapi/operations/standard"
+	"wash_admin/openapi/restapi/operations/users"
 	"wash_admin/openapi/restapi/operations/wash_servers"
 )
 
@@ -52,6 +53,9 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		WashServersDeleteHandler: wash_servers.DeleteHandlerFunc(func(params wash_servers.DeleteParams, principal *app.Auth) wash_servers.DeleteResponder {
 			return wash_servers.DeleteNotImplemented()
 		}),
+		UsersGetUserHandler: users.GetUserHandlerFunc(func(params users.GetUserParams, principal *app.Auth) users.GetUserResponder {
+			return users.GetUserNotImplemented()
+		}),
 		WashServersGetWashServerHandler: wash_servers.GetWashServerHandlerFunc(func(params wash_servers.GetWashServerParams, principal *app.Auth) wash_servers.GetWashServerResponder {
 			return wash_servers.GetWashServerNotImplemented()
 		}),
@@ -63,6 +67,9 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		}),
 		WashServersUpdateHandler: wash_servers.UpdateHandlerFunc(func(params wash_servers.UpdateParams, principal *app.Auth) wash_servers.UpdateResponder {
 			return wash_servers.UpdateNotImplemented()
+		}),
+		UsersUpdateUserHandler: users.UpdateUserHandlerFunc(func(params users.UpdateUserParams, principal *app.Auth) users.UpdateUserResponder {
+			return users.UpdateUserNotImplemented()
 		}),
 
 		// Applies when the "Authorization" header is set
@@ -118,6 +125,8 @@ type WashAdminAPI struct {
 	WashServersAddHandler wash_servers.AddHandler
 	// WashServersDeleteHandler sets the operation handler for the delete operation
 	WashServersDeleteHandler wash_servers.DeleteHandler
+	// UsersGetUserHandler sets the operation handler for the get user operation
+	UsersGetUserHandler users.GetUserHandler
 	// WashServersGetWashServerHandler sets the operation handler for the get wash server operation
 	WashServersGetWashServerHandler wash_servers.GetWashServerHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
@@ -126,6 +135,8 @@ type WashAdminAPI struct {
 	WashServersListHandler wash_servers.ListHandler
 	// WashServersUpdateHandler sets the operation handler for the update operation
 	WashServersUpdateHandler wash_servers.UpdateHandler
+	// UsersUpdateUserHandler sets the operation handler for the update user operation
+	UsersUpdateUserHandler users.UpdateUserHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -213,6 +224,9 @@ func (o *WashAdminAPI) Validate() error {
 	if o.WashServersDeleteHandler == nil {
 		unregistered = append(unregistered, "wash_servers.DeleteHandler")
 	}
+	if o.UsersGetUserHandler == nil {
+		unregistered = append(unregistered, "users.GetUserHandler")
+	}
 	if o.WashServersGetWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_servers.GetWashServerHandler")
 	}
@@ -224,6 +238,9 @@ func (o *WashAdminAPI) Validate() error {
 	}
 	if o.WashServersUpdateHandler == nil {
 		unregistered = append(unregistered, "wash_servers.UpdateHandler")
+	}
+	if o.UsersUpdateUserHandler == nil {
+		unregistered = append(unregistered, "users.UpdateUserHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -335,6 +352,10 @@ func (o *WashAdminAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/users/{id}"] = users.NewGetUser(o.context, o.UsersGetUserHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/wash-server/{id}"] = wash_servers.NewGetWashServer(o.context, o.WashServersGetWashServerHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -348,6 +369,10 @@ func (o *WashAdminAPI) initHandlerCache() {
 		o.handlers["PATCH"] = make(map[string]http.Handler)
 	}
 	o.handlers["PATCH"]["/wash-server"] = wash_servers.NewUpdate(o.context, o.WashServersUpdateHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"]["/users/{id}"] = users.NewUpdateUser(o.context, o.UsersUpdateUserHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"wash_bonus/internal/conversions"
+
 	"github.com/OpenRbt/share_business/wash_rabbit/entity/admin"
 	"github.com/OpenRbt/share_business/wash_rabbit/entity/session"
 	"github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 	"github.com/wagslane/go-rabbitmq"
-	"wash_bonus/internal/conversions"
 )
 
 func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {

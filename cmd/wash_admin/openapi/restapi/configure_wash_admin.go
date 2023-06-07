@@ -12,6 +12,7 @@ import (
 	"wash_admin/internal/app"
 	"wash_admin/openapi/restapi/operations"
 	"wash_admin/openapi/restapi/operations/standard"
+	"wash_admin/openapi/restapi/operations/users"
 	"wash_admin/openapi/restapi/operations/wash_servers"
 )
 
@@ -62,6 +63,11 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 			return wash_servers.DeleteNotImplemented()
 		})
 	}
+	if api.UsersGetUserHandler == nil {
+		api.UsersGetUserHandler = users.GetUserHandlerFunc(func(params users.GetUserParams, principal *app.Auth) users.GetUserResponder {
+			return users.GetUserNotImplemented()
+		})
+	}
 	if api.WashServersGetWashServerHandler == nil {
 		api.WashServersGetWashServerHandler = wash_servers.GetWashServerHandlerFunc(func(params wash_servers.GetWashServerParams, principal *app.Auth) wash_servers.GetWashServerResponder {
 			return wash_servers.GetWashServerNotImplemented()
@@ -80,6 +86,11 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 	if api.WashServersUpdateHandler == nil {
 		api.WashServersUpdateHandler = wash_servers.UpdateHandlerFunc(func(params wash_servers.UpdateParams, principal *app.Auth) wash_servers.UpdateResponder {
 			return wash_servers.UpdateNotImplemented()
+		})
+	}
+	if api.UsersUpdateUserHandler == nil {
+		api.UsersUpdateUserHandler = users.UpdateUserHandlerFunc(func(params users.UpdateUserParams, principal *app.Auth) users.UpdateUserResponder {
+			return users.UpdateUserNotImplemented()
 		})
 	}
 

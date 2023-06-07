@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/strfmt"
 
 	"wash_admin/openapi/client/standard"
+	"wash_admin/openapi/client/users"
 	"wash_admin/openapi/client/wash_servers"
 )
 
@@ -57,6 +58,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *WashAdmin 
 	cli := new(WashAdmin)
 	cli.Transport = transport
 	cli.Standard = standard.New(transport, formats)
+	cli.Users = users.New(transport, formats)
 	cli.WashServers = wash_servers.New(transport, formats)
 	return cli
 }
@@ -104,6 +106,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type WashAdmin struct {
 	Standard standard.ClientService
 
+	Users users.ClientService
+
 	WashServers wash_servers.ClientService
 
 	Transport runtime.ClientTransport
@@ -113,5 +117,6 @@ type WashAdmin struct {
 func (c *WashAdmin) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.Standard.SetTransport(transport)
+	c.Users.SetTransport(transport)
 	c.WashServers.SetTransport(transport)
 }

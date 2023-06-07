@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"errors"
+	"time"
+
 	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	"go.uber.org/zap"
-	"time"
 )
 
 type RabbitClient interface {

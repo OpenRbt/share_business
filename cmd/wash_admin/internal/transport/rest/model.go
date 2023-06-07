@@ -18,8 +18,13 @@ func DeleteWashServerFromRest(model models.WashServerDelete) (uuid.UUID, error) 
 }
 
 func PaginationFromRest(model models.Pagination) app.Pagination {
+	limit := model.Limit
+	if limit == 0 {
+		limit = 100
+	}
+
 	return app.Pagination{
-		Limit:  model.Limit,
+		Limit:  limit,
 		Offset: model.Offset,
 	}
 }

@@ -2,25 +2,25 @@ package rabbit
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
-	"github.com/wagslane/go-rabbitmq"
 	"wash_admin/internal/infrastructure/rabbit-intapi/client/operations"
 	"wash_admin/internal/infrastructure/rabbit-intapi/models"
+
+	rabbit_vo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
+	"github.com/wagslane/go-rabbitmq"
 )
 
 func (s *Service) SendMessage(msg interface{}, service rabbit_vo.Service, routingKey rabbit_vo.RoutingKey, messageType rabbit_vo.MessageType) (err error) {
-	jsonMsg, err := json.Marshal(msg)
-	if err != nil {
-		return
+	bytes, ok := msg.([]byte)
+	if !ok {
+		return errors.New("wrong message body")
 	}
 
 	switch service {
 	case rabbit_vo.WashAdminService:
 		return s.eventsPublisher.Publish(
-			jsonMsg,
+			bytes,
 			[]string{string(routingKey)},
 			rabbitmq.WithPublishOptionsType(string(messageType)),
 			rabbitmq.WithPublishOptionsExchange(string(service)),

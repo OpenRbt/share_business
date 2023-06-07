@@ -10,13 +10,13 @@ import (
 	"github.com/gocraft/dbr/v2"
 )
 
-func (s *Storage) GetUser(ctx context.Context, identity string) (app.User, error) {
+func (s *Storage) GetUser(ctx context.Context, userID string) (app.User, error) {
 	var dbWashUser dbmodels.User
 
 	err := s.db.NewSession(nil).
 		Select("*").
 		From("users").
-		Where("id = ?", identity).
+		Where("id = ?", userID).
 		LoadOneContext(ctx, &dbWashUser)
 
 	switch {
@@ -46,12 +46,12 @@ func (s *Storage) CreateWashUser(ctx context.Context, id string) (app.User, erro
 	return conversions.WashUserFromDB(dbWashUser), nil
 }
 
-func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, identity string) (app.User, error) {
-	dbWashUser, err := s.GetUser(ctx, identity)
+func (s *Storage) GetOrCreateUserIfNotExists(ctx context.Context, userID string) (app.User, error) {
+	dbWashUser, err := s.GetUser(ctx, userID)
 
 	if err != nil {
 		if errors.Is(err, app.ErrNotFound) {
-			return s.CreateWashUser(ctx, identity)
+			return s.CreateWashUser(ctx, userID)
 		}
 
 		return app.User{}, err

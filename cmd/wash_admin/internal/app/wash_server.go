@@ -9,18 +9,19 @@ import (
 )
 
 type WashServerService interface {
+	GetUser(ctx context.Context, auth *Auth, userID string) (User, error)
 	GetWashServer(ctx context.Context, auth *Auth, id uuid.UUID) (WashServer, error)
 	RegisterWashServer(ctx context.Context, auth *Auth, newServer RegisterWashServer) (WashServer, error)
 	UpdateWashServer(ctx context.Context, auth *Auth, updateWashServer UpdateWashServer) error
 	DeleteWashServer(ctx context.Context, auth *Auth, id uuid.UUID) error
 	GetWashServerList(ctx context.Context, auth *Auth, getWashServerList Pagination) ([]WashServer, error)
 
-	UpdateUserRole(ctx context.Context, auth *Auth, user UpdateUser) error
+	UpdateUserRole(ctx context.Context, auth *Auth, updateUser UpdateUser) error
 }
 
 type Repository interface {
-	GetOrCreateUserIfNotExists(ctx context.Context, identity string) (User, error)
-	GetUser(ctx context.Context, identity string) (User, error)
+	GetOrCreateUserIfNotExists(ctx context.Context, userID string) (User, error)
+	GetUser(ctx context.Context, userID string) (User, error)
 	GetWashServer(ctx context.Context, id uuid.UUID) (WashServer, error)
 
 	UpdateUserRole(ctx context.Context, updateUser UpdateUser) error
@@ -173,5 +174,23 @@ func (svc *WashServerSvc) GetWashServerList(ctx context.Context, auth *Auth, pag
 		return svc.repo.GetWashServerList(ctx, pagination)
 	default:
 		return []WashServer{}, ErrAccessDenied
+	}
+}
+
+func (svc *WashServerSvc) GetUser(ctx context.Context, auth *Auth, userID string) (User, error) {
+	currentUser, err := svc.repo.GetOrCreateUserIfNotExists(ctx, auth.UID)
+	if err != nil {
+		return User{}, err
+	}
+
+	if auth.UID == userID {
+		return svc.repo.GetUser(ctx, userID)
+	}
+
+	switch currentUser.Role {
+	case AdminRole:
+		return svc.repo.GetUser(ctx, userID)
+	default:
+		return User{}, ErrAccessDenied
 	}
 }

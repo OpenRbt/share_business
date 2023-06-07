@@ -16,6 +16,7 @@ func (svc *service) initWashServerHandlers(api *operations.WashAdminAPI) {
 	api.WashServersAddHandler = wash_servers.AddHandlerFunc(svc.addWashServer)
 	api.WashServersUpdateHandler = wash_servers.UpdateHandlerFunc(svc.updateWashServer)
 	api.WashServersDeleteHandler = wash_servers.DeleteHandlerFunc(svc.deleteWashServer)
+	api.WashServersListHandler = wash_servers.ListHandlerFunc(svc.getWashServerList)
 }
 
 func (svc *service) getWashServer(params wash_servers.GetWashServerParams, auth *app.Auth) wash_servers.GetWashServerResponder {
@@ -30,6 +31,8 @@ func (svc *service) getWashServer(params wash_servers.GetWashServerParams, auth 
 	switch {
 	case err == nil:
 		return wash_servers.NewGetWashServerOK().WithPayload(WashServerToRest(res))
+	case errors.Is(err, app.ErrAccessDenied):
+		return wash_servers.NewGetWashServerForbidden()
 	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewGetWashServerNotFound()
 	default:
@@ -51,6 +54,8 @@ func (svc *service) addWashServer(params wash_servers.AddParams, auth *app.Auth)
 		return wash_servers.NewAddOK().WithPayload(WashServerToRest(newServer))
 	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewAddBadRequest()
+	case errors.Is(err, app.ErrAccessDenied):
+		return wash_servers.NewAddForbidden()
 	default:
 		return wash_servers.NewAddInternalServerError()
 	}
@@ -70,6 +75,8 @@ func (svc *service) updateWashServer(params wash_servers.UpdateParams, auth *app
 		return wash_servers.NewUpdateNoContent()
 	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewUpdateNotFound()
+	case errors.Is(err, app.ErrAccessDenied):
+		return wash_servers.NewUpdateForbidden()
 	default:
 		return wash_servers.NewUpdateInternalServerError()
 	}
@@ -89,14 +96,17 @@ func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app
 		return wash_servers.NewDeleteNoContent()
 	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewDeleteNotFound()
+	case errors.Is(err, app.ErrAccessDenied):
+		return wash_servers.NewDeleteForbidden()
 	default:
 		return wash_servers.NewDeleteInternalServerError()
 	}
 }
 
 func (svc *service) getWashServerList(params wash_servers.ListParams, auth *app.Auth) wash_servers.ListResponder {
-	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, PaginationFromRest(*params.Body))
+	pagination := PaginationFromRest(*params.Body)
 
+	res, err := svc.washServers.GetWashServerList(params.HTTPRequest.Context(), auth, pagination)
 	payload := WashServerListToRest(res)
 
 	switch {
@@ -104,6 +114,8 @@ func (svc *service) getWashServerList(params wash_servers.ListParams, auth *app.
 		return wash_servers.NewListOK().WithPayload(payload)
 	case errors.Is(err, app.ErrNotFound):
 		return wash_servers.NewListNotFound()
+	case errors.Is(err, app.ErrAccessDenied):
+		return wash_servers.NewListForbidden()
 	default:
 		return wash_servers.NewListInternalServerError()
 	}

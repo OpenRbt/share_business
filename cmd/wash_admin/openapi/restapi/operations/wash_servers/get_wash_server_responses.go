@@ -108,6 +108,53 @@ func (o *GetWashServerBadRequest) WriteResponse(rw http.ResponseWriter, producer
 
 func (o *GetWashServerBadRequest) GetWashServerResponder() {}
 
+// GetWashServerForbiddenCode is the HTTP code returned for type GetWashServerForbidden
+const GetWashServerForbiddenCode int = 403
+
+/*
+GetWashServerForbidden Forbidden
+
+swagger:response getWashServerForbidden
+*/
+type GetWashServerForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetWashServerForbidden creates GetWashServerForbidden with default headers values
+func NewGetWashServerForbidden() *GetWashServerForbidden {
+
+	return &GetWashServerForbidden{}
+}
+
+// WithPayload adds the payload to the get wash server forbidden response
+func (o *GetWashServerForbidden) WithPayload(payload *models.Error) *GetWashServerForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get wash server forbidden response
+func (o *GetWashServerForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetWashServerForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *GetWashServerForbidden) GetWashServerResponder() {}
+
 // GetWashServerNotFoundCode is the HTTP code returned for type GetWashServerNotFound
 const GetWashServerNotFoundCode int = 404
 

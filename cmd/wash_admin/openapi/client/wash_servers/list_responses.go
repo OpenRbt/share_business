@@ -35,6 +35,12 @@ func (o *ListReader) ReadResponse(response runtime.ClientResponse, consumer runt
 			return nil, err
 		}
 		return nil, result
+	case 403:
+		result := NewListForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewListNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -175,6 +181,74 @@ func (o *ListBadRequest) GetPayload() *models.Error {
 }
 
 func (o *ListBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewListForbidden creates a ListForbidden with default headers values
+func NewListForbidden() *ListForbidden {
+	return &ListForbidden{}
+}
+
+/*
+ListForbidden describes a response with status code 403, with default header values.
+
+Forbidden
+*/
+type ListForbidden struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this list forbidden response has a 2xx status code
+func (o *ListForbidden) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this list forbidden response has a 3xx status code
+func (o *ListForbidden) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this list forbidden response has a 4xx status code
+func (o *ListForbidden) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this list forbidden response has a 5xx status code
+func (o *ListForbidden) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this list forbidden response a status code equal to that given
+func (o *ListForbidden) IsCode(code int) bool {
+	return code == 403
+}
+
+// Code gets the status code for the list forbidden response
+func (o *ListForbidden) Code() int {
+	return 403
+}
+
+func (o *ListForbidden) Error() string {
+	return fmt.Sprintf("[GET /wash-server/list][%d] listForbidden  %+v", 403, o.Payload)
+}
+
+func (o *ListForbidden) String() string {
+	return fmt.Sprintf("[GET /wash-server/list][%d] listForbidden  %+v", 403, o.Payload)
+}
+
+func (o *ListForbidden) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *ListForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

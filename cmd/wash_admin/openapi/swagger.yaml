@@ -33,7 +33,62 @@ paths:
             properties:
               ok:
                 type: boolean
-
+  /users/{id}:
+    get:
+      tags:
+        - users
+      security:
+        - authKey: []
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/User"
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+          schema:
+            $ref: "#/definitions/error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/error"
+    patch:
+      tags:
+        - users
+      security:
+        - authKey: []
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - name: update
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserUpdate"
+      responses:
+        204:
+          description: OK
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+          schema:
+            $ref: "#/definitions/error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/error"
   /wash-server/{id}:
     get:
       tags:
@@ -53,6 +108,10 @@ paths:
             $ref: "#/definitions/WashServer"
         400:
           description: Bad request
+          schema:
+            $ref: "#/definitions/error"
+        403:
+          description: Forbidden
           schema:
             $ref: "#/definitions/error"
         404:
@@ -84,6 +143,10 @@ paths:
           description: Bad request
           schema:
             $ref: "#/definitions/error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/error"
         500:
           description: Internal error
           schema:
@@ -105,6 +168,10 @@ paths:
           description: Success update
         400:
           description: Bad request
+          schema:
+            $ref: "#/definitions/error"
+        403:
+          description: Forbidden
           schema:
             $ref: "#/definitions/error"
         404:
@@ -132,6 +199,10 @@ paths:
           description: OK
         400:
           description: Bad request
+          schema:
+            $ref: "#/definitions/error"
+        403:
+          description: Forbidden
           schema:
             $ref: "#/definitions/error"
         404:
@@ -164,6 +235,10 @@ paths:
               $ref: "#/definitions/WashServer"
         400:
           description: Bad request
+          schema:
+            $ref: "#/definitions/error"
+        403:
+          description: Forbidden
           schema:
             $ref: "#/definitions/error"
         404:
@@ -239,3 +314,23 @@ definitions:
       offset:
         type: integer
         format: int64
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      role:
+        type: string
+        enum:
+          - "user"
+          - "admin"
+          - "engineer"
+  UserUpdate:
+    type: object
+    properties:
+      role:
+        type: string
+        enum:
+          - "user"
+          - "admin"
+          - "engineer"

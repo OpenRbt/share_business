@@ -35,6 +35,12 @@ func (o *UpdateReader) ReadResponse(response runtime.ClientResponse, consumer ru
 			return nil, err
 		}
 		return nil, result
+	case 403:
+		result := NewUpdateForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewUpdateNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -165,6 +171,74 @@ func (o *UpdateBadRequest) GetPayload() *models.Error {
 }
 
 func (o *UpdateBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewUpdateForbidden creates a UpdateForbidden with default headers values
+func NewUpdateForbidden() *UpdateForbidden {
+	return &UpdateForbidden{}
+}
+
+/*
+UpdateForbidden describes a response with status code 403, with default header values.
+
+Forbidden
+*/
+type UpdateForbidden struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this update forbidden response has a 2xx status code
+func (o *UpdateForbidden) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this update forbidden response has a 3xx status code
+func (o *UpdateForbidden) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this update forbidden response has a 4xx status code
+func (o *UpdateForbidden) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this update forbidden response has a 5xx status code
+func (o *UpdateForbidden) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this update forbidden response a status code equal to that given
+func (o *UpdateForbidden) IsCode(code int) bool {
+	return code == 403
+}
+
+// Code gets the status code for the update forbidden response
+func (o *UpdateForbidden) Code() int {
+	return 403
+}
+
+func (o *UpdateForbidden) Error() string {
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateForbidden  %+v", 403, o.Payload)
+}
+
+func (o *UpdateForbidden) String() string {
+	return fmt.Sprintf("[PATCH /wash-server/][%d] updateForbidden  %+v", 403, o.Payload)
+}
+
+func (o *UpdateForbidden) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *UpdateForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

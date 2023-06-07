@@ -35,6 +35,12 @@ func (o *GetWashServerReader) ReadResponse(response runtime.ClientResponse, cons
 			return nil, err
 		}
 		return nil, result
+	case 403:
+		result := NewGetWashServerForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 404:
 		result := NewGetWashServerNotFound()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -177,6 +183,74 @@ func (o *GetWashServerBadRequest) GetPayload() *models.Error {
 }
 
 func (o *GetWashServerBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewGetWashServerForbidden creates a GetWashServerForbidden with default headers values
+func NewGetWashServerForbidden() *GetWashServerForbidden {
+	return &GetWashServerForbidden{}
+}
+
+/*
+GetWashServerForbidden describes a response with status code 403, with default header values.
+
+Forbidden
+*/
+type GetWashServerForbidden struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this get wash server forbidden response has a 2xx status code
+func (o *GetWashServerForbidden) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get wash server forbidden response has a 3xx status code
+func (o *GetWashServerForbidden) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get wash server forbidden response has a 4xx status code
+func (o *GetWashServerForbidden) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this get wash server forbidden response has a 5xx status code
+func (o *GetWashServerForbidden) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get wash server forbidden response a status code equal to that given
+func (o *GetWashServerForbidden) IsCode(code int) bool {
+	return code == 403
+}
+
+// Code gets the status code for the get wash server forbidden response
+func (o *GetWashServerForbidden) Code() int {
+	return 403
+}
+
+func (o *GetWashServerForbidden) Error() string {
+	return fmt.Sprintf("[GET /wash-server/{id}][%d] getWashServerForbidden  %+v", 403, o.Payload)
+}
+
+func (o *GetWashServerForbidden) String() string {
+	return fmt.Sprintf("[GET /wash-server/{id}][%d] getWashServerForbidden  %+v", 403, o.Payload)
+}
+
+func (o *GetWashServerForbidden) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *GetWashServerForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

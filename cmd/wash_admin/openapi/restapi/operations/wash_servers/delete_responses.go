@@ -88,6 +88,53 @@ func (o *DeleteBadRequest) WriteResponse(rw http.ResponseWriter, producer runtim
 
 func (o *DeleteBadRequest) DeleteResponder() {}
 
+// DeleteForbiddenCode is the HTTP code returned for type DeleteForbidden
+const DeleteForbiddenCode int = 403
+
+/*
+DeleteForbidden Forbidden
+
+swagger:response deleteForbidden
+*/
+type DeleteForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewDeleteForbidden creates DeleteForbidden with default headers values
+func NewDeleteForbidden() *DeleteForbidden {
+
+	return &DeleteForbidden{}
+}
+
+// WithPayload adds the payload to the delete forbidden response
+func (o *DeleteForbidden) WithPayload(payload *models.Error) *DeleteForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the delete forbidden response
+func (o *DeleteForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *DeleteForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *DeleteForbidden) DeleteResponder() {}
+
 // DeleteNotFoundCode is the HTTP code returned for type DeleteNotFound
 const DeleteNotFoundCode int = 404
 

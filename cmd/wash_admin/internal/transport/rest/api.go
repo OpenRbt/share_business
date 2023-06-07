@@ -53,6 +53,7 @@ func NewServer(cfg *bootstrap.Config, auth firebaseauth.Service, l *zap.SugaredL
 	api.StandardHealthCheckHandler = standard.HealthCheckHandlerFunc(healthCheck)
 
 	svc.initWashServerHandlers(api)
+	svc.initUserHandlers(api)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)
