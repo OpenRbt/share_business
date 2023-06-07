@@ -1,0 +1,1 @@
+drop table rabbit_send_log;

@@ -1,0 +1,1 @@
+ALTER TABLE bonus_reward_log ADD COLUMN payload BYTEA;

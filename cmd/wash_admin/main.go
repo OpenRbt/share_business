@@ -57,7 +57,10 @@ func main() {
 
 	repo := dal.New(dbConn, l)
 
-	washSvc := app.NewWashServerService(l, repo, rabbitSvc)
+	worker := app.NewWorker(l, repo, rabbitSvc)
+	washSvc := app.NewWashServerService(l, repo, rabbitSvc, worker)
+
+	go worker.ProcessMessages()
 
 	server, err := rest.NewServer(cfg, authSvc, l, washSvc)
 	if err != nil {

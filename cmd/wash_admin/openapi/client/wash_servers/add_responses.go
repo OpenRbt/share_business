@@ -35,6 +35,12 @@ func (o *AddReader) ReadResponse(response runtime.ClientResponse, consumer runti
 			return nil, err
 		}
 		return nil, result
+	case 403:
+		result := NewAddForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 500:
 		result := NewAddInternalServerError()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -171,6 +177,74 @@ func (o *AddBadRequest) GetPayload() *models.Error {
 }
 
 func (o *AddBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewAddForbidden creates a AddForbidden with default headers values
+func NewAddForbidden() *AddForbidden {
+	return &AddForbidden{}
+}
+
+/*
+AddForbidden describes a response with status code 403, with default header values.
+
+Forbidden
+*/
+type AddForbidden struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this add forbidden response has a 2xx status code
+func (o *AddForbidden) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this add forbidden response has a 3xx status code
+func (o *AddForbidden) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this add forbidden response has a 4xx status code
+func (o *AddForbidden) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this add forbidden response has a 5xx status code
+func (o *AddForbidden) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this add forbidden response a status code equal to that given
+func (o *AddForbidden) IsCode(code int) bool {
+	return code == 403
+}
+
+// Code gets the status code for the add forbidden response
+func (o *AddForbidden) Code() int {
+	return 403
+}
+
+func (o *AddForbidden) Error() string {
+	return fmt.Sprintf("[PUT /wash-server/][%d] addForbidden  %+v", 403, o.Payload)
+}
+
+func (o *AddForbidden) String() string {
+	return fmt.Sprintf("[PUT /wash-server/][%d] addForbidden  %+v", 403, o.Payload)
+}
+
+func (o *AddForbidden) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *AddForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

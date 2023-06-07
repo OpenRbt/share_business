@@ -88,6 +88,53 @@ func (o *UpdateBadRequest) WriteResponse(rw http.ResponseWriter, producer runtim
 
 func (o *UpdateBadRequest) UpdateResponder() {}
 
+// UpdateForbiddenCode is the HTTP code returned for type UpdateForbidden
+const UpdateForbiddenCode int = 403
+
+/*
+UpdateForbidden Forbidden
+
+swagger:response updateForbidden
+*/
+type UpdateForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewUpdateForbidden creates UpdateForbidden with default headers values
+func NewUpdateForbidden() *UpdateForbidden {
+
+	return &UpdateForbidden{}
+}
+
+// WithPayload adds the payload to the update forbidden response
+func (o *UpdateForbidden) WithPayload(payload *models.Error) *UpdateForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the update forbidden response
+func (o *UpdateForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *UpdateForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *UpdateForbidden) UpdateResponder() {}
+
 // UpdateNotFoundCode is the HTTP code returned for type UpdateNotFound
 const UpdateNotFoundCode int = 404
 

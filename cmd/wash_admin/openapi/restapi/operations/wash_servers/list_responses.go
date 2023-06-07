@@ -111,6 +111,53 @@ func (o *ListBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.
 
 func (o *ListBadRequest) ListResponder() {}
 
+// ListForbiddenCode is the HTTP code returned for type ListForbidden
+const ListForbiddenCode int = 403
+
+/*
+ListForbidden Forbidden
+
+swagger:response listForbidden
+*/
+type ListForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewListForbidden creates ListForbidden with default headers values
+func NewListForbidden() *ListForbidden {
+
+	return &ListForbidden{}
+}
+
+// WithPayload adds the payload to the list forbidden response
+func (o *ListForbidden) WithPayload(payload *models.Error) *ListForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the list forbidden response
+func (o *ListForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ListForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *ListForbidden) ListResponder() {}
+
 // ListNotFoundCode is the HTTP code returned for type ListNotFound
 const ListNotFoundCode int = 404
 

@@ -1,8 +1,13 @@
 package dal
 
 import (
+	"errors"
 	"github.com/gocraft/dbr/v2"
 	"go.uber.org/zap"
+)
+
+var (
+	ErrBadPayload = errors.New("bad message payload")
 )
 
 type Storage struct {

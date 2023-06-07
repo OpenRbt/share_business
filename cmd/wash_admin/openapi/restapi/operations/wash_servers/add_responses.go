@@ -108,6 +108,53 @@ func (o *AddBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.P
 
 func (o *AddBadRequest) AddResponder() {}
 
+// AddForbiddenCode is the HTTP code returned for type AddForbidden
+const AddForbiddenCode int = 403
+
+/*
+AddForbidden Forbidden
+
+swagger:response addForbidden
+*/
+type AddForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewAddForbidden creates AddForbidden with default headers values
+func NewAddForbidden() *AddForbidden {
+
+	return &AddForbidden{}
+}
+
+// WithPayload adds the payload to the add forbidden response
+func (o *AddForbidden) WithPayload(payload *models.Error) *AddForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the add forbidden response
+func (o *AddForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *AddForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *AddForbidden) AddResponder() {}
+
 // AddInternalServerErrorCode is the HTTP code returned for type AddInternalServerError
 const AddInternalServerErrorCode int = 500
 

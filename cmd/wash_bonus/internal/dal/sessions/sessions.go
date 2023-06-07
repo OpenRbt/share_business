@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gocraft/dbr/v2"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"time"
 	"wash_bonus/internal/conversions"
 	"wash_bonus/internal/dal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/entity/vo"
+
+	"github.com/gocraft/dbr/v2"
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (entity.Session, error) {
@@ -82,6 +83,57 @@ func (r *repo) SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID s
 	updateStmt.Set("user", userID)
 
 	_, err = updateStmt.ExecContext(ctx)
+	return
+}
+
+func (r *repo) UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
+	var tx *dbr.Tx
+
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+		if err != nil && tx != nil {
+			err = tx.Rollback()
+			dal.LogOptionalError(r.l, "session", err)
+		}
+	}()
+
+	tx, err = r.db.NewSession(nil).BeginTx(ctx, nil)
+
+	dbUUID := uuid.NullUUID{
+		UUID:  sessionID,
+		Valid: true,
+	}
+	date := time.Now().UTC()
+
+	var sessionBalance decimal.NullDecimal
+
+	err = tx.SelectBySql("SELECT balance FROM users WHERE id = ? FOR UPDATE", dbUUID).LoadOneContext(ctx, &sessionBalance)
+
+	if amount.LessThan(decimal.Zero) && amount.Add(sessionBalance.Decimal).LessThan(decimal.Zero) {
+		err = entity.ErrNotEnoughMoney
+		return
+	}
+
+	newDbAmount := decimal.NullDecimal{
+		Decimal: sessionBalance.Decimal.Add(amount),
+		Valid:   true,
+	}
+
+	_, err = tx.Update("sessions").
+		Where("id = ?", dbUUID).
+		Set("balance", newDbAmount).
+		ExecContext(ctx)
+
+	_, err = tx.InsertInto("sessions_balance_events").
+		Columns("session", "old_amount", "new_amount", "date").
+		Values(dbUUID, sessionBalance, newDbAmount, date).
+		ExecContext(ctx)
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
+
 	return
 }
 
