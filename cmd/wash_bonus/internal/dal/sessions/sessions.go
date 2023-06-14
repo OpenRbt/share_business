@@ -319,9 +319,9 @@ func (r *repo) DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessi
 	tx, err = r.db.NewSession(nil).BeginTx(ctx, nil)
 
 	// Receiving user from session
-	err = tx.Select("user").
+	err = tx.Select("\"user\"").
 		From("sessions").
-		Where("id = ?").
+		Where("id = ?", sessionID).
 		LoadOneContext(ctx, &userID)
 
 	if err != nil {
