@@ -1,11 +1,12 @@
 package conversions
 
 import (
-	"github.com/OpenRbt/share_business/wash_rabbit/entity/session"
-	"github.com/shopspring/decimal"
 	"wash_bonus/internal/dal/dbmodels"
 	"wash_bonus/internal/entity"
 	"wash_bonus/openapi/models"
+
+	"github.com/OpenRbt/share_business/wash_rabbit/entity/session"
+	"github.com/shopspring/decimal"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -50,9 +51,10 @@ func SessionUserAssign(sessionID uuid.UUID, userID string) session.UserAssign {
 	}
 }
 
-func SessionBonusCharge(sessionID uuid.UUID, amount decimal.Decimal) session.BonusCharge {
+func SessionBonusCharge(sessionID uuid.UUID, amount decimal.Decimal, post int64) session.BonusCharge {
 	return session.BonusCharge{
 		SessionID: sessionID.String(),
 		Amount:    amount.IntPart(),
+		Post:      post,
 	}
 }

@@ -3,11 +3,12 @@ package session
 import (
 	"context"
 	"errors"
+	"wash_bonus/internal/conversions"
+	"wash_bonus/internal/entity"
+
 	rabbitVo "github.com/OpenRbt/share_business/wash_rabbit/entity/vo"
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
-	"wash_bonus/internal/conversions"
-	"wash_bonus/internal/entity"
 )
 
 func (u *useCase) Get(ctx context.Context, sessionID uuid.UUID, user string) (session entity.Session, err error) {
@@ -95,7 +96,7 @@ func (u *useCase) ChargeBonuses(ctx context.Context, sessionID uuid.UUID, userID
 		return
 	}
 
-	eventErr := u.RabbitSvc.SendMessage(conversions.SessionBonusCharge(sessionID, amount), rabbitVo.WashBonusService, rabbitVo.RoutingKey(session.WashServer.Id.String()), rabbitVo.SessionBonusChargeMessageType)
+	eventErr := u.RabbitSvc.SendMessage(conversions.SessionBonusCharge(sessionID, amount, session.Post), rabbitVo.WashBonusService, rabbitVo.RoutingKey(session.WashServer.Id.String()), rabbitVo.SessionBonusChargeMessageType)
 	if eventErr != nil {
 		u.l.Errorw("failed to send charge bonuses event", "session", sessionID.String(), "amount", amount.String(), "error", eventErr)
 	}
