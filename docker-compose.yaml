@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${WASH_ADMIN_DB_PASS:-wash_admin}
     volumes:
       - ./scripts:/docker-entrypoint-initdb.d
-      - ./postgresql-data:/var/lib/postgresql/data
+      - wash_bonus_postgresql:/var/lib/postgresql/data
     ports:
       - "8090:5432"
 
@@ -67,4 +67,6 @@ volumes:
   rabbitmq-logs:
     driver: local
   rabbitmq_conf:
+    driver: local
+  wash_bonus_postgresql:
     driver: local
