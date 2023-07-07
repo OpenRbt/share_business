@@ -183,7 +183,7 @@ where "reports".processed = false
   	and "reports".session_id is not null 
   	and  "s".user is not null  
   	and "reports".id > ? 
-    and date_part('minute', now()::timestamp- "reports".ctime) > ?
+	and "reports".ctime < now() - interval '? minutes'
 order by "reports".id
 limit 100
 `, lastId, olderThenNMinutes).
