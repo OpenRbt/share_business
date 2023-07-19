@@ -1,0 +1,467 @@
+swagger: "2.0"
+info:
+  description: "Bonus system service for self-service car washes"
+  title: wash-bonus
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+securityDefinitions:
+  authKey:
+    description: Session token inside Authorization header.
+    type: apiKey
+    in: header
+    name: Authorization
+security:
+  - authKey: [ ]
+
+paths:
+  /healthCheck:
+    get:
+      tags:
+        - Standard
+      security:
+        - { }
+      operationId: healthCheck
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+
+  /users/{id}:
+    get:
+      tags:
+        - users
+      security:
+        - authKey: []
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/User"
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+    patch:
+      tags:
+        - users
+      security:
+        - authKey: []
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - name: update
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UserUpdate"
+      responses:
+        204:
+          description: OK
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /users/me:
+    get:
+      tags:
+        - users
+      security:
+        - authKey: []
+      operationId: getCurrentUser
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/User"
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /wash-servers/{id}:
+    get:
+      tags:
+        - washServers
+      security:
+        - authKey: []
+      operationId: getWashServerById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WashServer"
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: WashServer not exists
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+    patch:
+      tags:
+        - washServers
+      security:
+        - authKey: []
+      operationId: updateWashServer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/WashServerUpdate"
+      responses:
+        200:
+          description: Success update
+          schema:
+            $ref: "#/definitions/WashServer"
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: WashServer not exists
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+    delete:
+      tags:
+        - washServers
+      security:
+        - authKey: []
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: WashServer not exists
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /wash-servers/:
+    get:
+      tags:
+        - washServers
+      security:
+        - authKey: []
+      operationId: list
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/Pagination"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/WashServer"
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: WashServer not exists
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+    post:
+      tags:
+        - washServers
+      security:
+        - authKey: []
+      operationId: createWashServer
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/WashServerCreation"
+      responses:
+        200:
+          description: Success creation
+          schema:
+            $ref: "#/definitions/WashServer"
+        400:
+          description: Bad request
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /sessions/{id}:
+    get:
+      tags:
+        - sessions
+      security:
+        - authKey: [ ]
+      operationId: getSessionById
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Session"
+        403:
+          description: Forbidden
+        404:
+          description: Profile not exists
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /sessions/{id}/bonuses:
+    post:
+      tags:
+        - sessions
+      security:
+        - authKey: [ ]
+      operationId: chargeBonusesOnSession
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/BonusCharge"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/BonusCharge"
+        403:
+          description: Forbidden
+        404:
+          description: Session not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+  /session/{id}/assign-user:
+    post:
+      tags:
+        - sessions
+      security:
+        - authKey: [ ]
+      operationId: assignUserToSession
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: OK
+        403:
+          description: Forbidden
+        404:
+          description: Session not found
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: Internal error
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        description: Either same as HTTP Status Code OR >= 600.
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  User:
+    type: object
+    description: "user profile"
+    properties:
+      id:
+        type: string
+      active:
+        type: boolean
+      balance:
+        type: integer
+      role:
+        type: string
+        enum:
+          - "user"
+          - "admin"
+          - "engineer"
+
+  Session:
+    type: object
+    description: "session"
+    properties:
+      washServer:
+        $ref: "#/definitions/WashServer"
+      postID:
+        type: integer
+      postBalance:
+        type: integer
+  
+  BonusCharge:
+    type: object
+    description: "bonus amount for use in session"
+    properties:
+      amount:
+        type: integer
+
+  WashServer:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      serviceKey:
+        type: string
+      createdBy:
+        type: string
+
+  WashServerCreation:
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    required:
+      - name
+    
+  WashServerUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+
+  Pagination:
+    type: object
+    properties: 
+      limit:
+        type: integer
+        format: int64
+        maximum: 100
+      offset:
+        type: integer
+        format: int64
+
+  UserUpdate:
+    type: object
+    properties:
+      role:
+        type: string
+        enum:
+          - "user"
+          - "admin"
+          - "engineer"
