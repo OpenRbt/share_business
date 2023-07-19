@@ -42,14 +42,11 @@ services:
       - ./environment/rabbit:/etc/rabbitmq
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
-      - rabbitmq_conf:/etc/rabbitmq
 
 volumes:
   rabbitmq-data:
     driver: local
   rabbitmq-logs:
-    driver: local
-  rabbitmq_conf:
     driver: local
   wash_bonus_postgresql:
     driver: local
