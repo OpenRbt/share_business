@@ -6,10 +6,9 @@ services:
     image: postgres:14.5
     restart: always
     environment:
-      POSTGRES_USER:  ${WASH_ADMIN_DB_USER:-wash_admin}
-      POSTGRES_PASSWORD: ${WASH_ADMIN_DB_PASS:-wash_admin}
+      POSTGRES_USER:  ${WASH_DB_USER:-wash_bonus}
+      POSTGRES_PASSWORD: ${WASH_DB_PASS:-wash_bonus}
     volumes:
-      - ./scripts:/docker-entrypoint-initdb.d
       - wash_bonus_postgresql:/var/lib/postgresql/data
     ports:
       - "8090:5432"
@@ -18,7 +17,7 @@ services:
     container_name: wash_bonus_backend
     restart: always
     ports:
-      - ${WASH_BONUS_HTTP_PORT:-8071}:8080
+      - ${WASH_BONUS_HTTP_PORT:-8070}:8080
     depends_on:
       - wash_db
       - wash_rabbit
@@ -29,22 +28,6 @@ services:
       LOG_LEVEL: "info"
       DB_USER: ${WASH_BONUS_DB_USER:-wash_bonus}
       DB_PASSWORD: ${WASH_BONUS_DB_PASS:-wash_bonus}
-      
-  wash_admin_back:
-    container_name: wash_admin_backend
-    restart: always
-    ports:
-      - ${WASH_ADMIN_HTTP_PORT:-8070}:8080
-    depends_on:
-      - wash_db
-      - wash_rabbit
-    build:
-      context: .
-      dockerfile: ./wash_admin.Dockerfile
-    environment:
-      LOG_LEVEL: "info"
-      DB_USER: ${WASH_ADMIN_DB_USER:-wash_admin}
-      DB_PASSWORD:   ${WASH_ADMIN_DB_PASS:-wash_admin}
 
   wash_rabbit:
     container_name: wash_rabbit
@@ -54,9 +37,9 @@ services:
     restart: always
     ports:
       - "5672:5672"
+      - "15672:15672"
     volumes:
-      - ./environment/rabbit/rabbit.conf:/etc/rabbitmq/rabbitmq.conf
-      - ./environment/rabbit/definitions.json:/etc/rabbitmq/definitions.json
+      - ./environment/rabbit:/etc/rabbitmq
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
       - rabbitmq_conf:/etc/rabbitmq
