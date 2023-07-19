@@ -97,7 +97,7 @@ func NewServer(cfg *config.Config, auth firebase.Service, l *zap.SugaredLogger, 
 
 	newCORS := cors.New(cors.Options{
 		AllowedOrigins:   splitCommaSeparatedStr(cfg.AllowedOrigins),
-		AllowedMethods:   []string{"POST", "PUT", "GET", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"*"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
