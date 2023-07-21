@@ -38,8 +38,8 @@ func SessionToRabbit(e entity.Session) session.NewSession {
 
 func SessionToRest(e entity.Session) *models.Session {
 	return &models.Session{
-		PostBalance: 0, //TODO: add post balance field
 		PostID:      e.Post,
+		PostBalance: 0, //TODO: add post balance field
 		WashServer:  WashServerToRest(e.WashServer),
 	}
 }

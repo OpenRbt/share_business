@@ -653,6 +653,9 @@ func init() {
         "id": {
           "type": "string"
         },
+        "pendingBalance": {
+          "type": "integer"
+        },
         "role": {
           "type": "string",
           "enum": [
@@ -1370,6 +1373,9 @@ func init() {
         },
         "id": {
           "type": "string"
+        },
+        "pendingBalance": {
+          "type": "integer"
         },
         "role": {
           "type": "string",

@@ -30,6 +30,9 @@ type User struct {
 	// id
 	ID string `json:"id,omitempty"`
 
+	// pending balance
+	PendingBalance int64 `json:"pendingBalance,omitempty"`
+
 	// role
 	// Enum: [user admin engineer]
 	Role string `json:"role,omitempty"`
@@ -48,6 +51,9 @@ func (m *User) UnmarshalJSON(data []byte) error {
 		// id
 		ID string `json:"id,omitempty"`
 
+		// pending balance
+		PendingBalance int64 `json:"pendingBalance,omitempty"`
+
 		// role
 		// Enum: [user admin engineer]
 		Role string `json:"role,omitempty"`
@@ -62,6 +68,7 @@ func (m *User) UnmarshalJSON(data []byte) error {
 	m.Active = props.Active
 	m.Balance = props.Balance
 	m.ID = props.ID
+	m.PendingBalance = props.PendingBalance
 	m.Role = props.Role
 	return nil
 }

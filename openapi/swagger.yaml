@@ -389,6 +389,8 @@ definitions:
         type: boolean
       balance:
         type: integer
+      pendingBalance:
+        type: integer
       role:
         type: string
         enum:

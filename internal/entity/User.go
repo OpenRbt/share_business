@@ -5,10 +5,11 @@ import (
 )
 
 type User struct {
-	ID      string
-	Balance decimal.Decimal
-	Role    Role
-	Deleted bool
+	ID             string
+	Balance        decimal.Decimal
+	PendingBalance decimal.Decimal
+	Role           Role
+	Deleted        bool
 }
 
 type UpdateUser struct {
