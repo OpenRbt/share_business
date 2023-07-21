@@ -208,6 +208,36 @@ func (r *repo) GetUnprocessedMoneyReports(ctx context.Context, lastId int64, old
 	return
 }
 
+func (r *repo) GetUnporcessedReportsByUser(ctx context.Context, userID string) ([]entity.UserMoneyReport, error) {
+	var err error
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+	}()
+
+	session := r.db.NewSession(nil)
+	var dbReports []dbmodels.UserMoneyReport
+
+	_, err = session.SelectBySql(`
+			select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".processed, "reports".uuid,"s".user
+			from session_money_report "reports"
+			left join sessions "s" on "reports".session_id = "s".id
+			where "reports".processed = false 
+				and "reports".session_id is not null 
+				and  "s".user = ?
+		`, userID).
+		LoadContext(ctx, &dbReports)
+
+	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			return []entity.UserMoneyReport{}, nil
+		}
+
+		return []entity.UserMoneyReport{}, nil
+	}
+
+	return conversions.UserMoneyReportsFromDB(dbReports), nil
+}
+
 func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
 	var tx *dbr.Tx
 

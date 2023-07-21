@@ -24,12 +24,8 @@ type Service struct {
 	l    *zap.SugaredLogger
 	conn *amqp.Connection
 
-	// wash bonus handlers
 	washBonusPub    *rabbitmq.Publisher
 	washBonusSvcSub *rabbitmq.Consumer
-
-	// wash admin handler
-	washServerSub *rabbitmq.Consumer
 	rabbitSvc     app.RabbitService
 
 	intApi     *client.RabbitIntAPI
@@ -94,16 +90,6 @@ func New(l *zap.SugaredLogger, url string, port string, user string, password st
 	if err != nil {
 		return
 	}
-
-	svc.washServerSub, err = rabbitmq.NewConsumer(conn,
-		svc.ProcessMessage,
-		string(vo.WashAdminServesEventsRoutingKey),
-		rabbitmq.WithConsumerOptionsExchangeDeclare,
-		rabbitmq.WithConsumerOptionsExchangeName(string(vo.WashAdminService)),
-		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
-		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashAdminServesEventsRoutingKey)),
-		rabbitmq.WithConsumerOptionsExchangeDurable,
-	)
 
 	intClient := client.New(httptransport.New(url+":15672", "", []string{"http"}), strfmt.Default)
 	intAuth := httptransport.BasicAuth(user, password)

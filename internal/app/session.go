@@ -30,6 +30,7 @@ type (
 
 		SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
 		ProcessMoneyReports(ctx context.Context) (err error)
+		GetUserPendingBalance(ctx context.Context, userID string) (decimal.Decimal, error)
 	}
 
 	SessionRepo interface {
@@ -46,6 +47,7 @@ type (
 		LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error)
 
 		SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
+		GetUnporcessedReportsByUser(ctx context.Context, userID string) ([]entity.UserMoneyReport, error)
 		GetUnprocessedMoneyReports(ctx context.Context, lastId int64, olderThenNMinutes int64) (reports []entity.UserMoneyReport, err error)
 		UpdateMoneyReport(ctx context.Context, id int64, processed bool) (err error)
 	}

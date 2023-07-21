@@ -66,7 +66,7 @@ func main() {
 	l.Debug("connected to rabbit")
 
 	sessionCtrl := controllers.NewSessionController(l, sessionSvc, userSvc, washServerSvc, rabbitMQ)
-	userCtrl := controllers.NewUserController(l, userSvc)
+	userCtrl := controllers.NewUserController(l, userSvc, sessionSvc)
 	washServerCtrl := controllers.NewWashServerController(l, washServerSvc, userSvc, rabbitMQ)
 
 	schedulerSvc := schedule.New(l, sessionSvc)

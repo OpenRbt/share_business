@@ -2,9 +2,12 @@ package session
 
 import (
 	"context"
+	"errors"
 	"washBonus/internal/entity"
 	"washBonus/internal/entity/vo"
+	moneyreports "washBonus/pkg/moneyReports"
 
+	"github.com/gocraft/dbr/v2"
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 )
@@ -73,17 +76,7 @@ func (s *sessionService) ProcessMoneyReports(ctx context.Context) (err error) {
 }
 
 func (s *sessionService) processMoneyReport(ctx context.Context, report entity.UserMoneyReport) (err error) {
-	coins := decimal.NewFromInt(int64(report.Coins))
-	banknotes := decimal.NewFromInt(int64(report.Banknotes))
-	electonical := decimal.NewFromInt(int64(report.Electronical))
-
-	percent := decimal.NewFromInt(s.moneyReportsRewardPercentDefault)
-
-	divider := decimal.NewFromInt(100)
-
-	addAmount := coins.Div(divider).Mul(percent)
-	addAmount = addAmount.Add(banknotes.Div(divider).Mul(percent))
-	addAmount = addAmount.Add(electonical.Div(divider).Mul(percent))
+	addAmount := moneyreports.ProcessBonusesReward(report, decimal.NewFromInt(int64(s.moneyReportsRewardPercentDefault)))
 
 	err = s.userRepo.AddBonuses(ctx, addAmount, report.User)
 	if err != nil {
@@ -94,6 +87,27 @@ func (s *sessionService) processMoneyReport(ctx context.Context, report entity.U
 
 	return
 }
+
+func (s *sessionService) GetUserPendingBalance(ctx context.Context, userID string) (decimal.Decimal, error) {
+	reports, err := s.sessionRepo.GetUnporcessedReportsByUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			return decimal.NewFromInt(0), nil
+		}
+
+		return decimal.Decimal{}, err
+	}
+
+	balance := decimal.Zero
+
+	for _, report := range reports {
+		addAmount := moneyreports.ProcessBonusesReward(report, decimal.NewFromInt(int64(s.moneyReportsRewardPercentDefault)))
+		balance = balance.Add(addAmount)
+	}
+
+	return balance, nil
+}
+
 func (s *sessionService) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
 	return s.sessionRepo.ChargeBonuses(ctx, amount, sessionID, userID)
 }

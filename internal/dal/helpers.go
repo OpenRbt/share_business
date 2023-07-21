@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+
 	"go.uber.org/zap"
 )
 
