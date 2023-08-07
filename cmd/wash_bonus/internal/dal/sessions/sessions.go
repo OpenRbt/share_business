@@ -176,17 +176,17 @@ func (r *repo) GetUnprocessedMoneyReports(ctx context.Context, lastId int64, old
 
 	_, err = r.db.NewSession(nil).
 		SelectBySql(`
-select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".processed, "reports".uuid,"s".user
-from session_money_report "reports"
-left join sessions "s" on "reports".session_id = "s".id
-where "reports".processed = false 
-  	and "reports".session_id is not null 
-  	and  "s".user is not null  
-  	and "reports".id > ? 
-	and "reports".ctime < now() - interval '? minutes'
-order by "reports".id
-limit 100
-`, lastId, olderThenNMinutes).
+		select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".processed, "reports".uuid,"s".user
+		from session_money_report "reports"
+		left join sessions "s" on "reports".session_id = "s".id
+		where "reports".processed = false 
+			and "reports".session_id is not null 
+			and  "s".user is not null  
+			and "reports".id > ? 
+			and "reports".ctime < now() - interval '? minutes'
+		order by "reports".id
+		limit 100
+	`, lastId, olderThenNMinutes).
 		LoadContext(ctx, &dbReports)
 
 	if err != nil {
@@ -470,4 +470,58 @@ func (r *repo) LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payloa
 		Values(uuid.NullUUID{UUID: sessionID, Valid: true}, payload, uuid.NullUUID{UUID: messageUuid, Valid: true}).
 		ExecContext(ctx)
 	return
+}
+
+func (r *repo) DeleteUnusedSessions(ctx context.Context, SessionRetentionDays int64) (int64, error) {
+	var err error
+	defer func() {
+		dal.LogOptionalError(r.l, "session", err)
+	}()
+
+	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer tx.RollbackUnlessCommitted()
+
+	subquery := tx.Select("ses.id").
+		From("sessions AS ses").
+		Where("ses.user IS NULL").
+		Where("ses.id NOT IN (SELECT se.session_id FROM session_money_report AS se)").
+		Where("ses.created_at < now() - interval '? days'", SessionRetentionDays)
+
+	_, err = tx.DeleteFrom("session_money_report").
+		Where("session_id IN ?", subquery).
+		ExecContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = tx.DeleteFrom("sessions_balance_events").
+		Where("session IN ?", subquery).
+		ExecContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = tx.DeleteFrom("bonus_reward_log").
+		Where("session_id IN ?", subquery).
+		ExecContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	res, err := tx.DeleteFrom("sessions").
+		Where("id IN ?", subquery).
+		ExecContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	return count, tx.Commit()
 }

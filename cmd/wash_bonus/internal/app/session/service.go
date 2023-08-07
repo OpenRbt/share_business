@@ -2,11 +2,12 @@ package session
 
 import (
 	"context"
+	"wash_bonus/internal/entity"
+	"wash_bonus/internal/entity/vo"
+
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
-	"wash_bonus/internal/entity"
-	"wash_bonus/internal/entity/vo"
 )
 
 type Service interface {
@@ -15,6 +16,7 @@ type Service interface {
 
 	UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) error
 	SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error)
+	DeleteUnusedSessions(ctx context.Context, SessionRetentionDays int64) (int64, error)
 
 	ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
 	DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
@@ -31,11 +33,11 @@ type Repo interface {
 
 	UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) error
 	SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error)
+	DeleteUnusedSessions(ctx context.Context, SessionRetentionDays int64) (int64, error)
 
 	ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
 	DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
 	ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
-
 	LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error)
 
 	SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)

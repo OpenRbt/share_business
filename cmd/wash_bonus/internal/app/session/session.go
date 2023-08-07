@@ -2,10 +2,11 @@ package session
 
 import (
 	"context"
-	uuid "github.com/satori/go.uuid"
-	"github.com/shopspring/decimal"
 	"wash_bonus/internal/entity"
 	"wash_bonus/internal/entity/vo"
+
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (s *service) Create(ctx context.Context, serverID uuid.UUID, postID int64) (session entity.Session, err error) {
@@ -82,16 +83,23 @@ func (s *service) processMoneyReport(ctx context.Context, report entity.UserMone
 
 	return
 }
+
 func (s *service) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
 	return s.sessionRepo.ChargeBonuses(ctx, amount, sessionID, userID)
 }
+
 func (s *service) DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
 	return s.sessionRepo.DiscardBonuses(ctx, amount, sessionID)
 }
+
 func (s *service) ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
 	return s.sessionRepo.ConfirmBonuses(ctx, amount, sessionID)
 }
 
 func (s *service) LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error) {
 	return s.sessionRepo.LogRewardBonuses(ctx, sessionID, payload, messageUuid)
+}
+
+func (s *service) DeleteUnusedSessions(ctx context.Context, SessionRetentionDays int64) (int64, error) {
+	return s.sessionRepo.DeleteUnusedSessions(ctx, SessionRetentionDays)
 }
