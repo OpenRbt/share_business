@@ -67,7 +67,7 @@ func main() {
 	userUseCase := userUseCase.New(l, userSvc)
 
 	schedulerSvc := scheduler.New(l, sessionSvc)
-	schedulerSvc.Run(cfg.SchedulerConfig.DelayMinutes)
+	runScheduler(schedulerSvc, cfg.SchedulerConfig)
 
 	errc := make(chan error)
 
@@ -93,4 +93,12 @@ func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *bootstrap.Config,
 	}
 
 	errc <- server.Serve()
+}
+
+func runScheduler(schedulerSvc scheduler.Service, schedulerCfg bootstrap.SchedulerConfig) {
+	reportsDelay := schedulerCfg.ReportsDelayMinutes
+	sessionsDelay := schedulerCfg.SessionsDelayMinutes
+
+	sessionRetentionDays := schedulerCfg.SessionRetentionDays
+	schedulerSvc.Run(reportsDelay, sessionsDelay, sessionRetentionDays)
 }

@@ -46,7 +46,9 @@ type RabbitMQConfig struct {
 }
 
 type SchedulerConfig struct {
-	DelayMinutes int `env:"SCHEDULER_DELAY_MINUTES" envDefault:"1"`
+	ReportsDelayMinutes  int   `env:"REPORTS_DELAY_MINUTES" envDefault:"1"`
+	SessionsDelayMinutes int   `env:"SESSIONS_DELAY_MINUTES" envDefault:"5"`
+	SessionRetentionDays int64 `env:"SESSION_RETENTION_DAYS" envDefault:"1"`
 }
 
 func NewConfig(configFiles ...string) (*Config, error) {
@@ -68,12 +70,24 @@ func NewConfig(configFiles ...string) (*Config, error) {
 
 func checkConfig(c *Config) (err error) {
 	if c.SessionsConfig.MoneyReportRewardPercentDefault <= 0 {
-		err = errors.New("bad money reports reward value")
+		return errors.New("bad money reports reward value")
 	}
 
 	if c.SessionsConfig.ReportsProcessingDelayInMinutes < 0 {
-		err = errors.New("bad money report processing delay value")
+		return errors.New("bad money report processing delay value")
 	}
 
-	return
+	if c.SchedulerConfig.ReportsDelayMinutes < 0 {
+		return errors.New("wrong reports processing delay")
+	}
+
+	if c.SchedulerConfig.SessionsDelayMinutes < 0 {
+		return errors.New("wrong sessions processing delay")
+	}
+
+	if c.SchedulerConfig.SessionRetentionDays < 0 {
+		return errors.New("wrong session retention period")
+	}
+
+	return nil
 }
