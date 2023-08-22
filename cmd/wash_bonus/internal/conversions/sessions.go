@@ -44,10 +44,11 @@ func SessionToRest(e entity.Session) *models.Session {
 	}
 }
 
-func SessionUserAssign(sessionID uuid.UUID, userID string) session.UserAssign {
+func SessionUserAssign(sessionID uuid.UUID, userID string, post int64) session.UserAssign {
 	return session.UserAssign{
 		SessionID: sessionID.String(),
 		UserID:    userID,
+		Post:      post,
 	}
 }
 

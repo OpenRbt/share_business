@@ -60,7 +60,7 @@ func (u *useCase) AssignUser(ctx context.Context, sessionID uuid.UUID, userID st
 		return err
 	}
 
-	eventErr := u.RabbitSvc.SendMessage(conversions.SessionUserAssign(sessionID, userID), rabbitVo.WashBonusService, rabbitVo.RoutingKey(session.WashServer.Id.String()), rabbitVo.SessionUserMessageType)
+	eventErr := u.RabbitSvc.SendMessage(conversions.SessionUserAssign(sessionID, userID, session.Post), rabbitVo.WashBonusService, rabbitVo.RoutingKey(session.WashServer.Id.String()), rabbitVo.SessionUserMessageType)
 	if eventErr != nil {
 		u.l.Errorw("failed to send server event", "session pool creation", "target server", session.WashServer.Id.String(), "error", eventErr)
 	}
