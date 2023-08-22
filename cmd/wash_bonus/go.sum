@@ -126,8 +126,7 @@ github.com/NYTimes/gziphandler v1.1.1/go.mod h1:n/CVRwUEOgIxrgPvAQhUUr9oeUtvrhMo
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/OpenPeeDeeP/depguard v1.0.1 h1:VlW4R6jmBIv3/u1JNlawEvJMM4J+dPORPaZasQee8Us=
 github.com/OpenPeeDeeP/depguard v1.0.1/go.mod h1:xsIw86fROiiwelg+jB2uM9PiKihMMmUx/1V+TNhjQvM=
-github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230616092040-737f79befc94 h1:BDm9dTXfg2i3WzEmUgCdtxL4pJmzcKnNdvEDdnIXgBE=
-github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230616092040-737f79befc94/go.mod h1:wHiw3GqLVMbuLTETv6zaXmy1JEa5Wgj4RBSJW2arV+Y=
+github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230822024648-879a81fd3c5f h1:ltfGD/TsY0WA9HfQEutQS5DnrrD1+oImdzCzzm/JvIE=
 github.com/OpenRbt/share_business/wash_rabbit v0.0.0-20230822024648-879a81fd3c5f/go.mod h1:wHiw3GqLVMbuLTETv6zaXmy1JEa5Wgj4RBSJW2arV+Y=
 github.com/PuerkitoBio/purell v1.0.0/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
