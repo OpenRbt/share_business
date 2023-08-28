@@ -1,18 +1,15 @@
 package entity
 
-import (
-	"github.com/shopspring/decimal"
-)
+import uuid "github.com/satori/go.uuid"
 
 type User struct {
-	ID             string
-	Balance        decimal.Decimal
-	PendingBalance decimal.Decimal
-	Role           Role
-	Deleted        bool
+	ID              string
+	Role            Role
+	OrganizationIDs []uuid.UUID
+	Deleted         bool
 }
 
-type UpdateUser struct {
+type UserUpdate struct {
 	ID   string
 	Role Role
 }

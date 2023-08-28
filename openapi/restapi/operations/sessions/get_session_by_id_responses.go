@@ -61,6 +61,53 @@ func (o *GetSessionByIDOK) WriteResponse(rw http.ResponseWriter, producer runtim
 
 func (o *GetSessionByIDOK) GetSessionByIDResponder() {}
 
+// GetSessionByIDBadRequestCode is the HTTP code returned for type GetSessionByIDBadRequest
+const GetSessionByIDBadRequestCode int = 400
+
+/*
+GetSessionByIDBadRequest Bad request
+
+swagger:response getSessionByIdBadRequest
+*/
+type GetSessionByIDBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetSessionByIDBadRequest creates GetSessionByIDBadRequest with default headers values
+func NewGetSessionByIDBadRequest() *GetSessionByIDBadRequest {
+
+	return &GetSessionByIDBadRequest{}
+}
+
+// WithPayload adds the payload to the get session by Id bad request response
+func (o *GetSessionByIDBadRequest) WithPayload(payload *models.Error) *GetSessionByIDBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get session by Id bad request response
+func (o *GetSessionByIDBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetSessionByIDBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *GetSessionByIDBadRequest) GetSessionByIDResponder() {}
+
 // GetSessionByIDForbiddenCode is the HTTP code returned for type GetSessionByIDForbidden
 const GetSessionByIDForbiddenCode int = 403
 
@@ -70,6 +117,11 @@ GetSessionByIDForbidden Forbidden
 swagger:response getSessionByIdForbidden
 */
 type GetSessionByIDForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
 }
 
 // NewGetSessionByIDForbidden creates GetSessionByIDForbidden with default headers values
@@ -78,12 +130,27 @@ func NewGetSessionByIDForbidden() *GetSessionByIDForbidden {
 	return &GetSessionByIDForbidden{}
 }
 
+// WithPayload adds the payload to the get session by Id forbidden response
+func (o *GetSessionByIDForbidden) WithPayload(payload *models.Error) *GetSessionByIDForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get session by Id forbidden response
+func (o *GetSessionByIDForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *GetSessionByIDForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 func (o *GetSessionByIDForbidden) GetSessionByIDResponder() {}
@@ -92,7 +159,7 @@ func (o *GetSessionByIDForbidden) GetSessionByIDResponder() {}
 const GetSessionByIDNotFoundCode int = 404
 
 /*
-GetSessionByIDNotFound Profile not exists
+GetSessionByIDNotFound Not Found
 
 swagger:response getSessionByIdNotFound
 */

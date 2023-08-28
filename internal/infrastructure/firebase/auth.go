@@ -27,9 +27,15 @@ func (svc *FirebaseService) Auth(bearer string) (*app.Auth, error) {
 		return nil, entity.ErrAccessDenied
 	}
 
+	dbUser, err := svc.userSvc.GetOrCreate(ctx, user.UID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &app.Auth{
 		UID:          user.UID,
 		Disabled:     user.Disabled,
+		User:         dbUser,
 		UserMetadata: (*app.AuthUserMeta)(user.UserMetadata),
 	}, nil
 }

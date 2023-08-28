@@ -6,105 +6,147 @@ import (
 	"washBonus/internal/conversions"
 	"washBonus/internal/entity"
 	"washBonus/openapi/restapi/operations"
-	"washBonus/openapi/restapi/operations/wash_servers"
+	washServers "washBonus/openapi/restapi/operations/wash_servers"
 
 	uuid "github.com/satori/go.uuid"
 )
 
 func (svc *service) initWashServerHandlers(api *operations.WashBonusAPI) {
-	api.WashServersGetWashServerByIDHandler = wash_servers.GetWashServerByIDHandlerFunc(svc.getWashServer)
-	api.WashServersCreateWashServerHandler = wash_servers.CreateWashServerHandlerFunc(svc.createWashServer)
-	api.WashServersUpdateWashServerHandler = wash_servers.UpdateWashServerHandlerFunc(svc.updateWashServer)
-	api.WashServersDeleteHandler = wash_servers.DeleteHandlerFunc(svc.deleteWashServer)
-	api.WashServersListHandler = wash_servers.ListHandlerFunc(svc.getWashServerList)
+	api.WashServersGetWashServerByIDHandler = washServers.GetWashServerByIDHandlerFunc(svc.getWashServer)
+	api.WashServersCreateWashServerHandler = washServers.CreateWashServerHandlerFunc(svc.createWashServer)
+	api.WashServersUpdateWashServerHandler = washServers.UpdateWashServerHandlerFunc(svc.updateWashServer)
+	api.WashServersDeleteWashServerHandler = washServers.DeleteWashServerHandlerFunc(svc.deleteWashServer)
+	api.WashServersGetWashServersHandler = washServers.GetWashServersHandlerFunc(svc.getWashServers)
+
+	api.WashServersAssignServerToGroupHandler = washServers.AssignServerToGroupHandlerFunc(svc.assignServerToGroup)
 }
 
-func (svc *service) getWashServer(params wash_servers.GetWashServerByIDParams, auth *app.Auth) wash_servers.GetWashServerByIDResponder {
-	id, err := uuid.FromString(params.ID)
-
+func (svc *service) getWashServer(params washServers.GetWashServerByIDParams, auth *app.Auth) washServers.GetWashServerByIDResponder {
+	serverID, err := uuid.FromString(params.ServerID)
 	if err != nil {
-		return wash_servers.NewGetWashServerByIDBadRequest()
+		return washServers.NewGetWashServerByIDBadRequest()
 	}
 
-	res, err := svc.washServerCtrl.GetWashServerById(params.HTTPRequest.Context(), auth.UID, id)
+	res, err := svc.washServerCtrl.GetWashServerById(params.HTTPRequest.Context(), auth.User, serverID)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewGetWashServerByIDOK().WithPayload(conversions.WashServerToAdminRest(res))
+		return washServers.NewGetWashServerByIDOK().WithPayload(conversions.WashServerToAdminRest(res))
 	case errors.Is(err, entity.ErrAccessDenied):
-		return wash_servers.NewGetWashServerByIDForbidden()
+		return washServers.NewGetWashServerByIDForbidden()
 	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewGetWashServerByIDNotFound()
+		return washServers.NewGetWashServerByIDNotFound()
 	default:
-		return wash_servers.NewGetWashServerByIDInternalServerError()
+		svc.l.Errorln("Get wash server:", err)
+		return washServers.NewGetWashServerByIDInternalServerError()
 	}
 }
 
-func (svc *service) createWashServer(params wash_servers.CreateWashServerParams, auth *app.Auth) wash_servers.CreateWashServerResponder {
-	createWashServerFromRest := conversions.CreateWashServerFromRest(*params.Body)
+func (svc *service) createWashServer(params washServers.CreateWashServerParams, auth *app.Auth) washServers.CreateWashServerResponder {
+	createWashServerFromRest := conversions.WashServerCreationFromRest(*params.Body)
 
-	newServer, err := svc.washServerCtrl.CreateWashServer(params.HTTPRequest.Context(), auth.UID, createWashServerFromRest)
+	newServer, err := svc.washServerCtrl.CreateWashServer(params.HTTPRequest.Context(), auth.User, createWashServerFromRest)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewCreateWashServerOK().WithPayload(conversions.WashServerToAdminRest(newServer))
+		return washServers.NewCreateWashServerOK().WithPayload(conversions.WashServerToAdminRest(newServer))
 	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewCreateWashServerBadRequest()
+		return washServers.NewCreateWashServerBadRequest()
 	case errors.Is(err, entity.ErrAccessDenied):
-		return wash_servers.NewCreateWashServerForbidden()
+		return washServers.NewCreateWashServerForbidden()
 	default:
-		return wash_servers.NewCreateWashServerInternalServerError()
+		svc.l.Errorln("Create wash server:", err)
+		return washServers.NewCreateWashServerInternalServerError()
 	}
 }
 
-func (svc *service) updateWashServer(params wash_servers.UpdateWashServerParams, auth *app.Auth) wash_servers.UpdateWashServerResponder {
-	updateWashServerFromRest := conversions.UpdateWashServerFromRest(*params.Body)
+func (svc *service) updateWashServer(params washServers.UpdateWashServerParams, auth *app.Auth) washServers.UpdateWashServerResponder {
+	serverID, err := uuid.FromString(params.ServerID)
+	if err != nil {
+		return washServers.NewUpdateWashServerBadRequest()
+	}
 
-	updatedServer, err := svc.washServerCtrl.UpdateWashServer(params.HTTPRequest.Context(), auth.UID, uuid.FromStringOrNil(params.ID), updateWashServerFromRest)
+	updateWashServerFromRest := conversions.WashServerUpdateFromRest(*params.Body)
+
+	updatedServer, err := svc.washServerCtrl.UpdateWashServer(params.HTTPRequest.Context(), auth.User, serverID, updateWashServerFromRest)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewUpdateWashServerOK().WithPayload(conversions.WashServerToRest(updatedServer))
+		return washServers.NewUpdateWashServerOK().WithPayload(conversions.WashServerToRest(updatedServer))
 	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewUpdateWashServerNotFound()
+		return washServers.NewUpdateWashServerNotFound()
 	case errors.Is(err, entity.ErrAccessDenied):
-		return wash_servers.NewUpdateWashServerForbidden()
+		return washServers.NewUpdateWashServerForbidden()
 	case errors.Is(err, entity.ErrBadRequest):
-		return wash_servers.NewUpdateWashServerBadRequest()
+		return washServers.NewUpdateWashServerBadRequest()
 	default:
-		return wash_servers.NewUpdateWashServerInternalServerError()
+		svc.l.Errorln("Update wash server:", err)
+		return washServers.NewUpdateWashServerInternalServerError()
 	}
 }
 
-func (svc *service) deleteWashServer(params wash_servers.DeleteParams, auth *app.Auth) wash_servers.DeleteResponder {
-	err := svc.washServerCtrl.DeleteWashServer(params.HTTPRequest.Context(), auth.UID, uuid.FromStringOrNil(params.ID))
+func (svc *service) deleteWashServer(params washServers.DeleteWashServerParams, auth *app.Auth) washServers.DeleteWashServerResponder {
+	serverID, err := uuid.FromString(params.ServerID)
+	if err != nil {
+		return washServers.NewDeleteWashServerBadRequest()
+	}
+
+	err = svc.washServerCtrl.DeleteWashServer(params.HTTPRequest.Context(), auth.User, serverID)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewDeleteNoContent()
+		return washServers.NewDeleteWashServerNoContent()
 	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewDeleteNotFound()
+		return washServers.NewDeleteWashServerNotFound()
 	case errors.Is(err, entity.ErrAccessDenied):
-		return wash_servers.NewDeleteForbidden()
+		return washServers.NewDeleteWashServerForbidden()
 	default:
-		return wash_servers.NewDeleteInternalServerError()
+		svc.l.Errorln("Delete wash server:", err)
+		return washServers.NewDeleteWashServerInternalServerError()
 	}
 }
 
-func (svc *service) getWashServerList(params wash_servers.ListParams, auth *app.Auth) wash_servers.ListResponder {
-	pagination := conversions.PaginationFromRest(*params.Body)
+func (svc *service) getWashServers(params washServers.GetWashServersParams, auth *app.Auth) washServers.GetWashServersResponder {
+	filter := conversions.WashServerFilterFromRest(*params.Body, params.OrganizationID, params.GroupID)
 
-	res, err := svc.washServerCtrl.GetWashServers(params.HTTPRequest.Context(), auth.UID, pagination)
+	res, err := svc.washServerCtrl.GetWashServers(params.HTTPRequest.Context(), auth.User, filter)
 	payload := conversions.WashServerListToRest(res)
 
 	switch {
 	case err == nil:
-		return wash_servers.NewListOK().WithPayload(payload)
-	case errors.Is(err, entity.ErrNotFound):
-		return wash_servers.NewListNotFound()
+		return washServers.NewGetWashServersOK().WithPayload(payload)
 	case errors.Is(err, entity.ErrAccessDenied):
-		return wash_servers.NewListForbidden()
+		return washServers.NewGetWashServersForbidden()
 	default:
-		return wash_servers.NewListInternalServerError()
+		svc.l.Errorln("Get wash servers:", err)
+		return washServers.NewGetWashServersInternalServerError()
+	}
+}
+
+func (svc *service) assignServerToGroup(params washServers.AssignServerToGroupParams, auth *app.Auth) washServers.AssignServerToGroupResponder {
+	serverID, err := uuid.FromString(params.ServerID.String())
+	if err != nil {
+		return washServers.NewAssignServerToGroupBadRequest()
+	}
+
+	groupID, err := uuid.FromString(params.GroupID.String())
+	if err != nil {
+		return washServers.NewAssignServerToGroupBadRequest()
+	}
+
+	err = svc.washServerCtrl.AssignToServerGroup(params.HTTPRequest.Context(), auth.User, serverID, groupID)
+
+	switch {
+	case err == nil:
+		return washServers.NewAssignServerToGroupNoContent()
+	case errors.Is(err, entity.ErrBadRequest):
+		return washServers.NewAssignServerToGroupBadRequest()
+	case errors.Is(err, entity.ErrAccessDenied):
+		return washServers.NewAssignServerToGroupForbidden()
+	case errors.Is(err, entity.ErrNotFound):
+		return washServers.NewAssignServerToGroupNotFound()
+	default:
+		svc.l.Errorln("Assign wash server to server group:", err)
+		return washServers.NewAssignServerToGroupInternalServerError()
 	}
 }

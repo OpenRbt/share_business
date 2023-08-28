@@ -6,9 +6,8 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
-	"washBonus/internal/conversions"
+	"washBonus/internal/dal"
 	"washBonus/internal/dal/dbmodels"
-	"washBonus/internal/entity"
 
 	"github.com/gocraft/dbr/v2"
 	uuid "github.com/satori/go.uuid"
@@ -25,118 +24,186 @@ func (r *repo) generateNewServiceKey() string {
 	return fmt.Sprintf("%x", sha256.Sum256(data))
 }
 
-func (r *repo) CreateWashServer(ctx context.Context, userID string, creationEntity entity.CreateWashServer) (entity.WashServer, error) {
+func (r *repo) CreateWashServer(ctx context.Context, userID string, creationEntity dbmodels.WashServerCreation) (dbmodels.WashServer, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
 	var server dbmodels.WashServer
 
-	err := r.db.NewSession(nil).
+	if !creationEntity.GroupID.Valid {
+		err = r.db.NewSession(nil).
+			Select("gr.id").
+			From(dbr.I("server_groups").As("gr")).
+			Join(dbr.I("organizations").As("org"), "org.id = gr.organization_id").
+			Where("org.is_default AND gr.is_default").
+			LoadOneContext(ctx, &creationEntity.GroupID.UUID)
+
+		if err != nil {
+			return dbmodels.WashServer{}, err
+		}
+
+		creationEntity.GroupID.Valid = true
+	}
+
+	err = r.db.NewSession(nil).
 		InsertInto("wash_servers").
-		Columns("title", "description", "service_key", "created_by").
-		Record(dbmodels.RegisterWashServer{
+		Columns("title", "description", "service_key", "created_by", "group_id").
+		Record(dbmodels.WashServerCreation{
 			Title:       creationEntity.Title,
 			Description: creationEntity.Description,
 			ServiceKey:  r.generateNewServiceKey(),
 			CreatedBy:   userID,
-		}).Returning("id", "title", "description", "service_key", "created_by").
+			GroupID:     creationEntity.GroupID,
+		}).Returning("id").
 		LoadContext(ctx, &server)
 
 	if err != nil {
-		return entity.WashServer{}, err
+		return dbmodels.WashServer{}, err
 	}
 
-	return conversions.WashServerFromDB(server), err
+	err = r.db.NewSession(nil).Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
+		From(dbr.I("wash_servers").As("ser")).
+		Join(dbr.I("server_groups").As("gr"), "ser.group_id = gr.id").
+		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
+		Where("ser.id = ? AND NOT ser.deleted", server.ID).
+		LoadOneContext(ctx, &server)
+
+	return server, err
 }
 
-func (r *repo) GetWashServerById(ctx context.Context, serverID uuid.UUID) (entity.WashServer, error) {
+func (r *repo) GetWashServerById(ctx context.Context, serverID uuid.UUID) (dbmodels.WashServer, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
 	var dbWashServer dbmodels.WashServer
 
-	err := r.db.NewSession(nil).
-		Select("*").
-		From("wash_servers").
-		Where("id = ? AND NOT deleted", uuid.NullUUID{UUID: serverID, Valid: true}).
+	err = r.db.NewSession(nil).Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
+		From(dbr.I("wash_servers").As("ser")).
+		Join(dbr.I("server_groups").As("gr"), "ser.group_id = gr.id").
+		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
+		Where("ser.id = ? AND NOT ser.deleted", serverID).
 		LoadOneContext(ctx, &dbWashServer)
 
-	switch {
-	case err == nil:
-		return conversions.WashServerFromDB(dbWashServer), err
-	case errors.Is(err, dbr.ErrNotFound):
-		return entity.WashServer{}, entity.ErrNotFound
-	default:
-		return entity.WashServer{}, err
+	if errors.Is(err, dbr.ErrNotFound) {
+		return dbWashServer, dbmodels.ErrNotFound
 	}
+
+	return dbWashServer, err
 }
 
-func (r *repo) UpdateWashServer(ctx context.Context, serverID uuid.UUID, updateEntity entity.UpdateWashServer) (entity.WashServer, error) {
-	dbUpdateWashServer := conversions.UpdateWashServerToDb(updateEntity)
+func (r *repo) UpdateWashServer(ctx context.Context, serverID uuid.UUID, updateEntity dbmodels.WashServerUpdate) (dbmodels.WashServer, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
 	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
 	if err != nil {
-		return entity.WashServer{}, err
+		return dbmodels.WashServer{}, err
 	}
+	defer tx.RollbackUnlessCommitted()
 
 	updateMap := make(map[string]interface{})
 
-	if dbUpdateWashServer.Name != nil && *dbUpdateWashServer.Name != "" {
-		updateMap["title"] = dbUpdateWashServer.Name
+	if updateEntity.Name != nil && *updateEntity.Name != "" {
+		updateMap["title"] = updateEntity.Name
 	}
-	if dbUpdateWashServer.Description != nil && *dbUpdateWashServer.Description != "" {
-		updateMap["description"] = dbUpdateWashServer.Description
+	if updateEntity.Description != nil && *updateEntity.Description != "" {
+		updateMap["description"] = updateEntity.Description
 	}
 
 	if len(updateMap) == 0 {
-		return entity.WashServer{}, entity.ErrBadRequest
+		return dbmodels.WashServer{}, dbmodels.ErrBadValue
 	}
 
 	updateStatement := tx.Update("wash_servers").SetMap(updateMap).Where("id = ?", serverID)
 	_, err = updateStatement.ExecContext(ctx)
 	if err != nil {
-		return entity.WashServer{}, err
+		return dbmodels.WashServer{}, err
 	}
 
-	var washServer entity.WashServer
-	err = tx.Select("*").From("wash_servers").Where("id = ?", serverID).LoadOneContext(ctx, &washServer)
+	var washServer dbmodels.WashServer
+	err = tx.Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
+		From(dbr.I("wash_servers").As("ser")).
+		Join(dbr.I("server_groups").As("gr"), "ser.group_id = gr.id").
+		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
+		Where("ser.id = ? AND NOT ser.deleted", serverID).
+		LoadOneContext(ctx, &washServer)
 	if err != nil {
-		return entity.WashServer{}, err
+		return dbmodels.WashServer{}, err
 	}
 
 	return washServer, tx.Commit()
 }
 
 func (r *repo) DeleteWashServer(ctx context.Context, serverID uuid.UUID) error {
-	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
 
-	if err != nil {
-		return err
-	}
-
-	deleteStatement := tx.
+	_, err = r.db.NewSession(nil).
 		Update("wash_servers").
-		Where("id = ? AND NOT DELETED", serverID).
-		Set("deleted", true)
+		Where("id = ? AND NOT deleted", serverID).
+		Set("deleted", true).
+		ExecContext(ctx)
 
-	_, err = deleteStatement.ExecContext(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	return tx.Commit()
+	return err
 }
 
-func (r *repo) GetWashServers(ctx context.Context, pagination entity.Pagination) ([]entity.WashServer, error) {
+func (r *repo) GetWashServers(ctx context.Context, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
+	query := r.db.NewSession(nil).
+		Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
+		From(dbr.I("wash_servers").As("ser")).
+		Join(dbr.I("server_groups").As("gr"), "ser.group_id = gr.id").
+		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
+		Where("NOT ser.deleted")
+
+	return getServers(ctx, query, filter)
+}
+
+func (r *repo) GetForManager(ctx context.Context, userID string, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
+	query := r.db.NewSession(nil).
+		Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
+		From(dbr.I("wash_servers").As("ser")).
+		Join(dbr.I("server_groups").As("gr"), "ser.group_id = gr.id").
+		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
+		Join(dbr.I("organization_managers").As("man"), "org.id = man.organization_id").
+		Where("NOT ser.deleted AND man.user_id = ?", userID)
+
+	return getServers(ctx, query, filter)
+}
+
+func getServers(ctx context.Context, query *dbr.SelectStmt, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
 	var dbWashServerList []dbmodels.WashServer
 
-	_, err := r.db.NewSession(nil).
-		Select("*").
-		From("wash_servers").
-		Where("NOT DELETED").
-		Limit(uint64(pagination.Limit)).
-		Offset(uint64(pagination.Offset)).
-		LoadContext(ctx, &dbWashServerList)
-
-	if err != nil {
-		return []entity.WashServer{}, err
+	if filter.OrganizationID != uuid.Nil {
+		query.Where("org.id = ?", filter.OrganizationID)
 	}
 
-	washServerListFromDB := conversions.WashServerListFromDB(dbWashServerList)
+	if filter.GroupID != uuid.Nil {
+		query.Where("gr.id = ?", filter.GroupID)
+	}
 
-	return washServerListFromDB, nil
+	_, err := query.
+		Limit(uint64(filter.Limit)).
+		Offset(uint64(filter.Offset)).
+		LoadContext(ctx, &dbWashServerList)
+
+	return dbWashServerList, err
+}
+
+func (r *repo) AssignToServerGroup(ctx context.Context, serverID uuid.UUID, groupID uuid.UUID) error {
+	var err error
+	defer dal.LogOptionalError(r.l, "wash_server", err)
+
+	_, err = r.db.NewSession(nil).
+		Update("wash_servers").
+		Where("id = ? AND NOT deleted", serverID).
+		Set("group_id", groupID).
+		ExecContext(ctx)
+
+	return err
 }

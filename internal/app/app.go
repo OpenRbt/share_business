@@ -1,13 +1,20 @@
 package app
 
 import (
+	"context"
 	"washBonus/internal/config"
+	"washBonus/internal/entity"
+)
+
+type (
+	Ctx = context.Context
 )
 
 type (
 	Auth struct {
 		UID          string
 		Disabled     bool
+		User         entity.User
 		UserMetadata *AuthUserMeta
 	}
 

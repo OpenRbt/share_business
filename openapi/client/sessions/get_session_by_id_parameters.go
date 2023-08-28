@@ -61,8 +61,8 @@ GetSessionByIDParams contains all the parameters to send to the API endpoint
 */
 type GetSessionByIDParams struct {
 
-	// ID.
-	ID string
+	// SessionID.
+	SessionID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +117,15 @@ func (o *GetSessionByIDParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithID adds the id to the get session by Id params
-func (o *GetSessionByIDParams) WithID(id string) *GetSessionByIDParams {
-	o.SetID(id)
+// WithSessionID adds the sessionID to the get session by Id params
+func (o *GetSessionByIDParams) WithSessionID(sessionID string) *GetSessionByIDParams {
+	o.SetSessionID(sessionID)
 	return o
 }
 
-// SetID adds the id to the get session by Id params
-func (o *GetSessionByIDParams) SetID(id string) {
-	o.ID = id
+// SetSessionID adds the sessionId to the get session by Id params
+func (o *GetSessionByIDParams) SetSessionID(sessionID string) {
+	o.SessionID = sessionID
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -136,8 +136,8 @@ func (o *GetSessionByIDParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 	}
 	var res []error
 
-	// path param id
-	if err := r.SetPathParam("id", o.ID); err != nil {
+	// path param sessionId
+	if err := r.SetPathParam("sessionId", o.SessionID); err != nil {
 		return err
 	}
 

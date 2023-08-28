@@ -1,31 +1,41 @@
 package app
 
 import (
-	"context"
+	"washBonus/internal/dal/dbmodels"
 	"washBonus/internal/entity"
-
-	"github.com/shopspring/decimal"
 )
 
 type (
 	UserController interface {
-		Get(ctx context.Context, authorizedUserID string, userID string) (entity.User, error)
-		UpdateUserRole(ctx context.Context, authorizedUserID string, userUpdate entity.UpdateUser) error
+		GetById(ctx Ctx, authUser entity.User, userID string) (entity.User, error)
+		Get(ctx Ctx, authUser entity.User, pagination entity.Pagination) ([]entity.User, error)
+		UpdateUserRole(ctx Ctx, authUser entity.User, userUpdate entity.UserUpdate) error
 	}
 
 	UserService interface {
-		Create(ctx context.Context, userID string) (user entity.User, err error)
-		Get(ctx context.Context, userID string) (user entity.User, err error)
-		GetOrCreate(ctx context.Context, userID string) (user entity.User, err error)
-		AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error)
-		UpdateUserRole(ctx context.Context, authorizedUserID string, userUpdate entity.UpdateUser) error
+		Create(ctx Ctx, userID string) (user entity.User, err error)
+		GetById(ctx Ctx, userID string) (user entity.User, err error)
+		Get(ctx Ctx, pagination entity.Pagination) ([]entity.User, error)
+		GetOrCreate(ctx Ctx, userID string) (user entity.User, err error)
+		UpdateUserRole(ctx Ctx, userUpdate entity.UserUpdate) error
 	}
 
 	UserRepo interface {
-		GetByID(ctx context.Context, userID string) (user entity.User, err error)
-		Create(ctx context.Context, userID string) (user entity.User, err error)
-		AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error)
-		GetBalance(ctx context.Context, userID string) (balance decimal.Decimal, err error)
-		UpdateUserRole(ctx context.Context, userUpdate entity.UpdateUser) error
+		GetById(ctx Ctx, userID string) (user dbmodels.User, err error)
+		Get(ctx Ctx, pagination dbmodels.Pagination) ([]dbmodels.User, error)
+		Create(ctx Ctx, userID string) (user dbmodels.User, err error)
+		UpdateUserRole(ctx Ctx, userUpdate dbmodels.UserUpdate) error
 	}
 )
+
+func IsAdmin(user entity.User) bool {
+	return user.Role == entity.AdminRole
+}
+
+func IsEngineer(user entity.User) bool {
+	return user.Role == entity.EngineerRole
+}
+
+func IsUser(user entity.User) bool {
+	return user.Role == entity.UserRole
+}

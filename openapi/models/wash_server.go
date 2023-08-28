@@ -10,8 +10,10 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // WashServer wash server
@@ -25,11 +27,19 @@ type WashServer struct {
 	// description
 	Description string `json:"description,omitempty"`
 
+	// group Id
+	// Format: uuid
+	GroupID strfmt.UUID `json:"groupId,omitempty"`
+
 	// id
 	ID string `json:"id,omitempty"`
 
 	// name
 	Name string `json:"name,omitempty"`
+
+	// organization Id
+	// Format: uuid
+	OrganizationID strfmt.UUID `json:"organizationId,omitempty"`
 
 	// service key
 	ServiceKey string `json:"serviceKey,omitempty"`
@@ -45,11 +55,19 @@ func (m *WashServer) UnmarshalJSON(data []byte) error {
 		// description
 		Description string `json:"description,omitempty"`
 
+		// group Id
+		// Format: uuid
+		GroupID strfmt.UUID `json:"groupId,omitempty"`
+
 		// id
 		ID string `json:"id,omitempty"`
 
 		// name
 		Name string `json:"name,omitempty"`
+
+		// organization Id
+		// Format: uuid
+		OrganizationID strfmt.UUID `json:"organizationId,omitempty"`
 
 		// service key
 		ServiceKey string `json:"serviceKey,omitempty"`
@@ -63,14 +81,53 @@ func (m *WashServer) UnmarshalJSON(data []byte) error {
 
 	m.CreatedBy = props.CreatedBy
 	m.Description = props.Description
+	m.GroupID = props.GroupID
 	m.ID = props.ID
 	m.Name = props.Name
+	m.OrganizationID = props.OrganizationID
 	m.ServiceKey = props.ServiceKey
 	return nil
 }
 
 // Validate validates this wash server
 func (m *WashServer) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateGroupID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateOrganizationID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *WashServer) validateGroupID(formats strfmt.Registry) error {
+	if swag.IsZero(m.GroupID) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("groupId", "body", "uuid", m.GroupID.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WashServer) validateOrganizationID(formats strfmt.Registry) error {
+	if swag.IsZero(m.OrganizationID) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("organizationId", "body", "uuid", m.OrganizationID.String(), formats); err != nil {
+		return err
+	}
+
 	return nil
 }
 

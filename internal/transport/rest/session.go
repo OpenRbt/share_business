@@ -22,7 +22,7 @@ func (svc *service) initSessionHandlers(api *operations.WashBonusAPI) {
 func (svc *service) getSession(params sessions.GetSessionByIDParams, auth *app.Auth) sessions.GetSessionByIDResponder {
 	var payload *models.Session
 
-	sessionID, err := uuid.FromString(params.ID)
+	sessionID, err := uuid.FromString(params.SessionID)
 	if err != nil {
 		return sessions.NewGetSessionByIDInternalServerError()
 	}
@@ -38,21 +38,21 @@ func (svc *service) getSession(params sessions.GetSessionByIDParams, auth *app.A
 	case errors.Is(err, entity.ErrNotFound):
 		return sessions.NewGetSessionByIDNotFound()
 	default:
+		svc.l.Errorln("Get session:", err)
 		return sessions.NewGetSessionByIDInternalServerError()
 	}
 }
 
 func (svc *service) chargeBonuses(params sessions.ChargeBonusesOnSessionParams, auth *app.Auth) sessions.ChargeBonusesOnSessionResponder {
-	sessionID, err := uuid.FromString(params.ID)
+	sessionID, err := uuid.FromString(params.SessionID)
 	if err != nil {
 		return sessions.NewChargeBonusesOnSessionInternalServerError()
 	}
 
 	amount := decimal.NewFromInt(params.Body.Amount)
-	err = svc.sessionCtrl.ChargeBonuses(params.HTTPRequest.Context(), amount, sessionID, auth.UID)
+	err = svc.sessionCtrl.ChargeBonuses(params.HTTPRequest.Context(), amount, sessionID, auth.User)
 
 	switch {
-
 	case err == nil:
 		return sessions.NewChargeBonusesOnSessionOK().WithPayload(&models.BonusCharge{Amount: params.Body.Amount})
 	case errors.Is(err, entity.ErrNotFound):
@@ -60,21 +60,21 @@ func (svc *service) chargeBonuses(params sessions.ChargeBonusesOnSessionParams, 
 	case errors.Is(err, entity.ErrForbidden):
 		return sessions.NewChargeBonusesOnSessionForbidden()
 	default:
+		svc.l.Errorln("Charge bonuses:", err)
 		return sessions.NewChargeBonusesOnSessionInternalServerError()
 	}
 
 }
 
 func (svc *service) assignUserToSession(params sessions.AssignUserToSessionParams, auth *app.Auth) sessions.AssignUserToSessionResponder {
-	sessionID, err := uuid.FromString(params.ID)
+	sessionID, err := uuid.FromString(params.SessionID)
 	if err != nil {
 		return sessions.NewAssignUserToSessionInternalServerError()
 	}
 
-	err = svc.sessionCtrl.AssignUserToSession(params.HTTPRequest.Context(), sessionID, auth.UID)
+	err = svc.sessionCtrl.AssignUserToSession(params.HTTPRequest.Context(), sessionID, auth.User)
 
 	switch {
-
 	case err == nil:
 		return sessions.NewAssignUserToSessionNoContent()
 	case errors.Is(err, entity.ErrNotFound):
@@ -82,6 +82,7 @@ func (svc *service) assignUserToSession(params sessions.AssignUserToSessionParam
 	case errors.Is(err, entity.ErrForbidden):
 		return sessions.NewAssignUserToSessionForbidden()
 	default:
+		svc.l.Errorln("Assign user to session:", err)
 		return sessions.NewAssignUserToSessionInternalServerError()
 	}
 

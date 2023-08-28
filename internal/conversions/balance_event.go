@@ -13,6 +13,7 @@ func BalanceEventFromDB(dbEvent dbmodels.BalanceEvent) entity.BalanceEvent {
 	return entity.BalanceEvent{
 		ID:            dbEvent.ID.UUID,
 		User:          dbEvent.User.UUID,
+		WalletID:      dbEvent.WalletID,
 		OperationKind: vo.OperationKind(dbEvent.OperationKind),
 		OldAmount:     dbEvent.OldAmount.Decimal,
 		NewAmount:     dbEvent.NewAmount.Decimal,
@@ -34,6 +35,7 @@ func BalanceEventToDB(event entity.BalanceEvent) dbmodels.BalanceEvent {
 			UUID:  event.User,
 			Valid: true,
 		},
+		WalletID:      event.WalletID,
 		OperationKind: 0,
 		OldAmount: decimal.NullDecimal{
 			Decimal: event.OldAmount,

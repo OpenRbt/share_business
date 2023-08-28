@@ -50,7 +50,7 @@ func (a *Client) AssignUserToSession(params *AssignUserToSessionParams, authInfo
 	op := &runtime.ClientOperation{
 		ID:                 "assignUserToSession",
 		Method:             "POST",
-		PathPattern:        "/session/{id}/assign-user",
+		PathPattern:        "/sessions/{sessionId}/assign-user",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -89,7 +89,7 @@ func (a *Client) ChargeBonusesOnSession(params *ChargeBonusesOnSessionParams, au
 	op := &runtime.ClientOperation{
 		ID:                 "chargeBonusesOnSession",
 		Method:             "POST",
-		PathPattern:        "/sessions/{id}/bonuses",
+		PathPattern:        "/sessions/{sessionId}/bonuses",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -128,7 +128,7 @@ func (a *Client) GetSessionByID(params *GetSessionByIDParams, authInfo runtime.C
 	op := &runtime.ClientOperation{
 		ID:                 "getSessionById",
 		Method:             "GET",
-		PathPattern:        "/sessions/{id}",
+		PathPattern:        "/sessions/{sessionId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

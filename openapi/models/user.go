@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -24,14 +25,11 @@ type User struct {
 	// active
 	Active bool `json:"active,omitempty"`
 
-	// balance
-	Balance int64 `json:"balance,omitempty"`
-
 	// id
 	ID string `json:"id,omitempty"`
 
-	// pending balance
-	PendingBalance int64 `json:"pendingBalance,omitempty"`
+	// organization ids
+	OrganizationIds []strfmt.UUID `json:"organizationIds,omitempty"`
 
 	// role
 	// Enum: [user admin engineer]
@@ -45,14 +43,11 @@ func (m *User) UnmarshalJSON(data []byte) error {
 		// active
 		Active bool `json:"active,omitempty"`
 
-		// balance
-		Balance int64 `json:"balance,omitempty"`
-
 		// id
 		ID string `json:"id,omitempty"`
 
-		// pending balance
-		PendingBalance int64 `json:"pendingBalance,omitempty"`
+		// organization ids
+		OrganizationIds []strfmt.UUID `json:"organizationIds,omitempty"`
 
 		// role
 		// Enum: [user admin engineer]
@@ -66,9 +61,8 @@ func (m *User) UnmarshalJSON(data []byte) error {
 	}
 
 	m.Active = props.Active
-	m.Balance = props.Balance
 	m.ID = props.ID
-	m.PendingBalance = props.PendingBalance
+	m.OrganizationIds = props.OrganizationIds
 	m.Role = props.Role
 	return nil
 }
@@ -77,6 +71,10 @@ func (m *User) UnmarshalJSON(data []byte) error {
 func (m *User) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateOrganizationIds(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateRole(formats); err != nil {
 		res = append(res, err)
 	}
@@ -84,6 +82,22 @@ func (m *User) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *User) validateOrganizationIds(formats strfmt.Registry) error {
+	if swag.IsZero(m.OrganizationIds) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.OrganizationIds); i++ {
+
+		if err := validate.FormatOf("organizationIds"+"."+strconv.Itoa(i), "body", "uuid", m.OrganizationIds[i].String(), formats); err != nil {
+			return err
+		}
+
+	}
+
 	return nil
 }
 

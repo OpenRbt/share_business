@@ -14,7 +14,7 @@ import (
 
 // GetSessionByIDURL generates an URL for the get session by Id operation
 type GetSessionByIDURL struct {
-	ID string
+	SessionID string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -40,13 +40,13 @@ func (o *GetSessionByIDURL) SetBasePath(bp string) {
 func (o *GetSessionByIDURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/sessions/{id}"
+	var _path = "/sessions/{sessionId}"
 
-	id := o.ID
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
+	sessionID := o.SessionID
+	if sessionID != "" {
+		_path = strings.Replace(_path, "{sessionId}", sessionID, -1)
 	} else {
-		return nil, errors.New("id is required on GetSessionByIDURL")
+		return nil, errors.New("sessionId is required on GetSessionByIDURL")
 	}
 
 	_basePath := o._basePath

@@ -10,9 +10,12 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
+	"washBonus/openapi/client/organizations"
+	"washBonus/openapi/client/server_groups"
 	"washBonus/openapi/client/sessions"
 	"washBonus/openapi/client/standard"
 	"washBonus/openapi/client/users"
+	"washBonus/openapi/client/wallets"
 	"washBonus/openapi/client/wash_servers"
 )
 
@@ -58,9 +61,12 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *WashBonus 
 
 	cli := new(WashBonus)
 	cli.Transport = transport
+	cli.Organizations = organizations.New(transport, formats)
+	cli.ServerGroups = server_groups.New(transport, formats)
 	cli.Sessions = sessions.New(transport, formats)
 	cli.Standard = standard.New(transport, formats)
 	cli.Users = users.New(transport, formats)
+	cli.Wallets = wallets.New(transport, formats)
 	cli.WashServers = wash_servers.New(transport, formats)
 	return cli
 }
@@ -106,11 +112,17 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // WashBonus is a client for wash bonus
 type WashBonus struct {
+	Organizations organizations.ClientService
+
+	ServerGroups server_groups.ClientService
+
 	Sessions sessions.ClientService
 
 	Standard standard.ClientService
 
 	Users users.ClientService
+
+	Wallets wallets.ClientService
 
 	WashServers wash_servers.ClientService
 
@@ -120,8 +132,11 @@ type WashBonus struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *WashBonus) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
+	c.Organizations.SetTransport(transport)
+	c.ServerGroups.SetTransport(transport)
 	c.Sessions.SetTransport(transport)
 	c.Standard.SetTransport(transport)
 	c.Users.SetTransport(transport)
+	c.Wallets.SetTransport(transport)
 	c.WashServers.SetTransport(transport)
 }

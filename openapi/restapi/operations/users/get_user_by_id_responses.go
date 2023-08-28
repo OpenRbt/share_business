@@ -70,6 +70,11 @@ GetUserByIDForbidden Forbidden
 swagger:response getUserByIdForbidden
 */
 type GetUserByIDForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
 }
 
 // NewGetUserByIDForbidden creates GetUserByIDForbidden with default headers values
@@ -78,12 +83,27 @@ func NewGetUserByIDForbidden() *GetUserByIDForbidden {
 	return &GetUserByIDForbidden{}
 }
 
+// WithPayload adds the payload to the get user by Id forbidden response
+func (o *GetUserByIDForbidden) WithPayload(payload *models.Error) *GetUserByIDForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get user by Id forbidden response
+func (o *GetUserByIDForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *GetUserByIDForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 func (o *GetUserByIDForbidden) GetUserByIDResponder() {}
@@ -92,7 +112,7 @@ func (o *GetUserByIDForbidden) GetUserByIDResponder() {}
 const GetUserByIDNotFoundCode int = 404
 
 /*
-GetUserByIDNotFound Not found
+GetUserByIDNotFound Not Found
 
 swagger:response getUserByIdNotFound
 */

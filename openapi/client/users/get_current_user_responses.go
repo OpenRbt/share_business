@@ -131,6 +131,7 @@ GetCurrentUserForbidden describes a response with status code 403, with default 
 Forbidden
 */
 type GetCurrentUserForbidden struct {
+	Payload *models.Error
 }
 
 // IsSuccess returns true when this get current user forbidden response has a 2xx status code
@@ -164,14 +165,25 @@ func (o *GetCurrentUserForbidden) Code() int {
 }
 
 func (o *GetCurrentUserForbidden) Error() string {
-	return fmt.Sprintf("[GET /users/me][%d] getCurrentUserForbidden ", 403)
+	return fmt.Sprintf("[GET /users/me][%d] getCurrentUserForbidden  %+v", 403, o.Payload)
 }
 
 func (o *GetCurrentUserForbidden) String() string {
-	return fmt.Sprintf("[GET /users/me][%d] getCurrentUserForbidden ", 403)
+	return fmt.Sprintf("[GET /users/me][%d] getCurrentUserForbidden  %+v", 403, o.Payload)
+}
+
+func (o *GetCurrentUserForbidden) GetPayload() *models.Error {
+	return o.Payload
 }
 
 func (o *GetCurrentUserForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -184,7 +196,7 @@ func NewGetCurrentUserNotFound() *GetCurrentUserNotFound {
 /*
 GetCurrentUserNotFound describes a response with status code 404, with default header values.
 
-Not found
+Not Found
 */
 type GetCurrentUserNotFound struct {
 	Payload *models.Error

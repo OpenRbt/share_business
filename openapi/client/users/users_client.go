@@ -34,7 +34,9 @@ type ClientService interface {
 
 	GetUserByID(params *GetUserByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserByIDOK, error)
 
-	UpdateUser(params *UpdateUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateUserNoContent, error)
+	GetUsers(params *GetUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUsersOK, error)
+
+	UpdateUserRole(params *UpdateUserRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateUserRoleNoContent, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
@@ -89,7 +91,7 @@ func (a *Client) GetUserByID(params *GetUserByIDParams, authInfo runtime.ClientA
 	op := &runtime.ClientOperation{
 		ID:                 "getUserById",
 		Method:             "GET",
-		PathPattern:        "/users/{id}",
+		PathPattern:        "/users/{userId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -118,22 +120,22 @@ func (a *Client) GetUserByID(params *GetUserByIDParams, authInfo runtime.ClientA
 }
 
 /*
-UpdateUser update user API
+GetUsers get users API
 */
-func (a *Client) UpdateUser(params *UpdateUserParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateUserNoContent, error) {
+func (a *Client) GetUsers(params *GetUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUsersOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewUpdateUserParams()
+		params = NewGetUsersParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "updateUser",
-		Method:             "PATCH",
-		PathPattern:        "/users/{id}",
+		ID:                 "getUsers",
+		Method:             "GET",
+		PathPattern:        "/users",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &UpdateUserReader{formats: a.formats},
+		Reader:             &GetUsersReader{formats: a.formats},
 		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
@@ -146,13 +148,52 @@ func (a *Client) UpdateUser(params *UpdateUserParams, authInfo runtime.ClientAut
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*UpdateUserNoContent)
+	success, ok := result.(*GetUsersOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for updateUser: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for getUsers: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+UpdateUserRole update user role API
+*/
+func (a *Client) UpdateUserRole(params *UpdateUserRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateUserRoleNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewUpdateUserRoleParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "updateUserRole",
+		Method:             "PATCH",
+		PathPattern:        "/users/{userId}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &UpdateUserRoleReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*UpdateUserRoleNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for updateUserRole: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

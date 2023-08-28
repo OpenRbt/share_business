@@ -61,8 +61,8 @@ GetUserByIDParams contains all the parameters to send to the API endpoint
 */
 type GetUserByIDParams struct {
 
-	// ID.
-	ID string
+	// UserID.
+	UserID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +117,15 @@ func (o *GetUserByIDParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithID adds the id to the get user by Id params
-func (o *GetUserByIDParams) WithID(id string) *GetUserByIDParams {
-	o.SetID(id)
+// WithUserID adds the userID to the get user by Id params
+func (o *GetUserByIDParams) WithUserID(userID string) *GetUserByIDParams {
+	o.SetUserID(userID)
 	return o
 }
 
-// SetID adds the id to the get user by Id params
-func (o *GetUserByIDParams) SetID(id string) {
-	o.ID = id
+// SetUserID adds the userId to the get user by Id params
+func (o *GetUserByIDParams) SetUserID(userID string) {
+	o.UserID = userID
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -136,8 +136,8 @@ func (o *GetUserByIDParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 	}
 	var res []error
 
-	// path param id
-	if err := r.SetPathParam("id", o.ID); err != nil {
+	// path param userId
+	if err := r.SetPathParam("userId", o.UserID); err != nil {
 		return err
 	}
 

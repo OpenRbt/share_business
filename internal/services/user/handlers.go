@@ -3,54 +3,63 @@ package user
 import (
 	"context"
 	"errors"
+	"washBonus/internal/conversions"
+	"washBonus/internal/dal/dbmodels"
 	"washBonus/internal/entity"
-
-	"github.com/shopspring/decimal"
 )
 
-func (s *userService) Get(ctx context.Context, userID string) (user entity.User, err error) {
-	return s.userRepo.GetByID(ctx, userID)
-}
-
-func (s *userService) GetOrCreate(ctx context.Context, userID string) (user entity.User, err error) {
-	user, err = s.userRepo.GetByID(ctx, userID)
+func (s *userService) Get(ctx context.Context, pagination entity.Pagination) ([]entity.User, error) {
+	usersFromDB, err := s.userRepo.Get(ctx, conversions.PaginationToDB(pagination))
 	if err != nil {
-		if errors.Is(err, entity.ErrNotFound) {
-			return s.userRepo.Create(ctx, userID)
-		}
+		return nil, err
 	}
 
-	return
+	return conversions.UsersFromDb(usersFromDB), nil
 }
 
-func (s *userService) AddBonuses(ctx context.Context, amount decimal.Decimal, userID string) (err error) {
-	return s.userRepo.AddBonuses(ctx, amount, userID)
-}
-
-func (s *userService) Create(ctx context.Context, userID string) (user entity.User, err error) {
-	return s.userRepo.Create(ctx, userID)
-}
-
-func (s *userService) UpdateUserRole(ctx context.Context, authorizedUserID string, userUpdate entity.UpdateUser) error {
-	user, err := s.userRepo.GetByID(ctx, authorizedUserID)
+func (s *userService) GetById(ctx context.Context, userID string) (entity.User, error) {
+	userFromDB, err := s.userRepo.GetById(ctx, userID)
 	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			err = entity.ErrNotFound
+		}
+		return entity.User{}, err
+	}
+
+	return conversions.UserFromDb(userFromDB), nil
+}
+
+func (s *userService) GetOrCreate(ctx context.Context, userID string) (entity.User, error) {
+	user, err := s.userRepo.GetById(ctx, userID)
+
+	if errors.Is(err, dbmodels.ErrNotFound) {
+		user, err = s.userRepo.Create(ctx, userID)
+	}
+
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return conversions.UserFromDb(user), nil
+}
+
+func (s *userService) Create(ctx context.Context, userID string) (entity.User, error) {
+	user, err := s.userRepo.Create(ctx, userID)
+	if err != nil {
+		return entity.User{}, err
+	}
+
+	return conversions.UserFromDb(user), nil
+}
+
+func (s *userService) UpdateUserRole(ctx context.Context, userUpdate entity.UserUpdate) error {
+	_, err := s.userRepo.GetById(ctx, userUpdate.ID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			return entity.ErrNotFound
+		}
 		return err
 	}
 
-	switch user.Role {
-	case entity.AdminRole:
-		_, err = s.userRepo.GetByID(ctx, userUpdate.ID)
-		if err != nil {
-			return err
-		}
-
-		err = s.userRepo.UpdateUserRole(ctx, userUpdate)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	default:
-		return entity.ErrAccessDenied
-	}
+	return s.userRepo.UpdateUserRole(ctx, conversions.UserUpdateToDB(userUpdate))
 }

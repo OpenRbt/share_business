@@ -66,8 +66,8 @@ type ChargeBonusesOnSessionParams struct {
 	// Body.
 	Body *models.BonusCharge
 
-	// ID.
-	ID string
+	// SessionID.
+	SessionID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -133,15 +133,15 @@ func (o *ChargeBonusesOnSessionParams) SetBody(body *models.BonusCharge) {
 	o.Body = body
 }
 
-// WithID adds the id to the charge bonuses on session params
-func (o *ChargeBonusesOnSessionParams) WithID(id string) *ChargeBonusesOnSessionParams {
-	o.SetID(id)
+// WithSessionID adds the sessionID to the charge bonuses on session params
+func (o *ChargeBonusesOnSessionParams) WithSessionID(sessionID string) *ChargeBonusesOnSessionParams {
+	o.SetSessionID(sessionID)
 	return o
 }
 
-// SetID adds the id to the charge bonuses on session params
-func (o *ChargeBonusesOnSessionParams) SetID(id string) {
-	o.ID = id
+// SetSessionID adds the sessionId to the charge bonuses on session params
+func (o *ChargeBonusesOnSessionParams) SetSessionID(sessionID string) {
+	o.SessionID = sessionID
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -157,8 +157,8 @@ func (o *ChargeBonusesOnSessionParams) WriteToRequest(r runtime.ClientRequest, r
 		}
 	}
 
-	// path param id
-	if err := r.SetPathParam("id", o.ID); err != nil {
+	// path param sessionId
+	if err := r.SetPathParam("sessionId", o.SessionID); err != nil {
 		return err
 	}
 

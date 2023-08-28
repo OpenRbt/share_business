@@ -5,15 +5,21 @@ import (
 	"washBonus/internal/app"
 	"washBonus/internal/config"
 	"washBonus/internal/controllers"
+	organizationRepo "washBonus/internal/dal/organizations"
+	serverGroupRepo "washBonus/internal/dal/serverGroups"
 	sessionsRepo "washBonus/internal/dal/sessions"
 	userRepo "washBonus/internal/dal/user"
+	walletRepo "washBonus/internal/dal/wallets"
 	washRepo "washBonus/internal/dal/washServer"
 	"washBonus/internal/infrastructure/firebase"
 	rabbitMQ "washBonus/internal/infrastructure/rabbit"
+	"washBonus/internal/services/organizations"
 	"washBonus/internal/services/rabbit"
 	"washBonus/internal/services/schedule"
+	"washBonus/internal/services/serverGroups"
 	"washBonus/internal/services/session"
 	"washBonus/internal/services/user"
+	"washBonus/internal/services/wallets"
 	"washBonus/internal/services/washServer"
 	"washBonus/internal/transport/rest"
 
@@ -47,17 +53,22 @@ func main() {
 
 	l.Debug("applied migrations")
 
-	authSvc := firebase.New(cfg.FirebaseConfig.FirebaseKeyFilePath)
-
 	userRepo := userRepo.NewRepo(l, dbConn)
 	washRepo := washRepo.NewRepo(l, dbConn)
 	sessionRepo := sessionsRepo.NewRepo(l, dbConn)
+	orgRepo := organizationRepo.NewRepo(l, dbConn)
+	groupRepo := serverGroupRepo.NewRepo(l, dbConn)
+	walletRepo := walletRepo.NewRepo(l, dbConn)
 
-	userSvc := user.New(l, userRepo)
-	washServerSvc := washServer.New(l, washRepo)
-	sessionSvc := session.New(l, userRepo, sessionRepo, washRepo, cfg.SessionsConfig.ReportsProcessingDelayInMinutes, cfg.SessionsConfig.MoneyReportRewardPercentDefault)
+	userSvc := user.New(l, userRepo, orgRepo)
+	authSvc := firebase.New(cfg.FirebaseConfig.FirebaseKeyFilePath, userSvc)
+	washServerSvc := washServer.New(l, washRepo, groupRepo)
+	sessionSvc := session.New(l, userRepo, sessionRepo, washRepo, walletRepo, cfg.SessionsConfig.ReportsProcessingDelayInMinutes, cfg.SessionsConfig.MoneyReportRewardPercentDefault)
+	orgSvc := organizations.New(l, orgRepo, userRepo)
+	groupSvc := serverGroups.New(l, groupRepo, orgRepo)
+	walletSvc := wallets.New(l, walletRepo)
 
-	rabbitSvc := rabbit.New(l, sessionSvc, userSvc, washServerSvc)
+	rabbitSvc := rabbit.New(l, sessionSvc, userSvc, washServerSvc, walletSvc)
 
 	rabbitMQ, err := rabbitMQ.New(l, cfg.RabbitMQConfig.Url, cfg.RabbitMQConfig.Port, cfg.RabbitMQConfig.User, cfg.RabbitMQConfig.Password, rabbitSvc)
 	if err != nil {
@@ -67,14 +78,17 @@ func main() {
 
 	sessionCtrl := controllers.NewSessionController(l, sessionSvc, userSvc, washServerSvc, rabbitMQ)
 	userCtrl := controllers.NewUserController(l, userSvc, sessionSvc)
-	washServerCtrl := controllers.NewWashServerController(l, washServerSvc, userSvc, rabbitMQ)
+	washServerCtrl := controllers.NewWashServerController(l, washServerSvc, userSvc, groupSvc, orgSvc, rabbitMQ)
+	orgCtrl := controllers.NewOrganizationController(l, orgSvc)
+	groupCtrl := controllers.NewServerGroupController(l, groupSvc, orgSvc)
+	walletCtrl := controllers.NewWalletController(l, walletSvc, sessionSvc)
 
 	schedulerSvc := schedule.New(l, sessionSvc)
 	runScheduler(schedulerSvc, cfg.SchedulerConfig)
 
 	errc := make(chan error)
 
-	go runHTTPServer(errc, l, cfg, authSvc, sessionCtrl, userCtrl, washServerCtrl)
+	go runHTTPServer(errc, l, cfg, authSvc, sessionCtrl, userCtrl, washServerCtrl, orgCtrl, groupCtrl, walletCtrl)
 
 	err = <-errc
 	if err != nil {
@@ -84,13 +98,13 @@ func main() {
 	l.Info("started server at: ", cfg.HTTPPort)
 }
 
-func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *config.Config, authSvc firebase.Service, sessionCtrl app.SessionController, userCtrl app.UserController, washServerCtrl app.WashServerController) {
+func runHTTPServer(errc chan error, l *zap.SugaredLogger, cfg *config.Config, authSvc firebase.Service, sessionCtrl app.SessionController, userCtrl app.UserController, washServerCtrl app.WashServerController, orgCtrl app.OrganizationController, groupCtrl app.ServerGroupController, walletCtrl app.WalletController) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Fatalln("panic: ", r)
 		}
 	}()
-	server, err := rest.NewServer(cfg, authSvc, l, sessionCtrl, userCtrl, washServerCtrl)
+	server, err := rest.NewServer(cfg, authSvc, l, sessionCtrl, userCtrl, washServerCtrl, orgCtrl, groupCtrl, walletCtrl)
 	if err != nil {
 		l.Fatalln("init rest server:", err)
 	}

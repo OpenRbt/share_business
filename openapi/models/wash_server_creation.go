@@ -22,7 +22,12 @@ import (
 type WashServerCreation struct {
 
 	// description
-	Description string `json:"description,omitempty"`
+	// Required: true
+	Description *string `json:"description"`
+
+	// group Id
+	// Format: uuid
+	GroupID *strfmt.UUID `json:"groupId,omitempty"`
 
 	// name
 	// Required: true
@@ -34,7 +39,12 @@ func (m *WashServerCreation) UnmarshalJSON(data []byte) error {
 	var props struct {
 
 		// description
-		Description string `json:"description,omitempty"`
+		// Required: true
+		Description *string `json:"description"`
+
+		// group Id
+		// Format: uuid
+		GroupID *strfmt.UUID `json:"groupId,omitempty"`
 
 		// name
 		// Required: true
@@ -48,6 +58,7 @@ func (m *WashServerCreation) UnmarshalJSON(data []byte) error {
 	}
 
 	m.Description = props.Description
+	m.GroupID = props.GroupID
 	m.Name = props.Name
 	return nil
 }
@@ -56,6 +67,14 @@ func (m *WashServerCreation) UnmarshalJSON(data []byte) error {
 func (m *WashServerCreation) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateDescription(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGroupID(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateName(formats); err != nil {
 		res = append(res, err)
 	}
@@ -63,6 +82,27 @@ func (m *WashServerCreation) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *WashServerCreation) validateDescription(formats strfmt.Registry) error {
+
+	if err := validate.Required("description", "body", m.Description); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *WashServerCreation) validateGroupID(formats strfmt.Registry) error {
+	if swag.IsZero(m.GroupID) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("groupId", "body", "uuid", m.GroupID.String(), formats); err != nil {
+		return err
+	}
+
 	return nil
 }
 

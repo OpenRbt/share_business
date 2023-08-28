@@ -29,6 +29,12 @@ func (o *AssignUserToSessionReader) ReadResponse(response runtime.ClientResponse
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewAssignUserToSessionBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 403:
 		result := NewAssignUserToSessionForbidden()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -48,7 +54,7 @@ func (o *AssignUserToSessionReader) ReadResponse(response runtime.ClientResponse
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[POST /session/{id}/assign-user] assignUserToSession", response, response.Code())
+		return nil, runtime.NewAPIError("[POST /sessions/{sessionId}/assign-user] assignUserToSession", response, response.Code())
 	}
 }
 
@@ -96,14 +102,82 @@ func (o *AssignUserToSessionNoContent) Code() int {
 }
 
 func (o *AssignUserToSessionNoContent) Error() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionNoContent ", 204)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionNoContent ", 204)
 }
 
 func (o *AssignUserToSessionNoContent) String() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionNoContent ", 204)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionNoContent ", 204)
 }
 
 func (o *AssignUserToSessionNoContent) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewAssignUserToSessionBadRequest creates a AssignUserToSessionBadRequest with default headers values
+func NewAssignUserToSessionBadRequest() *AssignUserToSessionBadRequest {
+	return &AssignUserToSessionBadRequest{}
+}
+
+/*
+AssignUserToSessionBadRequest describes a response with status code 400, with default header values.
+
+Bad request
+*/
+type AssignUserToSessionBadRequest struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this assign user to session bad request response has a 2xx status code
+func (o *AssignUserToSessionBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this assign user to session bad request response has a 3xx status code
+func (o *AssignUserToSessionBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this assign user to session bad request response has a 4xx status code
+func (o *AssignUserToSessionBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this assign user to session bad request response has a 5xx status code
+func (o *AssignUserToSessionBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this assign user to session bad request response a status code equal to that given
+func (o *AssignUserToSessionBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+// Code gets the status code for the assign user to session bad request response
+func (o *AssignUserToSessionBadRequest) Code() int {
+	return 400
+}
+
+func (o *AssignUserToSessionBadRequest) Error() string {
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *AssignUserToSessionBadRequest) String() string {
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *AssignUserToSessionBadRequest) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *AssignUserToSessionBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -119,6 +193,7 @@ AssignUserToSessionForbidden describes a response with status code 403, with def
 Forbidden
 */
 type AssignUserToSessionForbidden struct {
+	Payload *models.Error
 }
 
 // IsSuccess returns true when this assign user to session forbidden response has a 2xx status code
@@ -152,14 +227,25 @@ func (o *AssignUserToSessionForbidden) Code() int {
 }
 
 func (o *AssignUserToSessionForbidden) Error() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionForbidden ", 403)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionForbidden  %+v", 403, o.Payload)
 }
 
 func (o *AssignUserToSessionForbidden) String() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionForbidden ", 403)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionForbidden  %+v", 403, o.Payload)
+}
+
+func (o *AssignUserToSessionForbidden) GetPayload() *models.Error {
+	return o.Payload
 }
 
 func (o *AssignUserToSessionForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -172,7 +258,7 @@ func NewAssignUserToSessionNotFound() *AssignUserToSessionNotFound {
 /*
 AssignUserToSessionNotFound describes a response with status code 404, with default header values.
 
-Session not found
+Not Found
 */
 type AssignUserToSessionNotFound struct {
 	Payload *models.Error
@@ -209,11 +295,11 @@ func (o *AssignUserToSessionNotFound) Code() int {
 }
 
 func (o *AssignUserToSessionNotFound) Error() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionNotFound  %+v", 404, o.Payload)
 }
 
 func (o *AssignUserToSessionNotFound) String() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionNotFound  %+v", 404, o.Payload)
 }
 
 func (o *AssignUserToSessionNotFound) GetPayload() *models.Error {
@@ -277,11 +363,11 @@ func (o *AssignUserToSessionInternalServerError) Code() int {
 }
 
 func (o *AssignUserToSessionInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *AssignUserToSessionInternalServerError) String() string {
-	return fmt.Sprintf("[POST /session/{id}/assign-user][%d] assignUserToSessionInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/assign-user][%d] assignUserToSessionInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *AssignUserToSessionInternalServerError) GetPayload() *models.Error {

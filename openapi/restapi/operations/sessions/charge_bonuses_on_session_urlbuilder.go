@@ -14,7 +14,7 @@ import (
 
 // ChargeBonusesOnSessionURL generates an URL for the charge bonuses on session operation
 type ChargeBonusesOnSessionURL struct {
-	ID string
+	SessionID string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -40,13 +40,13 @@ func (o *ChargeBonusesOnSessionURL) SetBasePath(bp string) {
 func (o *ChargeBonusesOnSessionURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/sessions/{id}/bonuses"
+	var _path = "/sessions/{sessionId}/bonuses"
 
-	id := o.ID
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
+	sessionID := o.SessionID
+	if sessionID != "" {
+		_path = strings.Replace(_path, "{sessionId}", sessionID, -1)
 	} else {
-		return nil, errors.New("id is required on ChargeBonusesOnSessionURL")
+		return nil, errors.New("sessionId is required on ChargeBonusesOnSessionURL")
 	}
 
 	_basePath := o._basePath

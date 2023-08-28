@@ -25,19 +25,25 @@ type service struct {
 	l    *zap.SugaredLogger
 	auth firebase.Service
 
-	sessionCtrl    app.SessionController
-	userCtrl       app.UserController
-	washServerCtrl app.WashServerController
+	sessionCtrl     app.SessionController
+	userCtrl        app.UserController
+	washServerCtrl  app.WashServerController
+	orgCtrl         app.OrganizationController
+	serverGroupCtrl app.ServerGroupController
+	walletCtrl      app.WalletController
 }
 
-func NewServer(cfg *config.Config, auth firebase.Service, l *zap.SugaredLogger, sessionCtrl app.SessionController, userCtrl app.UserController, washServerCtrl app.WashServerController) (*restapi.Server, error) {
+func NewServer(cfg *config.Config, auth firebase.Service, l *zap.SugaredLogger, sessionCtrl app.SessionController, userCtrl app.UserController, washServerCtrl app.WashServerController, orgCtrl app.OrganizationController, serverGroupCtrl app.ServerGroupController, walletCtrl app.WalletController) (*restapi.Server, error) {
 	svc := &service{
 		l:    l,
 		auth: auth,
 
-		sessionCtrl:    sessionCtrl,
-		userCtrl:       userCtrl,
-		washServerCtrl: washServerCtrl,
+		sessionCtrl:     sessionCtrl,
+		userCtrl:        userCtrl,
+		washServerCtrl:  washServerCtrl,
+		orgCtrl:         orgCtrl,
+		serverGroupCtrl: serverGroupCtrl,
+		walletCtrl:      walletCtrl,
 	}
 
 	swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
@@ -59,6 +65,9 @@ func NewServer(cfg *config.Config, auth firebase.Service, l *zap.SugaredLogger, 
 	svc.initUserHandlers(api)
 	svc.initSessionHandlers(api)
 	svc.initWashServerHandlers(api)
+	svc.initOrganizationsHandlers(api)
+	svc.initServerGroupHandlers(api)
+	svc.initWalletHandlers(api)
 
 	server := restapi.NewServer(api)
 	server.Host = string(cfg.Host)

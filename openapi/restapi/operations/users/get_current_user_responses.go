@@ -70,6 +70,11 @@ GetCurrentUserForbidden Forbidden
 swagger:response getCurrentUserForbidden
 */
 type GetCurrentUserForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
 }
 
 // NewGetCurrentUserForbidden creates GetCurrentUserForbidden with default headers values
@@ -78,12 +83,27 @@ func NewGetCurrentUserForbidden() *GetCurrentUserForbidden {
 	return &GetCurrentUserForbidden{}
 }
 
+// WithPayload adds the payload to the get current user forbidden response
+func (o *GetCurrentUserForbidden) WithPayload(payload *models.Error) *GetCurrentUserForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get current user forbidden response
+func (o *GetCurrentUserForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *GetCurrentUserForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 func (o *GetCurrentUserForbidden) GetCurrentUserResponder() {}
@@ -92,7 +112,7 @@ func (o *GetCurrentUserForbidden) GetCurrentUserResponder() {}
 const GetCurrentUserNotFoundCode int = 404
 
 /*
-GetCurrentUserNotFound Not found
+GetCurrentUserNotFound Not Found
 
 swagger:response getCurrentUserNotFound
 */

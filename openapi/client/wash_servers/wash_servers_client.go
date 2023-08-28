@@ -30,17 +30,58 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	AssignServerToGroup(params *AssignServerToGroupParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AssignServerToGroupNoContent, error)
+
 	CreateWashServer(params *CreateWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*CreateWashServerOK, error)
 
-	Delete(params *DeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteNoContent, error)
+	DeleteWashServer(params *DeleteWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteWashServerNoContent, error)
 
 	GetWashServerByID(params *GetWashServerByIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWashServerByIDOK, error)
 
-	List(params *ListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListOK, error)
+	GetWashServers(params *GetWashServersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWashServersOK, error)
 
 	UpdateWashServer(params *UpdateWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*UpdateWashServerOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+AssignServerToGroup assign server to group API
+*/
+func (a *Client) AssignServerToGroup(params *AssignServerToGroupParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*AssignServerToGroupNoContent, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewAssignServerToGroupParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "assignServerToGroup",
+		Method:             "POST",
+		PathPattern:        "/server-groups/{groupId}/wash-servers/{serverId}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &AssignServerToGroupReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*AssignServerToGroupNoContent)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for assignServerToGroup: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
 }
 
 /*
@@ -83,22 +124,22 @@ func (a *Client) CreateWashServer(params *CreateWashServerParams, authInfo runti
 }
 
 /*
-Delete delete API
+DeleteWashServer delete wash server API
 */
-func (a *Client) Delete(params *DeleteParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteNoContent, error) {
+func (a *Client) DeleteWashServer(params *DeleteWashServerParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteWashServerNoContent, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewDeleteParams()
+		params = NewDeleteWashServerParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "delete",
+		ID:                 "deleteWashServer",
 		Method:             "DELETE",
-		PathPattern:        "/wash-servers/{id}",
+		PathPattern:        "/wash-servers/{serverId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &DeleteReader{formats: a.formats},
+		Reader:             &DeleteWashServerReader{formats: a.formats},
 		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
@@ -111,13 +152,13 @@ func (a *Client) Delete(params *DeleteParams, authInfo runtime.ClientAuthInfoWri
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*DeleteNoContent)
+	success, ok := result.(*DeleteWashServerNoContent)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for delete: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for deleteWashServer: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
@@ -132,7 +173,7 @@ func (a *Client) GetWashServerByID(params *GetWashServerByIDParams, authInfo run
 	op := &runtime.ClientOperation{
 		ID:                 "getWashServerById",
 		Method:             "GET",
-		PathPattern:        "/wash-servers/{id}",
+		PathPattern:        "/wash-servers/{serverId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -161,22 +202,22 @@ func (a *Client) GetWashServerByID(params *GetWashServerByIDParams, authInfo run
 }
 
 /*
-List list API
+GetWashServers get wash servers API
 */
-func (a *Client) List(params *ListParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*ListOK, error) {
+func (a *Client) GetWashServers(params *GetWashServersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWashServersOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewListParams()
+		params = NewGetWashServersParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "list",
+		ID:                 "getWashServers",
 		Method:             "GET",
 		PathPattern:        "/wash-servers/",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &ListReader{formats: a.formats},
+		Reader:             &GetWashServersReader{formats: a.formats},
 		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
@@ -189,13 +230,13 @@ func (a *Client) List(params *ListParams, authInfo runtime.ClientAuthInfoWriter,
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*ListOK)
+	success, ok := result.(*GetWashServersOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for list: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for getWashServers: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
@@ -210,7 +251,7 @@ func (a *Client) UpdateWashServer(params *UpdateWashServerParams, authInfo runti
 	op := &runtime.ClientOperation{
 		ID:                 "updateWashServer",
 		Method:             "PATCH",
-		PathPattern:        "/wash-servers/{id}",
+		PathPattern:        "/wash-servers/{serverId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

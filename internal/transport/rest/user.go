@@ -12,54 +12,71 @@ import (
 func (svc *service) initUserHandlers(api *operations.WashBonusAPI) {
 	api.UsersGetUserByIDHandler = users.GetUserByIDHandlerFunc(svc.getUserByID)
 	api.UsersGetCurrentUserHandler = users.GetCurrentUserHandlerFunc(svc.getCurrentUser)
-	api.UsersUpdateUserHandler = users.UpdateUserHandlerFunc(svc.updateUser)
+	api.UsersUpdateUserRoleHandler = users.UpdateUserRoleHandlerFunc(svc.updateUserRole)
+	api.UsersGetUsersHandler = users.GetUsersHandlerFunc(svc.getUsers)
 }
 
-func (svc *service) getUserByID(params users.GetUserByIDParams, auth *app.Auth) users.GetUserByIDResponder {
-	res, err := svc.userCtrl.Get(params.HTTPRequest.Context(), auth.UID, params.ID)
-
-	payload := conversions.UserToRest(res)
+func (svc *service) getUsers(params users.GetUsersParams, auth *app.Auth) users.GetUsersResponder {
+	res, err := svc.userCtrl.Get(params.HTTPRequest.Context(), auth.User, entity.Pagination(*params.Body))
 
 	switch {
 	case err == nil:
+		payload := conversions.UsersToRest(res)
+		return users.NewGetUsersOK().WithPayload(payload)
+	case errors.Is(err, entity.ErrAccessDenied):
+		return users.NewGetUsersForbidden()
+	default:
+		svc.l.Errorln("Get users:", err)
+		return users.NewGetUsersInternalServerError()
+	}
+}
+
+func (svc *service) getUserByID(params users.GetUserByIDParams, auth *app.Auth) users.GetUserByIDResponder {
+	res, err := svc.userCtrl.GetById(params.HTTPRequest.Context(), auth.User, params.UserID)
+
+	switch {
+	case err == nil:
+		payload := conversions.UserToRest(res)
 		return users.NewGetUserByIDOK().WithPayload(&payload)
 	case errors.Is(err, entity.ErrNotFound):
 		return users.NewGetUserByIDNotFound()
 	case errors.Is(err, entity.ErrAccessDenied):
 		return users.NewGetUserByIDForbidden()
 	default:
+		svc.l.Errorln("Get user by id:", err)
 		return users.NewGetUserByIDInternalServerError()
 	}
 }
 
 func (svc *service) getCurrentUser(params users.GetCurrentUserParams, auth *app.Auth) users.GetCurrentUserResponder {
-	res, err := svc.userCtrl.Get(params.HTTPRequest.Context(), auth.UID, auth.UID)
-
-	payload := conversions.UserToRest(res)
+	res, err := svc.userCtrl.GetById(params.HTTPRequest.Context(), auth.User, auth.UID)
 
 	switch {
 	case err == nil:
+		payload := conversions.UserToRest(res)
 		return users.NewGetCurrentUserOK().WithPayload(&payload)
 	case errors.Is(err, entity.ErrNotFound):
 		return users.NewGetCurrentUserNotFound()
 	case errors.Is(err, entity.ErrAccessDenied):
 		return users.NewGetCurrentUserForbidden()
 	default:
+		svc.l.Errorln("Get current user:", err)
 		return users.NewGetCurrentUserInternalServerError()
 	}
 }
 
-func (svc *service) updateUser(params users.UpdateUserParams, auth *app.Auth) users.UpdateUserResponder {
-	err := svc.userCtrl.UpdateUserRole(params.HTTPRequest.Context(), auth.UID, entity.UpdateUser{ID: params.ID, Role: entity.Role(params.Update.Role)})
+func (svc *service) updateUserRole(params users.UpdateUserRoleParams, auth *app.Auth) users.UpdateUserRoleResponder {
+	err := svc.userCtrl.UpdateUserRole(params.HTTPRequest.Context(), auth.User, entity.UserUpdate{ID: params.UserID, Role: entity.Role(params.Update.Role)})
 
 	switch {
 	case err == nil:
-		return users.NewUpdateUserNoContent()
+		return users.NewUpdateUserRoleNoContent()
 	case errors.Is(err, entity.ErrNotFound):
-		return users.NewUpdateUserNotFound()
+		return users.NewUpdateUserRoleNotFound()
 	case errors.Is(err, entity.ErrAccessDenied):
-		return users.NewUpdateUserForbidden()
+		return users.NewUpdateUserRoleForbidden()
 	default:
-		return users.NewUpdateUserInternalServerError()
+		svc.l.Errorln("Update user role:", err)
+		return users.NewUpdateUserRoleInternalServerError()
 	}
 }

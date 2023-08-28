@@ -14,7 +14,7 @@ import (
 
 // GetWashServerByIDURL generates an URL for the get wash server by Id operation
 type GetWashServerByIDURL struct {
-	ID string
+	ServerID string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -40,13 +40,13 @@ func (o *GetWashServerByIDURL) SetBasePath(bp string) {
 func (o *GetWashServerByIDURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/wash-servers/{id}"
+	var _path = "/wash-servers/{serverId}"
 
-	id := o.ID
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
+	serverID := o.ServerID
+	if serverID != "" {
+		_path = strings.Replace(_path, "{serverId}", serverID, -1)
 	} else {
-		return nil, errors.New("id is required on GetWashServerByIDURL")
+		return nil, errors.New("serverId is required on GetWashServerByIDURL")
 	}
 
 	_basePath := o._basePath

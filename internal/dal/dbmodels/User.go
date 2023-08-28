@@ -5,10 +5,11 @@ import (
 )
 
 type User struct {
-	ID      string              `db:"id"`
-	Balance decimal.NullDecimal `db:"balance"`
-	Role    string              `db:"role"`
-	Deleted bool                `db:"deleted"`
+	ID                 string              `db:"id"`
+	Balance            decimal.NullDecimal `db:"balance"`
+	Role               string              `db:"role"`
+	OrganizationIDsRaw string              `db:"organization_ids"`
+	Deleted            bool                `db:"deleted"`
 }
 
 const (
@@ -17,7 +18,7 @@ const (
 	EngineerRole string = "engineer"
 )
 
-type UpdateUser struct {
+type UserUpdate struct {
 	ID   string `db:"id"`
 	Role string `db:"role"`
 }

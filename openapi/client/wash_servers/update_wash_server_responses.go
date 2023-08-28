@@ -54,7 +54,7 @@ func (o *UpdateWashServerReader) ReadResponse(response runtime.ClientResponse, c
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[PATCH /wash-servers/{id}] updateWashServer", response, response.Code())
+		return nil, runtime.NewAPIError("[PATCH /wash-servers/{serverId}] updateWashServer", response, response.Code())
 	}
 }
 
@@ -103,11 +103,11 @@ func (o *UpdateWashServerOK) Code() int {
 }
 
 func (o *UpdateWashServerOK) Error() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerOK  %+v", 200, o.Payload)
 }
 
 func (o *UpdateWashServerOK) String() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerOK  %+v", 200, o.Payload)
 }
 
 func (o *UpdateWashServerOK) GetPayload() *models.WashServer {
@@ -171,11 +171,11 @@ func (o *UpdateWashServerBadRequest) Code() int {
 }
 
 func (o *UpdateWashServerBadRequest) Error() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *UpdateWashServerBadRequest) String() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *UpdateWashServerBadRequest) GetPayload() *models.Error {
@@ -239,11 +239,11 @@ func (o *UpdateWashServerForbidden) Code() int {
 }
 
 func (o *UpdateWashServerForbidden) Error() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerForbidden  %+v", 403, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerForbidden  %+v", 403, o.Payload)
 }
 
 func (o *UpdateWashServerForbidden) String() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerForbidden  %+v", 403, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerForbidden  %+v", 403, o.Payload)
 }
 
 func (o *UpdateWashServerForbidden) GetPayload() *models.Error {
@@ -270,7 +270,7 @@ func NewUpdateWashServerNotFound() *UpdateWashServerNotFound {
 /*
 UpdateWashServerNotFound describes a response with status code 404, with default header values.
 
-WashServer not exists
+Not Found
 */
 type UpdateWashServerNotFound struct {
 	Payload *models.Error
@@ -307,11 +307,11 @@ func (o *UpdateWashServerNotFound) Code() int {
 }
 
 func (o *UpdateWashServerNotFound) Error() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerNotFound  %+v", 404, o.Payload)
 }
 
 func (o *UpdateWashServerNotFound) String() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerNotFound  %+v", 404, o.Payload)
 }
 
 func (o *UpdateWashServerNotFound) GetPayload() *models.Error {
@@ -375,11 +375,11 @@ func (o *UpdateWashServerInternalServerError) Code() int {
 }
 
 func (o *UpdateWashServerInternalServerError) Error() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *UpdateWashServerInternalServerError) String() string {
-	return fmt.Sprintf("[PATCH /wash-servers/{id}][%d] updateWashServerInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PATCH /wash-servers/{serverId}][%d] updateWashServerInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *UpdateWashServerInternalServerError) GetPayload() *models.Error {

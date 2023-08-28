@@ -34,7 +34,7 @@ type GetSessionByIDParams struct {
 	  Required: true
 	  In: path
 	*/
-	ID string
+	SessionID string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -46,8 +46,8 @@ func (o *GetSessionByIDParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	o.HTTPRequest = r
 
-	rID, rhkID, _ := route.Params.GetOK("id")
-	if err := o.bindID(rID, rhkID, route.Formats); err != nil {
+	rSessionID, rhkSessionID, _ := route.Params.GetOK("sessionId")
+	if err := o.bindSessionID(rSessionID, rhkSessionID, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -56,8 +56,8 @@ func (o *GetSessionByIDParams) BindRequest(r *http.Request, route *middleware.Ma
 	return nil
 }
 
-// bindID binds and validates parameter ID from path.
-func (o *GetSessionByIDParams) bindID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+// bindSessionID binds and validates parameter SessionID from path.
+func (o *GetSessionByIDParams) bindSessionID(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
@@ -65,7 +65,7 @@ func (o *GetSessionByIDParams) bindID(rawData []string, hasKey bool, formats str
 
 	// Required: true
 	// Parameter is provided by construction from the route
-	o.ID = raw
+	o.SessionID = raw
 
 	return nil
 }

@@ -29,6 +29,12 @@ func (o *GetSessionByIDReader) ReadResponse(response runtime.ClientResponse, con
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewGetSessionByIDBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 403:
 		result := NewGetSessionByIDForbidden()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -48,7 +54,7 @@ func (o *GetSessionByIDReader) ReadResponse(response runtime.ClientResponse, con
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[GET /sessions/{id}] getSessionById", response, response.Code())
+		return nil, runtime.NewAPIError("[GET /sessions/{sessionId}] getSessionById", response, response.Code())
 	}
 }
 
@@ -97,11 +103,11 @@ func (o *GetSessionByIDOK) Code() int {
 }
 
 func (o *GetSessionByIDOK) Error() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetSessionByIDOK) String() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetSessionByIDOK) GetPayload() *models.Session {
@@ -111,6 +117,74 @@ func (o *GetSessionByIDOK) GetPayload() *models.Session {
 func (o *GetSessionByIDOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Session)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewGetSessionByIDBadRequest creates a GetSessionByIDBadRequest with default headers values
+func NewGetSessionByIDBadRequest() *GetSessionByIDBadRequest {
+	return &GetSessionByIDBadRequest{}
+}
+
+/*
+GetSessionByIDBadRequest describes a response with status code 400, with default header values.
+
+Bad request
+*/
+type GetSessionByIDBadRequest struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this get session by Id bad request response has a 2xx status code
+func (o *GetSessionByIDBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this get session by Id bad request response has a 3xx status code
+func (o *GetSessionByIDBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this get session by Id bad request response has a 4xx status code
+func (o *GetSessionByIDBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this get session by Id bad request response has a 5xx status code
+func (o *GetSessionByIDBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this get session by Id bad request response a status code equal to that given
+func (o *GetSessionByIDBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+// Code gets the status code for the get session by Id bad request response
+func (o *GetSessionByIDBadRequest) Code() int {
+	return 400
+}
+
+func (o *GetSessionByIDBadRequest) Error() string {
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *GetSessionByIDBadRequest) String() string {
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *GetSessionByIDBadRequest) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *GetSessionByIDBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -131,6 +205,7 @@ GetSessionByIDForbidden describes a response with status code 403, with default 
 Forbidden
 */
 type GetSessionByIDForbidden struct {
+	Payload *models.Error
 }
 
 // IsSuccess returns true when this get session by Id forbidden response has a 2xx status code
@@ -164,14 +239,25 @@ func (o *GetSessionByIDForbidden) Code() int {
 }
 
 func (o *GetSessionByIDForbidden) Error() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdForbidden ", 403)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdForbidden  %+v", 403, o.Payload)
 }
 
 func (o *GetSessionByIDForbidden) String() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdForbidden ", 403)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdForbidden  %+v", 403, o.Payload)
+}
+
+func (o *GetSessionByIDForbidden) GetPayload() *models.Error {
+	return o.Payload
 }
 
 func (o *GetSessionByIDForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -184,7 +270,7 @@ func NewGetSessionByIDNotFound() *GetSessionByIDNotFound {
 /*
 GetSessionByIDNotFound describes a response with status code 404, with default header values.
 
-Profile not exists
+Not Found
 */
 type GetSessionByIDNotFound struct {
 	Payload *models.Error
@@ -221,11 +307,11 @@ func (o *GetSessionByIDNotFound) Code() int {
 }
 
 func (o *GetSessionByIDNotFound) Error() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *GetSessionByIDNotFound) String() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *GetSessionByIDNotFound) GetPayload() *models.Error {
@@ -289,11 +375,11 @@ func (o *GetSessionByIDInternalServerError) Code() int {
 }
 
 func (o *GetSessionByIDInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *GetSessionByIDInternalServerError) String() string {
-	return fmt.Sprintf("[GET /sessions/{id}][%d] getSessionByIdInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /sessions/{sessionId}][%d] getSessionByIdInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *GetSessionByIDInternalServerError) GetPayload() *models.Error {
