@@ -41,6 +41,53 @@ func (o *AssignUserToSessionNoContent) WriteResponse(rw http.ResponseWriter, pro
 
 func (o *AssignUserToSessionNoContent) AssignUserToSessionResponder() {}
 
+// AssignUserToSessionBadRequestCode is the HTTP code returned for type AssignUserToSessionBadRequest
+const AssignUserToSessionBadRequestCode int = 400
+
+/*
+AssignUserToSessionBadRequest Bad request
+
+swagger:response assignUserToSessionBadRequest
+*/
+type AssignUserToSessionBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewAssignUserToSessionBadRequest creates AssignUserToSessionBadRequest with default headers values
+func NewAssignUserToSessionBadRequest() *AssignUserToSessionBadRequest {
+
+	return &AssignUserToSessionBadRequest{}
+}
+
+// WithPayload adds the payload to the assign user to session bad request response
+func (o *AssignUserToSessionBadRequest) WithPayload(payload *models.Error) *AssignUserToSessionBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the assign user to session bad request response
+func (o *AssignUserToSessionBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *AssignUserToSessionBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *AssignUserToSessionBadRequest) AssignUserToSessionResponder() {}
+
 // AssignUserToSessionForbiddenCode is the HTTP code returned for type AssignUserToSessionForbidden
 const AssignUserToSessionForbiddenCode int = 403
 
@@ -50,6 +97,11 @@ AssignUserToSessionForbidden Forbidden
 swagger:response assignUserToSessionForbidden
 */
 type AssignUserToSessionForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
 }
 
 // NewAssignUserToSessionForbidden creates AssignUserToSessionForbidden with default headers values
@@ -58,12 +110,27 @@ func NewAssignUserToSessionForbidden() *AssignUserToSessionForbidden {
 	return &AssignUserToSessionForbidden{}
 }
 
+// WithPayload adds the payload to the assign user to session forbidden response
+func (o *AssignUserToSessionForbidden) WithPayload(payload *models.Error) *AssignUserToSessionForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the assign user to session forbidden response
+func (o *AssignUserToSessionForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *AssignUserToSessionForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 func (o *AssignUserToSessionForbidden) AssignUserToSessionResponder() {}
@@ -72,7 +139,7 @@ func (o *AssignUserToSessionForbidden) AssignUserToSessionResponder() {}
 const AssignUserToSessionNotFoundCode int = 404
 
 /*
-AssignUserToSessionNotFound Session not found
+AssignUserToSessionNotFound Not Found
 
 swagger:response assignUserToSessionNotFound
 */

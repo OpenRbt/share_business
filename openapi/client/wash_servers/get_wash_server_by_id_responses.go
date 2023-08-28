@@ -54,7 +54,7 @@ func (o *GetWashServerByIDReader) ReadResponse(response runtime.ClientResponse, 
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[GET /wash-servers/{id}] getWashServerById", response, response.Code())
+		return nil, runtime.NewAPIError("[GET /wash-servers/{serverId}] getWashServerById", response, response.Code())
 	}
 }
 
@@ -103,11 +103,11 @@ func (o *GetWashServerByIDOK) Code() int {
 }
 
 func (o *GetWashServerByIDOK) Error() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetWashServerByIDOK) String() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetWashServerByIDOK) GetPayload() *models.WashServer {
@@ -171,11 +171,11 @@ func (o *GetWashServerByIDBadRequest) Code() int {
 }
 
 func (o *GetWashServerByIDBadRequest) Error() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *GetWashServerByIDBadRequest) String() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdBadRequest  %+v", 400, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdBadRequest  %+v", 400, o.Payload)
 }
 
 func (o *GetWashServerByIDBadRequest) GetPayload() *models.Error {
@@ -239,11 +239,11 @@ func (o *GetWashServerByIDForbidden) Code() int {
 }
 
 func (o *GetWashServerByIDForbidden) Error() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdForbidden  %+v", 403, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdForbidden  %+v", 403, o.Payload)
 }
 
 func (o *GetWashServerByIDForbidden) String() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdForbidden  %+v", 403, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdForbidden  %+v", 403, o.Payload)
 }
 
 func (o *GetWashServerByIDForbidden) GetPayload() *models.Error {
@@ -270,7 +270,7 @@ func NewGetWashServerByIDNotFound() *GetWashServerByIDNotFound {
 /*
 GetWashServerByIDNotFound describes a response with status code 404, with default header values.
 
-WashServer not exists
+Not Found
 */
 type GetWashServerByIDNotFound struct {
 	Payload *models.Error
@@ -307,11 +307,11 @@ func (o *GetWashServerByIDNotFound) Code() int {
 }
 
 func (o *GetWashServerByIDNotFound) Error() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *GetWashServerByIDNotFound) String() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *GetWashServerByIDNotFound) GetPayload() *models.Error {
@@ -375,11 +375,11 @@ func (o *GetWashServerByIDInternalServerError) Code() int {
 }
 
 func (o *GetWashServerByIDInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *GetWashServerByIDInternalServerError) String() string {
-	return fmt.Sprintf("[GET /wash-servers/{id}][%d] getWashServerByIdInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /wash-servers/{serverId}][%d] getWashServerByIdInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *GetWashServerByIDInternalServerError) GetPayload() *models.Error {

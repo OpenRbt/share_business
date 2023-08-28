@@ -11,6 +11,7 @@ import (
 type BalanceEvent struct {
 	ID            uuid.UUID
 	User          uuid.UUID
+	WalletID      uuid.UUID
 	OperationKind vo.OperationKind
 	OldAmount     decimal.Decimal
 	NewAmount     decimal.Decimal

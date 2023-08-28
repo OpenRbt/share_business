@@ -20,9 +20,12 @@ import (
 	"github.com/go-openapi/swag"
 
 	"washBonus/internal/app"
+	"washBonus/openapi/restapi/operations/organizations"
+	"washBonus/openapi/restapi/operations/server_groups"
 	"washBonus/openapi/restapi/operations/sessions"
 	"washBonus/openapi/restapi/operations/standard"
 	"washBonus/openapi/restapi/operations/users"
+	"washBonus/openapi/restapi/operations/wallets"
 	"washBonus/openapi/restapi/operations/wash_servers"
 )
 
@@ -48,20 +51,50 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		WashServersAssignServerToGroupHandler: wash_servers.AssignServerToGroupHandlerFunc(func(params wash_servers.AssignServerToGroupParams, principal *app.Auth) wash_servers.AssignServerToGroupResponder {
+			return wash_servers.AssignServerToGroupNotImplemented()
+		}),
+		OrganizationsAssignUserToOrganizationHandler: organizations.AssignUserToOrganizationHandlerFunc(func(params organizations.AssignUserToOrganizationParams, principal *app.Auth) organizations.AssignUserToOrganizationResponder {
+			return organizations.AssignUserToOrganizationNotImplemented()
+		}),
 		SessionsAssignUserToSessionHandler: sessions.AssignUserToSessionHandlerFunc(func(params sessions.AssignUserToSessionParams, principal *app.Auth) sessions.AssignUserToSessionResponder {
 			return sessions.AssignUserToSessionNotImplemented()
 		}),
 		SessionsChargeBonusesOnSessionHandler: sessions.ChargeBonusesOnSessionHandlerFunc(func(params sessions.ChargeBonusesOnSessionParams, principal *app.Auth) sessions.ChargeBonusesOnSessionResponder {
 			return sessions.ChargeBonusesOnSessionNotImplemented()
 		}),
+		OrganizationsCreateOrganizationHandler: organizations.CreateOrganizationHandlerFunc(func(params organizations.CreateOrganizationParams, principal *app.Auth) organizations.CreateOrganizationResponder {
+			return organizations.CreateOrganizationNotImplemented()
+		}),
+		ServerGroupsCreateServerGroupHandler: server_groups.CreateServerGroupHandlerFunc(func(params server_groups.CreateServerGroupParams, principal *app.Auth) server_groups.CreateServerGroupResponder {
+			return server_groups.CreateServerGroupNotImplemented()
+		}),
 		WashServersCreateWashServerHandler: wash_servers.CreateWashServerHandlerFunc(func(params wash_servers.CreateWashServerParams, principal *app.Auth) wash_servers.CreateWashServerResponder {
 			return wash_servers.CreateWashServerNotImplemented()
 		}),
-		WashServersDeleteHandler: wash_servers.DeleteHandlerFunc(func(params wash_servers.DeleteParams, principal *app.Auth) wash_servers.DeleteResponder {
-			return wash_servers.DeleteNotImplemented()
+		OrganizationsDeleteOrganizationHandler: organizations.DeleteOrganizationHandlerFunc(func(params organizations.DeleteOrganizationParams, principal *app.Auth) organizations.DeleteOrganizationResponder {
+			return organizations.DeleteOrganizationNotImplemented()
+		}),
+		ServerGroupsDeleteServerGroupHandler: server_groups.DeleteServerGroupHandlerFunc(func(params server_groups.DeleteServerGroupParams, principal *app.Auth) server_groups.DeleteServerGroupResponder {
+			return server_groups.DeleteServerGroupNotImplemented()
+		}),
+		WashServersDeleteWashServerHandler: wash_servers.DeleteWashServerHandlerFunc(func(params wash_servers.DeleteWashServerParams, principal *app.Auth) wash_servers.DeleteWashServerResponder {
+			return wash_servers.DeleteWashServerNotImplemented()
 		}),
 		UsersGetCurrentUserHandler: users.GetCurrentUserHandlerFunc(func(params users.GetCurrentUserParams, principal *app.Auth) users.GetCurrentUserResponder {
 			return users.GetCurrentUserNotImplemented()
+		}),
+		OrganizationsGetOrganizationByIDHandler: organizations.GetOrganizationByIDHandlerFunc(func(params organizations.GetOrganizationByIDParams, principal *app.Auth) organizations.GetOrganizationByIDResponder {
+			return organizations.GetOrganizationByIDNotImplemented()
+		}),
+		OrganizationsGetOrganizationsHandler: organizations.GetOrganizationsHandlerFunc(func(params organizations.GetOrganizationsParams, principal *app.Auth) organizations.GetOrganizationsResponder {
+			return organizations.GetOrganizationsNotImplemented()
+		}),
+		ServerGroupsGetServerGroupByIDHandler: server_groups.GetServerGroupByIDHandlerFunc(func(params server_groups.GetServerGroupByIDParams, principal *app.Auth) server_groups.GetServerGroupByIDResponder {
+			return server_groups.GetServerGroupByIDNotImplemented()
+		}),
+		ServerGroupsGetServerGroupsHandler: server_groups.GetServerGroupsHandlerFunc(func(params server_groups.GetServerGroupsParams, principal *app.Auth) server_groups.GetServerGroupsResponder {
+			return server_groups.GetServerGroupsNotImplemented()
 		}),
 		SessionsGetSessionByIDHandler: sessions.GetSessionByIDHandlerFunc(func(params sessions.GetSessionByIDParams, principal *app.Auth) sessions.GetSessionByIDResponder {
 			return sessions.GetSessionByIDNotImplemented()
@@ -69,17 +102,35 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		UsersGetUserByIDHandler: users.GetUserByIDHandlerFunc(func(params users.GetUserByIDParams, principal *app.Auth) users.GetUserByIDResponder {
 			return users.GetUserByIDNotImplemented()
 		}),
+		UsersGetUsersHandler: users.GetUsersHandlerFunc(func(params users.GetUsersParams, principal *app.Auth) users.GetUsersResponder {
+			return users.GetUsersNotImplemented()
+		}),
+		WalletsGetWalletByOrganizationIDHandler: wallets.GetWalletByOrganizationIDHandlerFunc(func(params wallets.GetWalletByOrganizationIDParams, principal *app.Auth) wallets.GetWalletByOrganizationIDResponder {
+			return wallets.GetWalletByOrganizationIDNotImplemented()
+		}),
+		WalletsGetWalletsHandler: wallets.GetWalletsHandlerFunc(func(params wallets.GetWalletsParams, principal *app.Auth) wallets.GetWalletsResponder {
+			return wallets.GetWalletsNotImplemented()
+		}),
 		WashServersGetWashServerByIDHandler: wash_servers.GetWashServerByIDHandlerFunc(func(params wash_servers.GetWashServerByIDParams, principal *app.Auth) wash_servers.GetWashServerByIDResponder {
 			return wash_servers.GetWashServerByIDNotImplemented()
+		}),
+		WashServersGetWashServersHandler: wash_servers.GetWashServersHandlerFunc(func(params wash_servers.GetWashServersParams, principal *app.Auth) wash_servers.GetWashServersResponder {
+			return wash_servers.GetWashServersNotImplemented()
 		}),
 		StandardHealthCheckHandler: standard.HealthCheckHandlerFunc(func(params standard.HealthCheckParams, principal *app.Auth) standard.HealthCheckResponder {
 			return standard.HealthCheckNotImplemented()
 		}),
-		WashServersListHandler: wash_servers.ListHandlerFunc(func(params wash_servers.ListParams, principal *app.Auth) wash_servers.ListResponder {
-			return wash_servers.ListNotImplemented()
+		OrganizationsRemoveUserFromOrganizationHandler: organizations.RemoveUserFromOrganizationHandlerFunc(func(params organizations.RemoveUserFromOrganizationParams, principal *app.Auth) organizations.RemoveUserFromOrganizationResponder {
+			return organizations.RemoveUserFromOrganizationNotImplemented()
 		}),
-		UsersUpdateUserHandler: users.UpdateUserHandlerFunc(func(params users.UpdateUserParams, principal *app.Auth) users.UpdateUserResponder {
-			return users.UpdateUserNotImplemented()
+		OrganizationsUpdateOrganizationHandler: organizations.UpdateOrganizationHandlerFunc(func(params organizations.UpdateOrganizationParams, principal *app.Auth) organizations.UpdateOrganizationResponder {
+			return organizations.UpdateOrganizationNotImplemented()
+		}),
+		ServerGroupsUpdateServerGroupHandler: server_groups.UpdateServerGroupHandlerFunc(func(params server_groups.UpdateServerGroupParams, principal *app.Auth) server_groups.UpdateServerGroupResponder {
+			return server_groups.UpdateServerGroupNotImplemented()
+		}),
+		UsersUpdateUserRoleHandler: users.UpdateUserRoleHandlerFunc(func(params users.UpdateUserRoleParams, principal *app.Auth) users.UpdateUserRoleResponder {
+			return users.UpdateUserRoleNotImplemented()
 		}),
 		WashServersUpdateWashServerHandler: wash_servers.UpdateWashServerHandlerFunc(func(params wash_servers.UpdateWashServerParams, principal *app.Auth) wash_servers.UpdateWashServerResponder {
 			return wash_servers.UpdateWashServerNotImplemented()
@@ -134,28 +185,60 @@ type WashBonusAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// WashServersAssignServerToGroupHandler sets the operation handler for the assign server to group operation
+	WashServersAssignServerToGroupHandler wash_servers.AssignServerToGroupHandler
+	// OrganizationsAssignUserToOrganizationHandler sets the operation handler for the assign user to organization operation
+	OrganizationsAssignUserToOrganizationHandler organizations.AssignUserToOrganizationHandler
 	// SessionsAssignUserToSessionHandler sets the operation handler for the assign user to session operation
 	SessionsAssignUserToSessionHandler sessions.AssignUserToSessionHandler
 	// SessionsChargeBonusesOnSessionHandler sets the operation handler for the charge bonuses on session operation
 	SessionsChargeBonusesOnSessionHandler sessions.ChargeBonusesOnSessionHandler
+	// OrganizationsCreateOrganizationHandler sets the operation handler for the create organization operation
+	OrganizationsCreateOrganizationHandler organizations.CreateOrganizationHandler
+	// ServerGroupsCreateServerGroupHandler sets the operation handler for the create server group operation
+	ServerGroupsCreateServerGroupHandler server_groups.CreateServerGroupHandler
 	// WashServersCreateWashServerHandler sets the operation handler for the create wash server operation
 	WashServersCreateWashServerHandler wash_servers.CreateWashServerHandler
-	// WashServersDeleteHandler sets the operation handler for the delete operation
-	WashServersDeleteHandler wash_servers.DeleteHandler
+	// OrganizationsDeleteOrganizationHandler sets the operation handler for the delete organization operation
+	OrganizationsDeleteOrganizationHandler organizations.DeleteOrganizationHandler
+	// ServerGroupsDeleteServerGroupHandler sets the operation handler for the delete server group operation
+	ServerGroupsDeleteServerGroupHandler server_groups.DeleteServerGroupHandler
+	// WashServersDeleteWashServerHandler sets the operation handler for the delete wash server operation
+	WashServersDeleteWashServerHandler wash_servers.DeleteWashServerHandler
 	// UsersGetCurrentUserHandler sets the operation handler for the get current user operation
 	UsersGetCurrentUserHandler users.GetCurrentUserHandler
+	// OrganizationsGetOrganizationByIDHandler sets the operation handler for the get organization by Id operation
+	OrganizationsGetOrganizationByIDHandler organizations.GetOrganizationByIDHandler
+	// OrganizationsGetOrganizationsHandler sets the operation handler for the get organizations operation
+	OrganizationsGetOrganizationsHandler organizations.GetOrganizationsHandler
+	// ServerGroupsGetServerGroupByIDHandler sets the operation handler for the get server group by Id operation
+	ServerGroupsGetServerGroupByIDHandler server_groups.GetServerGroupByIDHandler
+	// ServerGroupsGetServerGroupsHandler sets the operation handler for the get server groups operation
+	ServerGroupsGetServerGroupsHandler server_groups.GetServerGroupsHandler
 	// SessionsGetSessionByIDHandler sets the operation handler for the get session by Id operation
 	SessionsGetSessionByIDHandler sessions.GetSessionByIDHandler
 	// UsersGetUserByIDHandler sets the operation handler for the get user by Id operation
 	UsersGetUserByIDHandler users.GetUserByIDHandler
+	// UsersGetUsersHandler sets the operation handler for the get users operation
+	UsersGetUsersHandler users.GetUsersHandler
+	// WalletsGetWalletByOrganizationIDHandler sets the operation handler for the get wallet by organization Id operation
+	WalletsGetWalletByOrganizationIDHandler wallets.GetWalletByOrganizationIDHandler
+	// WalletsGetWalletsHandler sets the operation handler for the get wallets operation
+	WalletsGetWalletsHandler wallets.GetWalletsHandler
 	// WashServersGetWashServerByIDHandler sets the operation handler for the get wash server by Id operation
 	WashServersGetWashServerByIDHandler wash_servers.GetWashServerByIDHandler
+	// WashServersGetWashServersHandler sets the operation handler for the get wash servers operation
+	WashServersGetWashServersHandler wash_servers.GetWashServersHandler
 	// StandardHealthCheckHandler sets the operation handler for the health check operation
 	StandardHealthCheckHandler standard.HealthCheckHandler
-	// WashServersListHandler sets the operation handler for the list operation
-	WashServersListHandler wash_servers.ListHandler
-	// UsersUpdateUserHandler sets the operation handler for the update user operation
-	UsersUpdateUserHandler users.UpdateUserHandler
+	// OrganizationsRemoveUserFromOrganizationHandler sets the operation handler for the remove user from organization operation
+	OrganizationsRemoveUserFromOrganizationHandler organizations.RemoveUserFromOrganizationHandler
+	// OrganizationsUpdateOrganizationHandler sets the operation handler for the update organization operation
+	OrganizationsUpdateOrganizationHandler organizations.UpdateOrganizationHandler
+	// ServerGroupsUpdateServerGroupHandler sets the operation handler for the update server group operation
+	ServerGroupsUpdateServerGroupHandler server_groups.UpdateServerGroupHandler
+	// UsersUpdateUserRoleHandler sets the operation handler for the update user role operation
+	UsersUpdateUserRoleHandler users.UpdateUserRoleHandler
 	// WashServersUpdateWashServerHandler sets the operation handler for the update wash server operation
 	WashServersUpdateWashServerHandler wash_servers.UpdateWashServerHandler
 
@@ -239,20 +322,50 @@ func (o *WashBonusAPI) Validate() error {
 		unregistered = append(unregistered, "AuthorizationAuth")
 	}
 
+	if o.WashServersAssignServerToGroupHandler == nil {
+		unregistered = append(unregistered, "wash_servers.AssignServerToGroupHandler")
+	}
+	if o.OrganizationsAssignUserToOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.AssignUserToOrganizationHandler")
+	}
 	if o.SessionsAssignUserToSessionHandler == nil {
 		unregistered = append(unregistered, "sessions.AssignUserToSessionHandler")
 	}
 	if o.SessionsChargeBonusesOnSessionHandler == nil {
 		unregistered = append(unregistered, "sessions.ChargeBonusesOnSessionHandler")
 	}
+	if o.OrganizationsCreateOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.CreateOrganizationHandler")
+	}
+	if o.ServerGroupsCreateServerGroupHandler == nil {
+		unregistered = append(unregistered, "server_groups.CreateServerGroupHandler")
+	}
 	if o.WashServersCreateWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_servers.CreateWashServerHandler")
 	}
-	if o.WashServersDeleteHandler == nil {
-		unregistered = append(unregistered, "wash_servers.DeleteHandler")
+	if o.OrganizationsDeleteOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.DeleteOrganizationHandler")
+	}
+	if o.ServerGroupsDeleteServerGroupHandler == nil {
+		unregistered = append(unregistered, "server_groups.DeleteServerGroupHandler")
+	}
+	if o.WashServersDeleteWashServerHandler == nil {
+		unregistered = append(unregistered, "wash_servers.DeleteWashServerHandler")
 	}
 	if o.UsersGetCurrentUserHandler == nil {
 		unregistered = append(unregistered, "users.GetCurrentUserHandler")
+	}
+	if o.OrganizationsGetOrganizationByIDHandler == nil {
+		unregistered = append(unregistered, "organizations.GetOrganizationByIDHandler")
+	}
+	if o.OrganizationsGetOrganizationsHandler == nil {
+		unregistered = append(unregistered, "organizations.GetOrganizationsHandler")
+	}
+	if o.ServerGroupsGetServerGroupByIDHandler == nil {
+		unregistered = append(unregistered, "server_groups.GetServerGroupByIDHandler")
+	}
+	if o.ServerGroupsGetServerGroupsHandler == nil {
+		unregistered = append(unregistered, "server_groups.GetServerGroupsHandler")
 	}
 	if o.SessionsGetSessionByIDHandler == nil {
 		unregistered = append(unregistered, "sessions.GetSessionByIDHandler")
@@ -260,17 +373,35 @@ func (o *WashBonusAPI) Validate() error {
 	if o.UsersGetUserByIDHandler == nil {
 		unregistered = append(unregistered, "users.GetUserByIDHandler")
 	}
+	if o.UsersGetUsersHandler == nil {
+		unregistered = append(unregistered, "users.GetUsersHandler")
+	}
+	if o.WalletsGetWalletByOrganizationIDHandler == nil {
+		unregistered = append(unregistered, "wallets.GetWalletByOrganizationIDHandler")
+	}
+	if o.WalletsGetWalletsHandler == nil {
+		unregistered = append(unregistered, "wallets.GetWalletsHandler")
+	}
 	if o.WashServersGetWashServerByIDHandler == nil {
 		unregistered = append(unregistered, "wash_servers.GetWashServerByIDHandler")
+	}
+	if o.WashServersGetWashServersHandler == nil {
+		unregistered = append(unregistered, "wash_servers.GetWashServersHandler")
 	}
 	if o.StandardHealthCheckHandler == nil {
 		unregistered = append(unregistered, "standard.HealthCheckHandler")
 	}
-	if o.WashServersListHandler == nil {
-		unregistered = append(unregistered, "wash_servers.ListHandler")
+	if o.OrganizationsRemoveUserFromOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.RemoveUserFromOrganizationHandler")
 	}
-	if o.UsersUpdateUserHandler == nil {
-		unregistered = append(unregistered, "users.UpdateUserHandler")
+	if o.OrganizationsUpdateOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.UpdateOrganizationHandler")
+	}
+	if o.ServerGroupsUpdateServerGroupHandler == nil {
+		unregistered = append(unregistered, "server_groups.UpdateServerGroupHandler")
+	}
+	if o.UsersUpdateUserRoleHandler == nil {
+		unregistered = append(unregistered, "users.UpdateUserRoleHandler")
 	}
 	if o.WashServersUpdateWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_servers.UpdateWashServerHandler")
@@ -377,11 +508,27 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/session/{id}/assign-user"] = sessions.NewAssignUserToSession(o.context, o.SessionsAssignUserToSessionHandler)
+	o.handlers["POST"]["/server-groups/{groupId}/wash-servers/{serverId}"] = wash_servers.NewAssignServerToGroup(o.context, o.WashServersAssignServerToGroupHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/sessions/{id}/bonuses"] = sessions.NewChargeBonusesOnSession(o.context, o.SessionsChargeBonusesOnSessionHandler)
+	o.handlers["POST"]["/organizations/{organizationId}/users/{userId}"] = organizations.NewAssignUserToOrganization(o.context, o.OrganizationsAssignUserToOrganizationHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/sessions/{sessionId}/assign-user"] = sessions.NewAssignUserToSession(o.context, o.SessionsAssignUserToSessionHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/sessions/{sessionId}/bonuses"] = sessions.NewChargeBonusesOnSession(o.context, o.SessionsChargeBonusesOnSessionHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/organizations"] = organizations.NewCreateOrganization(o.context, o.OrganizationsCreateOrganizationHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/server-groups"] = server_groups.NewCreateServerGroup(o.context, o.ServerGroupsCreateServerGroupHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -389,7 +536,15 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/wash-servers/{id}"] = wash_servers.NewDelete(o.context, o.WashServersDeleteHandler)
+	o.handlers["DELETE"]["/organizations/{organizationId}"] = organizations.NewDeleteOrganization(o.context, o.OrganizationsDeleteOrganizationHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/server-groups/{groupId}"] = server_groups.NewDeleteServerGroup(o.context, o.ServerGroupsDeleteServerGroupHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/wash-servers/{serverId}"] = wash_servers.NewDeleteWashServer(o.context, o.WashServersDeleteWashServerHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -397,31 +552,71 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/sessions/{id}"] = sessions.NewGetSessionByID(o.context, o.SessionsGetSessionByIDHandler)
+	o.handlers["GET"]["/organizations/{organizationId}"] = organizations.NewGetOrganizationByID(o.context, o.OrganizationsGetOrganizationByIDHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/users/{id}"] = users.NewGetUserByID(o.context, o.UsersGetUserByIDHandler)
+	o.handlers["GET"]["/organizations"] = organizations.NewGetOrganizations(o.context, o.OrganizationsGetOrganizationsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/wash-servers/{id}"] = wash_servers.NewGetWashServerByID(o.context, o.WashServersGetWashServerByIDHandler)
+	o.handlers["GET"]["/server-groups/{groupId}"] = server_groups.NewGetServerGroupByID(o.context, o.ServerGroupsGetServerGroupByIDHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/server-groups"] = server_groups.NewGetServerGroups(o.context, o.ServerGroupsGetServerGroupsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/sessions/{sessionId}"] = sessions.NewGetSessionByID(o.context, o.SessionsGetSessionByIDHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/users/{userId}"] = users.NewGetUserByID(o.context, o.UsersGetUserByIDHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/users"] = users.NewGetUsers(o.context, o.UsersGetUsersHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/wallets/by-organization/{id}"] = wallets.NewGetWalletByOrganizationID(o.context, o.WalletsGetWalletByOrganizationIDHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/wallets"] = wallets.NewGetWallets(o.context, o.WalletsGetWalletsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/wash-servers/{serverId}"] = wash_servers.NewGetWashServerByID(o.context, o.WashServersGetWashServerByIDHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/wash-servers"] = wash_servers.NewGetWashServers(o.context, o.WashServersGetWashServersHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/healthCheck"] = standard.NewHealthCheck(o.context, o.StandardHealthCheckHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/wash-servers"] = wash_servers.NewList(o.context, o.WashServersListHandler)
+	o.handlers["DELETE"]["/organizations/{organizationId}/users/{userId}"] = organizations.NewRemoveUserFromOrganization(o.context, o.OrganizationsRemoveUserFromOrganizationHandler)
 	if o.handlers["PATCH"] == nil {
 		o.handlers["PATCH"] = make(map[string]http.Handler)
 	}
-	o.handlers["PATCH"]["/users/{id}"] = users.NewUpdateUser(o.context, o.UsersUpdateUserHandler)
+	o.handlers["PATCH"]["/organizations/{organizationId}"] = organizations.NewUpdateOrganization(o.context, o.OrganizationsUpdateOrganizationHandler)
 	if o.handlers["PATCH"] == nil {
 		o.handlers["PATCH"] = make(map[string]http.Handler)
 	}
-	o.handlers["PATCH"]["/wash-servers/{id}"] = wash_servers.NewUpdateWashServer(o.context, o.WashServersUpdateWashServerHandler)
+	o.handlers["PATCH"]["/server-groups/{groupId}"] = server_groups.NewUpdateServerGroup(o.context, o.ServerGroupsUpdateServerGroupHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"]["/users/{userId}"] = users.NewUpdateUserRole(o.context, o.UsersUpdateUserRoleHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"]["/wash-servers/{serverId}"] = wash_servers.NewUpdateWashServer(o.context, o.WashServersUpdateWashServerHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

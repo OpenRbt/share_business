@@ -35,7 +35,33 @@ paths:
               ok:
                 type: boolean
 
-  /users/{id}:
+  /users:
+    get:
+      tags:
+        - users
+      security:
+        - authKey: []
+      operationId: getUsers
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/Pagination"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/User"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /users/{userId}:
     get:
       tags:
         - users
@@ -43,7 +69,7 @@ paths:
         - authKey: []
       operationId: getUserById
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
           type: string
@@ -53,23 +79,19 @@ paths:
           schema:
             $ref: "#/definitions/User"
         403:
-          description: Forbidden
+          $ref: "#/responses/Forbidden"
         404:
-          description: Not found
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
     patch:
       tags:
         - users
       security:
         - authKey: []
-      operationId: updateUser
+      operationId: updateUserRole
       parameters:
-        - name: id
+        - name: userId
           in: path
           required: true
           type: string
@@ -77,20 +99,18 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/UserUpdate"
+            $ref: "#/definitions/UserRoleUpdate"
       responses:
         204:
           description: OK
+        400:
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
+          $ref: "#/responses/Forbidden"
         404:
-          description: Not found
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
 
   /users/me:
     get:
@@ -105,17 +125,13 @@ paths:
           schema:
             $ref: "#/definitions/User"
         403:
-          description: Forbidden
+          $ref: "#/responses/Forbidden"
         404:
-          description: Not found
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
 
-  /wash-servers/{id}:
+  /wash-servers/{serverId}:
     get:
       tags:
         - washServers
@@ -123,7 +139,7 @@ paths:
         - authKey: []
       operationId: getWashServerById
       parameters:
-        - name: id
+        - name: serverId
           in: path
           required: true
           type: string
@@ -133,21 +149,13 @@ paths:
           schema:
             $ref: "#/definitions/WashServer"
         400:
-          description: Bad request
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/Forbidden"
         404:
-          description: WashServer not exists
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
     patch:
       tags:
         - washServers
@@ -155,7 +163,7 @@ paths:
         - authKey: []
       operationId: updateWashServer
       parameters:
-        - name: id
+        - name: serverId
           in: path
           required: true
           type: string
@@ -169,29 +177,21 @@ paths:
           schema:
             $ref: "#/definitions/WashServer"
         400:
-          description: Bad request
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/Forbidden"
         404:
-          description: WashServer not exists
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
     delete:
       tags:
         - washServers
       security:
         - authKey: []
-      operationId: delete
+      operationId: deleteWashServer
       parameters:
-        - name: id
+        - name: serverId
           in: path
           required: true
           type: string
@@ -199,21 +199,13 @@ paths:
         204:
           description: OK
         400:
-          description: Bad request
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/Forbidden"
         404:
-          description: WashServer not exists
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
 
   /wash-servers/:
     get:
@@ -221,12 +213,20 @@ paths:
         - washServers
       security:
         - authKey: []
-      operationId: list
+      operationId: getWashServers
       parameters:
         - name: body
           in: body
           schema:
             $ref: "#/definitions/Pagination"
+        - name: organizationId
+          in: query
+          type: string
+          format: uuid
+        - name: groupId
+          in: query
+          type: string
+          format: uuid
       responses:
         200:
           description: OK
@@ -235,21 +235,11 @@ paths:
             items: 
               $ref: "#/definitions/WashServer"
         400:
-          description: Bad request
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
-          schema:
-            $ref: "#/definitions/Error"
-        404:
-          description: WashServer not exists
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/Forbidden"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
     post:
       tags:
         - washServers
@@ -267,19 +257,15 @@ paths:
           schema:
             $ref: "#/definitions/WashServer"
         400:
-          description: Bad request
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
 
-  /sessions/{id}:
+  /sessions/{sessionId}:
     get:
       tags:
         - sessions
@@ -287,7 +273,7 @@ paths:
         - authKey: [ ]
       operationId: getSessionById
       parameters:
-        - name: id
+        - name: sessionId
           in: path
           type: string
           required: true
@@ -296,18 +282,16 @@ paths:
           description: OK
           schema:
             $ref: "#/definitions/Session"
+        400:
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
+          $ref: "#/responses/Forbidden"
         404:
-          description: Profile not exists
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
 
-  /sessions/{id}/bonuses:
+  /sessions/{sessionId}/bonuses:
     post:
       tags:
         - sessions
@@ -315,7 +299,7 @@ paths:
         - authKey: [ ]
       operationId: chargeBonusesOnSession
       parameters:
-        - name: id
+        - name: sessionId
           in: path
           type: string
           required: true
@@ -328,18 +312,16 @@ paths:
           description: OK
           schema:
             $ref: "#/definitions/BonusCharge"
+        400:
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
+          $ref: "#/responses/Forbidden"
         404:
-          description: Session not found
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/InternalError"
 
-  /session/{id}/assign-user:
+  /sessions/{sessionId}/assign-user:
     post:
       tags:
         - sessions
@@ -347,23 +329,416 @@ paths:
         - authKey: [ ]
       operationId: assignUserToSession
       parameters:
-        - name: id
+        - name: sessionId
           in: path
           type: string
           required: true
       responses:
         204:
           description: OK
+        400:
+          $ref: "#/responses/BadRequest"
         403:
-          description: Forbidden
+          $ref: "#/responses/Forbidden"
         404:
-          description: Session not found
-          schema:
-            $ref: "#/definitions/Error"
+          $ref: "#/responses/NotFound"
         500:
-          description: Internal error
+          $ref: "#/responses/InternalError"
+
+  /organizations:
+    get:
+      tags:
+        - organizations
+      operationId: getOrganizations
+      parameters:
+        - name: body
+          in: body
           schema:
-            $ref: "#/definitions/Error"
+            
+            $ref: "#/definitions/Pagination"
+        - name: ids
+          in: query
+          type: array
+          items: 
+            type: string
+            format: uuid
+          collectionFormat: csv
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Organization"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      tags:
+        - organizations
+      operationId: createOrganization
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/OrganizationCreation"
+      responses:
+        200:
+          description: Successfull created
+          schema:
+            $ref: "#/definitions/Organization"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /organizations/{organizationId}:
+    get:
+      tags:
+        - organizations
+      operationId: getOrganizationById
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Organization"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    patch:
+      tags:
+        - organizations
+      operationId: updateOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/OrganizationUpdate"
+      responses:
+        200:
+          description: Successfull updated
+          schema:
+            $ref: "#/definitions/Organization"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      tags:
+        - organizations
+      operationId: deleteOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /organizations/{organizationId}/users/{userId}:
+    post:
+      tags:
+        - organizations
+      operationId: assignUserToOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: userId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      tags:
+        - organizations
+      operationId: removeUserFromOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: userId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /server-groups:
+    get:
+      tags:
+        - serverGroups
+      operationId: getServerGroups
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/Pagination"
+        - name: organizationId
+          in: query
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/ServerGroup"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        500:
+          $ref: "#/responses/InternalError"
+    post:
+      tags:
+        - serverGroups
+      operationId: createServerGroup
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/ServerGroupCreation"
+      responses:
+        200:
+          description: Successfull created
+          schema:
+            $ref: "#/definitions/ServerGroup"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /server-groups/{groupId}:
+    get:
+      tags:
+        - serverGroups
+      operationId: getServerGroupById
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ServerGroup"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    patch:
+      tags:
+        - serverGroups
+      operationId: updateServerGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/ServerGroupUpdate"
+      responses:
+        200:
+          description: Successfull updated
+          schema:
+            $ref: "#/definitions/ServerGroup"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    delete:
+      tags:
+        - serverGroups
+      operationId: deleteServerGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    
+  /server-groups/{groupId}/wash-servers/{serverId}:
+    post:
+      tags:
+        - washServers
+      operationId: assignServerToGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: serverId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /wallets:
+    get:
+      tags:
+        - wallets
+      operationId: getWallets
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/Pagination"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Wallet"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+
+  /wallets/by-organization/{id}:
+    get:
+      tags:
+        - wallets
+      operationId: getWalletByOrganizationId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Wallet"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+
+responses:
+  BadRequest:
+    description: Bad request
+    schema:
+      $ref: "#/definitions/Error"
+  Forbidden:
+    description: Forbidden
+    schema:
+      $ref: "#/definitions/Error"
+  NotFound:
+    description: Not Found
+    schema:
+      $ref: "#/definitions/Error"
+  InternalError:
+    description: Internal error
+    schema:
+      $ref: "#/definitions/Error"
 
 definitions:
   Error:
@@ -387,16 +762,18 @@ definitions:
         type: string
       active:
         type: boolean
-      balance:
-        type: integer
-      pendingBalance:
-        type: integer
       role:
         type: string
         enum:
           - "user"
           - "admin"
           - "engineer"
+      organizationIds:
+        type: array
+        items:
+          type: string
+          format: uuid
+        x-omitempty: true
 
   Session:
     type: object
@@ -429,15 +806,24 @@ definitions:
         type: string
       createdBy:
         type: string
+      groupId:
+        type: string
+        format: uuid
+      organizationId:
+        type: string
+        format: uuid
 
   WashServerCreation:
+    required: ["name", "description"]
     properties:
       name:
         type: string
       description:
         type: string
-    required:
-      - name
+      groupId:
+        type: string
+        format: uuid
+        x-nullable: true
     
   WashServerUpdate:
     type: object
@@ -458,7 +844,7 @@ definitions:
         type: integer
         format: int64
 
-  UserUpdate:
+  UserRoleUpdate:
     type: object
     properties:
       role:
@@ -467,3 +853,87 @@ definitions:
           - "user"
           - "admin"
           - "engineer"
+
+  Organization:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+      isDefault:
+        type: boolean
+
+  OrganizationCreation:
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    required:
+      - name
+      - description
+
+  OrganizationUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+
+  ServerGroup:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+      organizationId:
+        type: string
+        format: uuid
+      isDefault:
+        type: boolean
+
+  ServerGroupCreation:
+    required: ["name", "description", "organizationId"]
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      organizationId:
+        type: string
+        format: uuid
+
+  ServerGroupUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+
+  Wallet:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      userId:
+        type: string
+      organizationId:
+        type: string
+        format: uuid
+      balance:
+        type: integer
+        x-omitempty: false
+      pendingBalance:
+        type: integer
+        x-omitempty: false

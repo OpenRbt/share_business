@@ -32,7 +32,7 @@ func NewUpdateWashServer(ctx *middleware.Context, handler UpdateWashServerHandle
 }
 
 /*
-	UpdateWashServer swagger:route PATCH /wash-servers/{id} washServers updateWashServer
+	UpdateWashServer swagger:route PATCH /wash-servers/{serverId} washServers updateWashServer
 
 UpdateWashServer update wash server API
 */

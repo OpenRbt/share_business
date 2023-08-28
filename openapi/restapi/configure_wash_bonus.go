@@ -11,9 +11,12 @@ import (
 
 	"washBonus/internal/app"
 	"washBonus/openapi/restapi/operations"
+	"washBonus/openapi/restapi/operations/organizations"
+	"washBonus/openapi/restapi/operations/server_groups"
 	"washBonus/openapi/restapi/operations/sessions"
 	"washBonus/openapi/restapi/operations/standard"
 	"washBonus/openapi/restapi/operations/users"
+	"washBonus/openapi/restapi/operations/wallets"
 	"washBonus/openapi/restapi/operations/wash_servers"
 )
 
@@ -54,6 +57,16 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
+	if api.WashServersAssignServerToGroupHandler == nil {
+		api.WashServersAssignServerToGroupHandler = wash_servers.AssignServerToGroupHandlerFunc(func(params wash_servers.AssignServerToGroupParams, principal *app.Auth) wash_servers.AssignServerToGroupResponder {
+			return wash_servers.AssignServerToGroupNotImplemented()
+		})
+	}
+	if api.OrganizationsAssignUserToOrganizationHandler == nil {
+		api.OrganizationsAssignUserToOrganizationHandler = organizations.AssignUserToOrganizationHandlerFunc(func(params organizations.AssignUserToOrganizationParams, principal *app.Auth) organizations.AssignUserToOrganizationResponder {
+			return organizations.AssignUserToOrganizationNotImplemented()
+		})
+	}
 	if api.SessionsAssignUserToSessionHandler == nil {
 		api.SessionsAssignUserToSessionHandler = sessions.AssignUserToSessionHandlerFunc(func(params sessions.AssignUserToSessionParams, principal *app.Auth) sessions.AssignUserToSessionResponder {
 			return sessions.AssignUserToSessionNotImplemented()
@@ -64,19 +77,59 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return sessions.ChargeBonusesOnSessionNotImplemented()
 		})
 	}
+	if api.OrganizationsCreateOrganizationHandler == nil {
+		api.OrganizationsCreateOrganizationHandler = organizations.CreateOrganizationHandlerFunc(func(params organizations.CreateOrganizationParams, principal *app.Auth) organizations.CreateOrganizationResponder {
+			return organizations.CreateOrganizationNotImplemented()
+		})
+	}
+	if api.ServerGroupsCreateServerGroupHandler == nil {
+		api.ServerGroupsCreateServerGroupHandler = server_groups.CreateServerGroupHandlerFunc(func(params server_groups.CreateServerGroupParams, principal *app.Auth) server_groups.CreateServerGroupResponder {
+			return server_groups.CreateServerGroupNotImplemented()
+		})
+	}
 	if api.WashServersCreateWashServerHandler == nil {
 		api.WashServersCreateWashServerHandler = wash_servers.CreateWashServerHandlerFunc(func(params wash_servers.CreateWashServerParams, principal *app.Auth) wash_servers.CreateWashServerResponder {
 			return wash_servers.CreateWashServerNotImplemented()
 		})
 	}
-	if api.WashServersDeleteHandler == nil {
-		api.WashServersDeleteHandler = wash_servers.DeleteHandlerFunc(func(params wash_servers.DeleteParams, principal *app.Auth) wash_servers.DeleteResponder {
-			return wash_servers.DeleteNotImplemented()
+	if api.OrganizationsDeleteOrganizationHandler == nil {
+		api.OrganizationsDeleteOrganizationHandler = organizations.DeleteOrganizationHandlerFunc(func(params organizations.DeleteOrganizationParams, principal *app.Auth) organizations.DeleteOrganizationResponder {
+			return organizations.DeleteOrganizationNotImplemented()
+		})
+	}
+	if api.ServerGroupsDeleteServerGroupHandler == nil {
+		api.ServerGroupsDeleteServerGroupHandler = server_groups.DeleteServerGroupHandlerFunc(func(params server_groups.DeleteServerGroupParams, principal *app.Auth) server_groups.DeleteServerGroupResponder {
+			return server_groups.DeleteServerGroupNotImplemented()
+		})
+	}
+	if api.WashServersDeleteWashServerHandler == nil {
+		api.WashServersDeleteWashServerHandler = wash_servers.DeleteWashServerHandlerFunc(func(params wash_servers.DeleteWashServerParams, principal *app.Auth) wash_servers.DeleteWashServerResponder {
+			return wash_servers.DeleteWashServerNotImplemented()
 		})
 	}
 	if api.UsersGetCurrentUserHandler == nil {
 		api.UsersGetCurrentUserHandler = users.GetCurrentUserHandlerFunc(func(params users.GetCurrentUserParams, principal *app.Auth) users.GetCurrentUserResponder {
 			return users.GetCurrentUserNotImplemented()
+		})
+	}
+	if api.OrganizationsGetOrganizationByIDHandler == nil {
+		api.OrganizationsGetOrganizationByIDHandler = organizations.GetOrganizationByIDHandlerFunc(func(params organizations.GetOrganizationByIDParams, principal *app.Auth) organizations.GetOrganizationByIDResponder {
+			return organizations.GetOrganizationByIDNotImplemented()
+		})
+	}
+	if api.OrganizationsGetOrganizationsHandler == nil {
+		api.OrganizationsGetOrganizationsHandler = organizations.GetOrganizationsHandlerFunc(func(params organizations.GetOrganizationsParams, principal *app.Auth) organizations.GetOrganizationsResponder {
+			return organizations.GetOrganizationsNotImplemented()
+		})
+	}
+	if api.ServerGroupsGetServerGroupByIDHandler == nil {
+		api.ServerGroupsGetServerGroupByIDHandler = server_groups.GetServerGroupByIDHandlerFunc(func(params server_groups.GetServerGroupByIDParams, principal *app.Auth) server_groups.GetServerGroupByIDResponder {
+			return server_groups.GetServerGroupByIDNotImplemented()
+		})
+	}
+	if api.ServerGroupsGetServerGroupsHandler == nil {
+		api.ServerGroupsGetServerGroupsHandler = server_groups.GetServerGroupsHandlerFunc(func(params server_groups.GetServerGroupsParams, principal *app.Auth) server_groups.GetServerGroupsResponder {
+			return server_groups.GetServerGroupsNotImplemented()
 		})
 	}
 	if api.SessionsGetSessionByIDHandler == nil {
@@ -89,9 +142,29 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return users.GetUserByIDNotImplemented()
 		})
 	}
+	if api.UsersGetUsersHandler == nil {
+		api.UsersGetUsersHandler = users.GetUsersHandlerFunc(func(params users.GetUsersParams, principal *app.Auth) users.GetUsersResponder {
+			return users.GetUsersNotImplemented()
+		})
+	}
+	if api.WalletsGetWalletByOrganizationIDHandler == nil {
+		api.WalletsGetWalletByOrganizationIDHandler = wallets.GetWalletByOrganizationIDHandlerFunc(func(params wallets.GetWalletByOrganizationIDParams, principal *app.Auth) wallets.GetWalletByOrganizationIDResponder {
+			return wallets.GetWalletByOrganizationIDNotImplemented()
+		})
+	}
+	if api.WalletsGetWalletsHandler == nil {
+		api.WalletsGetWalletsHandler = wallets.GetWalletsHandlerFunc(func(params wallets.GetWalletsParams, principal *app.Auth) wallets.GetWalletsResponder {
+			return wallets.GetWalletsNotImplemented()
+		})
+	}
 	if api.WashServersGetWashServerByIDHandler == nil {
 		api.WashServersGetWashServerByIDHandler = wash_servers.GetWashServerByIDHandlerFunc(func(params wash_servers.GetWashServerByIDParams, principal *app.Auth) wash_servers.GetWashServerByIDResponder {
 			return wash_servers.GetWashServerByIDNotImplemented()
+		})
+	}
+	if api.WashServersGetWashServersHandler == nil {
+		api.WashServersGetWashServersHandler = wash_servers.GetWashServersHandlerFunc(func(params wash_servers.GetWashServersParams, principal *app.Auth) wash_servers.GetWashServersResponder {
+			return wash_servers.GetWashServersNotImplemented()
 		})
 	}
 	if api.StandardHealthCheckHandler == nil {
@@ -99,14 +172,24 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return standard.HealthCheckNotImplemented()
 		})
 	}
-	if api.WashServersListHandler == nil {
-		api.WashServersListHandler = wash_servers.ListHandlerFunc(func(params wash_servers.ListParams, principal *app.Auth) wash_servers.ListResponder {
-			return wash_servers.ListNotImplemented()
+	if api.OrganizationsRemoveUserFromOrganizationHandler == nil {
+		api.OrganizationsRemoveUserFromOrganizationHandler = organizations.RemoveUserFromOrganizationHandlerFunc(func(params organizations.RemoveUserFromOrganizationParams, principal *app.Auth) organizations.RemoveUserFromOrganizationResponder {
+			return organizations.RemoveUserFromOrganizationNotImplemented()
 		})
 	}
-	if api.UsersUpdateUserHandler == nil {
-		api.UsersUpdateUserHandler = users.UpdateUserHandlerFunc(func(params users.UpdateUserParams, principal *app.Auth) users.UpdateUserResponder {
-			return users.UpdateUserNotImplemented()
+	if api.OrganizationsUpdateOrganizationHandler == nil {
+		api.OrganizationsUpdateOrganizationHandler = organizations.UpdateOrganizationHandlerFunc(func(params organizations.UpdateOrganizationParams, principal *app.Auth) organizations.UpdateOrganizationResponder {
+			return organizations.UpdateOrganizationNotImplemented()
+		})
+	}
+	if api.ServerGroupsUpdateServerGroupHandler == nil {
+		api.ServerGroupsUpdateServerGroupHandler = server_groups.UpdateServerGroupHandlerFunc(func(params server_groups.UpdateServerGroupParams, principal *app.Auth) server_groups.UpdateServerGroupResponder {
+			return server_groups.UpdateServerGroupNotImplemented()
+		})
+	}
+	if api.UsersUpdateUserRoleHandler == nil {
+		api.UsersUpdateUserRoleHandler = users.UpdateUserRoleHandlerFunc(func(params users.UpdateUserRoleParams, principal *app.Auth) users.UpdateUserRoleResponder {
+			return users.UpdateUserRoleNotImplemented()
 		})
 	}
 	if api.WashServersUpdateWashServerHandler == nil {

@@ -11,13 +11,15 @@ type rabbitService struct {
 	sessionSvc app.SessionService
 	userSvc    app.UserService
 	washSvc    app.WashServerService
+	walletSvc  app.WalletService
 }
 
-func New(l *zap.SugaredLogger, session app.SessionService, user app.UserService, wash app.WashServerService) app.RabbitService {
+func New(l *zap.SugaredLogger, session app.SessionService, user app.UserService, wash app.WashServerService, walletSvc app.WalletService) app.RabbitService {
 	return &rabbitService{
 		logger:     l,
 		sessionSvc: session,
 		userSvc:    user,
 		washSvc:    wash,
+		walletSvc:  walletSvc,
 	}
 }

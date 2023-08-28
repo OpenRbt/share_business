@@ -155,6 +155,53 @@ func (o *CreateWashServerForbidden) WriteResponse(rw http.ResponseWriter, produc
 
 func (o *CreateWashServerForbidden) CreateWashServerResponder() {}
 
+// CreateWashServerNotFoundCode is the HTTP code returned for type CreateWashServerNotFound
+const CreateWashServerNotFoundCode int = 404
+
+/*
+CreateWashServerNotFound Not Found
+
+swagger:response createWashServerNotFound
+*/
+type CreateWashServerNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewCreateWashServerNotFound creates CreateWashServerNotFound with default headers values
+func NewCreateWashServerNotFound() *CreateWashServerNotFound {
+
+	return &CreateWashServerNotFound{}
+}
+
+// WithPayload adds the payload to the create wash server not found response
+func (o *CreateWashServerNotFound) WithPayload(payload *models.Error) *CreateWashServerNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the create wash server not found response
+func (o *CreateWashServerNotFound) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *CreateWashServerNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *CreateWashServerNotFound) CreateWashServerResponder() {}
+
 // CreateWashServerInternalServerErrorCode is the HTTP code returned for type CreateWashServerInternalServerError
 const CreateWashServerInternalServerErrorCode int = 500
 

@@ -58,21 +58,131 @@ func init() {
         }
       }
     },
-    "/session/{id}/assign-user": {
-      "post": {
-        "security": [
+    "/organizations": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "getOrganizations",
+        "parameters": [
           {
-            "authKey": []
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "collectionFormat": "csv",
+            "name": "ids",
+            "in": "query"
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Organization"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "post": {
         "tags": [
-          "sessions"
+          "organizations"
         ],
-        "operationId": "assignUserToSession",
+        "operationId": "createOrganization",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/OrganizationCreation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull created",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "getOrganizationById",
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "deleteOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
             "in": "path",
             "required": true
           }
@@ -81,25 +191,369 @@ func init() {
           "204": {
             "description": "OK"
           },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
           "403": {
-            "description": "Forbidden"
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "Session not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "updateOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/OrganizationUpdate"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull updated",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
           }
         }
       }
     },
-    "/sessions/{id}": {
+    "/organizations/{organizationId}/users/{userId}": {
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "assignUserToOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "userId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "removeUserFromOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "userId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/server-groups": {
+      "get": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "getServerGroups",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ServerGroup"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "createServerGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ServerGroupCreation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull created",
+            "schema": {
+              "$ref": "#/definitions/ServerGroup"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/server-groups/{groupId}": {
+      "get": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "getServerGroupById",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ServerGroup"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "deleteServerGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "updateServerGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ServerGroupUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull updated",
+            "schema": {
+              "$ref": "#/definitions/ServerGroup"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/server-groups/{groupId}/wash-servers/{serverId}": {
+      "post": {
+        "tags": [
+          "washServers"
+        ],
+        "operationId": "assignServerToGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "serverId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/sessions/{sessionId}": {
       "get": {
         "security": [
           {
@@ -113,7 +567,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "sessionId",
             "in": "path",
             "required": true
           }
@@ -125,25 +579,60 @@ func init() {
               "$ref": "#/definitions/Session"
             }
           },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
           "403": {
-            "description": "Forbidden"
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "Profile not exists",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       }
     },
-    "/sessions/{id}/bonuses": {
+    "/sessions/{sessionId}/assign-user": {
+      "post": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "assignUserToSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "sessionId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/sessions/{sessionId}/bonuses": {
       "post": {
         "security": [
           {
@@ -157,7 +646,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "sessionId",
             "in": "path",
             "required": true
           },
@@ -176,20 +665,59 @@ func init() {
               "$ref": "#/definitions/BonusCharge"
             }
           },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
           "403": {
-            "description": "Forbidden"
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "Session not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
             "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/Pagination"
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
           }
         }
       }
@@ -213,24 +741,18 @@ func init() {
             }
           },
           "403": {
-            "description": "Forbidden"
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "Not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       }
     },
-    "/users/{id}": {
+    "/users/{userId}": {
       "get": {
         "security": [
           {
@@ -244,7 +766,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "required": true
           }
@@ -257,19 +779,13 @@ func init() {
             }
           },
           "403": {
-            "description": "Forbidden"
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "Not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       },
@@ -282,11 +798,11 @@ func init() {
         "tags": [
           "users"
         ],
-        "operationId": "updateUser",
+        "operationId": "updateUserRole",
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "required": true
           },
@@ -295,7 +811,7 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UserUpdate"
+              "$ref": "#/definitions/UserRoleUpdate"
             }
           }
         ],
@@ -303,35 +819,27 @@ func init() {
           "204": {
             "description": "OK"
           },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
           "403": {
-            "description": "Forbidden"
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "Not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       }
     },
-    "/wash-servers/": {
+    "/wallets": {
       "get": {
-        "security": [
-          {
-            "authKey": []
-          }
-        ],
         "tags": [
-          "washServers"
+          "wallets"
         ],
-        "operationId": "list",
+        "operationId": "getWallets",
         "parameters": [
           {
             "name": "body",
@@ -347,33 +855,112 @@ func init() {
             "schema": {
               "type": "array",
               "items": {
+                "$ref": "#/definitions/Wallet"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/wallets/by-organization/{id}": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "operationId": "getWalletByOrganizationId",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Wallet"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/wash-servers/": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "washServers"
+        ],
+        "operationId": "getWashServers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
                 "$ref": "#/definitions/WashServer"
               }
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/BadRequest"
           },
           "403": {
-            "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "WashServer not exists",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/Forbidden"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       },
@@ -404,27 +991,21 @@ func init() {
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/BadRequest"
           },
           "403": {
-            "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       }
     },
-    "/wash-servers/{id}": {
+    "/wash-servers/{serverId}": {
       "get": {
         "security": [
           {
@@ -438,7 +1019,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "serverId",
             "in": "path",
             "required": true
           }
@@ -451,28 +1032,16 @@ func init() {
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/BadRequest"
           },
           "403": {
-            "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "WashServer not exists",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       },
@@ -485,11 +1054,11 @@ func init() {
         "tags": [
           "washServers"
         ],
-        "operationId": "delete",
+        "operationId": "deleteWashServer",
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "serverId",
             "in": "path",
             "required": true
           }
@@ -499,28 +1068,16 @@ func init() {
             "description": "OK"
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/BadRequest"
           },
           "403": {
-            "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "WashServer not exists",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       },
@@ -537,7 +1094,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "serverId",
             "in": "path",
             "required": true
           },
@@ -557,28 +1114,16 @@ func init() {
             }
           },
           "400": {
-            "description": "Bad request",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/BadRequest"
           },
           "403": {
-            "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/Forbidden"
           },
           "404": {
-            "description": "WashServer not exists",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/NotFound"
           },
           "500": {
-            "description": "Internal error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "$ref": "#/responses/InternalError"
           }
         }
       }
@@ -611,6 +1156,49 @@ func init() {
         }
       }
     },
+    "Organization": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OrganizationCreation": {
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OrganizationUpdate": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "Pagination": {
       "type": "object",
       "properties": {
@@ -622,6 +1210,58 @@ func init() {
         "offset": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "ServerGroup": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "ServerGroupCreation": {
+      "required": [
+        "name",
+        "description",
+        "organizationId"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "ServerGroupUpdate": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -647,14 +1287,16 @@ func init() {
         "active": {
           "type": "boolean"
         },
-        "balance": {
-          "type": "integer"
-        },
         "id": {
           "type": "string"
         },
-        "pendingBalance": {
-          "type": "integer"
+        "organizationIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "x-omitempty": true
         },
         "role": {
           "type": "string",
@@ -666,7 +1308,7 @@ func init() {
         }
       }
     },
-    "UserUpdate": {
+    "UserRoleUpdate": {
       "type": "object",
       "properties": {
         "role": {
@@ -676,6 +1318,30 @@ func init() {
             "admin",
             "engineer"
           ]
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "integer",
+          "x-omitempty": false
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "pendingBalance": {
+          "type": "integer",
+          "x-omitempty": false
+        },
+        "userId": {
+          "type": "string"
         }
       }
     },
@@ -688,11 +1354,19 @@ func init() {
         "description": {
           "type": "string"
         },
+        "groupId": {
+          "type": "string",
+          "format": "uuid"
+        },
         "id": {
           "type": "string"
         },
         "name": {
           "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
         },
         "serviceKey": {
           "type": "string"
@@ -701,11 +1375,17 @@ func init() {
     },
     "WashServerCreation": {
       "required": [
-        "name"
+        "name",
+        "description"
       ],
       "properties": {
         "description": {
           "type": "string"
+        },
+        "groupId": {
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
         },
         "name": {
           "type": "string"
@@ -721,6 +1401,32 @@ func init() {
         "name": {
           "type": "string"
         }
+      }
+    }
+  },
+  "responses": {
+    "BadRequest": {
+      "description": "Bad request",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "Forbidden": {
+      "description": "Forbidden",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "InternalError": {
+      "description": "Internal error",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "NotFound": {
+      "description": "Not Found",
+      "schema": {
+        "$ref": "#/definitions/Error"
       }
     }
   },
@@ -779,34 +1485,90 @@ func init() {
         }
       }
     },
-    "/session/{id}/assign-user": {
-      "post": {
-        "security": [
-          {
-            "authKey": []
-          }
-        ],
+    "/organizations": {
+      "get": {
         "tags": [
-          "sessions"
+          "organizations"
         ],
-        "operationId": "assignUserToSession",
+        "operationId": "getOrganizations",
         "parameters": [
           {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "collectionFormat": "csv",
+            "name": "ids",
+            "in": "query"
           }
         ],
         "responses": {
-          "204": {
-            "description": "OK"
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Organization"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
-          "404": {
-            "description": "Session not found",
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "createOrganization",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/OrganizationCreation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull created",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -820,7 +1582,549 @@ func init() {
         }
       }
     },
-    "/sessions/{id}": {
+    "/organizations/{organizationId}": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "getOrganizationById",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "deleteOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "updateOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/OrganizationUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull updated",
+            "schema": {
+              "$ref": "#/definitions/Organization"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/organizations/{organizationId}/users/{userId}": {
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "assignUserToOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "userId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "removeUserFromOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "userId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/server-groups": {
+      "get": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "getServerGroups",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ServerGroup"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "createServerGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ServerGroupCreation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull created",
+            "schema": {
+              "$ref": "#/definitions/ServerGroup"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/server-groups/{groupId}": {
+      "get": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "getServerGroupById",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ServerGroup"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "deleteServerGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "serverGroups"
+        ],
+        "operationId": "updateServerGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/ServerGroupUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfull updated",
+            "schema": {
+              "$ref": "#/definitions/ServerGroup"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/server-groups/{groupId}/wash-servers/{serverId}": {
+      "post": {
+        "tags": [
+          "washServers"
+        ],
+        "operationId": "assignServerToGroup",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "serverId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/sessions/{sessionId}": {
       "get": {
         "security": [
           {
@@ -834,7 +2138,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "sessionId",
             "in": "path",
             "required": true
           }
@@ -846,11 +2150,20 @@ func init() {
               "$ref": "#/definitions/Session"
             }
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "404": {
-            "description": "Profile not exists",
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -864,7 +2177,57 @@ func init() {
         }
       }
     },
-    "/sessions/{id}/bonuses": {
+    "/sessions/{sessionId}/assign-user": {
+      "post": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "sessions"
+        ],
+        "operationId": "assignUserToSession",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "sessionId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/sessions/{sessionId}/bonuses": {
       "post": {
         "security": [
           {
@@ -878,7 +2241,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "sessionId",
             "in": "path",
             "required": true
           },
@@ -897,11 +2260,71 @@ func init() {
               "$ref": "#/definitions/BonusCharge"
             }
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "404": {
-            "description": "Session not found",
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "operationId": "getUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -934,10 +2357,13 @@ func init() {
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "404": {
-            "description": "Not found",
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -951,7 +2377,7 @@ func init() {
         }
       }
     },
-    "/users/{id}": {
+    "/users/{userId}": {
       "get": {
         "security": [
           {
@@ -965,7 +2391,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "required": true
           }
@@ -978,10 +2404,13 @@ func init() {
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "404": {
-            "description": "Not found",
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1003,11 +2432,11 @@ func init() {
         "tags": [
           "users"
         ],
-        "operationId": "updateUser",
+        "operationId": "updateUserRole",
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "required": true
           },
@@ -1016,7 +2445,7 @@ func init() {
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/UserUpdate"
+              "$ref": "#/definitions/UserRoleUpdate"
             }
           }
         ],
@@ -1024,11 +2453,121 @@ func init() {
           "204": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "403": {
-            "description": "Forbidden"
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "404": {
-            "description": "Not found",
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/wallets": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "operationId": "getWallets",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Pagination"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Wallet"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/wallets/by-organization/{id}": {
+      "get": {
+        "tags": [
+          "wallets"
+        ],
+        "operationId": "getWalletByOrganizationId",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Wallet"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1052,7 +2591,7 @@ func init() {
         "tags": [
           "washServers"
         ],
-        "operationId": "list",
+        "operationId": "getWashServers",
         "parameters": [
           {
             "name": "body",
@@ -1060,6 +2599,18 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Pagination"
             }
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "groupId",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1080,12 +2631,6 @@ func init() {
           },
           "403": {
             "description": "Forbidden",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "WashServer not exists",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1136,6 +2681,12 @@ func init() {
               "$ref": "#/definitions/Error"
             }
           },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
             "description": "Internal error",
             "schema": {
@@ -1145,7 +2696,7 @@ func init() {
         }
       }
     },
-    "/wash-servers/{id}": {
+    "/wash-servers/{serverId}": {
       "get": {
         "security": [
           {
@@ -1159,7 +2710,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "serverId",
             "in": "path",
             "required": true
           }
@@ -1184,7 +2735,7 @@ func init() {
             }
           },
           "404": {
-            "description": "WashServer not exists",
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1206,11 +2757,11 @@ func init() {
         "tags": [
           "washServers"
         ],
-        "operationId": "delete",
+        "operationId": "deleteWashServer",
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "serverId",
             "in": "path",
             "required": true
           }
@@ -1232,7 +2783,7 @@ func init() {
             }
           },
           "404": {
-            "description": "WashServer not exists",
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1258,7 +2809,7 @@ func init() {
         "parameters": [
           {
             "type": "string",
-            "name": "id",
+            "name": "serverId",
             "in": "path",
             "required": true
           },
@@ -1290,7 +2841,7 @@ func init() {
             }
           },
           "404": {
-            "description": "WashServer not exists",
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1332,6 +2883,49 @@ func init() {
         }
       }
     },
+    "Organization": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OrganizationCreation": {
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "OrganizationUpdate": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "Pagination": {
       "type": "object",
       "properties": {
@@ -1343,6 +2937,58 @@ func init() {
         "offset": {
           "type": "integer",
           "format": "int64"
+        }
+      }
+    },
+    "ServerGroup": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "isDefault": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "ServerGroupCreation": {
+      "required": [
+        "name",
+        "description",
+        "organizationId"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "ServerGroupUpdate": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -1368,14 +3014,16 @@ func init() {
         "active": {
           "type": "boolean"
         },
-        "balance": {
-          "type": "integer"
-        },
         "id": {
           "type": "string"
         },
-        "pendingBalance": {
-          "type": "integer"
+        "organizationIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "x-omitempty": true
         },
         "role": {
           "type": "string",
@@ -1387,7 +3035,7 @@ func init() {
         }
       }
     },
-    "UserUpdate": {
+    "UserRoleUpdate": {
       "type": "object",
       "properties": {
         "role": {
@@ -1397,6 +3045,30 @@ func init() {
             "admin",
             "engineer"
           ]
+        }
+      }
+    },
+    "Wallet": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "integer",
+          "x-omitempty": false
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "pendingBalance": {
+          "type": "integer",
+          "x-omitempty": false
+        },
+        "userId": {
+          "type": "string"
         }
       }
     },
@@ -1409,11 +3081,19 @@ func init() {
         "description": {
           "type": "string"
         },
+        "groupId": {
+          "type": "string",
+          "format": "uuid"
+        },
         "id": {
           "type": "string"
         },
         "name": {
           "type": "string"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
         },
         "serviceKey": {
           "type": "string"
@@ -1422,11 +3102,17 @@ func init() {
     },
     "WashServerCreation": {
       "required": [
-        "name"
+        "name",
+        "description"
       ],
       "properties": {
         "description": {
           "type": "string"
+        },
+        "groupId": {
+          "type": "string",
+          "format": "uuid",
+          "x-nullable": true
         },
         "name": {
           "type": "string"
@@ -1442,6 +3128,32 @@ func init() {
         "name": {
           "type": "string"
         }
+      }
+    }
+  },
+  "responses": {
+    "BadRequest": {
+      "description": "Bad request",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "Forbidden": {
+      "description": "Forbidden",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "InternalError": {
+      "description": "Internal error",
+      "schema": {
+        "$ref": "#/definitions/Error"
+      }
+    },
+    "NotFound": {
+      "description": "Not Found",
+      "schema": {
+        "$ref": "#/definitions/Error"
       }
     }
   },

@@ -48,7 +48,7 @@ func (o *GetUserByIDReader) ReadResponse(response runtime.ClientResponse, consum
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[GET /users/{id}] getUserById", response, response.Code())
+		return nil, runtime.NewAPIError("[GET /users/{userId}] getUserById", response, response.Code())
 	}
 }
 
@@ -97,11 +97,11 @@ func (o *GetUserByIDOK) Code() int {
 }
 
 func (o *GetUserByIDOK) Error() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetUserByIDOK) String() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdOK  %+v", 200, o.Payload)
 }
 
 func (o *GetUserByIDOK) GetPayload() *models.User {
@@ -131,6 +131,7 @@ GetUserByIDForbidden describes a response with status code 403, with default hea
 Forbidden
 */
 type GetUserByIDForbidden struct {
+	Payload *models.Error
 }
 
 // IsSuccess returns true when this get user by Id forbidden response has a 2xx status code
@@ -164,14 +165,25 @@ func (o *GetUserByIDForbidden) Code() int {
 }
 
 func (o *GetUserByIDForbidden) Error() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdForbidden ", 403)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdForbidden  %+v", 403, o.Payload)
 }
 
 func (o *GetUserByIDForbidden) String() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdForbidden ", 403)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdForbidden  %+v", 403, o.Payload)
+}
+
+func (o *GetUserByIDForbidden) GetPayload() *models.Error {
+	return o.Payload
 }
 
 func (o *GetUserByIDForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -184,7 +196,7 @@ func NewGetUserByIDNotFound() *GetUserByIDNotFound {
 /*
 GetUserByIDNotFound describes a response with status code 404, with default header values.
 
-Not found
+Not Found
 */
 type GetUserByIDNotFound struct {
 	Payload *models.Error
@@ -221,11 +233,11 @@ func (o *GetUserByIDNotFound) Code() int {
 }
 
 func (o *GetUserByIDNotFound) Error() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *GetUserByIDNotFound) String() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdNotFound  %+v", 404, o.Payload)
 }
 
 func (o *GetUserByIDNotFound) GetPayload() *models.Error {
@@ -289,11 +301,11 @@ func (o *GetUserByIDInternalServerError) Code() int {
 }
 
 func (o *GetUserByIDInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *GetUserByIDInternalServerError) String() string {
-	return fmt.Sprintf("[GET /users/{id}][%d] getUserByIdInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /users/{userId}][%d] getUserByIdInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *GetUserByIDInternalServerError) GetPayload() *models.Error {

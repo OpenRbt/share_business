@@ -61,8 +61,8 @@ GetWashServerByIDParams contains all the parameters to send to the API endpoint
 */
 type GetWashServerByIDParams struct {
 
-	// ID.
-	ID string
+	// ServerID.
+	ServerID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +117,15 @@ func (o *GetWashServerByIDParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithID adds the id to the get wash server by Id params
-func (o *GetWashServerByIDParams) WithID(id string) *GetWashServerByIDParams {
-	o.SetID(id)
+// WithServerID adds the serverID to the get wash server by Id params
+func (o *GetWashServerByIDParams) WithServerID(serverID string) *GetWashServerByIDParams {
+	o.SetServerID(serverID)
 	return o
 }
 
-// SetID adds the id to the get wash server by Id params
-func (o *GetWashServerByIDParams) SetID(id string) {
-	o.ID = id
+// SetServerID adds the serverId to the get wash server by Id params
+func (o *GetWashServerByIDParams) SetServerID(serverID string) {
+	o.ServerID = serverID
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -136,8 +136,8 @@ func (o *GetWashServerByIDParams) WriteToRequest(r runtime.ClientRequest, reg st
 	}
 	var res []error
 
-	// path param id
-	if err := r.SetPathParam("id", o.ID); err != nil {
+	// path param serverId
+	if err := r.SetPathParam("serverId", o.ServerID); err != nil {
 		return err
 	}
 

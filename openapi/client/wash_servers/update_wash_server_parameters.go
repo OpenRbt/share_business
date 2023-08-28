@@ -66,8 +66,8 @@ type UpdateWashServerParams struct {
 	// Body.
 	Body *models.WashServerUpdate
 
-	// ID.
-	ID string
+	// ServerID.
+	ServerID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -133,15 +133,15 @@ func (o *UpdateWashServerParams) SetBody(body *models.WashServerUpdate) {
 	o.Body = body
 }
 
-// WithID adds the id to the update wash server params
-func (o *UpdateWashServerParams) WithID(id string) *UpdateWashServerParams {
-	o.SetID(id)
+// WithServerID adds the serverID to the update wash server params
+func (o *UpdateWashServerParams) WithServerID(serverID string) *UpdateWashServerParams {
+	o.SetServerID(serverID)
 	return o
 }
 
-// SetID adds the id to the update wash server params
-func (o *UpdateWashServerParams) SetID(id string) {
-	o.ID = id
+// SetServerID adds the serverId to the update wash server params
+func (o *UpdateWashServerParams) SetServerID(serverID string) {
+	o.ServerID = serverID
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -157,8 +157,8 @@ func (o *UpdateWashServerParams) WriteToRequest(r runtime.ClientRequest, reg str
 		}
 	}
 
-	// path param id
-	if err := r.SetPathParam("id", o.ID); err != nil {
+	// path param serverId
+	if err := r.SetPathParam("serverId", o.ServerID); err != nil {
 		return err
 	}
 

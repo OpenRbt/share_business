@@ -159,7 +159,7 @@ func (o *GetWashServerByIDForbidden) GetWashServerByIDResponder() {}
 const GetWashServerByIDNotFoundCode int = 404
 
 /*
-GetWashServerByIDNotFound WashServer not exists
+GetWashServerByIDNotFound Not Found
 
 swagger:response getWashServerByIdNotFound
 */

@@ -14,7 +14,7 @@ import (
 
 // AssignUserToSessionURL generates an URL for the assign user to session operation
 type AssignUserToSessionURL struct {
-	ID string
+	SessionID string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -40,13 +40,13 @@ func (o *AssignUserToSessionURL) SetBasePath(bp string) {
 func (o *AssignUserToSessionURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/session/{id}/assign-user"
+	var _path = "/sessions/{sessionId}/assign-user"
 
-	id := o.ID
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
+	sessionID := o.SessionID
+	if sessionID != "" {
+		_path = strings.Replace(_path, "{sessionId}", sessionID, -1)
 	} else {
-		return nil, errors.New("id is required on AssignUserToSessionURL")
+		return nil, errors.New("sessionId is required on AssignUserToSessionURL")
 	}
 
 	_basePath := o._basePath

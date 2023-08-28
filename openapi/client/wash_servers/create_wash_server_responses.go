@@ -41,6 +41,12 @@ func (o *CreateWashServerReader) ReadResponse(response runtime.ClientResponse, c
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewCreateWashServerNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 500:
 		result := NewCreateWashServerInternalServerError()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -245,6 +251,74 @@ func (o *CreateWashServerForbidden) GetPayload() *models.Error {
 }
 
 func (o *CreateWashServerForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewCreateWashServerNotFound creates a CreateWashServerNotFound with default headers values
+func NewCreateWashServerNotFound() *CreateWashServerNotFound {
+	return &CreateWashServerNotFound{}
+}
+
+/*
+CreateWashServerNotFound describes a response with status code 404, with default header values.
+
+Not Found
+*/
+type CreateWashServerNotFound struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this create wash server not found response has a 2xx status code
+func (o *CreateWashServerNotFound) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this create wash server not found response has a 3xx status code
+func (o *CreateWashServerNotFound) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this create wash server not found response has a 4xx status code
+func (o *CreateWashServerNotFound) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this create wash server not found response has a 5xx status code
+func (o *CreateWashServerNotFound) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this create wash server not found response a status code equal to that given
+func (o *CreateWashServerNotFound) IsCode(code int) bool {
+	return code == 404
+}
+
+// Code gets the status code for the create wash server not found response
+func (o *CreateWashServerNotFound) Code() int {
+	return 404
+}
+
+func (o *CreateWashServerNotFound) Error() string {
+	return fmt.Sprintf("[POST /wash-servers/][%d] createWashServerNotFound  %+v", 404, o.Payload)
+}
+
+func (o *CreateWashServerNotFound) String() string {
+	return fmt.Sprintf("[POST /wash-servers/][%d] createWashServerNotFound  %+v", 404, o.Payload)
+}
+
+func (o *CreateWashServerNotFound) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *CreateWashServerNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.Error)
 

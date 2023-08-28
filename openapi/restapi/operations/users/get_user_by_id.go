@@ -32,7 +32,7 @@ func NewGetUserByID(ctx *middleware.Context, handler GetUserByIDHandler) *GetUse
 }
 
 /*
-	GetUserByID swagger:route GET /users/{id} users getUserById
+	GetUserByID swagger:route GET /users/{userId} users getUserById
 
 GetUserByID get user by Id API
 */

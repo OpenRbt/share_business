@@ -29,6 +29,12 @@ func (o *ChargeBonusesOnSessionReader) ReadResponse(response runtime.ClientRespo
 			return nil, err
 		}
 		return result, nil
+	case 400:
+		result := NewChargeBonusesOnSessionBadRequest()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 403:
 		result := NewChargeBonusesOnSessionForbidden()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -48,7 +54,7 @@ func (o *ChargeBonusesOnSessionReader) ReadResponse(response runtime.ClientRespo
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[POST /sessions/{id}/bonuses] chargeBonusesOnSession", response, response.Code())
+		return nil, runtime.NewAPIError("[POST /sessions/{sessionId}/bonuses] chargeBonusesOnSession", response, response.Code())
 	}
 }
 
@@ -97,11 +103,11 @@ func (o *ChargeBonusesOnSessionOK) Code() int {
 }
 
 func (o *ChargeBonusesOnSessionOK) Error() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionOK  %+v", 200, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionOK) String() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionOK  %+v", 200, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionOK) GetPayload() *models.BonusCharge {
@@ -111,6 +117,74 @@ func (o *ChargeBonusesOnSessionOK) GetPayload() *models.BonusCharge {
 func (o *ChargeBonusesOnSessionOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	o.Payload = new(models.BonusCharge)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+// NewChargeBonusesOnSessionBadRequest creates a ChargeBonusesOnSessionBadRequest with default headers values
+func NewChargeBonusesOnSessionBadRequest() *ChargeBonusesOnSessionBadRequest {
+	return &ChargeBonusesOnSessionBadRequest{}
+}
+
+/*
+ChargeBonusesOnSessionBadRequest describes a response with status code 400, with default header values.
+
+Bad request
+*/
+type ChargeBonusesOnSessionBadRequest struct {
+	Payload *models.Error
+}
+
+// IsSuccess returns true when this charge bonuses on session bad request response has a 2xx status code
+func (o *ChargeBonusesOnSessionBadRequest) IsSuccess() bool {
+	return false
+}
+
+// IsRedirect returns true when this charge bonuses on session bad request response has a 3xx status code
+func (o *ChargeBonusesOnSessionBadRequest) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this charge bonuses on session bad request response has a 4xx status code
+func (o *ChargeBonusesOnSessionBadRequest) IsClientError() bool {
+	return true
+}
+
+// IsServerError returns true when this charge bonuses on session bad request response has a 5xx status code
+func (o *ChargeBonusesOnSessionBadRequest) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this charge bonuses on session bad request response a status code equal to that given
+func (o *ChargeBonusesOnSessionBadRequest) IsCode(code int) bool {
+	return code == 400
+}
+
+// Code gets the status code for the charge bonuses on session bad request response
+func (o *ChargeBonusesOnSessionBadRequest) Code() int {
+	return 400
+}
+
+func (o *ChargeBonusesOnSessionBadRequest) Error() string {
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *ChargeBonusesOnSessionBadRequest) String() string {
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionBadRequest  %+v", 400, o.Payload)
+}
+
+func (o *ChargeBonusesOnSessionBadRequest) GetPayload() *models.Error {
+	return o.Payload
+}
+
+func (o *ChargeBonusesOnSessionBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -131,6 +205,7 @@ ChargeBonusesOnSessionForbidden describes a response with status code 403, with 
 Forbidden
 */
 type ChargeBonusesOnSessionForbidden struct {
+	Payload *models.Error
 }
 
 // IsSuccess returns true when this charge bonuses on session forbidden response has a 2xx status code
@@ -164,14 +239,25 @@ func (o *ChargeBonusesOnSessionForbidden) Code() int {
 }
 
 func (o *ChargeBonusesOnSessionForbidden) Error() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionForbidden ", 403)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionForbidden  %+v", 403, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionForbidden) String() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionForbidden ", 403)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionForbidden  %+v", 403, o.Payload)
+}
+
+func (o *ChargeBonusesOnSessionForbidden) GetPayload() *models.Error {
+	return o.Payload
 }
 
 func (o *ChargeBonusesOnSessionForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
@@ -184,7 +270,7 @@ func NewChargeBonusesOnSessionNotFound() *ChargeBonusesOnSessionNotFound {
 /*
 ChargeBonusesOnSessionNotFound describes a response with status code 404, with default header values.
 
-Session not found
+Not Found
 */
 type ChargeBonusesOnSessionNotFound struct {
 	Payload *models.Error
@@ -221,11 +307,11 @@ func (o *ChargeBonusesOnSessionNotFound) Code() int {
 }
 
 func (o *ChargeBonusesOnSessionNotFound) Error() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionNotFound  %+v", 404, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionNotFound) String() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionNotFound  %+v", 404, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionNotFound  %+v", 404, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionNotFound) GetPayload() *models.Error {
@@ -289,11 +375,11 @@ func (o *ChargeBonusesOnSessionInternalServerError) Code() int {
 }
 
 func (o *ChargeBonusesOnSessionInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionInternalServerError) String() string {
-	return fmt.Sprintf("[POST /sessions/{id}/bonuses][%d] chargeBonusesOnSessionInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /sessions/{sessionId}/bonuses][%d] chargeBonusesOnSessionInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *ChargeBonusesOnSessionInternalServerError) GetPayload() *models.Error {

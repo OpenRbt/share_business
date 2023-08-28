@@ -14,7 +14,7 @@ import (
 
 // GetUserByIDURL generates an URL for the get user by Id operation
 type GetUserByIDURL struct {
-	ID string
+	UserID string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -40,13 +40,13 @@ func (o *GetUserByIDURL) SetBasePath(bp string) {
 func (o *GetUserByIDURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/users/{id}"
+	var _path = "/users/{userId}"
 
-	id := o.ID
-	if id != "" {
-		_path = strings.Replace(_path, "{id}", id, -1)
+	userID := o.UserID
+	if userID != "" {
+		_path = strings.Replace(_path, "{userId}", userID, -1)
 	} else {
-		return nil, errors.New("id is required on GetUserByIDURL")
+		return nil, errors.New("userId is required on GetUserByIDURL")
 	}
 
 	_basePath := o._basePath

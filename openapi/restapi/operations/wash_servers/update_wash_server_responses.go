@@ -159,7 +159,7 @@ func (o *UpdateWashServerForbidden) UpdateWashServerResponder() {}
 const UpdateWashServerNotFoundCode int = 404
 
 /*
-UpdateWashServerNotFound WashServer not exists
+UpdateWashServerNotFound Not Found
 
 swagger:response updateWashServerNotFound
 */

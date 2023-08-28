@@ -22,9 +22,11 @@ type Service interface {
 type FirebaseService struct {
 	app  *firebase.App
 	auth *auth.Client
+
+	userSvc app.UserService
 }
 
-func New(keyfileLocation string) Service {
+func New(keyfileLocation string, userSvc app.UserService) Service {
 	keyFilePath, err := filepath.Abs(keyfileLocation)
 	if err != nil {
 		panic("Unable to load service key")
@@ -44,5 +46,7 @@ func New(keyfileLocation string) Service {
 	return &FirebaseService{
 		app:  app,
 		auth: auth,
+
+		userSvc: userSvc,
 	}
 }

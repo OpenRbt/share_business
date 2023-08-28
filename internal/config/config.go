@@ -35,7 +35,7 @@ type (
 	}
 
 	SessionsConfig struct {
-		ReportsProcessingDelayInMinutes int64 `env:"MONEY_REPORTS_PROCESSING_DELAY_MINUTES" envDefault:"14400"`
+		ReportsProcessingDelayInMinutes int64 `env:"MONEY_REPORTS_PROCESSING_DELAY_MINUTES" envDefault:"60"`
 		MoneyReportRewardPercentDefault int64 `env:"MONEY_REPORT_REWARD_PERCENT_DEFAULT" envDefault:"5"`
 	}
 

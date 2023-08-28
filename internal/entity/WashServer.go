@@ -5,20 +5,28 @@ import (
 )
 
 type WashServer struct {
-	ID          uuid.UUID
-	Title       string
-	Description string
-	ServiceKey  string
-	CreatedBy   string
+	ID             uuid.UUID
+	Title          string
+	Description    string
+	ServiceKey     string
+	CreatedBy      string
+	GroupID        uuid.UUID
+	OrganizationID uuid.UUID
 }
 
-type CreateWashServer struct {
+type WashServerCreation struct {
 	Title       string
 	Description string
+	GroupID     uuid.NullUUID
 }
 
-type UpdateWashServer struct {
+type WashServerUpdate struct {
 	Title       *string
 	Description *string
-	Deleted     *bool
+}
+
+type WashServerFilter struct {
+	Pagination
+	OrganizationID uuid.UUID
+	GroupID        uuid.UUID
 }

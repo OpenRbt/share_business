@@ -74,7 +74,7 @@ func (s *rabbitService) RewardBonuses(ctx context.Context, payload []byte, sessi
 		return entity.ErrMessageDuplicate
 	}
 
-	return s.userSvc.AddBonuses(ctx, amount, session.User.ID)
+	return s.walletSvc.ChargeBonusesByUserAndOrganization(ctx, amount, session.User.ID, session.WashServer.OrganizationID)
 }
 
 func (s *rabbitService) SaveMoneyReport(ctx context.Context, report entity.MoneyReport) error {

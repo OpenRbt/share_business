@@ -61,8 +61,8 @@ AssignUserToSessionParams contains all the parameters to send to the API endpoin
 */
 type AssignUserToSessionParams struct {
 
-	// ID.
-	ID string
+	// SessionID.
+	SessionID string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,15 +117,15 @@ func (o *AssignUserToSessionParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithID adds the id to the assign user to session params
-func (o *AssignUserToSessionParams) WithID(id string) *AssignUserToSessionParams {
-	o.SetID(id)
+// WithSessionID adds the sessionID to the assign user to session params
+func (o *AssignUserToSessionParams) WithSessionID(sessionID string) *AssignUserToSessionParams {
+	o.SetSessionID(sessionID)
 	return o
 }
 
-// SetID adds the id to the assign user to session params
-func (o *AssignUserToSessionParams) SetID(id string) {
-	o.ID = id
+// SetSessionID adds the sessionId to the assign user to session params
+func (o *AssignUserToSessionParams) SetSessionID(sessionID string) {
+	o.SessionID = sessionID
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -136,8 +136,8 @@ func (o *AssignUserToSessionParams) WriteToRequest(r runtime.ClientRequest, reg 
 	}
 	var res []error
 
-	// path param id
-	if err := r.SetPathParam("id", o.ID); err != nil {
+	// path param sessionId
+	if err := r.SetPathParam("sessionId", o.SessionID); err != nil {
 		return err
 	}
 

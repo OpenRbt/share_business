@@ -61,6 +61,53 @@ func (o *ChargeBonusesOnSessionOK) WriteResponse(rw http.ResponseWriter, produce
 
 func (o *ChargeBonusesOnSessionOK) ChargeBonusesOnSessionResponder() {}
 
+// ChargeBonusesOnSessionBadRequestCode is the HTTP code returned for type ChargeBonusesOnSessionBadRequest
+const ChargeBonusesOnSessionBadRequestCode int = 400
+
+/*
+ChargeBonusesOnSessionBadRequest Bad request
+
+swagger:response chargeBonusesOnSessionBadRequest
+*/
+type ChargeBonusesOnSessionBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewChargeBonusesOnSessionBadRequest creates ChargeBonusesOnSessionBadRequest with default headers values
+func NewChargeBonusesOnSessionBadRequest() *ChargeBonusesOnSessionBadRequest {
+
+	return &ChargeBonusesOnSessionBadRequest{}
+}
+
+// WithPayload adds the payload to the charge bonuses on session bad request response
+func (o *ChargeBonusesOnSessionBadRequest) WithPayload(payload *models.Error) *ChargeBonusesOnSessionBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the charge bonuses on session bad request response
+func (o *ChargeBonusesOnSessionBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *ChargeBonusesOnSessionBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *ChargeBonusesOnSessionBadRequest) ChargeBonusesOnSessionResponder() {}
+
 // ChargeBonusesOnSessionForbiddenCode is the HTTP code returned for type ChargeBonusesOnSessionForbidden
 const ChargeBonusesOnSessionForbiddenCode int = 403
 
@@ -70,6 +117,11 @@ ChargeBonusesOnSessionForbidden Forbidden
 swagger:response chargeBonusesOnSessionForbidden
 */
 type ChargeBonusesOnSessionForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
 }
 
 // NewChargeBonusesOnSessionForbidden creates ChargeBonusesOnSessionForbidden with default headers values
@@ -78,12 +130,27 @@ func NewChargeBonusesOnSessionForbidden() *ChargeBonusesOnSessionForbidden {
 	return &ChargeBonusesOnSessionForbidden{}
 }
 
+// WithPayload adds the payload to the charge bonuses on session forbidden response
+func (o *ChargeBonusesOnSessionForbidden) WithPayload(payload *models.Error) *ChargeBonusesOnSessionForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the charge bonuses on session forbidden response
+func (o *ChargeBonusesOnSessionForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *ChargeBonusesOnSessionForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }
 
 func (o *ChargeBonusesOnSessionForbidden) ChargeBonusesOnSessionResponder() {}
@@ -92,7 +159,7 @@ func (o *ChargeBonusesOnSessionForbidden) ChargeBonusesOnSessionResponder() {}
 const ChargeBonusesOnSessionNotFoundCode int = 404
 
 /*
-ChargeBonusesOnSessionNotFound Session not found
+ChargeBonusesOnSessionNotFound Not Found
 
 swagger:response chargeBonusesOnSessionNotFound
 */

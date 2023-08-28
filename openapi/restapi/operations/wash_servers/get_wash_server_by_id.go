@@ -32,7 +32,7 @@ func NewGetWashServerByID(ctx *middleware.Context, handler GetWashServerByIDHand
 }
 
 /*
-	GetWashServerByID swagger:route GET /wash-servers/{id} washServers getWashServerById
+	GetWashServerByID swagger:route GET /wash-servers/{serverId} washServers getWashServerById
 
 GetWashServerByID get wash server by Id API
 */

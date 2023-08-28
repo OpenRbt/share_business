@@ -1,7 +1,7 @@
 package app
 
 import (
-	"context"
+	"washBonus/internal/dal/dbmodels"
 	"washBonus/internal/entity"
 	"washBonus/internal/entity/vo"
 
@@ -11,46 +11,46 @@ import (
 
 type (
 	SessionController interface {
-		GetSession(ctx context.Context, sessionID uuid.UUID, userID string) (entity.Session, error)
-		ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) error
-		AssignUserToSession(ctx context.Context, sessionID uuid.UUID, userID string) error
+		GetSession(ctx Ctx, sessionID uuid.UUID, userID string) (entity.Session, error)
+		ChargeBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID, authUser entity.User) error
+		AssignUserToSession(ctx Ctx, sessionID uuid.UUID, authUser entity.User) error
 	}
 
 	SessionService interface {
-		Create(ctx context.Context, serverID uuid.UUID, postID int64) (session entity.Session, err error)
-		Get(ctx context.Context, sessionID uuid.UUID, userID *string) (entity.Session, error)
+		Create(ctx Ctx, serverID uuid.UUID, postID int64) (session entity.Session, err error)
+		Get(ctx Ctx, sessionID uuid.UUID, userID *string) (entity.Session, error)
 
-		UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) error
-		SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error)
+		UpdateSessionState(ctx Ctx, sessionID uuid.UUID, state vo.SessionState) error
+		SetSessionUser(ctx Ctx, sessionID uuid.UUID, userID string) (err error)
 
-		ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
-		DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
-		ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
-		LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error)
+		ChargeBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
+		DiscardBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID) (err error)
+		ConfirmBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID) (err error)
+		LogRewardBonuses(ctx Ctx, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error)
 
-		SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
-		DeleteUnusedSessions(ctx context.Context, SessionRetentionDays int64) (int64, error)
-		ProcessMoneyReports(ctx context.Context) (err error)
-		GetUserPendingBalance(ctx context.Context, userID string) (decimal.Decimal, error)
+		SaveMoneyReport(ctx Ctx, report entity.MoneyReport) (err error)
+		DeleteUnusedSessions(ctx Ctx, SessionRetentionDays int64) (int64, error)
+		ProcessMoneyReports(ctx Ctx) (err error)
+		GetUserOrganizationPendingBalance(ctx Ctx, userID string, organizationID uuid.UUID) (decimal.Decimal, error)
 	}
 
 	SessionRepo interface {
-		GetSession(ctx context.Context, sessionID uuid.UUID) (entity.Session, error)
-		CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (entity.Session, error)
+		GetSession(ctx Ctx, sessionID uuid.UUID) (dbmodels.Session, error)
+		CreateSession(ctx Ctx, serverID uuid.UUID, postID int64) (dbmodels.Session, error)
 
-		UpdateSessionState(ctx context.Context, sessionID uuid.UUID, state vo.SessionState) error
-		SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID string) (err error)
+		UpdateSessionState(ctx Ctx, sessionID uuid.UUID, state dbmodels.SessionState) error
+		SetSessionUser(ctx Ctx, sessionID uuid.UUID, userID string) (err error)
 
-		ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
-		DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
-		ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error)
+		ChargeBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error)
+		DiscardBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID) (err error)
+		ConfirmBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID) (err error)
 
-		LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error)
+		LogRewardBonuses(ctx Ctx, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error)
 
-		SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error)
-		DeleteUnusedSessions(ctx context.Context, SessionRetentionDays int64) (int64, error)
-		GetUnporcessedReportsByUser(ctx context.Context, userID string) ([]entity.UserMoneyReport, error)
-		GetUnprocessedMoneyReports(ctx context.Context, lastId int64, olderThenNMinutes int64) (reports []entity.UserMoneyReport, err error)
-		UpdateMoneyReport(ctx context.Context, id int64, processed bool) (err error)
+		SaveMoneyReport(ctx Ctx, report dbmodels.MoneyReport) (err error)
+		DeleteUnusedSessions(ctx Ctx, SessionRetentionDays int64) (int64, error)
+		GetUnporcessedReportsByUserAndOrganization(ctx Ctx, userID string, organizationID uuid.UUID) ([]dbmodels.UserMoneyReport, error)
+		GetUnprocessedMoneyReports(ctx Ctx, lastId int64, olderThenNMinutes int64) (reports []dbmodels.UserMoneyReport, err error)
+		UpdateMoneyReport(ctx Ctx, id int64, processed bool) (err error)
 	}
 )
