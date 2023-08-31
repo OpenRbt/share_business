@@ -25,6 +25,10 @@ type User struct {
 	// active
 	Active bool `json:"active,omitempty"`
 
+	// email
+	// Format: email
+	Email strfmt.Email `json:"email,omitempty"`
+
 	// id
 	ID string `json:"id,omitempty"`
 
@@ -42,6 +46,10 @@ func (m *User) UnmarshalJSON(data []byte) error {
 
 		// active
 		Active bool `json:"active,omitempty"`
+
+		// email
+		// Format: email
+		Email strfmt.Email `json:"email,omitempty"`
 
 		// id
 		ID string `json:"id,omitempty"`
@@ -61,6 +69,7 @@ func (m *User) UnmarshalJSON(data []byte) error {
 	}
 
 	m.Active = props.Active
+	m.Email = props.Email
 	m.ID = props.ID
 	m.OrganizationIds = props.OrganizationIds
 	m.Role = props.Role
@@ -70,6 +79,10 @@ func (m *User) UnmarshalJSON(data []byte) error {
 // Validate validates this user
 func (m *User) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateEmail(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateOrganizationIds(formats); err != nil {
 		res = append(res, err)
@@ -82,6 +95,18 @@ func (m *User) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *User) validateEmail(formats strfmt.Registry) error {
+	if swag.IsZero(m.Email) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("email", "body", "email", m.Email.String(), formats); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 func (s *serverGroupService) Get(ctx context.Context, userID string, filter entity.ServerGroupFilter) ([]entity.ServerGroup, error) {
-	groups, err := s.serverGroupRepo.Get(ctx, userID, conversions.ServerGroupFilterToDB(filter))
+	groups, err := s.groupRepo.Get(ctx, userID, conversions.ServerGroupFilterToDB(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func (s *serverGroupService) Get(ctx context.Context, userID string, filter enti
 }
 
 func (s *serverGroupService) GetById(ctx context.Context, id uuid.UUID) (entity.ServerGroup, error) {
-	group, err := s.serverGroupRepo.GetById(ctx, id)
+	group, err := s.groupRepo.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.ServerGroup{}, entity.ErrNotFound
@@ -32,7 +32,7 @@ func (s *serverGroupService) GetById(ctx context.Context, id uuid.UUID) (entity.
 }
 
 func (s *serverGroupService) Create(ctx context.Context, groupCreation entity.ServerGroupCreation) (entity.ServerGroup, error) {
-	org, err := s.organizationRepo.GetById(ctx, groupCreation.OrganizationID)
+	org, err := s.orgRepo.GetById(ctx, groupCreation.OrganizationID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.ServerGroup{}, entity.ErrNotFound
@@ -44,7 +44,7 @@ func (s *serverGroupService) Create(ctx context.Context, groupCreation entity.Se
 		return entity.ServerGroup{}, err
 	}
 
-	createdGroup, err := s.serverGroupRepo.Create(ctx, conversions.ServerGroupCreationToDb(groupCreation))
+	createdGroup, err := s.groupRepo.Create(ctx, conversions.ServerGroupCreationToDb(groupCreation))
 	if err != nil {
 		return entity.ServerGroup{}, err
 	}
@@ -53,11 +53,14 @@ func (s *serverGroupService) Create(ctx context.Context, groupCreation entity.Se
 }
 
 func (s *serverGroupService) Update(ctx context.Context, id uuid.UUID, groupUpdate entity.ServerGroupUpdate) (entity.ServerGroup, error) {
-	updatedGroup, err := s.serverGroupRepo.Update(ctx, id, conversions.ServerGroupUpdateToDb(groupUpdate))
+	updatedGroup, err := s.groupRepo.Update(ctx, id, conversions.ServerGroupUpdateToDb(groupUpdate))
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.ServerGroup{}, entity.ErrNotFound
+			err = entity.ErrNotFound
+		} else if errors.Is(err, dbmodels.ErrBadValue) {
+			err = entity.ErrAccessDenied
 		}
+
 		return entity.ServerGroup{}, err
 	}
 
@@ -65,7 +68,7 @@ func (s *serverGroupService) Update(ctx context.Context, id uuid.UUID, groupUpda
 }
 
 func (s *serverGroupService) Delete(ctx context.Context, id uuid.UUID) error {
-	group, err := s.serverGroupRepo.GetById(ctx, id)
+	group, err := s.groupRepo.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.ErrNotFound
@@ -77,5 +80,5 @@ func (s *serverGroupService) Delete(ctx context.Context, id uuid.UUID) error {
 		return entity.ErrAccessDenied
 	}
 
-	return s.serverGroupRepo.Delete(ctx, id)
+	return s.groupRepo.Delete(ctx, id)
 }

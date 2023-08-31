@@ -399,6 +399,9 @@ func init() {
           "403": {
             "$ref": "#/responses/Forbidden"
           },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
           "500": {
             "$ref": "#/responses/InternalError"
           }
@@ -1196,10 +1199,12 @@ func init() {
       "type": "object",
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         }
       }
     },
@@ -1248,10 +1253,16 @@ func init() {
       "type": "object",
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
+        },
+        "isDefault": {
+          "type": "boolean",
+          "x-nullable": true
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         }
       }
     },
@@ -1276,6 +1287,10 @@ func init() {
       "properties": {
         "active": {
           "type": "boolean"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
         },
         "id": {
           "type": "string"
@@ -1386,10 +1401,12 @@ func init() {
       "type": "object",
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         }
       }
     }
@@ -1959,6 +1976,12 @@ func init() {
           },
           "403": {
             "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -3006,10 +3029,12 @@ func init() {
       "type": "object",
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         }
       }
     },
@@ -3058,10 +3083,16 @@ func init() {
       "type": "object",
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
+        },
+        "isDefault": {
+          "type": "boolean",
+          "x-nullable": true
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         }
       }
     },
@@ -3086,6 +3117,10 @@ func init() {
       "properties": {
         "active": {
           "type": "boolean"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
         },
         "id": {
           "type": "string"
@@ -3196,10 +3231,12 @@ func init() {
       "type": "object",
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         }
       }
     }

@@ -14,7 +14,7 @@ require (
 	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-openapi/swag v0.21.1
 	github.com/go-openapi/validate v0.21.0
-	github.com/gocraft/dbr/v2 v2.7.3
+	github.com/gocraft/dbr/v2 v2.7.5
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/joho/godotenv v1.4.0

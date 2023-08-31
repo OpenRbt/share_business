@@ -15,7 +15,7 @@ func WashServerFromDB(dbWashServer dbmodels.WashServer) entity.WashServer {
 		Title:          dbWashServer.Title,
 		Description:    dbWashServer.Description,
 		CreatedBy:      dbWashServer.CreatedBy,
-		ServiceKey:     dbWashServer.ServiceKey,
+		ServiceKey:     &dbWashServer.ServiceKey,
 		GroupID:        dbWashServer.GroupID,
 		OrganizationID: dbWashServer.OrganizationID,
 	}
@@ -28,19 +28,25 @@ func WashServerToRest(e entity.WashServer) *models.WashServer {
 		Name:           e.Title,
 		GroupID:        strfmt.UUID(e.GroupID.String()),
 		OrganizationID: strfmt.UUID(e.OrganizationID.String()),
+		CreatedBy:      e.CreatedBy,
 	}
 }
 
 func WashServerToAdminRest(e entity.WashServer) *models.WashServer {
-	return &models.WashServer{
+	m := &models.WashServer{
 		ID:             e.ID.String(),
 		Name:           e.Title,
 		Description:    e.Description,
 		CreatedBy:      e.CreatedBy,
-		ServiceKey:     e.ServiceKey,
 		GroupID:        strfmt.UUID(e.GroupID.String()),
 		OrganizationID: strfmt.UUID(e.OrganizationID.String()),
 	}
+
+	if e.ServiceKey != nil {
+		m.ServiceKey = *e.ServiceKey
+	}
+
+	return m
 }
 
 func WashServerListFromDB(washServerList []dbmodels.WashServer) []entity.WashServer {
@@ -66,8 +72,8 @@ func WashServerListToRest(washServerEntity []entity.WashServer) []*models.WashSe
 
 func WashServerUpdateFromRest(model models.WashServerUpdate) entity.WashServerUpdate {
 	return entity.WashServerUpdate{
-		Title:       &model.Name,
-		Description: &model.Description,
+		Title:       model.Name,
+		Description: model.Description,
 	}
 }
 

@@ -57,7 +57,7 @@ func (ctrl *washServerController) CreateWashServer(ctx context.Context, auth app
 		return entity.WashServer{}, err
 	}
 
-	err = ctrl.rabbitSvc.CreateRabbitUser(registered.ID.String(), registered.ServiceKey)
+	err = ctrl.rabbitSvc.CreateRabbitUser(registered.ID.String(), *registered.ServiceKey)
 	if err != nil {
 		return entity.WashServer{}, err
 	}
@@ -66,7 +66,16 @@ func (ctrl *washServerController) CreateWashServer(ctx context.Context, auth app
 }
 
 func (ctrl *washServerController) GetWashServerById(ctx context.Context, auth app.Auth, id uuid.UUID) (entity.WashServer, error) {
-	return ctrl.washServerSvc.GetWashServerById(ctx, id)
+	server, err := ctrl.washServerSvc.GetWashServerById(ctx, id)
+	if err != nil {
+		return entity.WashServer{}, nil
+	}
+
+	if !app.IsAdmin(auth.User) {
+		server.ServiceKey = nil
+	}
+
+	return server, nil
 }
 
 func (ctrl *washServerController) UpdateWashServer(ctx context.Context, auth app.Auth, id uuid.UUID, updateWashServer entity.WashServerUpdate) (entity.WashServer, error) {

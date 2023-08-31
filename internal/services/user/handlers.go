@@ -40,8 +40,8 @@ func (s *userService) Create(ctx context.Context, userCreation entity.UserCreati
 	return conversions.UserFromDb(user), nil
 }
 
-func (s *userService) UpdateUserRole(ctx context.Context, userUpdate entity.UserUpdate) error {
-	_, err := s.userRepo.GetById(ctx, userUpdate.ID)
+func (s *userService) UpdateUserRole(ctx context.Context, userRole entity.UserUpdateRole) error {
+	_, err := s.userRepo.GetById(ctx, userRole.ID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.ErrNotFound
@@ -49,5 +49,17 @@ func (s *userService) UpdateUserRole(ctx context.Context, userUpdate entity.User
 		return err
 	}
 
-	return s.userRepo.UpdateUserRole(ctx, conversions.UserUpdateToDB(userUpdate))
+	return s.userRepo.UpdateUserRole(ctx, conversions.UserUpdateRoleToDB(userRole))
+}
+
+func (s *userService) UpdateUser(ctx context.Context, userModel entity.UserUpdate) error {
+	_, err := s.userRepo.GetById(ctx, userModel.ID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			return entity.ErrNotFound
+		}
+		return err
+	}
+
+	return s.userRepo.UpdateUser(ctx, conversions.UserUpdateToDB(userModel))
 }

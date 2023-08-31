@@ -20,10 +20,10 @@ import (
 type WashServerUpdate struct {
 
 	// description
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
 
 	// name
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -31,10 +31,10 @@ func (m *WashServerUpdate) UnmarshalJSON(data []byte) error {
 	var props struct {
 
 		// description
-		Description string `json:"description,omitempty"`
+		Description *string `json:"description,omitempty"`
 
 		// name
-		Name string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))

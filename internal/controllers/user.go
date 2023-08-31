@@ -38,7 +38,7 @@ func (ctrl *userController) GetById(ctx context.Context, auth app.Auth, userID s
 	return entity.User{}, entity.ErrAccessDenied
 }
 
-func (ctrl *userController) UpdateUserRole(ctx context.Context, auth app.Auth, userUpdate entity.UserUpdate) error {
+func (ctrl *userController) UpdateUserRole(ctx context.Context, auth app.Auth, userUpdate entity.UserUpdateRole) error {
 	if app.IsAdmin(auth.User) {
 		return ctrl.userSvc.UpdateUserRole(ctx, userUpdate)
 	}

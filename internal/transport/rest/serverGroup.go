@@ -65,6 +65,8 @@ func (svc *service) createServerGroup(params serverGroups.CreateServerGroupParam
 	switch {
 	case err == nil:
 		return serverGroups.NewCreateServerGroupOK().WithPayload(conversions.ServerGroupToRest(group))
+	case errors.Is(err, entity.ErrNotFound):
+		return serverGroups.NewCreateServerGroupNotFound()
 	case errors.Is(err, entity.ErrAccessDenied):
 		return serverGroups.NewCreateServerGroupForbidden()
 	default:

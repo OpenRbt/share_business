@@ -58,8 +58,8 @@ func OrganizationUpdateToDb(entity entity.OrganizationUpdate) dbmodels.Organizat
 
 func OrganizationUpdateFromRest(model models.OrganizationUpdate) entity.OrganizationUpdate {
 	return entity.OrganizationUpdate{
-		Name:        &model.Name,
-		Description: &model.Description,
+		Name:        model.Name,
+		Description: model.Description,
 	}
 }
 

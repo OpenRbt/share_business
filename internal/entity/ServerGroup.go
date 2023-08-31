@@ -22,6 +22,7 @@ type ServerGroupCreation struct {
 type ServerGroupUpdate struct {
 	Name        *string
 	Description *string
+	IsDefault   *bool
 }
 
 type ServerGroupFilter struct {

@@ -72,13 +72,8 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 
 	var org dbmodels.Organization
 
-	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
-	if err != nil {
-		return dbmodels.Organization{}, fmt.Errorf("failed to create organization: %w", err)
-	}
-	defer tx.RollbackUnlessCommitted()
-
-	err = tx.InsertInto("organizations").
+	err = r.db.NewSession(nil).
+		InsertInto("organizations").
 		Columns("name", "description").
 		Record(model).
 		Returning("id", "name", "description", "is_default", "deleted").
@@ -88,16 +83,7 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 		return dbmodels.Organization{}, fmt.Errorf("failed to create organization: %w", err)
 	}
 
-	_, err = tx.InsertInto("server_groups").
-		Columns("name", "description", "organization_id", "is_default").
-		Values("Default group for "+org.Name, org.Description, org.ID, true).
-		ExecContext(ctx)
-
-	if err != nil {
-		return dbmodels.Organization{}, fmt.Errorf("failed to create organization: %w", err)
-	}
-
-	return org, tx.Commit()
+	return org, nil
 }
 
 func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.OrganizationUpdate) (dbmodels.Organization, error) {
@@ -112,10 +98,10 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 
 	updateMap := make(map[string]interface{})
 
-	if model.Name != nil && *model.Name != "" {
+	if model.Name != nil {
 		updateMap["name"] = model.Name
 	}
-	if model.Description != nil && *model.Description != "" {
+	if model.Description != nil {
 		updateMap["description"] = model.Description
 	}
 
@@ -123,14 +109,19 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 		return dbmodels.Organization{}, dbmodels.ErrBadValue
 	}
 
-	updateStatement := tx.Update("organizations").SetMap(updateMap).Where("id = ? AND NOT deleted", id)
-	_, err = updateStatement.ExecContext(ctx)
+	_, err = tx.Update("organizations").
+		SetMap(updateMap).
+		Where("id = ? AND NOT deleted", id).
+		ExecContext(ctx)
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf("failed to update organization: %w", err)
 	}
 
 	var org dbmodels.Organization
-	err = tx.Select("*").From("organizations").Where("id = ?", id).LoadOneContext(ctx, &org)
+	err = tx.Select("*").
+		From("organizations").
+		Where("id = ?", id).
+		LoadOneContext(ctx, &org)
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf("failed to update organization: %w", err)
 	}
@@ -141,33 +132,22 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 func (r *repo) Delete(ctx context.Context, id uuid.UUID) error {
 	var err error
 	defer dal.LogOptionalError(r.l, "organization", err)
+	op := "failed to delete organization: %w"
 
 	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete organization: %w", err)
+		return fmt.Errorf(op, err)
 	}
 	defer tx.RollbackUnlessCommitted()
 
-	var defaultGroupID uuid.UUID
-	err = tx.Select("gr.id").
-		From(dbr.I("organizations").As("org")).
-		Join(dbr.I("server_groups").As("gr"), "gr.organization_id = org.id").
-		Where("org.is_default AND gr.is_default").
-		LoadOneContext(ctx, &defaultGroupID)
+	err = resetGroupsToDefaultOrganiziation(ctx, tx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete organization: %w", err)
+		return fmt.Errorf(op, err)
 	}
 
-	groupsSubquery := tx.Select("id").
-		From("server_groups").
-		Where("organization_id = ?", id)
-
-	_, err = tx.Update("wash_servers").
-		Where("group_id IN ?", groupsSubquery).
-		Set("group_id", defaultGroupID).
-		ExecContext(ctx)
+	err = deleteOrganizationWallets(ctx, tx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete organization: %w", err)
+		return fmt.Errorf(op, err)
 	}
 
 	_, err = tx.
@@ -176,10 +156,73 @@ func (r *repo) Delete(ctx context.Context, id uuid.UUID) error {
 		Set("deleted", true).
 		ExecContext(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to delete organization: %w", err)
+		return fmt.Errorf(op, err)
 	}
 
 	return tx.Commit()
+}
+
+func resetGroupsToDefaultOrganiziation(ctx context.Context, tx *dbr.Tx, id uuid.UUID) error {
+	defaultGroupIDSubquery := tx.Select("gr.id").
+		From(dbr.I("organizations").As("org")).
+		Join(dbr.I("server_groups").As("gr"), "gr.organization_id = org.id").
+		Where("org.is_default AND gr.is_default").
+		Limit(1)
+
+	resetedGroupsSubquery := tx.Select("id").
+		From("server_groups").
+		Where("organization_id = ?", id)
+
+	_, err := tx.Update("wash_servers").
+		Where("group_id IN ?", resetedGroupsSubquery).
+		Set("group_id", defaultGroupIDSubquery).
+		ExecContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deleteOrganizationWallets(ctx context.Context, tx *dbr.Tx, id uuid.UUID) error {
+	defaultOrgIDSubquery := tx.Select("id").
+		From("organizations").
+		Where("is_default").
+		Limit(1)
+
+	deletedWalletsBalancesSubquery := tx.Select("user_id, balance").
+		From("wallets").
+		Where("organization_id = ?", id)
+
+	var userBalances []struct {
+		UserID  string
+		Balance float64
+	}
+	_, err := deletedWalletsBalancesSubquery.LoadContext(ctx, &userBalances)
+	if err != nil {
+		return err
+	}
+
+	for _, userBalance := range userBalances {
+		_, err := tx.Update("wallets").
+			Set("balance", dbr.Expr("balance + ?", userBalance.Balance)).
+			Where("user_id = ? AND organization_id = ?", userBalance.UserID, defaultOrgIDSubquery).
+			ExecContext(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = tx.Update("wallets").
+		Where("organization_id = ?", id).
+		Set("deleted", true).
+		Set("balance", 0).
+		ExecContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *repo) AssignManager(ctx context.Context, organizationID uuid.UUID, userID string) error {

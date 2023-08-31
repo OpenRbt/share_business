@@ -21,7 +21,7 @@ func (r *walletRepo) Get(ctx context.Context, userID string, pagination dbmodels
 	_, err = r.db.NewSession(nil).
 		Select("*").
 		From("wallets").
-		Where("user_id = ?", userID).
+		Where("NOT deleted AND user_id = ?", userID).
 		Limit(uint64(pagination.Limit)).
 		Offset(uint64(pagination.Offset)).
 		LoadContext(ctx, &wallets)
@@ -38,6 +38,7 @@ func (r *walletRepo) GetById(ctx context.Context, walletID uuid.UUID) (dbmodels.
 	err = r.db.NewSession(nil).
 		Select("*").
 		From("wallets").
+		Where("NOT deleted").
 		Where("id = ?", walletID).
 		LoadOneContext(ctx, &wallet)
 
@@ -57,6 +58,7 @@ func (r *walletRepo) GetUserDefaultWallet(ctx context.Context, userID string) (d
 	err = r.db.NewSession(nil).
 		Select("*").
 		From("wallets").
+		Where("NOT deleted").
 		Where("is_default AND user_id = ?", userID).
 		LoadOneContext(ctx, &wallet)
 
@@ -72,6 +74,7 @@ func (r *walletRepo) GetByOrganizationId(ctx context.Context, userID string, org
 	err = r.db.NewSession(nil).
 		Select("*").
 		From("wallets").
+		Where("NOT deleted").
 		Where("user_id = ? AND organization_id = ?", userID, organizationID).
 		LoadOneContext(ctx, &wallet)
 
