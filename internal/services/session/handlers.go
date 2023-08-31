@@ -137,15 +137,42 @@ func (s *sessionService) GetUserOrganizationPendingBalance(ctx context.Context, 
 }
 
 func (s *sessionService) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
-	return s.sessionRepo.ChargeBonuses(ctx, amount, sessionID, userID)
+	err = s.sessionRepo.ChargeBonuses(ctx, amount, sessionID, userID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrBadValue) {
+			return entity.ErrAccessDenied
+		}
+
+		return err
+	}
+
+	return err
 }
 
 func (s *sessionService) DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
-	return s.sessionRepo.DiscardBonuses(ctx, amount, sessionID)
+	err = s.sessionRepo.DiscardBonuses(ctx, amount, sessionID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrBadValue) {
+			return entity.ErrAccessDenied
+		}
+
+		return err
+	}
+
+	return err
 }
 
 func (s *sessionService) ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
-	return s.sessionRepo.ConfirmBonuses(ctx, amount, sessionID)
+	err = s.sessionRepo.ConfirmBonuses(ctx, amount, sessionID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrBadValue) {
+			return entity.ErrAccessDenied
+		}
+
+		return err
+	}
+
+	return err
 }
 
 func (s *sessionService) LogRewardBonuses(ctx context.Context, sessionID uuid.UUID, payload []byte, messageUuid uuid.UUID) (err error) {

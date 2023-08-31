@@ -561,6 +561,8 @@ paths:
           $ref: "#/responses/BadRequest"
         403:
           $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
         500:
           $ref: "#/responses/InternalError"
 
@@ -779,6 +781,9 @@ definitions:
     properties:
       id:
         type: string
+      email:
+        type: string
+        format: email
       active:
         type: boolean
       role:
@@ -849,8 +854,10 @@ definitions:
     properties:
       name:
         type: string
+        x-nullable: true
       description:
         type: string
+        x-nullable: true
 
   UserRoleUpdate:
     type: object
@@ -890,8 +897,10 @@ definitions:
     properties:
       name:
         type: string
+        x-nullable: true
       description:
         type: string
+        x-nullable: true
 
   ServerGroup:
     type: object
@@ -925,8 +934,13 @@ definitions:
     properties:
       name:
         type: string
+        x-nullable: true
       description:
         type: string
+        x-nullable: true
+      isDefault:
+        type: boolean
+        x-nullable: true
 
   Wallet:
     type: object

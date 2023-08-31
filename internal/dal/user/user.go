@@ -90,16 +90,28 @@ func (r *userRepo) Create(ctx context.Context, ent dbmodels.UserCreation) (dbmod
 	return dbUser, tx.Commit()
 }
 
-func (r *userRepo) UpdateUserRole(ctx context.Context, updateUser dbmodels.UserUpdate) error {
+func (r *userRepo) UpdateUserRole(ctx context.Context, updateUser dbmodels.UserUpdateRole) error {
 	var err error
 	defer dal.LogOptionalError(r.l, "user", err)
 
-	dbUpdateUser := updateUser
+	_, err = r.db.NewSession(nil).
+		Update("users").
+		Where("id = ?", updateUser.ID).
+		Set("role", updateUser.Role).
+		ExecContext(ctx)
+
+	return err
+}
+
+func (r *userRepo) UpdateUser(ctx context.Context, userModel dbmodels.UserUpdate) error {
+	var err error
+	defer dal.LogOptionalError(r.l, "user", err)
 
 	_, err = r.db.NewSession(nil).
 		Update("users").
-		Where("id = ?", dbUpdateUser.ID).
-		Set("role", dbUpdateUser.Role).
+		Where("id = ?", userModel.ID).
+		Set("email", userModel.Email).
+		Set("name", userModel.Name).
 		ExecContext(ctx)
 
 	return err

@@ -7,15 +7,15 @@ import (
 )
 
 type serverGroupService struct {
-	logger           *zap.SugaredLogger
-	serverGroupRepo  app.ServerGroupRepo
-	organizationRepo app.OrganizationRepo
+	logger    *zap.SugaredLogger
+	groupRepo app.ServerGroupRepo
+	orgRepo   app.OrganizationRepo
 }
 
 func New(l *zap.SugaredLogger, groupRepo app.ServerGroupRepo, orgRepo app.OrganizationRepo) app.ServerGroupService {
 	return &serverGroupService{
-		logger:           l,
-		serverGroupRepo:  groupRepo,
-		organizationRepo: orgRepo,
+		logger:    l,
+		groupRepo: groupRepo,
+		orgRepo:   orgRepo,
 	}
 }

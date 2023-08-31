@@ -15,11 +15,13 @@ type ServerGroupCreation struct {
 	Name           string    `db:"name"`
 	Description    string    `db:"description"`
 	OrganizationID uuid.UUID `db:"organization_id"`
+	IsDefault      bool      `db:"is_default"`
 }
 
 type ServerGroupUpdate struct {
 	Name        *string `db:"name"`
 	Description *string `db:"description"`
+	IsDefault   *bool   `db:"is_default"`
 }
 
 type ServerGroupFilter struct {

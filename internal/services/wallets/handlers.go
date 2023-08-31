@@ -79,5 +79,14 @@ func (s *walletService) GetById(ctx context.Context, walletID uuid.UUID) (entity
 }
 
 func (s *walletService) ChargeBonusesByUserAndOrganization(ctx context.Context, amount decimal.Decimal, userID string, organizationID uuid.UUID) error {
-	return s.walletRepo.ChargeBonusesByUserAndOrganization(ctx, amount, userID, organizationID)
+	err := s.walletRepo.ChargeBonusesByUserAndOrganization(ctx, amount, userID, organizationID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrBadValue) {
+			return entity.ErrAccessDenied
+		}
+
+		return err
+	}
+
+	return err
 }

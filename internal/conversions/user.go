@@ -13,6 +13,7 @@ import (
 func UserFromDb(dbUser dbmodels.User) entity.User {
 	ent := entity.User{
 		ID:      dbUser.ID,
+		Email:   dbUser.Email,
 		Role:    RoleSelectionApp(dbUser.Role),
 		Deleted: dbUser.Deleted,
 	}
@@ -50,6 +51,10 @@ func UserToRest(user entity.User) models.User {
 		Role: string(user.Role),
 	}
 
+	if user.Email != nil {
+		mod.Email = strfmt.Email(*user.Email)
+	}
+
 	if len(user.OrganizationIDs) <= 0 {
 		return mod
 	}
@@ -75,11 +80,19 @@ func UsersToRest(users []entity.User) []*models.User {
 	return models
 }
 
-func UserUpdateToDB(user entity.UserUpdate) dbmodels.UserUpdate {
+func UserUpdateRoleToDB(user entity.UserUpdateRole) dbmodels.UserUpdateRole {
 	role := RoleSelectionDB(user.Role)
-	return dbmodels.UserUpdate{
+	return dbmodels.UserUpdateRole{
 		ID:   user.ID,
 		Role: role,
+	}
+}
+
+func UserUpdateToDB(user entity.UserUpdate) dbmodels.UserUpdate {
+	return dbmodels.UserUpdate{
+		ID:    user.ID,
+		Email: user.Email,
+		Name:  user.Name,
 	}
 }
 

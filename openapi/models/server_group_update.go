@@ -20,10 +20,13 @@ import (
 type ServerGroupUpdate struct {
 
 	// description
-	Description string `json:"description,omitempty"`
+	Description *string `json:"description,omitempty"`
+
+	// is default
+	IsDefault *bool `json:"isDefault,omitempty"`
 
 	// name
-	Name string `json:"name,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -31,10 +34,13 @@ func (m *ServerGroupUpdate) UnmarshalJSON(data []byte) error {
 	var props struct {
 
 		// description
-		Description string `json:"description,omitempty"`
+		Description *string `json:"description,omitempty"`
+
+		// is default
+		IsDefault *bool `json:"isDefault,omitempty"`
 
 		// name
-		Name string `json:"name,omitempty"`
+		Name *string `json:"name,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -44,6 +50,7 @@ func (m *ServerGroupUpdate) UnmarshalJSON(data []byte) error {
 	}
 
 	m.Description = props.Description
+	m.IsDefault = props.IsDefault
 	m.Name = props.Name
 	return nil
 }

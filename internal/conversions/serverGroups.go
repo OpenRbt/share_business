@@ -55,13 +55,15 @@ func ServerGroupUpdateToDb(groupUpdate entity.ServerGroupUpdate) dbmodels.Server
 	return dbmodels.ServerGroupUpdate{
 		Name:        groupUpdate.Name,
 		Description: groupUpdate.Description,
+		IsDefault:   groupUpdate.IsDefault,
 	}
 }
 
 func ServerGroupUpdateFromRest(groupUpdate models.ServerGroupUpdate) entity.ServerGroupUpdate {
 	return entity.ServerGroupUpdate{
-		Name:        &groupUpdate.Name,
-		Description: &groupUpdate.Description,
+		Name:        groupUpdate.Name,
+		Description: groupUpdate.Description,
+		IsDefault:   groupUpdate.IsDefault,
 	}
 }
 

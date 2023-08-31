@@ -103,10 +103,10 @@ func (r *repo) UpdateWashServer(ctx context.Context, serverID uuid.UUID, updateE
 
 	updateMap := make(map[string]interface{})
 
-	if updateEntity.Name != nil && *updateEntity.Name != "" {
+	if updateEntity.Name != nil {
 		updateMap["title"] = updateEntity.Name
 	}
-	if updateEntity.Description != nil && *updateEntity.Description != "" {
+	if updateEntity.Description != nil {
 		updateMap["description"] = updateEntity.Description
 	}
 

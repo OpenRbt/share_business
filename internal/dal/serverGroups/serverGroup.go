@@ -2,6 +2,7 @@ package organizations
 
 import (
 	"context"
+	"errors"
 	"washBonus/internal/dal"
 	"washBonus/internal/dal/dbmodels"
 
@@ -53,6 +54,9 @@ func (r *serverGroupRepo) GetById(ctx context.Context, id uuid.UUID) (dbmodels.S
 		LoadOneContext(ctx, &group)
 
 	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			err = dbmodels.ErrNotFound
+		}
 		return dbmodels.ServerGroup{}, err
 	}
 
@@ -65,9 +69,30 @@ func (r *serverGroupRepo) Create(ctx context.Context, model dbmodels.ServerGroup
 
 	var group dbmodels.ServerGroup
 
-	err = r.db.NewSession(nil).
-		InsertInto("server_groups").
-		Columns("name", "description", "organization_id").
+	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
+	if err != nil {
+		return group, err
+	}
+	defer tx.RollbackUnlessCommitted()
+
+	var groupCount int
+
+	err = tx.Select("1").
+		From("server_groups").
+		Where("NOT deleted AND organization_id = ?", model.OrganizationID).
+		Limit(1).
+		LoadOneContext(ctx, &groupCount)
+
+	if errors.Is(err, dbr.ErrNotFound) {
+		groupCount = 0
+	} else if err != nil {
+		return dbmodels.ServerGroup{}, err
+	}
+
+	model.IsDefault = groupCount == 0
+
+	err = tx.InsertInto("server_groups").
+		Columns("name", "description", "organization_id", "is_default").
 		Record(model).
 		Returning("id", "name", "description", "organization_id", "is_default", "deleted").
 		LoadContext(ctx, &group)
@@ -76,45 +101,115 @@ func (r *serverGroupRepo) Create(ctx context.Context, model dbmodels.ServerGroup
 		return dbmodels.ServerGroup{}, err
 	}
 
-	return group, err
+	return group, tx.Commit()
 }
 
 func (r *serverGroupRepo) Update(ctx context.Context, id uuid.UUID, model dbmodels.ServerGroupUpdate) (dbmodels.ServerGroup, error) {
 	var err error
 	defer dal.LogOptionalError(r.l, "server_group", err)
 
+	var group dbmodels.ServerGroup
+
 	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
 	if err != nil {
-		return dbmodels.ServerGroup{}, err
+		return group, err
 	}
 	defer tx.RollbackUnlessCommitted()
 
+	isDefaultOrg, err := isDefaultOrganizationByGroup(ctx, tx, id)
+	if err != nil {
+		return group, err
+	}
+
+	if isDefaultOrg {
+		return group, dbmodels.ErrBadValue
+	}
+
+	updateMap, err := buildUpdateMap(model)
+	if err != nil {
+		return group, err
+	}
+
+	if model.IsDefault != nil {
+		err = setDefaultGroup(ctx, tx, id)
+		if err != nil {
+			return group, err
+		}
+	}
+
+	_, err = tx.Update("server_groups").
+		SetMap(updateMap).
+		Where("NOT deleted AND id = ?", id).
+		ExecContext(ctx)
+	if err != nil {
+		return group, err
+	}
+
+	err = tx.Select("*").
+		From("server_groups").
+		Where("id = ?", id).
+		LoadOneContext(ctx, &group)
+	if err != nil {
+		return group, err
+	}
+
+	return group, tx.Commit()
+}
+
+func isDefaultOrganizationByGroup(ctx context.Context, tx *dbr.Tx, groupID uuid.UUID) (bool, error) {
+	var isDefault bool
+
+	err := tx.Select("true").
+		From(dbr.I("organizations").As("org")).
+		Join(dbr.I("server_groups").As("gr"), "gr.organization_id = org.id").
+		Where("org.is_default AND gr.id = ?", groupID).
+		LoadOneContext(ctx, &isDefault)
+
+	if !errors.Is(err, dbr.ErrNotFound) {
+		return false, err
+	}
+
+	return isDefault, nil
+}
+
+func buildUpdateMap(model dbmodels.ServerGroupUpdate) (map[string]interface{}, error) {
 	updateMap := make(map[string]interface{})
 
-	if model.Name != nil && *model.Name != "" {
+	if model.Name != nil {
 		updateMap["name"] = model.Name
 	}
-	if model.Description != nil && *model.Description != "" {
+
+	if model.Description != nil {
 		updateMap["description"] = model.Description
 	}
 
 	if len(updateMap) == 0 {
-		return dbmodels.ServerGroup{}, dbmodels.ErrBadValue
+		return nil, dbmodels.ErrBadValue
 	}
 
-	updateStatement := tx.Update("server_groups").SetMap(updateMap).Where("id = ? AND NOT deleted", id)
-	_, err = updateStatement.ExecContext(ctx)
+	return updateMap, nil
+}
+
+func setDefaultGroup(ctx context.Context, tx *dbr.Tx, newDefaultGroupID uuid.UUID) error {
+	orgIDSubquery := tx.Select("organization_id").
+		From("server_groups").
+		Where("id = ?", newDefaultGroupID)
+
+	_, err := tx.Update("server_groups").
+		Set("is_default", false).
+		Where("is_default").
+		Where("organization_id = ?", orgIDSubquery).
+		ExecContext(ctx)
 	if err != nil {
-		return dbmodels.ServerGroup{}, err
+		return err
 	}
 
-	var group dbmodels.ServerGroup
-	err = tx.Select("*").From("server_groups").Where("id = ?", id).LoadOneContext(ctx, &group)
-	if err != nil {
-		return dbmodels.ServerGroup{}, err
-	}
+	_, err = tx.Update("server_groups").
+		Set("is_default", true).
+		Where("id = ?", newDefaultGroupID).
+		ExecContext(ctx)
 
-	return group, tx.Commit()
+	return err
 }
 
 func (r *serverGroupRepo) Delete(ctx context.Context, id uuid.UUID) error {
@@ -127,23 +222,22 @@ func (r *serverGroupRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 	defer tx.RollbackUnlessCommitted()
 
-	var orgID uuid.UUID
-	err = tx.Select("org.id").
-		From(dbr.I("organizations").As("org")).
-		Join(dbr.I("server_groups").As("gr"), "gr.organization_id = org.id").
-		Where("gr.id = ?", id).
-		LoadOneContext(ctx, &orgID)
-	if err != nil {
-		return err
-	}
-
 	var defaultGroupID uuid.UUID
-	err = tx.Select("gr.id").
+
+	orgIDSubquery := tx.Select("org.id").
 		From(dbr.I("organizations").As("org")).
-		Join(dbr.I("server_groups").As("gr"), "gr.organization_id = org.id").
-		Where("org.id = ? AND gr.is_default", orgID).
+		LeftJoin(dbr.I("server_groups").As("gr"), "gr.organization_id = org.id").
+		Where("NOT org.is_default AND gr.id = ?", id)
+
+	err = tx.Select("id").
+		From("server_groups").
+		Where("is_default AND organization_id = ?", orgIDSubquery).
 		LoadOneContext(ctx, &defaultGroupID)
+
 	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			return dbmodels.ErrNotFound
+		}
 		return err
 	}
 
@@ -156,7 +250,7 @@ func (r *serverGroupRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	_, err = tx.Update("server_groups").
-		Where("id = ? AND NOT deleted AND NOT is_default", id).
+		Where("NOT deleted AND id = ? ", id).
 		Set("deleted", true).
 		ExecContext(ctx)
 	if err != nil {

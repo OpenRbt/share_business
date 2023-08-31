@@ -46,6 +46,17 @@ func (svc *FirebaseService) Auth(bearer string) (*app.Auth, error) {
 		}
 	}
 
+	if user.Email == nil {
+		err := svc.userSvc.UpdateUser(ctx, entity.UserUpdate{
+			ID:    fbUser.UID,
+			Email: fbUser.Email,
+			Name:  fbUser.DisplayName,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &app.Auth{
 		User:         user,
 		Disabled:     fbUser.Disabled,

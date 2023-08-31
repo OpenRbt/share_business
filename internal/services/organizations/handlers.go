@@ -24,7 +24,7 @@ func (s *organizationService) GetById(ctx context.Context, id uuid.UUID) (entity
 	org, err := s.organizationRepo.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.Organization{}, entity.ErrNotFound
+			err = entity.ErrNotFound
 		}
 		return entity.Organization{}, err
 	}
@@ -42,15 +42,30 @@ func (s *organizationService) Create(ctx context.Context, ent entity.Organizatio
 }
 
 func (s *organizationService) Update(ctx context.Context, id uuid.UUID, ent entity.OrganizationUpdate) (entity.Organization, error) {
-	org, err := s.organizationRepo.Update(ctx, id, conversions.OrganizationUpdateToDb(ent))
+	org, err := s.organizationRepo.GetById(ctx, id)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			err = entity.ErrNotFound
+		}
+
+		return entity.Organization{}, err
+	}
+
+	if org.IsDefault {
+		return entity.Organization{}, entity.ErrAccessDenied
+	}
+
+	updatedOrg, err := s.organizationRepo.Update(ctx, id, conversions.OrganizationUpdateToDb(ent))
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.Organization{}, entity.ErrNotFound
+		} else if errors.Is(err, dbmodels.ErrBadValue) {
+			return entity.Organization{}, entity.ErrAccessDenied
 		}
 		return entity.Organization{}, err
 	}
 
-	return conversions.OrganizationFromDB(org), nil
+	return conversions.OrganizationFromDB(updatedOrg), nil
 }
 
 func (s *organizationService) Delete(ctx context.Context, id uuid.UUID) error {

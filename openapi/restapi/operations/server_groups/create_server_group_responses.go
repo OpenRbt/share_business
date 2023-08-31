@@ -155,6 +155,53 @@ func (o *CreateServerGroupForbidden) WriteResponse(rw http.ResponseWriter, produ
 
 func (o *CreateServerGroupForbidden) CreateServerGroupResponder() {}
 
+// CreateServerGroupNotFoundCode is the HTTP code returned for type CreateServerGroupNotFound
+const CreateServerGroupNotFoundCode int = 404
+
+/*
+CreateServerGroupNotFound Not Found
+
+swagger:response createServerGroupNotFound
+*/
+type CreateServerGroupNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewCreateServerGroupNotFound creates CreateServerGroupNotFound with default headers values
+func NewCreateServerGroupNotFound() *CreateServerGroupNotFound {
+
+	return &CreateServerGroupNotFound{}
+}
+
+// WithPayload adds the payload to the create server group not found response
+func (o *CreateServerGroupNotFound) WithPayload(payload *models.Error) *CreateServerGroupNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the create server group not found response
+func (o *CreateServerGroupNotFound) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *CreateServerGroupNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+func (o *CreateServerGroupNotFound) CreateServerGroupResponder() {}
+
 // CreateServerGroupInternalServerErrorCode is the HTTP code returned for type CreateServerGroupInternalServerError
 const CreateServerGroupInternalServerErrorCode int = 500
 

@@ -45,6 +45,8 @@ func (s *washService) UpdateWashServer(ctx context.Context, serverID uuid.UUID, 
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			err = entity.ErrNotFound
+		} else if errors.Is(err, dbmodels.ErrBadValue) {
+			err = entity.ErrAccessDenied
 		}
 		return entity.WashServer{}, err
 	}

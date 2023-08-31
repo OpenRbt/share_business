@@ -8,7 +8,7 @@ type WashServer struct {
 	ID             uuid.UUID
 	Title          string
 	Description    string
-	ServiceKey     string
+	ServiceKey     *string
 	CreatedBy      string
 	GroupID        uuid.UUID
 	OrganizationID uuid.UUID

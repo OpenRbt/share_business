@@ -21,9 +21,15 @@ type (
 		Name  string `db:"name"`
 	}
 
-	UserUpdate struct {
+	UserUpdateRole struct {
 		ID   string `db:"id"`
 		Role string `db:"role"`
+	}
+
+	UserUpdate struct {
+		ID    string `db:"id"`
+		Email string `db:"email"`
+		Name  string `db:"name"`
 	}
 )
 

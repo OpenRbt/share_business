@@ -67,7 +67,7 @@ func (svc *service) getCurrentUser(params users.GetCurrentUserParams, auth *app.
 }
 
 func (svc *service) updateUserRole(params users.UpdateUserRoleParams, auth *app.Auth) users.UpdateUserRoleResponder {
-	err := svc.userCtrl.UpdateUserRole(params.HTTPRequest.Context(), *auth, entity.UserUpdate{ID: params.UserID, Role: entity.Role(params.Update.Role)})
+	err := svc.userCtrl.UpdateUserRole(params.HTTPRequest.Context(), *auth, entity.UserUpdateRole{ID: params.UserID, Role: entity.Role(params.Update.Role)})
 
 	switch {
 	case err == nil:

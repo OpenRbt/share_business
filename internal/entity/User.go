@@ -18,8 +18,14 @@ type (
 		Name  string
 	}
 
-	UserUpdate struct {
+	UserUpdateRole struct {
 		ID   string
 		Role Role
+	}
+
+	UserUpdate struct {
+		ID    string
+		Email string
+		Name  string
 	}
 )
