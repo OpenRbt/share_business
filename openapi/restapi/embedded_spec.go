@@ -66,11 +66,13 @@ func init() {
         "operationId": "getOrganizations",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/isManagedByMe"
           },
           {
             "type": "array",
@@ -334,11 +336,13 @@ func init() {
         "operationId": "getServerGroups",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/isManagedByMe"
           },
           {
             "type": "string",
@@ -693,11 +697,10 @@ func init() {
         "operationId": "getUsers",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
           }
         ],
         "responses": {
@@ -842,11 +845,10 @@ func init() {
         "operationId": "getWallets",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
           }
         ],
         "responses": {
@@ -924,11 +926,13 @@ func init() {
         "operationId": "getWashServers",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/isManagedByMe"
           },
           {
             "type": "string",
@@ -1199,20 +1203,6 @@ func init() {
         }
       }
     },
-    "Pagination": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer",
-          "format": "int64",
-          "maximum": 100
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
     "ServerGroup": {
       "type": "object",
       "properties": {
@@ -1402,6 +1392,30 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "parameters": {
+    "isManagedByMe": {
+      "type": "boolean",
+      "default": false,
+      "name": "isManagedByMe",
+      "in": "query"
+    },
+    "limit": {
+      "type": "integer",
+      "format": "int64",
+      "default": 100,
+      "description": "Maximum number of records to return",
+      "name": "limit",
+      "in": "query"
+    },
+    "offset": {
+      "type": "integer",
+      "format": "int64",
+      "default": 0,
+      "description": "Number of records to skip for pagination",
+      "name": "offset",
+      "in": "query"
     }
   },
   "responses": {
@@ -1493,11 +1507,28 @@ func init() {
         "operationId": "getOrganizations",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "description": "Number of records to skip for pagination",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 100,
+            "description": "Maximum number of records to return",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isManagedByMe",
+            "in": "query"
           },
           {
             "type": "array",
@@ -1839,11 +1870,28 @@ func init() {
         "operationId": "getServerGroups",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "description": "Number of records to skip for pagination",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 100,
+            "description": "Maximum number of records to return",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isManagedByMe",
+            "in": "query"
           },
           {
             "type": "string",
@@ -2300,11 +2348,22 @@ func init() {
         "operationId": "getUsers",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "description": "Number of records to skip for pagination",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 100,
+            "description": "Maximum number of records to return",
+            "name": "limit",
+            "in": "query"
           }
         ],
         "responses": {
@@ -2488,11 +2547,22 @@ func init() {
         "operationId": "getWallets",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "description": "Number of records to skip for pagination",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 100,
+            "description": "Maximum number of records to return",
+            "name": "limit",
+            "in": "query"
           }
         ],
         "responses": {
@@ -2594,11 +2664,28 @@ func init() {
         "operationId": "getWashServers",
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "$ref": "#/definitions/Pagination"
-            }
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "description": "Number of records to skip for pagination",
+            "name": "offset",
+            "in": "query"
+          },
+          {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int64",
+            "default": 100,
+            "description": "Maximum number of records to return",
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isManagedByMe",
+            "in": "query"
           },
           {
             "type": "string",
@@ -2926,20 +3013,6 @@ func init() {
         }
       }
     },
-    "Pagination": {
-      "type": "object",
-      "properties": {
-        "limit": {
-          "type": "integer",
-          "format": "int64",
-          "maximum": 100
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
     "ServerGroup": {
       "type": "object",
       "properties": {
@@ -3129,6 +3202,32 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "parameters": {
+    "isManagedByMe": {
+      "type": "boolean",
+      "default": false,
+      "name": "isManagedByMe",
+      "in": "query"
+    },
+    "limit": {
+      "minimum": 0,
+      "type": "integer",
+      "format": "int64",
+      "default": 100,
+      "description": "Maximum number of records to return",
+      "name": "limit",
+      "in": "query"
+    },
+    "offset": {
+      "minimum": 0,
+      "type": "integer",
+      "format": "int64",
+      "default": 0,
+      "description": "Number of records to skip for pagination",
+      "name": "offset",
+      "in": "query"
     }
   },
   "responses": {

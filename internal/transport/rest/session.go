@@ -27,7 +27,7 @@ func (svc *service) getSession(params sessions.GetSessionByIDParams, auth *app.A
 		return sessions.NewGetSessionByIDInternalServerError()
 	}
 
-	res, err := svc.sessionCtrl.GetSession(params.HTTPRequest.Context(), sessionID, auth.UID)
+	res, err := svc.sessionCtrl.GetSession(params.HTTPRequest.Context(), *auth, sessionID)
 
 	switch {
 	case err == nil:
@@ -50,7 +50,7 @@ func (svc *service) chargeBonuses(params sessions.ChargeBonusesOnSessionParams, 
 	}
 
 	amount := decimal.NewFromInt(params.Body.Amount)
-	err = svc.sessionCtrl.ChargeBonuses(params.HTTPRequest.Context(), amount, sessionID, auth.User)
+	err = svc.sessionCtrl.ChargeBonuses(params.HTTPRequest.Context(), *auth, amount, sessionID)
 
 	switch {
 	case err == nil:
@@ -72,7 +72,7 @@ func (svc *service) assignUserToSession(params sessions.AssignUserToSessionParam
 		return sessions.NewAssignUserToSessionInternalServerError()
 	}
 
-	err = svc.sessionCtrl.AssignUserToSession(params.HTTPRequest.Context(), sessionID, auth.User)
+	err = svc.sessionCtrl.AssignUserToSession(params.HTTPRequest.Context(), *auth, sessionID)
 
 	switch {
 	case err == nil:

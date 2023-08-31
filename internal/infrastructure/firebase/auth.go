@@ -2,6 +2,7 @@ package firebase
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"washBonus/internal/app"
 	"washBonus/internal/entity"
@@ -22,20 +23,32 @@ func (svc *FirebaseService) Auth(bearer string) (*app.Auth, error) {
 		return nil, entity.ErrAccessDenied
 	}
 
-	user, err := svc.auth.GetUser(ctx, token.UID)
+	fbUser, err := svc.auth.GetUser(ctx, token.UID)
 	if err != nil {
 		return nil, entity.ErrAccessDenied
 	}
 
-	dbUser, err := svc.userSvc.GetOrCreate(ctx, user.UID)
+	user, err := svc.userSvc.GetById(ctx, fbUser.UID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, entity.ErrNotFound) {
+			userCreation := entity.UserCreation{
+				ID:    fbUser.UID,
+				Email: fbUser.Email,
+				Name:  fbUser.DisplayName,
+			}
+
+			user, err = svc.userSvc.Create(ctx, userCreation)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
 	}
 
 	return &app.Auth{
-		UID:          user.UID,
-		Disabled:     user.Disabled,
-		User:         dbUser,
-		UserMetadata: (*app.AuthUserMeta)(user.UserMetadata),
+		User:         user,
+		Disabled:     fbUser.Disabled,
+		UserMetadata: (*app.AuthUserMeta)(fbUser.UserMetadata),
 	}, nil
 }

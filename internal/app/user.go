@@ -7,23 +7,22 @@ import (
 
 type (
 	UserController interface {
-		GetById(ctx Ctx, authUser entity.User, userID string) (entity.User, error)
-		Get(ctx Ctx, authUser entity.User, pagination entity.Pagination) ([]entity.User, error)
-		UpdateUserRole(ctx Ctx, authUser entity.User, userUpdate entity.UserUpdate) error
+		GetById(ctx Ctx, auth Auth, userID string) (entity.User, error)
+		Get(ctx Ctx, auth Auth, pagination entity.Pagination) ([]entity.User, error)
+		UpdateUserRole(ctx Ctx, auth Auth, userUpdate entity.UserUpdate) error
 	}
 
 	UserService interface {
-		Create(ctx Ctx, userID string) (user entity.User, err error)
-		GetById(ctx Ctx, userID string) (user entity.User, err error)
+		GetById(ctx Ctx, userID string) (entity.User, error)
 		Get(ctx Ctx, pagination entity.Pagination) ([]entity.User, error)
-		GetOrCreate(ctx Ctx, userID string) (user entity.User, err error)
+		Create(ctx Ctx, userCreation entity.UserCreation) (entity.User, error)
 		UpdateUserRole(ctx Ctx, userUpdate entity.UserUpdate) error
 	}
 
 	UserRepo interface {
-		GetById(ctx Ctx, userID string) (user dbmodels.User, err error)
+		GetById(ctx Ctx, userID string) (dbmodels.User, error)
 		Get(ctx Ctx, pagination dbmodels.Pagination) ([]dbmodels.User, error)
-		Create(ctx Ctx, userID string) (user dbmodels.User, err error)
+		Create(ctx Ctx, userCreation dbmodels.UserCreation) (dbmodels.User, error)
 		UpdateUserRole(ctx Ctx, userUpdate dbmodels.UserUpdate) error
 	}
 )

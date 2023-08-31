@@ -10,17 +10,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (s *serverGroupService) Get(ctx context.Context, filter entity.ServerGroupFilter) ([]entity.ServerGroup, error) {
-	groups, err := s.serverGroupRepo.Get(ctx, conversions.ServerGroupFilterToDB(filter))
-	if err != nil {
-		return nil, err
-	}
-
-	return conversions.ServerGroupsFromDB(groups), nil
-}
-
-func (s *serverGroupService) GetForManager(ctx context.Context, userID string, filter entity.ServerGroupFilter) ([]entity.ServerGroup, error) {
-	groups, err := s.serverGroupRepo.GetForManager(ctx, userID, conversions.ServerGroupFilterToDB(filter))
+func (s *serverGroupService) Get(ctx context.Context, userID string, filter entity.ServerGroupFilter) ([]entity.ServerGroup, error) {
+	groups, err := s.serverGroupRepo.Get(ctx, userID, conversions.ServerGroupFilterToDB(filter))
 	if err != nil {
 		return nil, err
 	}

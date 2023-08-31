@@ -25,4 +25,5 @@ type ServerGroupUpdate struct {
 type ServerGroupFilter struct {
 	Pagination
 	OrganizationID uuid.UUID
+	IsManagedByMe  bool
 }

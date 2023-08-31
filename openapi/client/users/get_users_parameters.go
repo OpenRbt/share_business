@@ -14,8 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-
-	"washBonus/openapi/models"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetUsersParams creates a new GetUsersParams object,
@@ -63,8 +62,22 @@ GetUsersParams contains all the parameters to send to the API endpoint
 */
 type GetUsersParams struct {
 
-	// Body.
-	Body *models.Pagination
+	/* Limit.
+
+	   Maximum number of records to return
+
+	   Format: int64
+	   Default: 100
+	*/
+	Limit *int64
+
+	/* Offset.
+
+	   Number of records to skip for pagination
+
+	   Format: int64
+	*/
+	Offset *int64
 
 	timeout    time.Duration
 	Context    context.Context
@@ -83,7 +96,21 @@ func (o *GetUsersParams) WithDefaults() *GetUsersParams {
 //
 // All values with no default are reset to their zero value.
 func (o *GetUsersParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		limitDefault = int64(100)
+
+		offsetDefault = int64(0)
+	)
+
+	val := GetUsersParams{
+		Limit:  &limitDefault,
+		Offset: &offsetDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get users params
@@ -119,15 +146,26 @@ func (o *GetUsersParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the get users params
-func (o *GetUsersParams) WithBody(body *models.Pagination) *GetUsersParams {
-	o.SetBody(body)
+// WithLimit adds the limit to the get users params
+func (o *GetUsersParams) WithLimit(limit *int64) *GetUsersParams {
+	o.SetLimit(limit)
 	return o
 }
 
-// SetBody adds the body to the get users params
-func (o *GetUsersParams) SetBody(body *models.Pagination) {
-	o.Body = body
+// SetLimit adds the limit to the get users params
+func (o *GetUsersParams) SetLimit(limit *int64) {
+	o.Limit = limit
+}
+
+// WithOffset adds the offset to the get users params
+func (o *GetUsersParams) WithOffset(offset *int64) *GetUsersParams {
+	o.SetOffset(offset)
+	return o
+}
+
+// SetOffset adds the offset to the get users params
+func (o *GetUsersParams) SetOffset(offset *int64) {
+	o.Offset = offset
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -137,9 +175,38 @@ func (o *GetUsersParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 		return err
 	}
 	var res []error
-	if o.Body != nil {
-		if err := r.SetBodyParam(o.Body); err != nil {
-			return err
+
+	if o.Limit != nil {
+
+		// query param limit
+		var qrLimit int64
+
+		if o.Limit != nil {
+			qrLimit = *o.Limit
+		}
+		qLimit := swag.FormatInt64(qrLimit)
+		if qLimit != "" {
+
+			if err := r.SetQueryParam("limit", qLimit); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Offset != nil {
+
+		// query param offset
+		var qrOffset int64
+
+		if o.Offset != nil {
+			qrOffset = *o.Offset
+		}
+		qOffset := swag.FormatInt64(qrOffset)
+		if qOffset != "" {
+
+			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
 		}
 	}
 

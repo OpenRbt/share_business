@@ -11,17 +11,27 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
-
-	"washBonus/openapi/models"
 )
 
 // NewGetWalletsParams creates a new GetWalletsParams object
-//
-// There are no default values defined in the spec.
+// with the default values initialized.
 func NewGetWalletsParams() GetWalletsParams {
 
-	return GetWalletsParams{}
+	var (
+		// initialize parameters with default values
+
+		limitDefault  = int64(100)
+		offsetDefault = int64(0)
+	)
+
+	return GetWalletsParams{
+		Limit: &limitDefault,
+
+		Offset: &offsetDefault,
+	}
 }
 
 // GetWalletsParams contains all the bound params for the get wallets operation
@@ -33,10 +43,18 @@ type GetWalletsParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*
-	  In: body
+	/*Maximum number of records to return
+	  Minimum: 0
+	  In: query
+	  Default: 100
 	*/
-	Body *models.Pagination
+	Limit *int64
+	/*Number of records to skip for pagination
+	  Minimum: 0
+	  In: query
+	  Default: 0
+	*/
+	Offset *int64
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -48,29 +66,95 @@ func (o *GetWalletsParams) BindRequest(r *http.Request, route *middleware.Matche
 
 	o.HTTPRequest = r
 
-	if runtime.HasBody(r) {
-		defer r.Body.Close()
-		var body models.Pagination
-		if err := route.Consumer.Consume(r.Body, &body); err != nil {
-			res = append(res, errors.NewParseError("body", "body", "", err))
-		} else {
-			// validate body object
-			if err := body.Validate(route.Formats); err != nil {
-				res = append(res, err)
-			}
+	qs := runtime.Values(r.URL.Query())
 
-			ctx := validate.WithOperationRequest(r.Context())
-			if err := body.ContextValidate(ctx, route.Formats); err != nil {
-				res = append(res, err)
-			}
+	qLimit, qhkLimit, _ := qs.GetOK("limit")
+	if err := o.bindLimit(qLimit, qhkLimit, route.Formats); err != nil {
+		res = append(res, err)
+	}
 
-			if len(res) == 0 {
-				o.Body = &body
-			}
-		}
+	qOffset, qhkOffset, _ := qs.GetOK("offset")
+	if err := o.bindOffset(qOffset, qhkOffset, route.Formats); err != nil {
+		res = append(res, err)
 	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindLimit binds and validates parameter Limit from query.
+func (o *GetWalletsParams) bindLimit(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewGetWalletsParams()
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("limit", "query", "int64", raw)
+	}
+	o.Limit = &value
+
+	if err := o.validateLimit(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateLimit carries on validations for parameter Limit
+func (o *GetWalletsParams) validateLimit(formats strfmt.Registry) error {
+
+	if err := validate.MinimumInt("limit", "query", *o.Limit, 0, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// bindOffset binds and validates parameter Offset from query.
+func (o *GetWalletsParams) bindOffset(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewGetWalletsParams()
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("offset", "query", "int64", raw)
+	}
+	o.Offset = &value
+
+	if err := o.validateOffset(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateOffset carries on validations for parameter Offset
+func (o *GetWalletsParams) validateOffset(formats strfmt.Registry) error {
+
+	if err := validate.MinimumInt("offset", "query", *o.Offset, 0, false); err != nil {
+		return err
+	}
+
 	return nil
 }

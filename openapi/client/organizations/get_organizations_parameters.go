@@ -15,8 +15,6 @@ import (
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-
-	"washBonus/openapi/models"
 )
 
 // NewGetOrganizationsParams creates a new GetOrganizationsParams object,
@@ -64,11 +62,28 @@ GetOrganizationsParams contains all the parameters to send to the API endpoint
 */
 type GetOrganizationsParams struct {
 
-	// Body.
-	Body *models.Pagination
-
 	// Ids.
 	Ids []strfmt.UUID
+
+	// IsManagedByMe.
+	IsManagedByMe *bool
+
+	/* Limit.
+
+	   Maximum number of records to return
+
+	   Format: int64
+	   Default: 100
+	*/
+	Limit *int64
+
+	/* Offset.
+
+	   Number of records to skip for pagination
+
+	   Format: int64
+	*/
+	Offset *int64
 
 	timeout    time.Duration
 	Context    context.Context
@@ -87,7 +102,24 @@ func (o *GetOrganizationsParams) WithDefaults() *GetOrganizationsParams {
 //
 // All values with no default are reset to their zero value.
 func (o *GetOrganizationsParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		isManagedByMeDefault = bool(false)
+
+		limitDefault = int64(100)
+
+		offsetDefault = int64(0)
+	)
+
+	val := GetOrganizationsParams{
+		IsManagedByMe: &isManagedByMeDefault,
+		Limit:         &limitDefault,
+		Offset:        &offsetDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get organizations params
@@ -123,17 +155,6 @@ func (o *GetOrganizationsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the get organizations params
-func (o *GetOrganizationsParams) WithBody(body *models.Pagination) *GetOrganizationsParams {
-	o.SetBody(body)
-	return o
-}
-
-// SetBody adds the body to the get organizations params
-func (o *GetOrganizationsParams) SetBody(body *models.Pagination) {
-	o.Body = body
-}
-
 // WithIds adds the ids to the get organizations params
 func (o *GetOrganizationsParams) WithIds(ids []strfmt.UUID) *GetOrganizationsParams {
 	o.SetIds(ids)
@@ -145,6 +166,39 @@ func (o *GetOrganizationsParams) SetIds(ids []strfmt.UUID) {
 	o.Ids = ids
 }
 
+// WithIsManagedByMe adds the isManagedByMe to the get organizations params
+func (o *GetOrganizationsParams) WithIsManagedByMe(isManagedByMe *bool) *GetOrganizationsParams {
+	o.SetIsManagedByMe(isManagedByMe)
+	return o
+}
+
+// SetIsManagedByMe adds the isManagedByMe to the get organizations params
+func (o *GetOrganizationsParams) SetIsManagedByMe(isManagedByMe *bool) {
+	o.IsManagedByMe = isManagedByMe
+}
+
+// WithLimit adds the limit to the get organizations params
+func (o *GetOrganizationsParams) WithLimit(limit *int64) *GetOrganizationsParams {
+	o.SetLimit(limit)
+	return o
+}
+
+// SetLimit adds the limit to the get organizations params
+func (o *GetOrganizationsParams) SetLimit(limit *int64) {
+	o.Limit = limit
+}
+
+// WithOffset adds the offset to the get organizations params
+func (o *GetOrganizationsParams) WithOffset(offset *int64) *GetOrganizationsParams {
+	o.SetOffset(offset)
+	return o
+}
+
+// SetOffset adds the offset to the get organizations params
+func (o *GetOrganizationsParams) SetOffset(offset *int64) {
+	o.Offset = offset
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetOrganizationsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -152,11 +206,6 @@ func (o *GetOrganizationsParams) WriteToRequest(r runtime.ClientRequest, reg str
 		return err
 	}
 	var res []error
-	if o.Body != nil {
-		if err := r.SetBodyParam(o.Body); err != nil {
-			return err
-		}
-	}
 
 	if o.Ids != nil {
 
@@ -166,6 +215,57 @@ func (o *GetOrganizationsParams) WriteToRequest(r runtime.ClientRequest, reg str
 		// query array param ids
 		if err := r.SetQueryParam("ids", joinedIds...); err != nil {
 			return err
+		}
+	}
+
+	if o.IsManagedByMe != nil {
+
+		// query param isManagedByMe
+		var qrIsManagedByMe bool
+
+		if o.IsManagedByMe != nil {
+			qrIsManagedByMe = *o.IsManagedByMe
+		}
+		qIsManagedByMe := swag.FormatBool(qrIsManagedByMe)
+		if qIsManagedByMe != "" {
+
+			if err := r.SetQueryParam("isManagedByMe", qIsManagedByMe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Limit != nil {
+
+		// query param limit
+		var qrLimit int64
+
+		if o.Limit != nil {
+			qrLimit = *o.Limit
+		}
+		qLimit := swag.FormatInt64(qrLimit)
+		if qLimit != "" {
+
+			if err := r.SetQueryParam("limit", qLimit); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Offset != nil {
+
+		// query param offset
+		var qrOffset int64
+
+		if o.Offset != nil {
+			qrOffset = *o.Offset
+		}
+		qOffset := swag.FormatInt64(qrOffset)
+		if qOffset != "" {
+
+			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
 		}
 	}
 

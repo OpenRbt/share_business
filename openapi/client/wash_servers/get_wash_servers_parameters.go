@@ -14,8 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-
-	"washBonus/openapi/models"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetWashServersParams creates a new GetWashServersParams object,
@@ -63,13 +62,30 @@ GetWashServersParams contains all the parameters to send to the API endpoint
 */
 type GetWashServersParams struct {
 
-	// Body.
-	Body *models.Pagination
-
 	// GroupID.
 	//
 	// Format: uuid
 	GroupID *strfmt.UUID
+
+	// IsManagedByMe.
+	IsManagedByMe *bool
+
+	/* Limit.
+
+	   Maximum number of records to return
+
+	   Format: int64
+	   Default: 100
+	*/
+	Limit *int64
+
+	/* Offset.
+
+	   Number of records to skip for pagination
+
+	   Format: int64
+	*/
+	Offset *int64
 
 	// OrganizationID.
 	//
@@ -93,7 +109,24 @@ func (o *GetWashServersParams) WithDefaults() *GetWashServersParams {
 //
 // All values with no default are reset to their zero value.
 func (o *GetWashServersParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		isManagedByMeDefault = bool(false)
+
+		limitDefault = int64(100)
+
+		offsetDefault = int64(0)
+	)
+
+	val := GetWashServersParams{
+		IsManagedByMe: &isManagedByMeDefault,
+		Limit:         &limitDefault,
+		Offset:        &offsetDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get wash servers params
@@ -129,17 +162,6 @@ func (o *GetWashServersParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the get wash servers params
-func (o *GetWashServersParams) WithBody(body *models.Pagination) *GetWashServersParams {
-	o.SetBody(body)
-	return o
-}
-
-// SetBody adds the body to the get wash servers params
-func (o *GetWashServersParams) SetBody(body *models.Pagination) {
-	o.Body = body
-}
-
 // WithGroupID adds the groupID to the get wash servers params
 func (o *GetWashServersParams) WithGroupID(groupID *strfmt.UUID) *GetWashServersParams {
 	o.SetGroupID(groupID)
@@ -149,6 +171,39 @@ func (o *GetWashServersParams) WithGroupID(groupID *strfmt.UUID) *GetWashServers
 // SetGroupID adds the groupId to the get wash servers params
 func (o *GetWashServersParams) SetGroupID(groupID *strfmt.UUID) {
 	o.GroupID = groupID
+}
+
+// WithIsManagedByMe adds the isManagedByMe to the get wash servers params
+func (o *GetWashServersParams) WithIsManagedByMe(isManagedByMe *bool) *GetWashServersParams {
+	o.SetIsManagedByMe(isManagedByMe)
+	return o
+}
+
+// SetIsManagedByMe adds the isManagedByMe to the get wash servers params
+func (o *GetWashServersParams) SetIsManagedByMe(isManagedByMe *bool) {
+	o.IsManagedByMe = isManagedByMe
+}
+
+// WithLimit adds the limit to the get wash servers params
+func (o *GetWashServersParams) WithLimit(limit *int64) *GetWashServersParams {
+	o.SetLimit(limit)
+	return o
+}
+
+// SetLimit adds the limit to the get wash servers params
+func (o *GetWashServersParams) SetLimit(limit *int64) {
+	o.Limit = limit
+}
+
+// WithOffset adds the offset to the get wash servers params
+func (o *GetWashServersParams) WithOffset(offset *int64) *GetWashServersParams {
+	o.SetOffset(offset)
+	return o
+}
+
+// SetOffset adds the offset to the get wash servers params
+func (o *GetWashServersParams) SetOffset(offset *int64) {
+	o.Offset = offset
 }
 
 // WithOrganizationID adds the organizationID to the get wash servers params
@@ -169,11 +224,6 @@ func (o *GetWashServersParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		return err
 	}
 	var res []error
-	if o.Body != nil {
-		if err := r.SetBodyParam(o.Body); err != nil {
-			return err
-		}
-	}
 
 	if o.GroupID != nil {
 
@@ -187,6 +237,57 @@ func (o *GetWashServersParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		if qGroupID != "" {
 
 			if err := r.SetQueryParam("groupId", qGroupID); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.IsManagedByMe != nil {
+
+		// query param isManagedByMe
+		var qrIsManagedByMe bool
+
+		if o.IsManagedByMe != nil {
+			qrIsManagedByMe = *o.IsManagedByMe
+		}
+		qIsManagedByMe := swag.FormatBool(qrIsManagedByMe)
+		if qIsManagedByMe != "" {
+
+			if err := r.SetQueryParam("isManagedByMe", qIsManagedByMe); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Limit != nil {
+
+		// query param limit
+		var qrLimit int64
+
+		if o.Limit != nil {
+			qrLimit = *o.Limit
+		}
+		qLimit := swag.FormatInt64(qrLimit)
+		if qLimit != "" {
+
+			if err := r.SetQueryParam("limit", qLimit); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Offset != nil {
+
+		// query param offset
+		var qrOffset int64
+
+		if o.Offset != nil {
+			qrOffset = *o.Offset
+		}
+		qOffset := swag.FormatInt64(qrOffset)
+		if qOffset != "" {
+
+			if err := r.SetQueryParam("offset", qOffset); err != nil {
 				return err
 			}
 		}

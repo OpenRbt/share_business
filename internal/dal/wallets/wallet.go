@@ -3,7 +3,6 @@ package wallets
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 	"washBonus/internal/dal"
 	"washBonus/internal/dal/dbmodels"
@@ -22,7 +21,7 @@ func (r *walletRepo) Get(ctx context.Context, userID string, pagination dbmodels
 	_, err = r.db.NewSession(nil).
 		Select("*").
 		From("wallets").
-		Where("NOT is_default AND user_id = ?", userID).
+		Where("user_id = ?", userID).
 		Limit(uint64(pagination.Limit)).
 		Offset(uint64(pagination.Offset)).
 		LoadContext(ctx, &wallets)
@@ -95,8 +94,6 @@ func (r *walletRepo) Create(ctx context.Context, userID string, organizationID u
 		Values(userID, organizationID).
 		Returning("id", "user_id", "organization_id", "is_default", "balance").
 		LoadContext(ctx, &wallet)
-
-	fmt.Println(err)
 
 	return wallet, err
 }

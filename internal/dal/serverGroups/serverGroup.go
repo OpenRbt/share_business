@@ -9,47 +9,30 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (r *serverGroupRepo) Get(ctx context.Context, filter dbmodels.ServerGroupFilter) ([]dbmodels.ServerGroup, error) {
+func (r *serverGroupRepo) Get(ctx context.Context, userID string, filter dbmodels.ServerGroupFilter) ([]dbmodels.ServerGroup, error) {
 	var err error
 	defer dal.LogOptionalError(r.l, "server_group", err)
 
-	query := r.db.NewSession(nil).
-		Select("*").
-		From("server_groups").
-		Where("NOT deleted")
-
-	if filter.OrganizationID != uuid.Nil {
-		query = query.Where("organization_id = ?", filter.OrganizationID)
-	}
-
-	return getGroups(ctx, query, filter)
-}
-
-func (r *serverGroupRepo) GetForManager(ctx context.Context, userID string, filter dbmodels.ServerGroupFilter) ([]dbmodels.ServerGroup, error) {
-	var err error
-	defer dal.LogOptionalError(r.l, "server_group", err)
+	var groups []dbmodels.ServerGroup
 
 	query := r.db.NewSession(nil).
 		Select("gr.*").
 		From(dbr.I("server_groups").As("gr")).
-		Join(dbr.I("organization_managers").As("man"), "gr.organization_id = man.organization_id").
-		Where("NOT gr.deleted AND man.user_id = ?", userID)
+		Where("NOT gr.deleted")
 
 	if filter.OrganizationID != uuid.Nil {
 		query = query.Where("gr.organization_id = ?", filter.OrganizationID)
 	}
 
-	return getGroups(ctx, query, filter)
-}
+	if filter.IsManagedByMe {
+		query = query.LeftJoin(dbr.I("organization_managers").As("man"), "gr.organization_id = man.organization_id")
+		query = query.Where("man.user_id = ?", userID)
+	}
 
-func getGroups(ctx context.Context, query *dbr.SelectStmt, filter dbmodels.ServerGroupFilter) ([]dbmodels.ServerGroup, error) {
-	var groups []dbmodels.ServerGroup
-
-	_, err := query.
+	_, err = query.
 		Limit(uint64(filter.Limit)).
 		Offset(uint64(filter.Offset)).
 		LoadContext(ctx, &groups)
-
 	if err != nil {
 		return nil, err
 	}

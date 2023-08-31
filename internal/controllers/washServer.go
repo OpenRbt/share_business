@@ -30,8 +30,8 @@ func NewWashServerController(l *zap.SugaredLogger, washServerSvc app.WashServerS
 	}
 }
 
-func (ctrl *washServerController) CreateWashServer(ctx context.Context, authUser entity.User, newServer entity.WashServerCreation) (entity.WashServer, error) {
-	if app.IsUser(authUser) {
+func (ctrl *washServerController) CreateWashServer(ctx context.Context, auth app.Auth, newServer entity.WashServerCreation) (entity.WashServer, error) {
+	if app.IsUser(auth.User) {
 		return entity.WashServer{}, entity.ErrAccessDenied
 	}
 
@@ -42,17 +42,17 @@ func (ctrl *washServerController) CreateWashServer(ctx context.Context, authUser
 			return entity.WashServer{}, err
 		}
 
-		isUserManager, err := ctrl.orgSvc.IsUserManager(ctx, group.OrganizationID, authUser.ID)
+		isUserManager, err := ctrl.orgSvc.IsUserManager(ctx, group.OrganizationID, auth.User.ID)
 		if err != nil {
 			return entity.WashServer{}, err
 		}
 
-		if app.IsEngineer(authUser) && !isUserManager {
+		if app.IsEngineer(auth.User) && !isUserManager {
 			return entity.WashServer{}, entity.ErrAccessDenied
 		}
 	}
 
-	registered, err := ctrl.washServerSvc.CreateWashServer(ctx, authUser.ID, newServer)
+	registered, err := ctrl.washServerSvc.CreateWashServer(ctx, auth.User.ID, newServer)
 	if err != nil {
 		return entity.WashServer{}, err
 	}
@@ -65,16 +65,12 @@ func (ctrl *washServerController) CreateWashServer(ctx context.Context, authUser
 	return registered, nil
 }
 
-func (ctrl *washServerController) GetWashServerById(ctx context.Context, authUser entity.User, id uuid.UUID) (entity.WashServer, error) {
-	if app.IsUser(authUser) {
-		return entity.WashServer{}, entity.ErrAccessDenied
-	}
-
+func (ctrl *washServerController) GetWashServerById(ctx context.Context, auth app.Auth, id uuid.UUID) (entity.WashServer, error) {
 	return ctrl.washServerSvc.GetWashServerById(ctx, id)
 }
 
-func (ctrl *washServerController) UpdateWashServer(ctx context.Context, authUser entity.User, id uuid.UUID, updateWashServer entity.WashServerUpdate) (entity.WashServer, error) {
-	if app.IsUser(authUser) {
+func (ctrl *washServerController) UpdateWashServer(ctx context.Context, auth app.Auth, id uuid.UUID, updateWashServer entity.WashServerUpdate) (entity.WashServer, error) {
+	if app.IsUser(auth.User) {
 		return entity.WashServer{}, entity.ErrAccessDenied
 	}
 
@@ -83,12 +79,12 @@ func (ctrl *washServerController) UpdateWashServer(ctx context.Context, authUser
 		return entity.WashServer{}, err
 	}
 
-	isUserManager, err := ctrl.orgSvc.IsUserManager(ctx, server.OrganizationID, authUser.ID)
+	isUserManager, err := ctrl.orgSvc.IsUserManager(ctx, server.OrganizationID, auth.User.ID)
 	if err != nil {
 		return entity.WashServer{}, err
 	}
 
-	if app.IsEngineer(authUser) && !isUserManager {
+	if app.IsEngineer(auth.User) && !isUserManager {
 		return entity.WashServer{}, entity.ErrAccessDenied
 	}
 
@@ -100,8 +96,8 @@ func (ctrl *washServerController) UpdateWashServer(ctx context.Context, authUser
 	return updatedServer, nil
 }
 
-func (ctrl *washServerController) DeleteWashServer(ctx context.Context, authUser entity.User, id uuid.UUID) error {
-	if app.IsUser(authUser) {
+func (ctrl *washServerController) DeleteWashServer(ctx context.Context, auth app.Auth, id uuid.UUID) error {
+	if app.IsUser(auth.User) {
 		return entity.ErrAccessDenied
 	}
 
@@ -110,12 +106,12 @@ func (ctrl *washServerController) DeleteWashServer(ctx context.Context, authUser
 		return err
 	}
 
-	isUserManager, err := ctrl.orgSvc.IsUserManager(ctx, server.OrganizationID, authUser.ID)
+	isUserManager, err := ctrl.orgSvc.IsUserManager(ctx, server.OrganizationID, auth.User.ID)
 	if err != nil {
 		return err
 	}
 
-	if app.IsEngineer(authUser) && !isUserManager {
+	if app.IsEngineer(auth.User) && !isUserManager {
 		return entity.ErrAccessDenied
 	}
 
@@ -127,18 +123,16 @@ func (ctrl *washServerController) DeleteWashServer(ctx context.Context, authUser
 	return nil
 }
 
-func (ctrl *washServerController) GetWashServers(ctx context.Context, authUser entity.User, filter entity.WashServerFilter) ([]entity.WashServer, error) {
-	if app.IsAdmin(authUser) {
-		return ctrl.washServerSvc.GetWashServers(ctx, filter)
-	} else if app.IsEngineer(authUser) {
-		return ctrl.washServerSvc.GetForManager(ctx, authUser.ID, filter)
+func (ctrl *washServerController) GetWashServers(ctx context.Context, auth app.Auth, filter entity.WashServerFilter) ([]entity.WashServer, error) {
+	if !app.IsEngineer(auth.User) {
+		filter.IsManagedByMe = false
 	}
 
-	return ctrl.washServerSvc.GetWashServers(ctx, filter)
+	return ctrl.washServerSvc.GetWashServers(ctx, auth.User.ID, filter)
 }
 
-func (ctrl *washServerController) AssignToServerGroup(ctx context.Context, authUser entity.User, serverID uuid.UUID, groupID uuid.UUID) error {
-	if app.IsUser(authUser) {
+func (ctrl *washServerController) AssignToServerGroup(ctx context.Context, auth app.Auth, serverID uuid.UUID, groupID uuid.UUID) error {
+	if app.IsUser(auth.User) {
 		return entity.ErrAccessDenied
 	}
 
@@ -152,17 +146,17 @@ func (ctrl *washServerController) AssignToServerGroup(ctx context.Context, authU
 		return err
 	}
 
-	isUserServerManager, err := ctrl.orgSvc.IsUserManager(ctx, server.OrganizationID, authUser.ID)
+	isUserServerManager, err := ctrl.orgSvc.IsUserManager(ctx, server.OrganizationID, auth.User.ID)
 	if err != nil {
 		return err
 	}
 
-	isUserGroupManager, err := ctrl.orgSvc.IsUserManager(ctx, group.OrganizationID, authUser.ID)
+	isUserGroupManager, err := ctrl.orgSvc.IsUserManager(ctx, group.OrganizationID, auth.User.ID)
 	if err != nil {
 		return err
 	}
 
-	if app.IsEngineer(authUser) && (!isUserServerManager || !isUserGroupManager) {
+	if app.IsEngineer(auth.User) && (!isUserServerManager || !isUserGroupManager) {
 		return entity.ErrAccessDenied
 	}
 

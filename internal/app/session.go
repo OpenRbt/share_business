@@ -11,9 +11,9 @@ import (
 
 type (
 	SessionController interface {
-		GetSession(ctx Ctx, sessionID uuid.UUID, userID string) (entity.Session, error)
-		ChargeBonuses(ctx Ctx, amount decimal.Decimal, sessionID uuid.UUID, authUser entity.User) error
-		AssignUserToSession(ctx Ctx, sessionID uuid.UUID, authUser entity.User) error
+		GetSession(ctx Ctx, auth Auth, sessionID uuid.UUID) (entity.Session, error)
+		ChargeBonuses(ctx Ctx, auth Auth, amount decimal.Decimal, sessionID uuid.UUID) error
+		AssignUserToSession(ctx Ctx, auth Auth, sessionID uuid.UUID) error
 	}
 
 	SessionService interface {

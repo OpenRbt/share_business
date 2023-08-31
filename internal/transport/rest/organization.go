@@ -23,13 +23,15 @@ func (svc *service) initOrganizationsHandlers(api *operations.WashBonusAPI) {
 }
 
 func (svc *service) getOrganizations(params organizations.GetOrganizationsParams, auth *app.Auth) organizations.GetOrganizationsResponder {
-	filter, err := conversions.OrganizationFilterFromRest(*params.Body, params.Ids)
+	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
+
+	filter, err := conversions.OrganizationFilterFromRest(pagination, *params.IsManagedByMe, params.Ids)
 	if err != nil {
 		svc.l.Errorln(err)
 		return organizations.NewGetOrganizationsBadRequest()
 	}
 
-	res, err := svc.orgCtrl.Get(params.HTTPRequest.Context(), auth.User, filter)
+	res, err := svc.orgCtrl.Get(params.HTTPRequest.Context(), *auth, filter)
 
 	switch {
 	case err == nil:
@@ -48,7 +50,7 @@ func (svc *service) getOrganizationByID(params organizations.GetOrganizationByID
 		return organizations.NewGetOrganizationByIDBadRequest()
 	}
 
-	res, err := svc.orgCtrl.GetById(params.HTTPRequest.Context(), auth.User, id)
+	res, err := svc.orgCtrl.GetById(params.HTTPRequest.Context(), *auth, id)
 
 	switch {
 	case err == nil:
@@ -66,7 +68,7 @@ func (svc *service) getOrganizationByID(params organizations.GetOrganizationByID
 func (svc *service) createOrganization(params organizations.CreateOrganizationParams, auth *app.Auth) organizations.CreateOrganizationResponder {
 	orgCreation := conversions.OrganizationCreationFromRest(*params.Body)
 
-	org, err := svc.orgCtrl.Create(params.HTTPRequest.Context(), auth.User, orgCreation)
+	org, err := svc.orgCtrl.Create(params.HTTPRequest.Context(), *auth, orgCreation)
 
 	switch {
 	case err == nil:
@@ -86,7 +88,7 @@ func (svc *service) updateOrganization(params organizations.UpdateOrganizationPa
 	}
 
 	orgUpdate := conversions.OrganizationUpdateFromRest(*params.Body)
-	updatedOrg, err := svc.orgCtrl.Update(params.HTTPRequest.Context(), auth.User, id, orgUpdate)
+	updatedOrg, err := svc.orgCtrl.Update(params.HTTPRequest.Context(), *auth, id, orgUpdate)
 
 	switch {
 	case err == nil:
@@ -107,7 +109,7 @@ func (svc *service) deleteOrganization(params organizations.DeleteOrganizationPa
 		return organizations.NewDeleteOrganizationBadRequest()
 	}
 
-	err = svc.orgCtrl.Delete(params.HTTPRequest.Context(), auth.User, id)
+	err = svc.orgCtrl.Delete(params.HTTPRequest.Context(), *auth, id)
 
 	switch {
 	case err == nil:
@@ -128,7 +130,7 @@ func (svc *service) assignOrganizationManager(params organizations.AssignUserToO
 		return organizations.NewAssignUserToOrganizationBadRequest()
 	}
 
-	err = svc.orgCtrl.AssignManager(params.HTTPRequest.Context(), auth.User, id, params.UserID)
+	err = svc.orgCtrl.AssignManager(params.HTTPRequest.Context(), *auth, id, params.UserID)
 
 	switch {
 	case err == nil:
@@ -149,7 +151,7 @@ func (svc *service) removeOrganizationManager(params organizations.RemoveUserFro
 		return organizations.NewRemoveUserFromOrganizationBadRequest()
 	}
 
-	err = svc.orgCtrl.RemoveManager(params.HTTPRequest.Context(), auth.User, id, params.UserID)
+	err = svc.orgCtrl.RemoveManager(params.HTTPRequest.Context(), *auth, id, params.UserID)
 
 	switch {
 	case err == nil:

@@ -20,9 +20,10 @@ func (svc *service) initServerGroupHandlers(api *operations.WashBonusAPI) {
 }
 
 func (svc *service) getServerGroups(params serverGroups.GetServerGroupsParams, auth *app.Auth) serverGroups.GetServerGroupsResponder {
-	filter := conversions.ServerGroupFilterFromRest(*params.Body, params.OrganizationID)
+	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
+	filter := conversions.ServerGroupFilterFromRest(pagination, *params.IsManagedByMe, params.OrganizationID)
 
-	res, err := svc.serverGroupCtrl.Get(params.HTTPRequest.Context(), auth.User, filter)
+	res, err := svc.serverGroupCtrl.Get(params.HTTPRequest.Context(), *auth, filter)
 
 	switch {
 	case err == nil:
@@ -41,7 +42,7 @@ func (svc *service) getServerGroupByID(params serverGroups.GetServerGroupByIDPar
 		return serverGroups.NewGetServerGroupByIDBadRequest()
 	}
 
-	res, err := svc.serverGroupCtrl.GetById(params.HTTPRequest.Context(), auth.User, groupID)
+	res, err := svc.serverGroupCtrl.GetById(params.HTTPRequest.Context(), *auth, groupID)
 
 	switch {
 	case err == nil:
@@ -59,7 +60,7 @@ func (svc *service) getServerGroupByID(params serverGroups.GetServerGroupByIDPar
 func (svc *service) createServerGroup(params serverGroups.CreateServerGroupParams, auth *app.Auth) serverGroups.CreateServerGroupResponder {
 	groupCreation := conversions.ServerGroupCreationFromRest(*params.Body)
 
-	group, err := svc.serverGroupCtrl.Create(params.HTTPRequest.Context(), auth.User, groupCreation)
+	group, err := svc.serverGroupCtrl.Create(params.HTTPRequest.Context(), *auth, groupCreation)
 
 	switch {
 	case err == nil:
@@ -79,7 +80,7 @@ func (svc *service) updateServerGroup(params serverGroups.UpdateServerGroupParam
 	}
 
 	groupUpdate := conversions.ServerGroupUpdateFromRest(*params.Body)
-	updatedGroup, err := svc.serverGroupCtrl.Update(params.HTTPRequest.Context(), auth.User, groupID, groupUpdate)
+	updatedGroup, err := svc.serverGroupCtrl.Update(params.HTTPRequest.Context(), *auth, groupID, groupUpdate)
 
 	switch {
 	case err == nil:
@@ -100,7 +101,7 @@ func (svc *service) deleteServerGroup(params serverGroups.DeleteServerGroupParam
 		return serverGroups.NewDeleteServerGroupBadRequest()
 	}
 
-	err = svc.serverGroupCtrl.Delete(params.HTTPRequest.Context(), auth.User, groupID)
+	err = svc.serverGroupCtrl.Delete(params.HTTPRequest.Context(), *auth, groupID)
 
 	switch {
 	case err == nil:

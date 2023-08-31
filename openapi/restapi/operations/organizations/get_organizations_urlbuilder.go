@@ -16,7 +16,10 @@ import (
 
 // GetOrganizationsURL generates an URL for the get organizations operation
 type GetOrganizationsURL struct {
-	Ids []strfmt.UUID
+	Ids           []strfmt.UUID
+	IsManagedByMe *bool
+	Limit         *int64
+	Offset        *int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -64,6 +67,30 @@ func (o *GetOrganizationsURL) Build() (*url.URL, error) {
 		if qsv != "" {
 			qs.Set("ids", qsv)
 		}
+	}
+
+	var isManagedByMeQ string
+	if o.IsManagedByMe != nil {
+		isManagedByMeQ = swag.FormatBool(*o.IsManagedByMe)
+	}
+	if isManagedByMeQ != "" {
+		qs.Set("isManagedByMe", isManagedByMeQ)
+	}
+
+	var limitQ string
+	if o.Limit != nil {
+		limitQ = swag.FormatInt64(*o.Limit)
+	}
+	if limitQ != "" {
+		qs.Set("limit", limitQ)
+	}
+
+	var offsetQ string
+	if o.Offset != nil {
+		offsetQ = swag.FormatInt64(*o.Offset)
+	}
+	if offsetQ != "" {
+		qs.Set("offset", offsetQ)
 	}
 
 	_result.RawQuery = qs.Encode()

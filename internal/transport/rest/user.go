@@ -17,7 +17,8 @@ func (svc *service) initUserHandlers(api *operations.WashBonusAPI) {
 }
 
 func (svc *service) getUsers(params users.GetUsersParams, auth *app.Auth) users.GetUsersResponder {
-	res, err := svc.userCtrl.Get(params.HTTPRequest.Context(), auth.User, entity.Pagination(*params.Body))
+	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
+	res, err := svc.userCtrl.Get(params.HTTPRequest.Context(), *auth, pagination)
 
 	switch {
 	case err == nil:
@@ -32,7 +33,7 @@ func (svc *service) getUsers(params users.GetUsersParams, auth *app.Auth) users.
 }
 
 func (svc *service) getUserByID(params users.GetUserByIDParams, auth *app.Auth) users.GetUserByIDResponder {
-	res, err := svc.userCtrl.GetById(params.HTTPRequest.Context(), auth.User, params.UserID)
+	res, err := svc.userCtrl.GetById(params.HTTPRequest.Context(), *auth, params.UserID)
 
 	switch {
 	case err == nil:
@@ -49,7 +50,7 @@ func (svc *service) getUserByID(params users.GetUserByIDParams, auth *app.Auth) 
 }
 
 func (svc *service) getCurrentUser(params users.GetCurrentUserParams, auth *app.Auth) users.GetCurrentUserResponder {
-	res, err := svc.userCtrl.GetById(params.HTTPRequest.Context(), auth.User, auth.UID)
+	res, err := svc.userCtrl.GetById(params.HTTPRequest.Context(), *auth, auth.User.ID)
 
 	switch {
 	case err == nil:
@@ -66,7 +67,7 @@ func (svc *service) getCurrentUser(params users.GetCurrentUserParams, auth *app.
 }
 
 func (svc *service) updateUserRole(params users.UpdateUserRoleParams, auth *app.Auth) users.UpdateUserRoleResponder {
-	err := svc.userCtrl.UpdateUserRole(params.HTTPRequest.Context(), auth.User, entity.UserUpdate{ID: params.UserID, Role: entity.Role(params.Update.Role)})
+	err := svc.userCtrl.UpdateUserRole(params.HTTPRequest.Context(), *auth, entity.UserUpdate{ID: params.UserID, Role: entity.Role(params.Update.Role)})
 
 	switch {
 	case err == nil:

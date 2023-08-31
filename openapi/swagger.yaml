@@ -43,10 +43,8 @@ paths:
         - authKey: []
       operationId: getUsers
       parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/Pagination"
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
       responses:
         200:
           description: OK
@@ -215,10 +213,9 @@ paths:
         - authKey: []
       operationId: getWashServers
       parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/Pagination"
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/isManagedByMe'
         - name: organizationId
           in: query
           type: string
@@ -351,11 +348,9 @@ paths:
         - organizations
       operationId: getOrganizations
       parameters:
-        - name: body
-          in: body
-          schema:
-            
-            $ref: "#/definitions/Pagination"
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/isManagedByMe'
         - name: ids
           in: query
           type: array
@@ -528,10 +523,9 @@ paths:
         - serverGroups
       operationId: getServerGroups
       parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/Pagination"
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/isManagedByMe'
         - name: organizationId
           in: query
           type: string
@@ -677,10 +671,8 @@ paths:
         - wallets
       operationId: getWallets
       parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: "#/definitions/Pagination"
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
       responses:
         200:
           description: OK
@@ -721,6 +713,33 @@ paths:
           $ref: "#/responses/NotFound"
         500:
           $ref: "#/responses/InternalError"
+
+parameters:
+  offset:
+    name: offset
+    in: query
+    description: Number of records to skip for pagination
+    required: false
+    type: integer
+    format: int64
+    default: 0
+    minimum: 0
+
+  limit:
+    name: limit
+    in: query
+    description: Maximum number of records to return
+    required: false
+    type: integer
+    format: int64
+    default: 100
+    minimum: 0
+
+  isManagedByMe:
+    name: isManagedByMe
+    in: query
+    type: boolean
+    default: false
 
 responses:
   BadRequest:
@@ -832,17 +851,6 @@ definitions:
         type: string
       description:
         type: string
-
-  Pagination:
-    type: object
-    properties: 
-      limit:
-        type: integer
-        format: int64
-        maximum: 100
-      offset:
-        type: integer
-        format: int64
 
   UserRoleUpdate:
     type: object

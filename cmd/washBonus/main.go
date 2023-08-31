@@ -66,7 +66,7 @@ func main() {
 	sessionSvc := session.New(l, userRepo, sessionRepo, washRepo, walletRepo, cfg.SessionsConfig.ReportsProcessingDelayInMinutes, cfg.SessionsConfig.MoneyReportRewardPercentDefault)
 	orgSvc := organizations.New(l, orgRepo, userRepo)
 	groupSvc := serverGroups.New(l, groupRepo, orgRepo)
-	walletSvc := wallets.New(l, walletRepo)
+	walletSvc := wallets.New(l, walletRepo, orgRepo)
 
 	rabbitSvc := rabbit.New(l, sessionSvc, userSvc, washServerSvc, walletSvc)
 

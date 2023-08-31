@@ -3,7 +3,6 @@ package conversions
 import (
 	"washBonus/internal/dal/dbmodels"
 	"washBonus/internal/entity"
-	"washBonus/openapi/models"
 )
 
 func PaginationToDB(entity entity.Pagination) dbmodels.Pagination {
@@ -13,14 +12,9 @@ func PaginationToDB(entity entity.Pagination) dbmodels.Pagination {
 	}
 }
 
-func PaginationFromRest(model models.Pagination) entity.Pagination {
-	limit := model.Limit
-	if limit == 0 {
-		limit = 100
-	}
-
+func PaginationFromRest(limit, offset int64) entity.Pagination {
 	return entity.Pagination{
 		Limit:  limit,
-		Offset: model.Offset,
+		Offset: offset,
 	}
 }

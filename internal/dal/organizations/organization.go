@@ -12,43 +12,30 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (r *repo) Get(ctx context.Context, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error) {
+func (r *repo) Get(ctx context.Context, userID string, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error) {
 	var err error
 	defer dal.LogOptionalError(r.l, "organization", err)
+
+	var orgs []dbmodels.Organization
 
 	query := r.db.NewSession(nil).
 		Select("org.*").
 		From(dbr.I("organizations").As("org")).
 		Where("NOT org.deleted")
 
-	return getOrgs(ctx, query, filter)
-}
-
-func (r *repo) GetForManager(ctx context.Context, userID string, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error) {
-	var err error
-	defer dal.LogOptionalError(r.l, "organization", err)
-
-	query := r.db.NewSession(nil).
-		Select("org.*").
-		From(dbr.I("organizations").As("org")).
-		Join(dbr.I("organization_managers").As("man"), "org.id = man.organization_id").
-		Where("NOT org.deleted AND man.user_id = ?", userID)
-
-	return getOrgs(ctx, query, filter)
-}
-
-func getOrgs(ctx context.Context, query *dbr.SelectStmt, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error) {
-	var orgs []dbmodels.Organization
-
 	if len(filter.OrganizationIDs) > 0 {
 		query = query.Where("org.id IN ?", filter.OrganizationIDs)
 	}
 
-	_, err := query.
+	if filter.IsManagedByMe {
+		query = query.LeftJoin(dbr.I("organization_managers").As("man"), "org.id = man.organization_id")
+		query = query.Where("man.user_id = ?", userID)
+	}
+
+	_, err = query.
 		Limit(uint64(filter.Limit)).
 		Offset(uint64(filter.Offset)).
 		LoadContext(ctx, &orgs)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to load organizations: %w", err)
 	}

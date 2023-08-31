@@ -31,8 +31,8 @@ func NewSessionController(l *zap.SugaredLogger, sessionSvc app.SessionService, u
 	}
 }
 
-func (ctrl *sessionController) GetSession(ctx context.Context, sessionID uuid.UUID, userID string) (entity.Session, error) {
-	session, err := ctrl.sessionSvc.Get(ctx, sessionID, &userID)
+func (ctrl *sessionController) GetSession(ctx context.Context, auth app.Auth, sessionID uuid.UUID) (entity.Session, error) {
+	session, err := ctrl.sessionSvc.Get(ctx, sessionID, &auth.User.ID)
 	if err != nil {
 		return session, err
 	}
@@ -46,8 +46,8 @@ func (ctrl *sessionController) GetSession(ctx context.Context, sessionID uuid.UU
 	return session, nil
 }
 
-func (ctrl *sessionController) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, authUser entity.User) error {
-	session, err := ctrl.sessionSvc.Get(ctx, sessionID, &authUser.ID)
+func (ctrl *sessionController) ChargeBonuses(ctx context.Context, auth app.Auth, amount decimal.Decimal, sessionID uuid.UUID) error {
+	session, err := ctrl.sessionSvc.Get(ctx, sessionID, &auth.User.ID)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (ctrl *sessionController) ChargeBonuses(ctx context.Context, amount decimal
 		return entity.ErrForbidden
 	}
 
-	err = ctrl.sessionSvc.ChargeBonuses(ctx, amount, sessionID, authUser.ID)
+	err = ctrl.sessionSvc.ChargeBonuses(ctx, amount, sessionID, auth.User.ID)
 	if err != nil {
 		return err
 	}
@@ -70,23 +70,23 @@ func (ctrl *sessionController) ChargeBonuses(ctx context.Context, amount decimal
 	return nil
 }
 
-func (ctrl *sessionController) AssignUserToSession(ctx context.Context, sessionID uuid.UUID, authUser entity.User) error {
+func (ctrl *sessionController) AssignUserToSession(ctx context.Context, auth app.Auth, sessionID uuid.UUID) error {
 	session, err := ctrl.sessionSvc.Get(ctx, sessionID, nil)
 	if err != nil {
 		return err
 	}
 
-	if (session.User != nil && session.User.ID != authUser.ID) || session.Finished {
+	if (session.User != nil && session.User.ID != auth.User.ID) || session.Finished {
 		return entity.ErrForbidden
 	}
 
-	err = ctrl.sessionSvc.SetSessionUser(ctx, sessionID, authUser.ID)
+	err = ctrl.sessionSvc.SetSessionUser(ctx, sessionID, auth.User.ID)
 	if err != nil {
 		return err
 	}
 
 	washServerID := session.WashServer.ID.String()
-	eventErr := ctrl.rabbitSvc.SendMessage(conversions.SessionUserAssign(sessionID, authUser.ID, session.Post), rabbitVo.WashBonusService, rabbitVo.RoutingKey(washServerID), rabbitVo.SessionUserMessageType)
+	eventErr := ctrl.rabbitSvc.SendMessage(conversions.SessionUserAssign(sessionID, auth.User.ID, session.Post), rabbitVo.WashBonusService, rabbitVo.RoutingKey(washServerID), rabbitVo.SessionUserMessageType)
 	if eventErr != nil {
 		ctrl.logger.Errorw("failed to send server event", "session pool creation", "target server", washServerID, "error", eventErr)
 	}

@@ -25,4 +25,5 @@ type OrganizationUpdate struct {
 type OrganizationFilter struct {
 	Pagination
 	OrganizationIDs []uuid.UUID
+	IsManagedByMe   bool
 }

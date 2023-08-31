@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"fmt"
 	"washBonus/internal/dal"
 	"washBonus/internal/dal/dbmodels"
 
@@ -49,12 +48,10 @@ func (r *userRepo) Get(ctx context.Context, pagination dbmodels.Pagination) ([]d
 		Offset(uint64(pagination.Offset)).
 		LoadContext(ctx, &dbUsers)
 
-	fmt.Println(dbUsers)
-
 	return dbUsers, err
 }
 
-func (r *userRepo) Create(ctx context.Context, userID string) (dbmodels.User, error) {
+func (r *userRepo) Create(ctx context.Context, ent dbmodels.UserCreation) (dbmodels.User, error) {
 	var err error
 	defer dal.LogOptionalError(r.l, "user", err)
 
@@ -67,8 +64,8 @@ func (r *userRepo) Create(ctx context.Context, userID string) (dbmodels.User, er
 	var dbUser dbmodels.User
 
 	err = tx.InsertInto("users").
-		Columns("id", "role").
-		Values(userID, "user").
+		Columns("id", "email", "name", "role").
+		Values(ent.ID, ent.Email, ent.Name, "user").
 		Returning("id", "role", "deleted").
 		LoadContext(ctx, &dbUser)
 	if err != nil {
@@ -83,12 +80,7 @@ func (r *userRepo) Create(ctx context.Context, userID string) (dbmodels.User, er
 
 	_, err = tx.InsertInto("wallets").
 		Columns("user_id", "organization_id", "is_default").
-		Values(map[string]interface{}{
-			"user_id":         userID,
-			"organization_id": org.ID,
-			"is_default":      true,
-		}).
-		Returning("id", "user_id", "organization_id", "is_default", "balance").
+		Values(ent.ID, org.ID, true).
 		ExecContext(ctx)
 
 	if err != nil {

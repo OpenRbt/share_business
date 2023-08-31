@@ -24,6 +24,15 @@ func (s *walletService) Get(ctx context.Context, userID string, pagination entit
 }
 
 func (s *walletService) GetOrCreate(ctx context.Context, userID string, organizationID uuid.UUID) (entity.Wallet, error) {
+	_, err := s.orgRepo.GetById(ctx, organizationID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			err = entity.ErrNotFound
+		}
+
+		return entity.Wallet{}, err
+	}
+
 	wallet, err := s.walletRepo.GetByOrganizationId(ctx, userID, organizationID)
 	if errors.Is(err, dbmodels.ErrNotFound) {
 		wallet, err = s.walletRepo.Create(ctx, userID, organizationID)

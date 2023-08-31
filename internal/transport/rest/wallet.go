@@ -17,9 +17,9 @@ func (svc *service) initWalletHandlers(api *operations.WashBonusAPI) {
 }
 
 func (svc *service) getWallets(params wallets.GetWalletsParams, auth *app.Auth) wallets.GetWalletsResponder {
-	pagination := conversions.PaginationFromRest(*params.Body)
+	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
 
-	res, err := svc.walletCtrl.Get(params.HTTPRequest.Context(), auth.User, pagination)
+	res, err := svc.walletCtrl.Get(params.HTTPRequest.Context(), *auth, pagination)
 
 	switch {
 	case err == nil:
@@ -40,7 +40,7 @@ func (svc *service) getWalletByOrganizationID(params wallets.GetWalletByOrganiza
 		return wallets.NewGetWalletByOrganizationIDBadRequest()
 	}
 
-	res, err := svc.walletCtrl.GetByOrganizationId(params.HTTPRequest.Context(), auth.User, organizationID)
+	res, err := svc.walletCtrl.GetByOrganizationId(params.HTTPRequest.Context(), *auth, organizationID)
 
 	switch {
 	case err == nil:

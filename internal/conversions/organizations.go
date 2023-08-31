@@ -77,7 +77,7 @@ func OrganizationCreationFromRest(model models.OrganizationCreation) entity.Orga
 	}
 }
 
-func OrganizationFilterFromRest(pagination models.Pagination, organizationIDs []strfmt.UUID) (entity.OrganizationFilter, error) {
+func OrganizationFilterFromRest(pagination entity.Pagination, isManagedByMe bool, organizationIDs []strfmt.UUID) (entity.OrganizationFilter, error) {
 	ids := make([]uuid.UUID, 0, len(organizationIDs))
 
 	for _, value := range organizationIDs {
@@ -89,14 +89,16 @@ func OrganizationFilterFromRest(pagination models.Pagination, organizationIDs []
 	}
 
 	return entity.OrganizationFilter{
-		Pagination:      PaginationFromRest(pagination),
 		OrganizationIDs: ids,
+		Pagination:      pagination,
+		IsManagedByMe:   isManagedByMe,
 	}, nil
 }
 
-func OrganizationFilterToDB(filters entity.OrganizationFilter) dbmodels.OrganizationFilter {
+func OrganizationFilterToDB(filter entity.OrganizationFilter) dbmodels.OrganizationFilter {
 	return dbmodels.OrganizationFilter{
-		Pagination:      PaginationToDB(filters.Pagination),
-		OrganizationIDs: filters.OrganizationIDs,
+		Pagination:      PaginationToDB(filter.Pagination),
+		OrganizationIDs: filter.OrganizationIDs,
+		IsManagedByMe:   filter.IsManagedByMe,
 	}
 }

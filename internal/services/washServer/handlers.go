@@ -22,17 +22,8 @@ func (s *washService) GetWashServerById(ctx context.Context, serverID uuid.UUID)
 	return conversions.WashServerFromDB(server), nil
 }
 
-func (s *washService) GetWashServers(ctx context.Context, filter entity.WashServerFilter) ([]entity.WashServer, error) {
-	servers, err := s.washServerRepo.GetWashServers(ctx, conversions.WashServerFilterToDB(filter))
-	if err != nil {
-		return nil, err
-	}
-
-	return conversions.WashServerListFromDB(servers), nil
-}
-
-func (s *washService) GetForManager(ctx context.Context, userID string, filter entity.WashServerFilter) ([]entity.WashServer, error) {
-	servers, err := s.washServerRepo.GetForManager(ctx, userID, conversions.WashServerFilterToDB(filter))
+func (s *washService) GetWashServers(ctx context.Context, userID string, filter entity.WashServerFilter) ([]entity.WashServer, error) {
+	servers, err := s.washServerRepo.GetWashServers(ctx, userID, conversions.WashServerFilterToDB(filter))
 	if err != nil {
 		return nil, err
 	}

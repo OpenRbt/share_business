@@ -83,6 +83,14 @@ func UserUpdateToDB(user entity.UserUpdate) dbmodels.UserUpdate {
 	}
 }
 
+func UserCreationToDB(e entity.UserCreation) dbmodels.UserCreation {
+	return dbmodels.UserCreation{
+		ID:    e.ID,
+		Email: e.Email,
+		Name:  e.Name,
+	}
+}
+
 func RoleSelectionApp(dbRole string) entity.Role {
 	role := entity.AdminRole
 	switch dbRole {

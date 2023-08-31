@@ -10,9 +10,9 @@ import (
 
 type (
 	WalletController interface {
-		Get(ctx Ctx, authUser entity.User, pagination entity.Pagination) ([]entity.Wallet, error)
-		GetById(ctx Ctx, authUser entity.User, walletID uuid.UUID) (entity.Wallet, error)
-		GetByOrganizationId(ctx Ctx, authUser entity.User, organizationID uuid.UUID) (entity.Wallet, error)
+		Get(ctx Ctx, auth Auth, pagination entity.Pagination) ([]entity.Wallet, error)
+		GetById(ctx Ctx, auth Auth, walletID uuid.UUID) (entity.Wallet, error)
+		GetByOrganizationId(ctx Ctx, auth Auth, organizationID uuid.UUID) (entity.Wallet, error)
 	}
 
 	WalletService interface {

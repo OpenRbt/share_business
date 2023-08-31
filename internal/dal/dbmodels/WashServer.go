@@ -29,4 +29,5 @@ type WashServerFilter struct {
 	Pagination
 	OrganizationID uuid.UUID
 	GroupID        uuid.UUID
+	IsManagedByMe  bool
 }

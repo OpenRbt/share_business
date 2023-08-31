@@ -14,8 +14,7 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-
-	"washBonus/openapi/models"
+	"github.com/go-openapi/swag"
 )
 
 // NewGetWalletsParams creates a new GetWalletsParams object,
@@ -63,8 +62,22 @@ GetWalletsParams contains all the parameters to send to the API endpoint
 */
 type GetWalletsParams struct {
 
-	// Body.
-	Body *models.Pagination
+	/* Limit.
+
+	   Maximum number of records to return
+
+	   Format: int64
+	   Default: 100
+	*/
+	Limit *int64
+
+	/* Offset.
+
+	   Number of records to skip for pagination
+
+	   Format: int64
+	*/
+	Offset *int64
 
 	timeout    time.Duration
 	Context    context.Context
@@ -83,7 +96,21 @@ func (o *GetWalletsParams) WithDefaults() *GetWalletsParams {
 //
 // All values with no default are reset to their zero value.
 func (o *GetWalletsParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		limitDefault = int64(100)
+
+		offsetDefault = int64(0)
+	)
+
+	val := GetWalletsParams{
+		Limit:  &limitDefault,
+		Offset: &offsetDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the get wallets params
@@ -119,15 +146,26 @@ func (o *GetWalletsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithBody adds the body to the get wallets params
-func (o *GetWalletsParams) WithBody(body *models.Pagination) *GetWalletsParams {
-	o.SetBody(body)
+// WithLimit adds the limit to the get wallets params
+func (o *GetWalletsParams) WithLimit(limit *int64) *GetWalletsParams {
+	o.SetLimit(limit)
 	return o
 }
 
-// SetBody adds the body to the get wallets params
-func (o *GetWalletsParams) SetBody(body *models.Pagination) {
-	o.Body = body
+// SetLimit adds the limit to the get wallets params
+func (o *GetWalletsParams) SetLimit(limit *int64) {
+	o.Limit = limit
+}
+
+// WithOffset adds the offset to the get wallets params
+func (o *GetWalletsParams) WithOffset(offset *int64) *GetWalletsParams {
+	o.SetOffset(offset)
+	return o
+}
+
+// SetOffset adds the offset to the get wallets params
+func (o *GetWalletsParams) SetOffset(offset *int64) {
+	o.Offset = offset
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -137,9 +175,38 @@ func (o *GetWalletsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Re
 		return err
 	}
 	var res []error
-	if o.Body != nil {
-		if err := r.SetBodyParam(o.Body); err != nil {
-			return err
+
+	if o.Limit != nil {
+
+		// query param limit
+		var qrLimit int64
+
+		if o.Limit != nil {
+			qrLimit = *o.Limit
+		}
+		qLimit := swag.FormatInt64(qrLimit)
+		if qLimit != "" {
+
+			if err := r.SetQueryParam("limit", qLimit); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Offset != nil {
+
+		// query param offset
+		var qrOffset int64
+
+		if o.Offset != nil {
+			qrOffset = *o.Offset
+		}
+		qOffset := swag.FormatInt64(qrOffset)
+		if qOffset != "" {
+
+			if err := r.SetQueryParam("offset", qOffset); err != nil {
+				return err
+			}
 		}
 	}
 

@@ -12,9 +12,8 @@ type (
 
 type (
 	Auth struct {
-		UID          string
-		Disabled     bool
 		User         entity.User
+		Disabled     bool
 		UserMetadata *AuthUserMeta
 	}
 

@@ -81,24 +81,26 @@ func ServerGroupCreationFromRest(model models.ServerGroupCreation) entity.Server
 	}
 }
 
-func ServerGroupFilterFromRest(pagination models.Pagination, organizationID *strfmt.UUID) entity.ServerGroupFilter {
-	mod := entity.ServerGroupFilter{
-		Pagination: PaginationFromRest(pagination),
+func ServerGroupFilterFromRest(pagination entity.Pagination, isManagedByMe bool, organizationID *strfmt.UUID) entity.ServerGroupFilter {
+	filter := entity.ServerGroupFilter{
+		Pagination:    pagination,
+		IsManagedByMe: isManagedByMe,
 	}
 
 	if organizationID != nil {
 		orgID, err := uuid.FromString(organizationID.String())
 		if err == nil {
-			mod.OrganizationID = orgID
+			filter.OrganizationID = orgID
 		}
 	}
 
-	return mod
+	return filter
 }
 
-func ServerGroupFilterToDB(filters entity.ServerGroupFilter) dbmodels.ServerGroupFilter {
+func ServerGroupFilterToDB(filter entity.ServerGroupFilter) dbmodels.ServerGroupFilter {
 	return dbmodels.ServerGroupFilter{
-		Pagination:     PaginationToDB(filters.Pagination),
-		OrganizationID: filters.OrganizationID,
+		Pagination:     PaginationToDB(filter.Pagination),
+		OrganizationID: filter.OrganizationID,
+		IsManagedByMe:  filter.IsManagedByMe,
 	}
 }

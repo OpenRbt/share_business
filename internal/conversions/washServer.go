@@ -102,9 +102,10 @@ func WashServerCreationToDb(entity entity.WashServerCreation) dbmodels.WashServe
 	}
 }
 
-func WashServerFilterFromRest(pagination models.Pagination, organizationID *strfmt.UUID, groupID *strfmt.UUID) entity.WashServerFilter {
+func WashServerFilterFromRest(pagination entity.Pagination, isManagedByMe bool, organizationID *strfmt.UUID, groupID *strfmt.UUID) entity.WashServerFilter {
 	filter := entity.WashServerFilter{
-		Pagination: PaginationFromRest(pagination),
+		Pagination:    pagination,
+		IsManagedByMe: isManagedByMe,
 	}
 
 	if organizationID != nil {
@@ -129,5 +130,6 @@ func WashServerFilterToDB(filter entity.WashServerFilter) dbmodels.WashServerFil
 		Pagination:     PaginationToDB(filter.Pagination),
 		OrganizationID: filter.OrganizationID,
 		GroupID:        filter.GroupID,
+		IsManagedByMe:  filter.IsManagedByMe,
 	}
 }

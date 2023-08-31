@@ -27,7 +27,7 @@ func (svc *service) getWashServer(params washServers.GetWashServerByIDParams, au
 		return washServers.NewGetWashServerByIDBadRequest()
 	}
 
-	res, err := svc.washServerCtrl.GetWashServerById(params.HTTPRequest.Context(), auth.User, serverID)
+	res, err := svc.washServerCtrl.GetWashServerById(params.HTTPRequest.Context(), *auth, serverID)
 
 	switch {
 	case err == nil:
@@ -45,7 +45,7 @@ func (svc *service) getWashServer(params washServers.GetWashServerByIDParams, au
 func (svc *service) createWashServer(params washServers.CreateWashServerParams, auth *app.Auth) washServers.CreateWashServerResponder {
 	createWashServerFromRest := conversions.WashServerCreationFromRest(*params.Body)
 
-	newServer, err := svc.washServerCtrl.CreateWashServer(params.HTTPRequest.Context(), auth.User, createWashServerFromRest)
+	newServer, err := svc.washServerCtrl.CreateWashServer(params.HTTPRequest.Context(), *auth, createWashServerFromRest)
 
 	switch {
 	case err == nil:
@@ -68,7 +68,7 @@ func (svc *service) updateWashServer(params washServers.UpdateWashServerParams, 
 
 	updateWashServerFromRest := conversions.WashServerUpdateFromRest(*params.Body)
 
-	updatedServer, err := svc.washServerCtrl.UpdateWashServer(params.HTTPRequest.Context(), auth.User, serverID, updateWashServerFromRest)
+	updatedServer, err := svc.washServerCtrl.UpdateWashServer(params.HTTPRequest.Context(), *auth, serverID, updateWashServerFromRest)
 
 	switch {
 	case err == nil:
@@ -91,7 +91,7 @@ func (svc *service) deleteWashServer(params washServers.DeleteWashServerParams, 
 		return washServers.NewDeleteWashServerBadRequest()
 	}
 
-	err = svc.washServerCtrl.DeleteWashServer(params.HTTPRequest.Context(), auth.User, serverID)
+	err = svc.washServerCtrl.DeleteWashServer(params.HTTPRequest.Context(), *auth, serverID)
 
 	switch {
 	case err == nil:
@@ -107,13 +107,15 @@ func (svc *service) deleteWashServer(params washServers.DeleteWashServerParams, 
 }
 
 func (svc *service) getWashServers(params washServers.GetWashServersParams, auth *app.Auth) washServers.GetWashServersResponder {
-	filter := conversions.WashServerFilterFromRest(*params.Body, params.OrganizationID, params.GroupID)
+	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
 
-	res, err := svc.washServerCtrl.GetWashServers(params.HTTPRequest.Context(), auth.User, filter)
-	payload := conversions.WashServerListToRest(res)
+	filter := conversions.WashServerFilterFromRest(pagination, *params.IsManagedByMe, params.OrganizationID, params.GroupID)
+
+	res, err := svc.washServerCtrl.GetWashServers(params.HTTPRequest.Context(), *auth, filter)
 
 	switch {
 	case err == nil:
+		payload := conversions.WashServerListToRest(res)
 		return washServers.NewGetWashServersOK().WithPayload(payload)
 	case errors.Is(err, entity.ErrAccessDenied):
 		return washServers.NewGetWashServersForbidden()
@@ -134,7 +136,7 @@ func (svc *service) assignServerToGroup(params washServers.AssignServerToGroupPa
 		return washServers.NewAssignServerToGroupBadRequest()
 	}
 
-	err = svc.washServerCtrl.AssignToServerGroup(params.HTTPRequest.Context(), auth.User, serverID, groupID)
+	err = svc.washServerCtrl.AssignToServerGroup(params.HTTPRequest.Context(), *auth, serverID, groupID)
 
 	switch {
 	case err == nil:

@@ -3,7 +3,6 @@ package sessions
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 	"washBonus/internal/dal"
 	"washBonus/internal/dal/dbmodels"
@@ -312,8 +311,6 @@ func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessio
 		}
 	}
 
-	fmt.Println(updatedDefaultBalance, updatedOrgBalance)
-
 	_, err = tx.Update("wallets").
 		Where("id = ?", defaultWallet.ID).
 		Set("balance", updatedDefaultBalance).
@@ -330,10 +327,7 @@ func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessio
 		return err
 	}
 
-	fmt.Println(orgWallet, defaultWallet)
-
 	if !orgWallet.IsDefault {
-		fmt.Println("Suuka")
 		_, err = tx.Update("wallets").
 			Where("id = ?", orgWallet.ID).
 			Set("balance", updatedOrgBalance).

@@ -147,9 +147,11 @@ func (r *repo) DeleteWashServer(ctx context.Context, serverID uuid.UUID) error {
 	return err
 }
 
-func (r *repo) GetWashServers(ctx context.Context, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
+func (r *repo) GetWashServers(ctx context.Context, userID string, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
 	var err error
 	defer dal.LogOptionalError(r.l, "wash_server", err)
+
+	var dbWashServerList []dbmodels.WashServer
 
 	query := r.db.NewSession(nil).
 		Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
@@ -158,36 +160,20 @@ func (r *repo) GetWashServers(ctx context.Context, filter dbmodels.WashServerFil
 		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
 		Where("NOT ser.deleted")
 
-	return getServers(ctx, query, filter)
-}
-
-func (r *repo) GetForManager(ctx context.Context, userID string, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
-	var err error
-	defer dal.LogOptionalError(r.l, "wash_server", err)
-
-	query := r.db.NewSession(nil).
-		Select("ser.id, ser.title, ser.description, ser.service_key, ser.created_by, ser.group_id, org.id organization_id").
-		From(dbr.I("wash_servers").As("ser")).
-		Join(dbr.I("server_groups").As("gr"), "ser.group_id = gr.id").
-		Join(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
-		Join(dbr.I("organization_managers").As("man"), "org.id = man.organization_id").
-		Where("NOT ser.deleted AND man.user_id = ?", userID)
-
-	return getServers(ctx, query, filter)
-}
-
-func getServers(ctx context.Context, query *dbr.SelectStmt, filter dbmodels.WashServerFilter) ([]dbmodels.WashServer, error) {
-	var dbWashServerList []dbmodels.WashServer
-
 	if filter.OrganizationID != uuid.Nil {
-		query.Where("org.id = ?", filter.OrganizationID)
+		query = query.Where("org.id = ?", filter.OrganizationID)
 	}
 
 	if filter.GroupID != uuid.Nil {
-		query.Where("gr.id = ?", filter.GroupID)
+		query = query.Where("gr.id = ?", filter.GroupID)
 	}
 
-	_, err := query.
+	if filter.IsManagedByMe {
+		query = query.LeftJoin(dbr.I("organization_managers").As("man"), "org.id = man.organization_id")
+		query = query.Where("man.user_id = ?", userID)
+	}
+
+	_, err = query.
 		Limit(uint64(filter.Limit)).
 		Offset(uint64(filter.Offset)).
 		LoadContext(ctx, &dbWashServerList)

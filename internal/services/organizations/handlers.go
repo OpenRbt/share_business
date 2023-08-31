@@ -3,6 +3,7 @@ package organizations
 import (
 	"context"
 	"errors"
+	"washBonus/internal/app"
 	"washBonus/internal/conversions"
 	"washBonus/internal/dal/dbmodels"
 	"washBonus/internal/entity"
@@ -10,17 +11,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (s *organizationService) Get(ctx context.Context, filter entity.OrganizationFilter) ([]entity.Organization, error) {
-	orgs, err := s.organizationRepo.Get(ctx, conversions.OrganizationFilterToDB(filter))
-	if err != nil {
-		return nil, err
-	}
-
-	return conversions.OrganizationsFromDB(orgs), nil
-}
-
-func (s *organizationService) GetForManager(ctx context.Context, userID string, filter entity.OrganizationFilter) ([]entity.Organization, error) {
-	orgs, err := s.organizationRepo.GetForManager(ctx, userID, conversions.OrganizationFilterToDB(filter))
+func (s *organizationService) Get(ctx context.Context, userID string, filter entity.OrganizationFilter) ([]entity.Organization, error) {
+	orgs, err := s.organizationRepo.Get(ctx, userID, conversions.OrganizationFilterToDB(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -87,13 +79,18 @@ func (s *organizationService) AssignManager(ctx context.Context, organizationID 
 		return err
 	}
 
-	_, err = s.userRepo.GetById(ctx, userID)
+	dbUser, err := s.userRepo.GetById(ctx, userID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.ErrNotFound
 		}
 
 		return err
+	}
+
+	user := conversions.UserFromDb(dbUser)
+	if !app.IsEngineer(user) {
+		return entity.ErrBadRequest
 	}
 
 	err = s.organizationRepo.AssignManager(ctx, organizationID, userID)
@@ -114,13 +111,18 @@ func (s *organizationService) RemoveManager(ctx context.Context, organizationID 
 		return err
 	}
 
-	_, err = s.userRepo.GetById(ctx, userID)
+	dbUser, err := s.userRepo.GetById(ctx, userID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entity.ErrNotFound
 		}
 
 		return err
+	}
+
+	user := conversions.UserFromDb(dbUser)
+	if !app.IsEngineer(user) {
+		return entity.ErrBadRequest
 	}
 
 	err = s.organizationRepo.RemoveManager(ctx, organizationID, userID)

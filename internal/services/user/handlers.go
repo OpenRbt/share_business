@@ -29,22 +29,10 @@ func (s *userService) GetById(ctx context.Context, userID string) (entity.User, 
 	return conversions.UserFromDb(userFromDB), nil
 }
 
-func (s *userService) GetOrCreate(ctx context.Context, userID string) (entity.User, error) {
-	user, err := s.userRepo.GetById(ctx, userID)
+func (s *userService) Create(ctx context.Context, userCreation entity.UserCreation) (entity.User, error) {
+	dbUser := conversions.UserCreationToDB(userCreation)
 
-	if errors.Is(err, dbmodels.ErrNotFound) {
-		user, err = s.userRepo.Create(ctx, userID)
-	}
-
-	if err != nil {
-		return entity.User{}, err
-	}
-
-	return conversions.UserFromDb(user), nil
-}
-
-func (s *userService) Create(ctx context.Context, userID string) (entity.User, error) {
-	user, err := s.userRepo.Create(ctx, userID)
+	user, err := s.userRepo.Create(ctx, dbUser)
 	if err != nil {
 		return entity.User{}, err
 	}
