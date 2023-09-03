@@ -15,4 +15,5 @@ const (
 	SessionBonusDiscardMessageType MessageType = "bonus_service/session/bonus/discard"
 	SessionBonusRewardMessageType  MessageType = "bonus_service/session/bonus/reward"
 	SessionMoneyReportMessageType  MessageType = "bonus_service/session/money-report"
+	WashServerDeletionMessageType  MessageType = "bonus_service/wash_server/delete"
 )

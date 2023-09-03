@@ -17,6 +17,9 @@ type (
 
 		AssignManager(ctx Ctx, auth Auth, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, auth Auth, organizationID uuid.UUID, userID string) error
+
+		GetSettingsForOrganization(ctx Ctx, auth Auth, organizationID uuid.UUID) (entity.OrganizationSettings, error)
+		UpdateSettingsForOrganization(ctx Ctx, auth Auth, organizationID uuid.UUID, e entity.OrganizationSettingsUpdate) (entity.OrganizationSettings, error)
 	}
 
 	OrganizationService interface {
@@ -29,6 +32,9 @@ type (
 		AssignManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		IsUserManager(ctx Ctx, organizationID uuid.UUID, userID string) (bool, error)
+
+		GetSettingsForOrganization(ctx Ctx, organizationID uuid.UUID) (entity.OrganizationSettings, error)
+		UpdateSettingsForOrganization(ctx Ctx, organizationID uuid.UUID, e entity.OrganizationSettingsUpdate) (entity.OrganizationSettings, error)
 	}
 
 	OrganizationRepo interface {
@@ -41,5 +47,8 @@ type (
 		AssignManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		IsUserManager(ctx Ctx, organizationID uuid.UUID, userID string) (bool, error)
+
+		GetSettingsForOrganization(ctx Ctx, organizationID uuid.UUID) (dbmodels.OrganizationSettings, error)
+		UpdateSettingsForOrganization(ctx Ctx, organizationID uuid.UUID, model dbmodels.OrganizationSettingsUpdate) (dbmodels.OrganizationSettings, error)
 	}
 )

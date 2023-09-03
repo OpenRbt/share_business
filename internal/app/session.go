@@ -31,7 +31,8 @@ type (
 		SaveMoneyReport(ctx Ctx, report entity.MoneyReport) (err error)
 		DeleteUnusedSessions(ctx Ctx, SessionRetentionDays int64) (int64, error)
 		ProcessMoneyReports(ctx Ctx) (err error)
-		GetUserOrganizationPendingBalance(ctx Ctx, userID string, organizationID uuid.UUID) (decimal.Decimal, error)
+		GetUserPendingBalanceByOrganization(ctx Ctx, userID string, organizationID uuid.UUID) (decimal.Decimal, error)
+		GetUserPendingBalances(ctx Ctx, userID string) ([]entity.UserPendingBalance, error)
 	}
 
 	SessionRepo interface {
@@ -49,8 +50,8 @@ type (
 
 		SaveMoneyReport(ctx Ctx, report dbmodels.MoneyReport) (err error)
 		DeleteUnusedSessions(ctx Ctx, SessionRetentionDays int64) (int64, error)
-		GetUnporcessedReportsByUserAndOrganization(ctx Ctx, userID string, organizationID uuid.UUID) ([]dbmodels.UserMoneyReport, error)
-		GetUnprocessedMoneyReports(ctx Ctx, lastId int64, olderThenNMinutes int64) (reports []dbmodels.UserMoneyReport, err error)
-		UpdateMoneyReport(ctx Ctx, id int64, processed bool) (err error)
+		GetUserPendingBalanceByOrganization(ctx Ctx, userID string, organizationID uuid.UUID) (decimal.Decimal, error)
+		GetUserPendingBalances(ctx Ctx, userID string) ([]dbmodels.UserPendingBalance, error)
+		ProcessAndChargeMoneyReports(ctx Ctx, lastId int64) ([]dbmodels.UserMoneyReport, error)
 	}
 )

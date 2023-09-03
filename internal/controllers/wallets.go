@@ -6,6 +6,7 @@ import (
 	"washBonus/internal/entity"
 
 	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 )
 
@@ -29,7 +30,7 @@ func (ctrl *walletController) Get(ctx context.Context, auth app.Auth, pagination
 		return nil, err
 	}
 
-	return ctrl.addPendingBalancesToWallets(ctx, wallets)
+	return ctrl.addPendingBalancesToWallets(ctx, auth.User.ID, wallets)
 }
 
 func (ctrl *walletController) GetById(ctx context.Context, auth app.Auth, walletID uuid.UUID) (entity.Wallet, error) {
@@ -54,19 +55,26 @@ func (ctrl *walletController) GetByOrganizationId(ctx context.Context, auth app.
 	return ctrl.addPendingBalanceToWallet(ctx, auth.User.ID, wallet)
 }
 
-func (ctrl *walletController) addPendingBalancesToWallets(ctx context.Context, wallets []entity.Wallet) ([]entity.Wallet, error) {
-	for i, wallet := range wallets {
-		var err error
-		wallets[i], err = ctrl.addPendingBalanceToWallet(ctx, wallet.UserID, wallet)
-		if err != nil {
-			return nil, err
-		}
+func (ctrl *walletController) addPendingBalancesToWallets(ctx context.Context, userID string, wallets []entity.Wallet) ([]entity.Wallet, error) {
+	pendingBalances, err := ctrl.sessionSvc.GetUserPendingBalances(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	orgBalances := make(map[string]decimal.Decimal, len(pendingBalances))
+
+	for _, balance := range pendingBalances {
+		orgBalances[balance.OrganizationID.String()] = balance.PendingBalance
+	}
+
+	for i := range wallets {
+		wallets[i].PendingBalance = orgBalances[wallets[i].OrganizationID.String()]
 	}
 	return wallets, nil
 }
 
 func (ctrl *walletController) addPendingBalanceToWallet(ctx context.Context, userID string, wallet entity.Wallet) (entity.Wallet, error) {
-	pendingBalance, err := ctrl.sessionSvc.GetUserOrganizationPendingBalance(ctx, userID, wallet.OrganizationID)
+	pendingBalance, err := ctrl.sessionSvc.GetUserPendingBalanceByOrganization(ctx, userID, wallet.OrganizationID)
 	if err != nil {
 		return wallet, err
 	}

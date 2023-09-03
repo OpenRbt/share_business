@@ -99,51 +99,6 @@ func (r *repo) SetSessionUser(ctx context.Context, sessionID uuid.UUID, userID s
 	return
 }
 
-func (r *repo) UpdateSessionBalance(ctx context.Context, sessionID uuid.UUID, amount decimal.Decimal) (err error) {
-	defer dal.LogOptionalError(r.l, "session", err)
-
-	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.RollbackUnlessCommitted()
-
-	dbUUID := uuid.NullUUID{
-		UUID:  sessionID,
-		Valid: true,
-	}
-	date := time.Now().UTC()
-
-	var sessionBalance decimal.NullDecimal
-
-	err = tx.SelectBySql("SELECT balance FROM users WHERE id = ? FOR UPDATE", dbUUID).LoadOneContext(ctx, &sessionBalance)
-
-	if amount.LessThan(decimal.Zero) && amount.Add(sessionBalance.Decimal).LessThan(decimal.Zero) {
-		err = dbmodels.ErrNotEnoughMoney
-		return
-	}
-
-	newDbAmount := decimal.NullDecimal{
-		Decimal: sessionBalance.Decimal.Add(amount),
-		Valid:   true,
-	}
-
-	_, err = tx.Update("sessions").
-		Where("id = ?", dbUUID).
-		Set("balance", newDbAmount).
-		ExecContext(ctx)
-
-	_, err = tx.InsertInto("sessions_balance_events").
-		Columns("session", "old_amount", "new_amount", "date").
-		Values(dbUUID, sessionBalance, newDbAmount, date).
-		ExecContext(ctx)
-	if err != nil {
-		return
-	}
-
-	return tx.Commit()
-}
-
 func (r *repo) SaveMoneyReport(ctx context.Context, report dbmodels.MoneyReport) (err error) {
 	defer dal.LogOptionalError(r.l, "session", err)
 
@@ -179,68 +134,171 @@ func (r *repo) SaveMoneyReport(ctx context.Context, report dbmodels.MoneyReport)
 	return tx.Commit()
 }
 
-func (r *repo) UpdateMoneyReport(ctx context.Context, id int64, processed bool) (err error) {
-	defer dal.LogOptionalError(r.l, "session", err)
+func (r *repo) ProcessAndChargeMoneyReports(ctx context.Context, lastId int64) ([]dbmodels.UserMoneyReport, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "sessions", err)
 
-	_, err = r.db.NewSession(nil).
-		Update("session_money_report").
-		Set("processed", processed).
-		Where("id = ?", id).
-		ExecContext(ctx)
+	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.RollbackUnlessCommitted()
 
-	return
+	dbReports, err := getUnprocessedReports(ctx, tx, lastId)
+	if err != nil {
+		return nil, err
+	}
+
+	var balanceEvents []dbmodels.UpdateBalanceEvent
+
+	for _, report := range dbReports {
+		var wallet dbmodels.Wallet
+		err = tx.SelectBySql("SELECT * FROM wallets WHERE user_id = ? AND organization_id = ? FOR UPDATE", report.User, report.OrganizationID).
+			LoadOneContext(ctx, &wallet)
+		if err != nil {
+			return nil, err
+		}
+
+		updatedBalance := wallet.Balance.Add(report.PendingBonuses)
+
+		_, err = tx.Update("wallets").
+			Set("balance", updatedBalance).
+			Where("id = ?", wallet.ID).
+			ExecContext(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		balanceEvents = append(balanceEvents, dbmodels.UpdateBalanceEvent{
+			UserID:    report.User,
+			WalletID:  wallet.ID,
+			OldAmount: wallet.Balance,
+			NewAmount: updatedBalance,
+		})
+	}
+
+	err = insertBalanceEvents(ctx, tx, balanceEvents)
+	if err != nil {
+		return nil, err
+	}
+
+	err = markMoneyReportsAsProcessed(ctx, tx, dbReports)
+	if err != nil {
+		return nil, err
+	}
+
+	return dbReports, tx.Commit()
 }
 
-func (r *repo) GetUnprocessedMoneyReports(ctx context.Context, lastId int64, olderThenNMinutes int64) (reports []dbmodels.UserMoneyReport, err error) {
-	defer dal.LogOptionalError(r.l, "session", err)
-
+func getUnprocessedReports(ctx context.Context, tx *dbr.Tx, lastId int64) ([]dbmodels.UserMoneyReport, error) {
 	var dbReports []dbmodels.UserMoneyReport
-
-	_, err = r.db.NewSession(nil).
-		SelectBySql(`
-			select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".organization_id, "reports".processed, "reports".uuid,"s".user
-			from session_money_report "reports"
-			left join sessions "s" on "reports".session_id = "s".id
-			where "reports".processed = false 
-				and "reports".session_id is not null 
-				and  "s".user is not null  
-				and "reports".id > ? 
-				and "reports".ctime < now() - interval '? minutes'
-			order by "reports".id
-			limit 100
-		`, lastId, olderThenNMinutes).
+	_, err := tx.SelectBySql(`
+			SELECT r.id, r.station_id, r.banknotes, r.cars_total, r.coins, r.electronical, r.service, r.bonuses, r.session_id, r.organization_id, r.processed, r.uuid, "s".user,
+				COALESCE((r.banknotes + r.coins + r.electronical) * (set.bonus_percentage / 100.0), 0) as pending_bonuses
+			FROM session_money_report r
+			LEFT JOIN sessions s ON r.session_id = s.id
+			JOIN organization_settings set ON r.organization_id = set.organization_id
+			WHERE r.processed = FALSE 
+				AND r.session_id IS NOT NULL
+				AND  s.user IS NOT NULL
+				AND r.id > ?
+				AND r.ctime < CURRENT_TIMESTAMP - set.processing_delay
+			ORDER BY r.id
+			LIMIT 100
+		`, lastId).
 		LoadContext(ctx, &dbReports)
 
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	return dbReports, nil
 }
 
-func (r *repo) GetUnporcessedReportsByUserAndOrganization(ctx context.Context, userID string, organizationID uuid.UUID) ([]dbmodels.UserMoneyReport, error) {
+func insertBalanceEvents(ctx context.Context, tx *dbr.Tx, events []dbmodels.UpdateBalanceEvent) error {
+	sqlInsert := `
+		INSERT INTO balance_events ("user", wallet_id, old_amount, new_amount, date)
+		VALUES ($1, $2, $3, $4, NOW())
+	`
+
+	for _, event := range events {
+		_, err := tx.ExecContext(ctx, sqlInsert, event.UserID, event.WalletID, event.OldAmount, event.NewAmount)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func markMoneyReportsAsProcessed(ctx context.Context, tx *dbr.Tx, reports []dbmodels.UserMoneyReport) error {
+	if len(reports) < 1 {
+		return nil
+	}
+
+	reportIDs := make([]int64, len(reports))
+	for i, report := range reports {
+		reportIDs[i] = report.ID
+	}
+
+	_, err := tx.
+		Update("session_money_report").
+		Set("processed", true).
+		Where("id IN ?", reportIDs).
+		ExecContext(ctx)
+
+	return err
+}
+
+func (r *repo) GetUserPendingBalanceByOrganization(ctx context.Context, userID string, organizationID uuid.UUID) (decimal.Decimal, error) {
 	var err error
 	defer dal.LogOptionalError(r.l, "session", err)
 
 	session := r.db.NewSession(nil)
-	var dbReports []dbmodels.UserMoneyReport
+	var pendingBalance decimal.Decimal
 
 	_, err = session.SelectBySql(`
-			select "reports".id, "reports".station_id, "reports".banknotes, "reports".cars_total, "reports".coins, "reports".electronical, "reports".service, "reports".bonuses, "reports".session_id, "reports".organization_id, "reports".processed, "reports".uuid,"s".user
-			from session_money_report "reports"
-			left join sessions "s" on "reports".session_id = "s".id
-			where "reports".processed = false 
-				and "reports".session_id is not null 
-				and "s".user = ?
-				and "reports".organization_id = ? 
+			SELECT COALESCE(SUM((r.banknotes + r.coins + r.electronical) * (set.bonus_percentage / 100.0)), 0) as pending_balance
+			FROM session_money_report r
+			LEFT JOIN sessions s on r.session_id = s.id
+			JOIN organization_settings set ON r.organization_id = set.organization_id
+			WHERE r.processed = FALSE 
+				AND r.session_id is NOT NULL 
+				AND s.user = ?
+				AND r.organization_id = ?
 		`, userID, organizationID).
-		LoadContext(ctx, &dbReports)
+		LoadContext(ctx, &pendingBalance)
 
 	if err != nil {
-		return []dbmodels.UserMoneyReport{}, nil
+		return decimal.Zero, err
 	}
 
-	return dbReports, nil
+	return pendingBalance, nil
+}
+
+func (r *repo) GetUserPendingBalances(ctx context.Context, userID string) ([]dbmodels.UserPendingBalance, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "session", err)
+
+	session := r.db.NewSession(nil)
+	var pendingBalances []dbmodels.UserPendingBalance
+
+	_, err = session.SelectBySql(`
+			SELECT r.organization_id, COALESCE(SUM((r.banknotes + r.coins + r.electronical) * (set.bonus_percentage / 100.0)), 0) as pending_balance
+			FROM session_money_report r
+			LEFT JOIN sessions s on r.session_id = s.id
+			JOIN organization_settings set ON r.organization_id = set.organization_id
+			WHERE r.processed = FALSE 
+				AND r.session_id is NOT NULL 
+				AND s.user = ?
+			GROUP BY r.organization_id
+		`, userID).
+		LoadContext(ctx, &pendingBalances)
+
+	if err != nil {
+		return nil, nil
+	}
+
+	return pendingBalances, nil
 }
 
 func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) error {
@@ -257,9 +315,7 @@ func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessio
 
 	var (
 		sessionBalance decimal.NullDecimal
-
-		defaultWallet dbmodels.Wallet
-		orgWallet     dbmodels.Wallet
+		orgWallet      dbmodels.Wallet
 	)
 	dbSessionUUID := uuid.NullUUID{UUID: sessionID, Valid: true}
 
@@ -284,36 +340,20 @@ func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessio
 	}
 
 	//User balance bonus consumption
-
-	err = tx.SelectBySql("SELECT * from wallets WHERE user_id = ? AND is_default FOR UPDATE", userID).
-		LoadOneContext(ctx, &defaultWallet)
-	if err != nil {
-		return err
-	}
-
 	err = tx.SelectBySql("SELECT * from wallets WHERE user_id = ? AND organization_id = ? FOR UPDATE", userID, org.ID).
 		LoadOneContext(ctx, &orgWallet)
 	if err != nil {
 		return err
 	}
 
-	updatedDefaultBalance := defaultWallet.Balance.Sub(amount)
-	updatedOrgBalance := orgWallet.Balance
-	if updatedDefaultBalance.LessThan(decimal.Zero) {
-		if orgWallet.IsDefault {
-			return dbmodels.ErrNotEnoughMoney
-		}
-
-		updatedDefaultBalance = decimal.Zero
-		updatedOrgBalance = updatedOrgBalance.Add(updatedDefaultBalance)
-		if updatedOrgBalance.LessThan(decimal.Zero) {
-			return dbmodels.ErrNotEnoughMoney
-		}
+	updatedOrgBalance := orgWallet.Balance.Sub(amount)
+	if amount.LessThan(decimal.Zero) || updatedOrgBalance.LessThan(decimal.Zero) {
+		return dbmodels.ErrNotEnoughMoney
 	}
 
 	_, err = tx.Update("wallets").
-		Where("id = ?", defaultWallet.ID).
-		Set("balance", updatedDefaultBalance).
+		Where("id = ?", orgWallet.ID).
+		Set("balance", updatedOrgBalance).
 		ExecContext(ctx)
 	if err != nil {
 		return err
@@ -321,30 +361,11 @@ func (r *repo) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessio
 
 	_, err = tx.InsertInto("balance_events").
 		Columns("user", "wallet_id", "old_amount", "new_amount", "date").
-		Values(userID, defaultWallet.ID, defaultWallet.Balance, updatedDefaultBalance, date).
+		Values(userID, orgWallet.ID, orgWallet.Balance, updatedOrgBalance, date).
 		ExecContext(ctx)
 	if err != nil {
 		return err
 	}
-
-	if !orgWallet.IsDefault {
-		_, err = tx.Update("wallets").
-			Where("id = ?", orgWallet.ID).
-			Set("balance", updatedOrgBalance).
-			ExecContext(ctx)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.InsertInto("balance_events").
-			Columns("user", "wallet_id", "old_amount", "new_amount", "date").
-			Values(userID, orgWallet.ID, orgWallet.Balance, updatedOrgBalance, date).
-			ExecContext(ctx)
-		if err != nil {
-			return err
-		}
-	}
-
 	//Session balance bonus assignment
 	err = tx.SelectBySql("SELECT balance FROM sessions WHERE id = ? FOR UPDATE", dbSessionUUID).
 		LoadOneContext(ctx, &sessionBalance)
@@ -460,7 +481,6 @@ func (r *repo) DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessi
 	}
 
 	updatedUserBalance := userWallet.Balance.Add(amount)
-
 	_, err = tx.Update("wallets").
 		Where("id = ?", userWallet.ID).
 		Set("balance", updatedUserBalance).

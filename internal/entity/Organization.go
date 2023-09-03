@@ -4,26 +4,40 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type Organization struct {
-	ID          uuid.UUID
-	Name        string
-	Description string
-	IsDefault   bool
-	Deleted     bool
-}
+type (
+	Organization struct {
+		ID          uuid.UUID
+		Name        string
+		Description string
+		IsDefault   bool
+		Deleted     bool
+	}
 
-type OrganizationCreation struct {
-	Name        string
-	Description string
-}
+	OrganizationCreation struct {
+		Name        string
+		Description string
+	}
 
-type OrganizationUpdate struct {
-	Name        *string
-	Description *string
-}
+	OrganizationUpdate struct {
+		Name        *string
+		Description *string
+	}
 
-type OrganizationFilter struct {
-	Pagination
-	OrganizationIDs []uuid.UUID
-	IsManagedByMe   bool
-}
+	OrganizationFilter struct {
+		Pagination
+		OrganizationIDs []uuid.UUID
+		IsManagedByMe   bool
+	}
+
+	OrganizationSettings struct {
+		ID                            uuid.UUID
+		OrganizationID                uuid.UUID
+		ReportsProcessingDelayMinutes int64
+		BonusPercentage               int64
+	}
+
+	OrganizationSettingsUpdate struct {
+		ReportsProcessingDelayMinutes *int64
+		BonusPercentage               *int64
+	}
+)

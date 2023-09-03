@@ -1,6 +1,7 @@
 package rabbit
 
 import (
+	"context"
 	"fmt"
 	"washBonus/internal/app"
 	"washBonus/internal/infrastructure/rabbit/entity/vo"
@@ -18,6 +19,7 @@ import (
 type RabbitService interface {
 	SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error)
 	CreateRabbitUser(userID, userKey string) error
+	DeleteRabbitUser(ctx context.Context, userID string) error
 }
 
 type Service struct {
@@ -26,7 +28,7 @@ type Service struct {
 
 	washBonusPub    *rabbitmq.Publisher
 	washBonusSvcSub *rabbitmq.Consumer
-	rabbitSvc     app.RabbitService
+	rabbitSvc       app.RabbitService
 
 	intApi     *client.RabbitIntAPI
 	intApiAuth runtime.ClientAuthInfoWriter

@@ -1,6 +1,9 @@
 package entity
 
-import uuid "github.com/satori/go.uuid"
+import (
+	uuid "github.com/satori/go.uuid"
+	"github.com/shopspring/decimal"
+)
 
 type (
 	User struct {
@@ -27,5 +30,10 @@ type (
 		ID    string
 		Email string
 		Name  string
+	}
+
+	UserPendingBalance struct {
+		OrganizationID uuid.UUID
+		PendingBalance decimal.Decimal
 	}
 )

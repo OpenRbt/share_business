@@ -63,7 +63,7 @@ func main() {
 	userSvc := user.New(l, userRepo, orgRepo)
 	authSvc := firebase.New(cfg.FirebaseConfig.FirebaseKeyFilePath, userSvc)
 	washServerSvc := washServer.New(l, washRepo, groupRepo)
-	sessionSvc := session.New(l, userRepo, sessionRepo, washRepo, walletRepo, cfg.SessionsConfig.ReportsProcessingDelayInMinutes, cfg.SessionsConfig.MoneyReportRewardPercentDefault)
+	sessionSvc := session.New(l, userRepo, sessionRepo, washRepo, walletRepo)
 	orgSvc := organizations.New(l, orgRepo, userRepo)
 	groupSvc := serverGroups.New(l, groupRepo, orgRepo)
 	walletSvc := wallets.New(l, walletRepo, orgRepo)

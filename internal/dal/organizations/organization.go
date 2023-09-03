@@ -283,3 +283,76 @@ func (r *repo) IsUserManager(ctx context.Context, organizationID uuid.UUID, user
 
 	return isUserManager, err
 }
+
+func (r *repo) GetSettingsForOrganization(ctx context.Context, organizationID uuid.UUID) (dbmodels.OrganizationSettings, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "organization_settings", err)
+
+	var settings dbmodels.OrganizationSettings
+
+	err = r.db.NewSession(nil).
+		SelectBySql(`
+			SELECT id, organization_id, FLOOR(EXTRACT(EPOCH FROM processing_delay) / 60) AS processing_delay, bonus_percentage 
+			FROM organization_settings 
+			WHERE organization_id = ?
+			LIMIT 1
+		`, organizationID).
+		LoadOneContext(ctx, &settings)
+
+	if err == nil {
+		return settings, nil
+	}
+
+	if errors.Is(err, dbr.ErrNotFound) {
+		return dbmodels.OrganizationSettings{}, dbmodels.ErrNotFound
+	}
+
+	return dbmodels.OrganizationSettings{}, fmt.Errorf("failed to load organization settings: %w", err)
+}
+
+func (r *repo) UpdateSettingsForOrganization(ctx context.Context, organizationID uuid.UUID, model dbmodels.OrganizationSettingsUpdate) (dbmodels.OrganizationSettings, error) {
+	var err error
+	defer dal.LogOptionalError(r.l, "organization_settings", err)
+
+	tx, err := r.db.NewSession(nil).BeginTx(ctx, nil)
+	if err != nil {
+		return dbmodels.OrganizationSettings{}, fmt.Errorf("failed to update organization settings: %w", err)
+	}
+	defer tx.RollbackUnlessCommitted()
+
+	updateMap := make(map[string]interface{})
+
+	if model.ReportsProcessingDelayMinutes != nil {
+		updateMap["processing_delay"] = fmt.Sprintf("%d minutes", *model.ReportsProcessingDelayMinutes)
+	}
+
+	if model.BonusPercentage != nil {
+		updateMap["bonus_percentage"] = model.BonusPercentage
+	}
+
+	if len(updateMap) == 0 {
+		return dbmodels.OrganizationSettings{}, dbmodels.ErrBadValue
+	}
+
+	_, err = tx.Update("organization_settings").
+		SetMap(updateMap).
+		Where("organization_id = ?", organizationID).
+		ExecContext(ctx)
+	if err != nil {
+		return dbmodels.OrganizationSettings{}, fmt.Errorf("failed to update organization settings: %w", err)
+	}
+
+	var settings dbmodels.OrganizationSettings
+	err = tx.SelectBySql(`
+		SELECT id, organization_id, FLOOR(EXTRACT(EPOCH FROM processing_delay) / 60) AS processing_delay, bonus_percentage 
+		FROM organization_settings 
+		WHERE organization_id = ?
+	`, organizationID).
+		LoadOneContext(ctx, &settings)
+
+	if err != nil {
+		return dbmodels.OrganizationSettings{}, fmt.Errorf("failed to update organization settings: %w", err)
+	}
+
+	return settings, tx.Commit()
+}

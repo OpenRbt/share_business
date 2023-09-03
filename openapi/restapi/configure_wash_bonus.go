@@ -137,6 +137,11 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 			return sessions.GetSessionByIDNotImplemented()
 		})
 	}
+	if api.OrganizationsGetSettingsForOrganizationHandler == nil {
+		api.OrganizationsGetSettingsForOrganizationHandler = organizations.GetSettingsForOrganizationHandlerFunc(func(params organizations.GetSettingsForOrganizationParams, principal *app.Auth) organizations.GetSettingsForOrganizationResponder {
+			return organizations.GetSettingsForOrganizationNotImplemented()
+		})
+	}
 	if api.UsersGetUserByIDHandler == nil {
 		api.UsersGetUserByIDHandler = users.GetUserByIDHandlerFunc(func(params users.GetUserByIDParams, principal *app.Auth) users.GetUserByIDResponder {
 			return users.GetUserByIDNotImplemented()
@@ -185,6 +190,11 @@ func configureAPI(api *operations.WashBonusAPI) http.Handler {
 	if api.ServerGroupsUpdateServerGroupHandler == nil {
 		api.ServerGroupsUpdateServerGroupHandler = server_groups.UpdateServerGroupHandlerFunc(func(params server_groups.UpdateServerGroupParams, principal *app.Auth) server_groups.UpdateServerGroupResponder {
 			return server_groups.UpdateServerGroupNotImplemented()
+		})
+	}
+	if api.OrganizationsUpdateSettingForOrganizationHandler == nil {
+		api.OrganizationsUpdateSettingForOrganizationHandler = organizations.UpdateSettingForOrganizationHandlerFunc(func(params organizations.UpdateSettingForOrganizationParams, principal *app.Auth) organizations.UpdateSettingForOrganizationResponder {
+			return organizations.UpdateSettingForOrganizationNotImplemented()
 		})
 	}
 	if api.UsersUpdateUserRoleHandler == nil {

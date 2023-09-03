@@ -19,7 +19,6 @@ type (
 		FirebaseConfig  FirebaseConfig
 		RabbitMQConfig  RabbitMQConfig
 		SchedulerConfig SchedulerConfig
-		SessionsConfig  SessionsConfig
 	}
 
 	DBConfig struct {
@@ -32,11 +31,6 @@ type (
 
 	FirebaseConfig struct {
 		FirebaseKeyFilePath string `env:"FB_KEYFILE_PATH" envDefault:"/app/firebase/fb_key.json"`
-	}
-
-	SessionsConfig struct {
-		ReportsProcessingDelayInMinutes int64 `env:"MONEY_REPORTS_PROCESSING_DELAY_MINUTES" envDefault:"60"`
-		MoneyReportRewardPercentDefault int64 `env:"MONEY_REPORT_REWARD_PERCENT_DEFAULT" envDefault:"5"`
 	}
 
 	RabbitMQConfig struct {
@@ -71,14 +65,6 @@ func NewConfig(configFiles ...string) (*Config, error) {
 }
 
 func checkConfig(c *Config) (err error) {
-	if c.SessionsConfig.MoneyReportRewardPercentDefault <= 0 {
-		return errors.New("bad money reports reward value")
-	}
-
-	if c.SessionsConfig.ReportsProcessingDelayInMinutes < 0 {
-		return errors.New("bad money report processing delay value")
-	}
-
 	if c.SchedulerConfig.ReportsDelayMinutes < 0 {
 		return errors.New("wrong reports processing delay")
 	}
