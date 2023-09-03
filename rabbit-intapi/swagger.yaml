@@ -43,6 +43,23 @@ paths:
           description: bad request
         500:
           description: error
+    delete:
+      operationId: deleteUser
+      description: delete rabbit user
+      security:
+        - Auth: []
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          type: string
+      responses:
+        204:
+          description: ok
+        400:
+          description: bad request
+        500:
+          description: error
   /api/permissions/{vhost}/{user_id}:
     put:
       operationId: setUserPerms

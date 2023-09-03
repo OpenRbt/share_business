@@ -222,3 +222,15 @@ func (s *Service) CreateRabbitUser(userID, userKey string) error {
 
 	return nil
 }
+
+func (s *Service) DeleteRabbitUser(ctx context.Context, userID string) error {
+	_, err := s.intApi.Operations.DeleteUser(&operations.DeleteUserParams{
+		UserID:  userID,
+		Context: ctx,
+	}, s.intApiAuth)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

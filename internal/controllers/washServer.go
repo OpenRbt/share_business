@@ -5,6 +5,7 @@ import (
 	"washBonus/internal/app"
 	"washBonus/internal/entity"
 	"washBonus/internal/infrastructure/rabbit"
+	"washBonus/internal/infrastructure/rabbit/entity/vo"
 
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
@@ -125,6 +126,16 @@ func (ctrl *washServerController) DeleteWashServer(ctx context.Context, auth app
 	}
 
 	err = ctrl.washServerSvc.DeleteWashServer(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = ctrl.rabbitSvc.SendMessage(nil, vo.WashBonusService, vo.RoutingKey(id.String()), vo.WashServerDeletionMessageType)
+	if err != nil {
+		return err
+	}
+
+	err = ctrl.rabbitSvc.DeleteRabbitUser(ctx, id.String())
 	if err != nil {
 		return err
 	}
