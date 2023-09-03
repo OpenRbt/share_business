@@ -72,3 +72,19 @@ func (ctrl *organizationController) RemoveManager(ctx context.Context, auth app.
 
 	return ctrl.orgSvc.RemoveManager(ctx, organizationID, userID)
 }
+
+func (ctrl *organizationController) GetSettingsForOrganization(ctx context.Context, auth app.Auth, organizationID uuid.UUID) (entity.OrganizationSettings, error) {
+	if !app.IsAdmin(auth.User) {
+		return entity.OrganizationSettings{}, entity.ErrAccessDenied
+	}
+
+	return ctrl.orgSvc.GetSettingsForOrganization(ctx, organizationID)
+}
+
+func (ctrl *organizationController) UpdateSettingsForOrganization(ctx context.Context, auth app.Auth, organizationID uuid.UUID, e entity.OrganizationSettingsUpdate) (entity.OrganizationSettings, error) {
+	if !app.IsAdmin(auth.User) {
+		return entity.OrganizationSettings{}, entity.ErrAccessDenied
+	}
+
+	return ctrl.orgSvc.UpdateSettingsForOrganization(ctx, organizationID, e)
+}

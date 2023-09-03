@@ -20,3 +20,10 @@ type BalanceEvent struct {
 	ErrorMsg      string              `db:"error_msg"`
 	Date          time.Time           `db:"date"`
 }
+
+type UpdateBalanceEvent struct {
+	UserID    string
+	WalletID  uuid.UUID
+	OldAmount decimal.Decimal
+	NewAmount decimal.Decimal
+}

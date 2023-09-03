@@ -716,6 +716,59 @@ paths:
         500:
           $ref: "#/responses/InternalError"
 
+  /organizations/{id}/settings:
+    get:
+      tags:
+        - organizations
+      operationId: getSettingsForOrganization
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OrganizationSettings"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+    patch:
+      tags:
+        - organizations
+      operationId: updateSettingForOrganization
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/OrganizationSettingsUpdate"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/OrganizationSettings"
+        400:
+          $ref: "#/responses/BadRequest"
+        403:
+          $ref: "#/responses/Forbidden"
+        404:
+          $ref: "#/responses/NotFound"
+        500:
+          $ref: "#/responses/InternalError"
+
 parameters:
   offset:
     name: offset
@@ -959,3 +1012,31 @@ definitions:
       pendingBalance:
         type: integer
         x-omitempty: false
+
+  OrganizationSettings:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      organizationId:
+        type: string
+        format: uuid
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
+
+  OrganizationSettingsUpdate:
+    type: object
+    properties:
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100

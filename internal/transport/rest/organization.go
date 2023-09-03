@@ -20,6 +20,9 @@ func (svc *service) initOrganizationsHandlers(api *operations.WashBonusAPI) {
 
 	api.OrganizationsAssignUserToOrganizationHandler = organizations.AssignUserToOrganizationHandlerFunc(svc.assignOrganizationManager)
 	api.OrganizationsRemoveUserFromOrganizationHandler = organizations.RemoveUserFromOrganizationHandlerFunc(svc.removeOrganizationManager)
+
+	api.OrganizationsGetSettingsForOrganizationHandler = organizations.GetSettingsForOrganizationHandlerFunc(svc.getSettingsForOrganization)
+	api.OrganizationsUpdateSettingForOrganizationHandler = organizations.UpdateSettingForOrganizationHandlerFunc(svc.updateSettingsForOrganization)
 }
 
 func (svc *service) getOrganizations(params organizations.GetOrganizationsParams, auth *app.Auth) organizations.GetOrganizationsResponder {
@@ -163,5 +166,49 @@ func (svc *service) removeOrganizationManager(params organizations.RemoveUserFro
 	default:
 		svc.l.Errorln("Remove user from organization:", err)
 		return organizations.NewRemoveUserFromOrganizationInternalServerError()
+	}
+}
+
+func (svc *service) getSettingsForOrganization(params organizations.GetSettingsForOrganizationParams, auth *app.Auth) organizations.GetSettingsForOrganizationResponder {
+	id, err := uuid.FromString(params.ID.String())
+	if err != nil {
+		return organizations.NewGetSettingsForOrganizationBadRequest()
+	}
+
+	settings, err := svc.orgCtrl.GetSettingsForOrganization(params.HTTPRequest.Context(), *auth, id)
+
+	switch {
+	case err == nil:
+		payload := conversions.OrganizationSettingsToRest(settings)
+		return organizations.NewGetSettingsForOrganizationOK().WithPayload(&payload)
+	case errors.Is(err, entity.ErrAccessDenied):
+		return organizations.NewGetSettingsForOrganizationForbidden()
+	case errors.Is(err, entity.ErrNotFound):
+		return organizations.NewGetSettingsForOrganizationNotFound()
+	default:
+		svc.l.Errorln("Get organization settings:", err)
+		return organizations.NewGetSettingsForOrganizationInternalServerError()
+	}
+}
+
+func (svc *service) updateSettingsForOrganization(params organizations.UpdateSettingForOrganizationParams, auth *app.Auth) organizations.UpdateSettingForOrganizationResponder {
+	id, err := uuid.FromString(params.ID.String())
+	if err != nil {
+		return organizations.NewUpdateSettingForOrganizationBadRequest()
+	}
+
+	settings, err := svc.orgCtrl.UpdateSettingsForOrganization(params.HTTPRequest.Context(), *auth, id, conversions.OrganizationSettingsUpdateFromRest(*params.Body))
+
+	switch {
+	case err == nil:
+		payload := conversions.OrganizationSettingsToRest(settings)
+		return organizations.NewUpdateSettingForOrganizationOK().WithPayload(&payload)
+	case errors.Is(err, entity.ErrAccessDenied):
+		return organizations.NewUpdateSettingForOrganizationForbidden()
+	case errors.Is(err, entity.ErrNotFound):
+		return organizations.NewUpdateSettingForOrganizationNotFound()
+	default:
+		svc.l.Errorln("Update organization settings:", err)
+		return organizations.NewUpdateSettingForOrganizationInternalServerError()
 	}
 }

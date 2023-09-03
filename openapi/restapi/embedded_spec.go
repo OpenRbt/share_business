@@ -139,6 +139,86 @@ func init() {
         }
       }
     },
+    "/organizations/{id}/settings": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "getSettingsForOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OrganizationSettings"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "updateSettingForOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrganizationSettingsUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OrganizationSettings"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalError"
+          }
+        }
+      }
+    },
     "/organizations/{organizationId}": {
       "get": {
         "tags": [
@@ -1192,6 +1272,38 @@ func init() {
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "OrganizationSettings": {
+      "type": "object",
+      "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer"
+        }
+      }
+    },
+    "OrganizationSettingsUpdate": {
+      "type": "object",
+      "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer"
         }
       }
     },
@@ -1630,6 +1742,110 @@ func init() {
         }
       }
     },
+    "/organizations/{id}/settings": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "getSettingsForOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OrganizationSettings"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "updateSettingForOrganization",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrganizationSettingsUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/OrganizationSettings"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/organizations/{organizationId}": {
       "get": {
         "tags": [
@@ -3022,6 +3238,42 @@ func init() {
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "OrganizationSettings": {
+      "type": "object",
+      "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 0
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organizationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "OrganizationSettingsUpdate": {
+      "type": "object",
+      "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 0
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },

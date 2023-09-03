@@ -104,6 +104,17 @@ func UserCreationToDB(e entity.UserCreation) dbmodels.UserCreation {
 	}
 }
 
+func UserPendingBalancesFromDB(e []dbmodels.UserPendingBalance) []entity.UserPendingBalance {
+	balances := make([]entity.UserPendingBalance, len(e))
+
+	for idx, balance := range e {
+		balances[idx].OrganizationID = balance.OrganizationID
+		balances[idx].PendingBalance = balance.PendingBalance
+	}
+
+	return balances
+}
+
 func RoleSelectionApp(dbRole string) entity.Role {
 	role := entity.AdminRole
 	switch dbRole {

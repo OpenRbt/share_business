@@ -45,15 +45,6 @@ func (s *walletService) GetOrCreate(ctx context.Context, userID string, organiza
 		return entity.Wallet{}, err
 	}
 
-	defaultWallet, err := s.walletRepo.GetUserDefaultWallet(ctx, wallet.UserID)
-	if err != nil {
-		return entity.Wallet{}, err
-	}
-
-	if wallet.ID != defaultWallet.ID {
-		wallet.Balance = wallet.Balance.Add(defaultWallet.Balance)
-	}
-
 	return conversions.WalletFromDB(wallet), nil
 }
 
@@ -64,15 +55,6 @@ func (s *walletService) GetById(ctx context.Context, walletID uuid.UUID) (entity
 			err = entity.ErrNotFound
 		}
 		return entity.Wallet{}, err
-	}
-
-	defaultWallet, err := s.walletRepo.GetUserDefaultWallet(ctx, wallet.UserID)
-	if err != nil {
-		return entity.Wallet{}, err
-	}
-
-	if wallet.ID != defaultWallet.ID {
-		wallet.Balance = wallet.Balance.Add(defaultWallet.Balance)
 	}
 
 	return conversions.WalletFromDB(wallet), nil

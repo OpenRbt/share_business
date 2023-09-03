@@ -99,6 +99,9 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		SessionsGetSessionByIDHandler: sessions.GetSessionByIDHandlerFunc(func(params sessions.GetSessionByIDParams, principal *app.Auth) sessions.GetSessionByIDResponder {
 			return sessions.GetSessionByIDNotImplemented()
 		}),
+		OrganizationsGetSettingsForOrganizationHandler: organizations.GetSettingsForOrganizationHandlerFunc(func(params organizations.GetSettingsForOrganizationParams, principal *app.Auth) organizations.GetSettingsForOrganizationResponder {
+			return organizations.GetSettingsForOrganizationNotImplemented()
+		}),
 		UsersGetUserByIDHandler: users.GetUserByIDHandlerFunc(func(params users.GetUserByIDParams, principal *app.Auth) users.GetUserByIDResponder {
 			return users.GetUserByIDNotImplemented()
 		}),
@@ -128,6 +131,9 @@ func NewWashBonusAPI(spec *loads.Document) *WashBonusAPI {
 		}),
 		ServerGroupsUpdateServerGroupHandler: server_groups.UpdateServerGroupHandlerFunc(func(params server_groups.UpdateServerGroupParams, principal *app.Auth) server_groups.UpdateServerGroupResponder {
 			return server_groups.UpdateServerGroupNotImplemented()
+		}),
+		OrganizationsUpdateSettingForOrganizationHandler: organizations.UpdateSettingForOrganizationHandlerFunc(func(params organizations.UpdateSettingForOrganizationParams, principal *app.Auth) organizations.UpdateSettingForOrganizationResponder {
+			return organizations.UpdateSettingForOrganizationNotImplemented()
 		}),
 		UsersUpdateUserRoleHandler: users.UpdateUserRoleHandlerFunc(func(params users.UpdateUserRoleParams, principal *app.Auth) users.UpdateUserRoleResponder {
 			return users.UpdateUserRoleNotImplemented()
@@ -217,6 +223,8 @@ type WashBonusAPI struct {
 	ServerGroupsGetServerGroupsHandler server_groups.GetServerGroupsHandler
 	// SessionsGetSessionByIDHandler sets the operation handler for the get session by Id operation
 	SessionsGetSessionByIDHandler sessions.GetSessionByIDHandler
+	// OrganizationsGetSettingsForOrganizationHandler sets the operation handler for the get settings for organization operation
+	OrganizationsGetSettingsForOrganizationHandler organizations.GetSettingsForOrganizationHandler
 	// UsersGetUserByIDHandler sets the operation handler for the get user by Id operation
 	UsersGetUserByIDHandler users.GetUserByIDHandler
 	// UsersGetUsersHandler sets the operation handler for the get users operation
@@ -237,6 +245,8 @@ type WashBonusAPI struct {
 	OrganizationsUpdateOrganizationHandler organizations.UpdateOrganizationHandler
 	// ServerGroupsUpdateServerGroupHandler sets the operation handler for the update server group operation
 	ServerGroupsUpdateServerGroupHandler server_groups.UpdateServerGroupHandler
+	// OrganizationsUpdateSettingForOrganizationHandler sets the operation handler for the update setting for organization operation
+	OrganizationsUpdateSettingForOrganizationHandler organizations.UpdateSettingForOrganizationHandler
 	// UsersUpdateUserRoleHandler sets the operation handler for the update user role operation
 	UsersUpdateUserRoleHandler users.UpdateUserRoleHandler
 	// WashServersUpdateWashServerHandler sets the operation handler for the update wash server operation
@@ -370,6 +380,9 @@ func (o *WashBonusAPI) Validate() error {
 	if o.SessionsGetSessionByIDHandler == nil {
 		unregistered = append(unregistered, "sessions.GetSessionByIDHandler")
 	}
+	if o.OrganizationsGetSettingsForOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.GetSettingsForOrganizationHandler")
+	}
 	if o.UsersGetUserByIDHandler == nil {
 		unregistered = append(unregistered, "users.GetUserByIDHandler")
 	}
@@ -399,6 +412,9 @@ func (o *WashBonusAPI) Validate() error {
 	}
 	if o.ServerGroupsUpdateServerGroupHandler == nil {
 		unregistered = append(unregistered, "server_groups.UpdateServerGroupHandler")
+	}
+	if o.OrganizationsUpdateSettingForOrganizationHandler == nil {
+		unregistered = append(unregistered, "organizations.UpdateSettingForOrganizationHandler")
 	}
 	if o.UsersUpdateUserRoleHandler == nil {
 		unregistered = append(unregistered, "users.UpdateUserRoleHandler")
@@ -572,6 +588,10 @@ func (o *WashBonusAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/organizations/{id}/settings"] = organizations.NewGetSettingsForOrganization(o.context, o.OrganizationsGetSettingsForOrganizationHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/users/{userId}"] = users.NewGetUserByID(o.context, o.UsersGetUserByIDHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -609,6 +629,10 @@ func (o *WashBonusAPI) initHandlerCache() {
 		o.handlers["PATCH"] = make(map[string]http.Handler)
 	}
 	o.handlers["PATCH"]["/server-groups/{groupId}"] = server_groups.NewUpdateServerGroup(o.context, o.ServerGroupsUpdateServerGroupHandler)
+	if o.handlers["PATCH"] == nil {
+		o.handlers["PATCH"] = make(map[string]http.Handler)
+	}
+	o.handlers["PATCH"]["/organizations/{id}/settings"] = organizations.NewUpdateSettingForOrganization(o.context, o.OrganizationsUpdateSettingForOrganizationHandler)
 	if o.handlers["PATCH"] == nil {
 		o.handlers["PATCH"] = make(map[string]http.Handler)
 	}

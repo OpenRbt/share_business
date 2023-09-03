@@ -102,3 +102,35 @@ func OrganizationFilterToDB(filter entity.OrganizationFilter) dbmodels.Organizat
 		IsManagedByMe:   filter.IsManagedByMe,
 	}
 }
+
+func OrganizationSettingsFromDB(m dbmodels.OrganizationSettings) entity.OrganizationSettings {
+	return entity.OrganizationSettings{
+		ID:                            m.ID,
+		OrganizationID:                m.OrganizationID,
+		ReportsProcessingDelayMinutes: m.ReportsProcessingDelayMinutes,
+		BonusPercentage:               m.BonusPercentage,
+	}
+}
+
+func OrganizationSettingsUpdateToDB(e entity.OrganizationSettingsUpdate) dbmodels.OrganizationSettingsUpdate {
+	return dbmodels.OrganizationSettingsUpdate{
+		ReportsProcessingDelayMinutes: e.ReportsProcessingDelayMinutes,
+		BonusPercentage:               e.BonusPercentage,
+	}
+}
+
+func OrganizationSettingsToRest(e entity.OrganizationSettings) models.OrganizationSettings {
+	return models.OrganizationSettings{
+		ID:                            strfmt.UUID(e.ID.String()),
+		OrganizationID:                strfmt.UUID(e.OrganizationID.String()),
+		ReportsProcessingDelayMinutes: &e.ReportsProcessingDelayMinutes,
+		BonusPercentage:               &e.BonusPercentage,
+	}
+}
+
+func OrganizationSettingsUpdateFromRest(m models.OrganizationSettingsUpdate) entity.OrganizationSettingsUpdate {
+	return entity.OrganizationSettingsUpdate{
+		ReportsProcessingDelayMinutes: m.ReportsProcessingDelayMinutes,
+		BonusPercentage:               m.BonusPercentage,
+	}
+}

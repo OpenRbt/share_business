@@ -42,17 +42,13 @@ func (s *organizationService) Create(ctx context.Context, ent entity.Organizatio
 }
 
 func (s *organizationService) Update(ctx context.Context, id uuid.UUID, ent entity.OrganizationUpdate) (entity.Organization, error) {
-	org, err := s.organizationRepo.GetById(ctx, id)
+	_, err := s.organizationRepo.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			err = entity.ErrNotFound
 		}
 
 		return entity.Organization{}, err
-	}
-
-	if org.IsDefault {
-		return entity.Organization{}, entity.ErrAccessDenied
 	}
 
 	updatedOrg, err := s.organizationRepo.Update(ctx, id, conversions.OrganizationUpdateToDb(ent))
@@ -150,4 +146,44 @@ func (s *organizationService) RemoveManager(ctx context.Context, organizationID 
 
 func (s *organizationService) IsUserManager(ctx context.Context, organizationID uuid.UUID, userID string) (bool, error) {
 	return s.organizationRepo.IsUserManager(ctx, organizationID, userID)
+}
+
+func (s *organizationService) GetSettingsForOrganization(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationSettings, error) {
+	_, err := s.organizationRepo.GetById(ctx, organizationID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			return entity.OrganizationSettings{}, entity.ErrNotFound
+		}
+
+		return entity.OrganizationSettings{}, err
+	}
+
+	settings, err := s.organizationRepo.GetSettingsForOrganization(ctx, organizationID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			return entity.OrganizationSettings{}, entity.ErrNotFound
+		}
+
+		return entity.OrganizationSettings{}, err
+	}
+
+	return conversions.OrganizationSettingsFromDB(settings), nil
+}
+
+func (s *organizationService) UpdateSettingsForOrganization(ctx context.Context, organizationID uuid.UUID, e entity.OrganizationSettingsUpdate) (entity.OrganizationSettings, error) {
+	_, err := s.organizationRepo.GetById(ctx, organizationID)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			return entity.OrganizationSettings{}, entity.ErrNotFound
+		}
+
+		return entity.OrganizationSettings{}, err
+	}
+
+	settings, err := s.organizationRepo.UpdateSettingsForOrganization(ctx, organizationID, conversions.OrganizationSettingsUpdateToDB(e))
+	if err != nil {
+		return entity.OrganizationSettings{}, err
+	}
+
+	return conversions.OrganizationSettingsFromDB(settings), nil
 }

@@ -7,7 +7,6 @@ import (
 	"washBonus/internal/dal/dbmodels"
 	"washBonus/internal/entity"
 	"washBonus/internal/entity/vo"
-	moneyreports "washBonus/pkg/moneyReports"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
@@ -79,10 +78,10 @@ func (s *sessionService) ProcessMoneyReports(ctx context.Context) (err error) {
 	lastID := int64(0)
 
 	for {
-		reports, err := s.sessionRepo.GetUnprocessedMoneyReports(ctx, lastID, s.reportsProcessingDelayInMinutes)
-
+		reports, err := s.sessionRepo.ProcessAndChargeMoneyReports(ctx, lastID)
 		if err != nil {
-			return err
+			s.logger.Warn("failed to process money reports: ", err)
+			break
 		}
 
 		if len(reports) == 0 {
@@ -90,34 +89,13 @@ func (s *sessionService) ProcessMoneyReports(ctx context.Context) (err error) {
 		}
 
 		lastID = reports[len(reports)-1].ID
-
-		for _, report := range reports {
-			err = s.processMoneyReport(ctx, conversions.UserMoneyReportFromDB(report))
-			if err != nil {
-				s.logger.Warn("failed to process money report with id", report.ID, "error", err)
-				break
-			}
-		}
 	}
 
 	return
 }
 
-func (s *sessionService) processMoneyReport(ctx context.Context, report entity.UserMoneyReport) (err error) {
-	addAmount := moneyreports.ProcessBonusesReward(report, decimal.NewFromInt(int64(s.moneyReportsRewardPercentDefault)))
-
-	err = s.walletRepo.ChargeBonusesByUserAndOrganization(ctx, addAmount, report.User, report.OrganizationID)
-	if err != nil {
-		return
-	}
-
-	err = s.sessionRepo.UpdateMoneyReport(ctx, report.ID, true)
-
-	return
-}
-
-func (s *sessionService) GetUserOrganizationPendingBalance(ctx context.Context, userID string, organizationID uuid.UUID) (decimal.Decimal, error) {
-	reports, err := s.sessionRepo.GetUnporcessedReportsByUserAndOrganization(ctx, userID, organizationID)
+func (s *sessionService) GetUserPendingBalanceByOrganization(ctx context.Context, userID string, organizationID uuid.UUID) (decimal.Decimal, error) {
+	pendingBalance, err := s.sessionRepo.GetUserPendingBalanceByOrganization(ctx, userID, organizationID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return decimal.NewFromInt(0), nil
@@ -126,14 +104,16 @@ func (s *sessionService) GetUserOrganizationPendingBalance(ctx context.Context, 
 		return decimal.Decimal{}, err
 	}
 
-	balance := decimal.Zero
+	return pendingBalance, nil
+}
 
-	for _, report := range reports {
-		addAmount := moneyreports.ProcessBonusesReward(conversions.UserMoneyReportFromDB(report), decimal.NewFromInt(int64(s.moneyReportsRewardPercentDefault)))
-		balance = balance.Add(addAmount)
+func (s *sessionService) GetUserPendingBalances(ctx context.Context, userID string) ([]entity.UserPendingBalance, error) {
+	pendingBalances, err := s.sessionRepo.GetUserPendingBalances(ctx, userID)
+	if err != nil {
+		return nil, err
 	}
 
-	return balance, nil
+	return conversions.UserPendingBalancesFromDB(pendingBalances), nil
 }
 
 func (s *sessionService) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
