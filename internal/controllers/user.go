@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"context"
-	"washBonus/internal/app"
-	"washBonus/internal/entity"
+	"washbonus/internal/app"
+	"washbonus/internal/entities"
 
 	"go.uber.org/zap"
 )
@@ -22,26 +22,10 @@ func NewUserController(l *zap.SugaredLogger, userSvc app.UserService, sessionSvc
 	}
 }
 
-func (ctrl *userController) Get(ctx context.Context, auth app.Auth, pagination entity.Pagination) ([]entity.User, error) {
-	if app.IsAdmin(auth.User) {
-		return ctrl.userSvc.Get(ctx, pagination)
-	}
-
-	return nil, entity.ErrAccessDenied
-}
-
-func (ctrl *userController) GetById(ctx context.Context, auth app.Auth, userID string) (entity.User, error) {
-	if auth.User.ID == userID || app.IsAdmin(auth.User) {
+func (ctrl *userController) GetById(ctx context.Context, auth app.Auth, userID string) (entities.User, error) {
+	if auth.User.ID == userID {
 		return ctrl.userSvc.GetById(ctx, userID)
 	}
 
-	return entity.User{}, entity.ErrAccessDenied
-}
-
-func (ctrl *userController) UpdateUserRole(ctx context.Context, auth app.Auth, userUpdate entity.UserUpdateRole) error {
-	if app.IsAdmin(auth.User) {
-		return ctrl.userSvc.UpdateUserRole(ctx, userUpdate)
-	}
-
-	return entity.ErrAccessDenied
+	return entities.User{}, entities.ErrForbidden
 }

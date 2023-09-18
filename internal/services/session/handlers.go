@@ -3,19 +3,19 @@ package session
 import (
 	"context"
 	"errors"
-	"washBonus/internal/conversions"
-	"washBonus/internal/dal/dbmodels"
-	"washBonus/internal/entity"
-	"washBonus/internal/entity/vo"
+	"washbonus/internal/conversions"
+	"washbonus/internal/dal/dbmodels"
+	"washbonus/internal/entities"
+	"washbonus/internal/entities/vo"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 )
 
-func (s *sessionService) Create(ctx context.Context, serverID uuid.UUID, postID int64) (entity.Session, error) {
+func (s *sessionService) Create(ctx context.Context, serverID uuid.UUID, postID int64) (entities.Session, error) {
 	sessionFromDB, err := s.sessionRepo.CreateSession(ctx, serverID, postID)
 	if err != nil {
-		return entity.Session{}, err
+		return entities.Session{}, err
 	}
 
 	session := conversions.SessionFromDB(sessionFromDB)
@@ -23,9 +23,9 @@ func (s *sessionService) Create(ctx context.Context, serverID uuid.UUID, postID 
 	serverFromDB, err := s.washServerRepo.GetWashServerById(ctx, serverID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.Session{}, entity.ErrNotFound
+			return entities.Session{}, entities.ErrNotFound
 		}
-		return entity.Session{}, err
+		return entities.Session{}, err
 	}
 
 	server := conversions.WashServerFromDB(serverFromDB)
@@ -34,26 +34,26 @@ func (s *sessionService) Create(ctx context.Context, serverID uuid.UUID, postID 
 	return session, nil
 }
 
-func (s *sessionService) Get(ctx context.Context, sessionID uuid.UUID, userID *string) (entity.Session, error) {
+func (s *sessionService) Get(ctx context.Context, sessionID uuid.UUID, userID *string) (entities.Session, error) {
 	sessionFromDB, err := s.sessionRepo.GetSession(ctx, sessionID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.Session{}, entity.ErrNotFound
+			return entities.Session{}, entities.ErrNotFound
 		}
-		return entity.Session{}, err
+		return entities.Session{}, err
 	}
 
 	session := conversions.SessionFromDB(sessionFromDB)
 	if session.User != nil && userID != nil && session.User.ID != *userID {
-		return entity.Session{}, entity.ErrForbidden
+		return entities.Session{}, entities.ErrForbidden
 	}
 
 	washServerFromDB, err := s.washServerRepo.GetWashServerById(ctx, session.WashServer.ID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.Session{}, entity.ErrNotFound
+			return entities.Session{}, entities.ErrNotFound
 		}
-		return entity.Session{}, err
+		return entities.Session{}, err
 	}
 
 	washServer := conversions.WashServerFromDB(washServerFromDB)
@@ -70,7 +70,7 @@ func (s *sessionService) SetSessionUser(ctx context.Context, sessionID uuid.UUID
 	return s.sessionRepo.SetSessionUser(ctx, sessionID, userID)
 }
 
-func (s *sessionService) SaveMoneyReport(ctx context.Context, report entity.MoneyReport) (err error) {
+func (s *sessionService) SaveMoneyReport(ctx context.Context, report entities.MoneyReport) (err error) {
 	return s.sessionRepo.SaveMoneyReport(ctx, conversions.MoneyReportToDB(report))
 }
 
@@ -107,7 +107,7 @@ func (s *sessionService) GetUserPendingBalanceByOrganization(ctx context.Context
 	return pendingBalance, nil
 }
 
-func (s *sessionService) GetUserPendingBalances(ctx context.Context, userID string) ([]entity.UserPendingBalance, error) {
+func (s *sessionService) GetUserPendingBalances(ctx context.Context, userID string) ([]entities.UserPendingBalance, error) {
 	pendingBalances, err := s.sessionRepo.GetUserPendingBalances(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -119,8 +119,8 @@ func (s *sessionService) GetUserPendingBalances(ctx context.Context, userID stri
 func (s *sessionService) ChargeBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID, userID string) (err error) {
 	err = s.sessionRepo.ChargeBonuses(ctx, amount, sessionID, userID)
 	if err != nil {
-		if errors.Is(err, dbmodels.ErrBadValue) {
-			return entity.ErrAccessDenied
+		if errors.Is(err, dbmodels.ErrBadRequest) {
+			return entities.ErrForbidden
 		}
 
 		return err
@@ -132,8 +132,8 @@ func (s *sessionService) ChargeBonuses(ctx context.Context, amount decimal.Decim
 func (s *sessionService) DiscardBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
 	err = s.sessionRepo.DiscardBonuses(ctx, amount, sessionID)
 	if err != nil {
-		if errors.Is(err, dbmodels.ErrBadValue) {
-			return entity.ErrAccessDenied
+		if errors.Is(err, dbmodels.ErrBadRequest) {
+			return entities.ErrForbidden
 		}
 
 		return err
@@ -145,8 +145,8 @@ func (s *sessionService) DiscardBonuses(ctx context.Context, amount decimal.Deci
 func (s *sessionService) ConfirmBonuses(ctx context.Context, amount decimal.Decimal, sessionID uuid.UUID) (err error) {
 	err = s.sessionRepo.ConfirmBonuses(ctx, amount, sessionID)
 	if err != nil {
-		if errors.Is(err, dbmodels.ErrBadValue) {
-			return entity.ErrAccessDenied
+		if errors.Is(err, dbmodels.ErrBadRequest) {
+			return entities.ErrForbidden
 		}
 
 		return err

@@ -3,60 +3,39 @@ package user
 import (
 	"context"
 	"errors"
-	"washBonus/internal/conversions"
-	"washBonus/internal/dal/dbmodels"
-	"washBonus/internal/entity"
+	"washbonus/internal/conversions"
+	"washbonus/internal/dal/dbmodels"
+	"washbonus/internal/entities"
 )
 
-func (s *userService) Get(ctx context.Context, pagination entity.Pagination) ([]entity.User, error) {
-	usersFromDB, err := s.userRepo.Get(ctx, conversions.PaginationToDB(pagination))
-	if err != nil {
-		return nil, err
-	}
-
-	return conversions.UsersFromDb(usersFromDB), nil
-}
-
-func (s *userService) GetById(ctx context.Context, userID string) (entity.User, error) {
+func (s *userService) GetById(ctx context.Context, userID string) (entities.User, error) {
 	userFromDB, err := s.userRepo.GetById(ctx, userID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			err = entity.ErrNotFound
+			err = entities.ErrNotFound
 		}
-		return entity.User{}, err
+		return entities.User{}, err
 	}
 
 	return conversions.UserFromDb(userFromDB), nil
 }
 
-func (s *userService) Create(ctx context.Context, userCreation entity.UserCreation) (entity.User, error) {
+func (s *userService) Create(ctx context.Context, userCreation entities.UserCreation) (entities.User, error) {
 	dbUser := conversions.UserCreationToDB(userCreation)
 
 	user, err := s.userRepo.Create(ctx, dbUser)
 	if err != nil {
-		return entity.User{}, err
+		return entities.User{}, err
 	}
 
 	return conversions.UserFromDb(user), nil
 }
 
-func (s *userService) UpdateUserRole(ctx context.Context, userRole entity.UserUpdateRole) error {
-	_, err := s.userRepo.GetById(ctx, userRole.ID)
-	if err != nil {
-		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.ErrNotFound
-		}
-		return err
-	}
-
-	return s.userRepo.UpdateUserRole(ctx, conversions.UserUpdateRoleToDB(userRole))
-}
-
-func (s *userService) UpdateUser(ctx context.Context, userModel entity.UserUpdate) error {
+func (s *userService) UpdateUser(ctx context.Context, userModel entities.UserUpdate) error {
 	_, err := s.userRepo.GetById(ctx, userModel.ID)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
-			return entity.ErrNotFound
+			return entities.ErrNotFound
 		}
 		return err
 	}

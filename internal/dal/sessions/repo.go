@@ -1,7 +1,7 @@
 package sessions
 
 import (
-	"washBonus/internal/app"
+	"washbonus/internal/app"
 
 	"github.com/gocraft/dbr/v2"
 	"go.uber.org/zap"

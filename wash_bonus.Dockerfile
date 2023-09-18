@@ -13,7 +13,7 @@ WORKDIR /build
 COPY . .
 
 RUN go mod download
-RUN go build -ldflags="-s -w" -o /app/washBonus ./cmd/washBonus
+RUN go build -ldflags="-s -w" -o /app/washbonus ./cmd/washbonus
 
 FROM alpine
 
@@ -27,7 +27,7 @@ WORKDIR /app
 COPY environment/firebase /app/firebase
 
 COPY internal/migrations /app/internal/migrations
-COPY --from=builder /app/washBonus /app/washBonus
+COPY --from=builder /app/washbonus /app/washbonus
 
 EXPOSE 8080
-CMD ["/app/washBonus"]
+CMD ["/app/washbonus"]

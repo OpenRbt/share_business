@@ -2,12 +2,13 @@
 package rest
 
 import (
-	"github.com/felixge/httpsnoop"
-	"github.com/powerman/structlog"
-	"go.uber.org/zap"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/felixge/httpsnoop"
+	"github.com/powerman/structlog"
+	"go.uber.org/zap"
 )
 
 // Make sure not to overwrite this file after you generated it because all your edits would be lost!

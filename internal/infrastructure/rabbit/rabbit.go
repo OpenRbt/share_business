@@ -3,9 +3,10 @@ package rabbit
 import (
 	"context"
 	"fmt"
-	"washBonus/internal/app"
-	"washBonus/internal/infrastructure/rabbit/entity/vo"
-	"washBonus/rabbit-intapi/client"
+	"washbonus/internal/app"
+	"washbonus/internal/config"
+	"washbonus/internal/infrastructure/rabbit/entities/vo"
+	"washbonus/rabbit-intapi/client"
 
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
@@ -34,18 +35,18 @@ type Service struct {
 	intApiAuth runtime.ClientAuthInfoWriter
 }
 
-func New(l *zap.SugaredLogger, url string, port string, user string, password string, rabbitSvc app.RabbitService) (svc *Service, err error) {
+func New(l *zap.SugaredLogger, cfg config.RabbitMQConfig, rabbitSvc app.RabbitService) (svc *Service, err error) {
 	svc = &Service{
 		l:         l,
 		rabbitSvc: rabbitSvc,
 	}
 
-	connString := fmt.Sprintf("amqp://%s:%s@%s:%s/", user, password, url, port)
+	connString := fmt.Sprintf("amqp://%s:%s@%s:%s/", cfg.User, cfg.Password, cfg.Url, cfg.Port)
 	rabbitConf := rabbitmq.Config{
 		SASL: []amqp.Authentication{
 			&amqp.PlainAuth{
-				Username: user,
-				Password: password,
+				Username: cfg.User,
+				Password: cfg.Password,
 			},
 		},
 		Vhost:      "/",
@@ -93,8 +94,8 @@ func New(l *zap.SugaredLogger, url string, port string, user string, password st
 		return
 	}
 
-	intClient := client.New(httptransport.New(url+":15672", "", []string{"http"}), strfmt.Default)
-	intAuth := httptransport.BasicAuth(user, password)
+	intClient := client.New(httptransport.New(cfg.Url+":15672", "", []string{"http"}), strfmt.Default)
+	intAuth := httptransport.BasicAuth(cfg.User, cfg.Password)
 
 	svc.intApi = intClient
 	svc.intApiAuth = intAuth

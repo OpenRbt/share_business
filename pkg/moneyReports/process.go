@@ -1,12 +1,12 @@
 package moneyreports
 
 import (
-	"washBonus/internal/entity"
+	"washbonus/internal/entities"
 
 	"github.com/shopspring/decimal"
 )
 
-func ProcessBonusesReward(report entity.UserMoneyReport, percent decimal.Decimal) decimal.Decimal {
+func ProcessBonusesReward(report entities.UserMoneyReport, percent decimal.Decimal) decimal.Decimal {
 	moneyTypes := []struct {
 		name  string
 		value int64

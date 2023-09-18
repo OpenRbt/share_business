@@ -1,0 +1,239 @@
+swagger: "2.0"
+info:
+  description: "Bonus system service for self-service car washes"
+  title: wash-bonus
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+securityDefinitions:
+  authKey:
+    description: Session token inside Authorization header.
+    type: apiKey
+    in: header
+    name: Authorization
+security:
+  - authKey: [ ]
+
+paths:
+  /healthCheck:
+    get:
+      tags:     
+        - Standard
+      security:
+        - { }
+      operationId: healthCheck
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+
+  /sessions/{sessionId}:
+    get:
+      tags:     
+        - sessions
+      security:
+        - authKey: [ ]
+      operationId: getSessionById
+      parameters:
+        - name: sessionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Session"
+        default: {$ref: '#/responses/GenericError'}
+
+  /sessions/{sessionId}/bonuses:
+    post:
+      tags:     
+        - sessions
+      security:
+        - authKey: [ ]
+      operationId: chargeBonusesOnSession
+      parameters:
+        - name: sessionId
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/BonusCharge"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/BonusCharge"
+        default: {$ref: '#/responses/GenericError'}
+
+  /sessions/{sessionId}/assign-user:
+    post:
+      tags:     
+        - sessions
+      security:
+        - authKey: [ ]
+      operationId: assignUserToSession
+      parameters:
+        - name: sessionId
+          in: path
+          type: string
+          required: true
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+  /wallets:
+    get:
+      tags:     
+        - wallets
+      operationId: getWallets
+      parameters:
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Wallet"
+        default: {$ref: '#/responses/GenericError'}
+
+  /wallets/by-organization/{id}:
+    get:
+      tags:     
+        - wallets
+      operationId: getWalletByOrganizationId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Wallet"
+        default: {$ref: '#/responses/GenericError'}
+
+parameters:
+  offset:
+    name: offset
+    in: query
+    description: Number of records to skip for pagination
+    required: false
+    type: integer
+    format: int64
+    default: 0
+    minimum: 0
+
+  limit:
+    name: limit
+    in: query
+    description: Maximum number of records to return
+    required: false
+    type: integer
+    format: int64
+    default: 100
+    minimum: 0
+
+  isManagedByMe:
+    name: isManagedByMe
+    in: query
+    type: boolean
+    default: false
+
+responses:
+  GenericError:
+    description: Generic error response
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        description: Either same as HTTP Status Code OR >= 600.
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  WashServer:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+        format: uuid
+      organizationId:
+        type: string
+        format: uuid
+
+  Session:
+    type: object
+    description: "session"
+    properties:
+      washServer:
+        $ref: "#/definitions/WashServer"
+      postID:
+        type: integer
+      postBalance:
+        type: integer
+  
+  BonusCharge:
+    type: object
+    description: "bonus amount for use in session"
+    properties:
+      amount:
+        type: integer
+
+  Organization:
+    type: object
+    required: [id, name]
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+
+  Wallet:
+    type: object
+    required: [id, userId, organization, balance, pendingBalance]
+    properties:
+      id:
+        type: string
+        format: uuid
+      userId:
+        type: string
+      organization:
+        $ref: '#/definitions/Organization'
+      balance:
+        type: integer
+        x-omitempty: false
+      pendingBalance:
+        type: integer
+        x-omitempty: false

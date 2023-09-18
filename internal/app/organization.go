@@ -1,40 +1,33 @@
 package app
 
 import (
-	"washBonus/internal/dal/dbmodels"
-	"washBonus/internal/entity"
+	"washbonus/internal/dal/dbmodels"
+	"washbonus/internal/entities"
 
 	uuid "github.com/satori/go.uuid"
 )
 
 type (
 	OrganizationController interface {
-		Get(ctx Ctx, auth Auth, filter entity.OrganizationFilter) ([]entity.Organization, error)
-		GetById(ctx Ctx, auth Auth, id uuid.UUID) (entity.Organization, error)
-		Create(ctx Ctx, auth Auth, ent entity.OrganizationCreation) (entity.Organization, error)
-		Update(ctx Ctx, auth Auth, id uuid.UUID, ent entity.OrganizationUpdate) (entity.Organization, error)
-		Delete(ctx Ctx, auth Auth, id uuid.UUID) error
+		Get(ctx Ctx, auth AdminAuth, filter entities.OrganizationFilter) ([]entities.Organization, error)
+		GetById(ctx Ctx, auth AdminAuth, id uuid.UUID) (entities.Organization, error)
+		Create(ctx Ctx, auth AdminAuth, ent entities.OrganizationCreation) (entities.Organization, error)
+		Update(ctx Ctx, auth AdminAuth, id uuid.UUID, ent entities.OrganizationUpdate) (entities.Organization, error)
+		Delete(ctx Ctx, auth AdminAuth, id uuid.UUID) error
 
-		AssignManager(ctx Ctx, auth Auth, organizationID uuid.UUID, userID string) error
-		RemoveManager(ctx Ctx, auth Auth, organizationID uuid.UUID, userID string) error
-
-		GetSettingsForOrganization(ctx Ctx, auth Auth, organizationID uuid.UUID) (entity.OrganizationSettings, error)
-		UpdateSettingsForOrganization(ctx Ctx, auth Auth, organizationID uuid.UUID, e entity.OrganizationSettingsUpdate) (entity.OrganizationSettings, error)
+		AssignManager(ctx Ctx, auth AdminAuth, organizationID uuid.UUID, userID string) error
+		RemoveManager(ctx Ctx, auth AdminAuth, organizationID uuid.UUID, userID string) error
 	}
 
 	OrganizationService interface {
-		Get(ctx Ctx, userID string, filter entity.OrganizationFilter) ([]entity.Organization, error)
-		GetById(ctx Ctx, id uuid.UUID) (entity.Organization, error)
-		Create(ctx Ctx, ent entity.OrganizationCreation) (entity.Organization, error)
-		Update(ctx Ctx, id uuid.UUID, ent entity.OrganizationUpdate) (entity.Organization, error)
+		Get(ctx Ctx, userID string, filter entities.OrganizationFilter) ([]entities.Organization, error)
+		GetById(ctx Ctx, id uuid.UUID) (entities.Organization, error)
+		Create(ctx Ctx, ent entities.OrganizationCreation) (entities.Organization, error)
+		Update(ctx Ctx, id uuid.UUID, ent entities.OrganizationUpdate) (entities.Organization, error)
 		Delete(ctx Ctx, id uuid.UUID) error
 
 		AssignManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, organizationID uuid.UUID, userID string) error
-		IsUserManager(ctx Ctx, organizationID uuid.UUID, userID string) (bool, error)
-
-		GetSettingsForOrganization(ctx Ctx, organizationID uuid.UUID) (entity.OrganizationSettings, error)
-		UpdateSettingsForOrganization(ctx Ctx, organizationID uuid.UUID, e entity.OrganizationSettingsUpdate) (entity.OrganizationSettings, error)
 	}
 
 	OrganizationRepo interface {
@@ -46,9 +39,5 @@ type (
 
 		AssignManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, organizationID uuid.UUID, userID string) error
-		IsUserManager(ctx Ctx, organizationID uuid.UUID, userID string) (bool, error)
-
-		GetSettingsForOrganization(ctx Ctx, organizationID uuid.UUID) (dbmodels.OrganizationSettings, error)
-		UpdateSettingsForOrganization(ctx Ctx, organizationID uuid.UUID, model dbmodels.OrganizationSettingsUpdate) (dbmodels.OrganizationSettings, error)
 	}
 )
