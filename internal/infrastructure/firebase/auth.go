@@ -95,6 +95,10 @@ func (svc *FirebaseService) AdminAuth(bearer string) (*app.AdminAuth, error) {
 		}
 	}
 
+	if app.IsAdminHasNoAccess(user) {
+		return nil, ErrUnauthorized
+	}
+
 	if user.Email == nil {
 		err := svc.adminSvc.Update(ctx, entities.AdminUserUpdate{
 			ID:    fbUser.UID,

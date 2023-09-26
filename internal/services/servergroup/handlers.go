@@ -78,7 +78,7 @@ func (s *serverGroupService) Delete(ctx context.Context, id uuid.UUID) error {
 
 	err = s.groupRepo.Delete(ctx, id)
 	if errors.Is(err, dbmodels.ErrAlreadyExists) {
-		return entities.ErrAlreadyExists
+		return entities.ErrBadRequest
 	}
 
 	return err

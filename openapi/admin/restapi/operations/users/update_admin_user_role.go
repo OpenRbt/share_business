@@ -15,9 +15,9 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 
 	"washbonus/internal/app"
+	"washbonus/openapi/admin/models"
 )
 
 // UpdateAdminUserRoleHandlerFunc turns a function with the right signature into a update admin user role handler
@@ -83,8 +83,7 @@ func (o *UpdateAdminUserRole) ServeHTTP(rw http.ResponseWriter, r *http.Request)
 type UpdateAdminUserRoleBody struct {
 
 	// role
-	// Enum: [systemManager admin]
-	Role string `json:"role,omitempty"`
+	Role models.AdminUserRole `json:"role,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -92,8 +91,7 @@ func (o *UpdateAdminUserRoleBody) UnmarshalJSON(data []byte) error {
 	var props struct {
 
 		// role
-		// Enum: [systemManager admin]
-		Role string `json:"role,omitempty"`
+		Role models.AdminUserRole `json:"role,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -120,50 +118,52 @@ func (o *UpdateAdminUserRoleBody) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-var updateAdminUserRoleBodyTypeRolePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["systemManager","admin"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		updateAdminUserRoleBodyTypeRolePropEnum = append(updateAdminUserRoleBodyTypeRolePropEnum, v)
-	}
-}
-
-const (
-
-	// UpdateAdminUserRoleBodyRoleSystemManager captures enum value "systemManager"
-	UpdateAdminUserRoleBodyRoleSystemManager string = "systemManager"
-
-	// UpdateAdminUserRoleBodyRoleAdmin captures enum value "admin"
-	UpdateAdminUserRoleBodyRoleAdmin string = "admin"
-)
-
-// prop value enum
-func (o *UpdateAdminUserRoleBody) validateRoleEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, updateAdminUserRoleBodyTypeRolePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (o *UpdateAdminUserRoleBody) validateRole(formats strfmt.Registry) error {
 	if swag.IsZero(o.Role) { // not required
 		return nil
 	}
 
-	// value enum
-	if err := o.validateRoleEnum("body"+"."+"role", "body", o.Role); err != nil {
+	if err := o.Role.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("body" + "." + "role")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("body" + "." + "role")
+		}
 		return err
 	}
 
 	return nil
 }
 
-// ContextValidate validates this update admin user role body based on context it is used
+// ContextValidate validate this update admin user role body based on the context it is used
 func (o *UpdateAdminUserRoleBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := o.contextValidateRole(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (o *UpdateAdminUserRoleBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(o.Role) { // not required
+		return nil
+	}
+
+	if err := o.Role.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("body" + "." + "role")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("body" + "." + "role")
+		}
+		return err
+	}
+
 	return nil
 }
 

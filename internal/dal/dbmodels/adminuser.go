@@ -9,7 +9,6 @@ type (
 		Name           *string    `db:"name"`
 		Role           Role       `db:"role"`
 		OrganizationID *uuid.UUID `db:"organization_id"`
-		Deleted        bool       `db:"deleted"`
 	}
 
 	AdminUserCreation struct {
@@ -29,6 +28,12 @@ type (
 		ID   string `db:"id"`
 		Role Role   `db:"role"`
 	}
+
+	AdminUserFilter struct {
+		Pagination
+		Role      *Role
+		IsBlocked *bool
+	}
 )
 
 type Role string
@@ -36,4 +41,5 @@ type Role string
 const (
 	SystemManagerRole Role = "system_manager"
 	AdminRole         Role = "admin"
+	NoAccessRole      Role = "no_access"
 )

@@ -28,6 +28,8 @@ paths:
       parameters:
         - $ref: '#/parameters/offset'
         - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/adminUserRole'
+        - $ref: '#/parameters/isBlocked'
       responses:
         200:
           description: OK
@@ -71,8 +73,7 @@ paths:
             type: object
             properties:
               role:
-                type: string
-                enum: [systemManager, admin]
+                $ref: "#/definitions/AdminUserRole"
       responses:
         204:
           description: OK
@@ -80,7 +81,7 @@ paths:
     delete:
       tags:     
         - users
-      operationId: deleteAdminUser
+      operationId: blockAdminUser
       parameters:
         - name: userId
           in: path
@@ -474,6 +475,22 @@ paths:
         default: {$ref: '#/responses/GenericError'}
 
   /users/applications/{id}:
+    get:
+      tags:     
+        - applications
+      operationId: getAdminApplicationById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AdminApplication'
+        default: {$ref: '#/responses/GenericError'}
     post:
       tags:     
         - applications
@@ -515,6 +532,17 @@ parameters:
     default: 100
     minimum: 0
 
+  adminUserRole:
+    name: role
+    in: query
+    type: string
+    enum: [serviceManager, admin, noAccess]
+  
+  isBlocked:
+    name: isBlocked
+    in: query
+    type: boolean
+
 responses:
   GenericError:
     description: Generic error response
@@ -535,6 +563,10 @@ definitions:
       message:
         type: string
 
+  AdminUserRole:
+    type: string
+    enum: [systemManager, admin, noAccess]
+
   AdminUser:
     type: object
     description: "Admin user profile"
@@ -547,8 +579,7 @@ definitions:
         type: string
         format: email
       role:
-        type: string
-        enum: [systemManager, admin]
+        $ref: "#/definitions/AdminUserRole"
       organizationId:
         type: string
         format: uuid
@@ -697,10 +728,6 @@ definitions:
       description:
         type: string
         x-nullable: true
-
-  ApplicationStatusEnum:
-    type: string
-    enum: [accepted, rejected, pending]
   
   FirebaseUser:
     type: object
@@ -712,6 +739,10 @@ definitions:
       email:
         type: string
         format: email
+
+  ApplicationStatusEnum:
+    type: string
+    enum: [accepted, rejected, pending]
   
   AdminApplication:
     type: object
@@ -736,9 +767,12 @@ definitions:
     type: object
     properties:
       status:
-        type: string
-        enum: [accept, reject]
+        $ref: '#/definitions/ApplicationStatusEnum'
       organizationId:
         type: string
         format: uuid
         x-nullable: true
+      role:
+        allOf:
+          - $ref: "#/definitions/AdminUserRole"
+          - x-nullable: true

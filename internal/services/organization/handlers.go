@@ -114,7 +114,7 @@ func (s *organizationService) AssignManager(ctx context.Context, organizationID 
 
 	err = s.organizationRepo.AssignManager(ctx, organizationID, userID)
 	if errors.Is(err, dbmodels.ErrAlreadyExists) {
-		return entities.ErrAlreadyExists
+		return entities.ErrBadRequest
 	}
 
 	return err

@@ -25,9 +25,11 @@ type AdminApplicationReview struct {
 	// Format: uuid
 	OrganizationID *strfmt.UUID `json:"organizationId,omitempty"`
 
+	// role
+	Role *AdminUserRole `json:"role,omitempty"`
+
 	// status
-	// Enum: [accept reject]
-	Status string `json:"status,omitempty"`
+	Status ApplicationStatusEnum `json:"status,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -38,9 +40,11 @@ func (m *AdminApplicationReview) UnmarshalJSON(data []byte) error {
 		// Format: uuid
 		OrganizationID *strfmt.UUID `json:"organizationId,omitempty"`
 
+		// role
+		Role *AdminUserRole `json:"role,omitempty"`
+
 		// status
-		// Enum: [accept reject]
-		Status string `json:"status,omitempty"`
+		Status ApplicationStatusEnum `json:"status,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -50,6 +54,7 @@ func (m *AdminApplicationReview) UnmarshalJSON(data []byte) error {
 	}
 
 	m.OrganizationID = props.OrganizationID
+	m.Role = props.Role
 	m.Status = props.Status
 	return nil
 }
@@ -59,6 +64,10 @@ func (m *AdminApplicationReview) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateOrganizationID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRole(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -84,32 +93,22 @@ func (m *AdminApplicationReview) validateOrganizationID(formats strfmt.Registry)
 	return nil
 }
 
-var adminApplicationReviewTypeStatusPropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["accept","reject"]`), &res); err != nil {
-		panic(err)
+func (m *AdminApplicationReview) validateRole(formats strfmt.Registry) error {
+	if swag.IsZero(m.Role) { // not required
+		return nil
 	}
-	for _, v := range res {
-		adminApplicationReviewTypeStatusPropEnum = append(adminApplicationReviewTypeStatusPropEnum, v)
+
+	if m.Role != nil {
+		if err := m.Role.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("role")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("role")
+			}
+			return err
+		}
 	}
-}
 
-const (
-
-	// AdminApplicationReviewStatusAccept captures enum value "accept"
-	AdminApplicationReviewStatusAccept string = "accept"
-
-	// AdminApplicationReviewStatusReject captures enum value "reject"
-	AdminApplicationReviewStatusReject string = "reject"
-)
-
-// prop value enum
-func (m *AdminApplicationReview) validateStatusEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, adminApplicationReviewTypeStatusPropEnum, true); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -118,16 +117,72 @@ func (m *AdminApplicationReview) validateStatus(formats strfmt.Registry) error {
 		return nil
 	}
 
-	// value enum
-	if err := m.validateStatusEnum("status", "body", m.Status); err != nil {
+	if err := m.Status.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("status")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("status")
+		}
 		return err
 	}
 
 	return nil
 }
 
-// ContextValidate validates this admin application review based on context it is used
+// ContextValidate validate this admin application review based on the context it is used
 func (m *AdminApplicationReview) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateRole(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateStatus(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *AdminApplicationReview) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Role != nil {
+
+		if swag.IsZero(m.Role) { // not required
+			return nil
+		}
+
+		if err := m.Role.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("role")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("role")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *AdminApplicationReview) contextValidateStatus(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Status) { // not required
+		return nil
+	}
+
+	if err := m.Status.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("status")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("status")
+		}
+		return err
+	}
+
 	return nil
 }
 

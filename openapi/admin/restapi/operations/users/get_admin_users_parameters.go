@@ -43,6 +43,10 @@ type GetAdminUsersParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
+	/*
+	  In: query
+	*/
+	IsBlocked *bool
 	/*Maximum number of records to return
 	  Minimum: 0
 	  In: query
@@ -55,6 +59,10 @@ type GetAdminUsersParams struct {
 	  Default: 0
 	*/
 	Offset *int64
+	/*
+	  In: query
+	*/
+	Role *string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -68,6 +76,11 @@ func (o *GetAdminUsersParams) BindRequest(r *http.Request, route *middleware.Mat
 
 	qs := runtime.Values(r.URL.Query())
 
+	qIsBlocked, qhkIsBlocked, _ := qs.GetOK("isBlocked")
+	if err := o.bindIsBlocked(qIsBlocked, qhkIsBlocked, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qLimit, qhkLimit, _ := qs.GetOK("limit")
 	if err := o.bindLimit(qLimit, qhkLimit, route.Formats); err != nil {
 		res = append(res, err)
@@ -77,9 +90,37 @@ func (o *GetAdminUsersParams) BindRequest(r *http.Request, route *middleware.Mat
 	if err := o.bindOffset(qOffset, qhkOffset, route.Formats); err != nil {
 		res = append(res, err)
 	}
+
+	qRole, qhkRole, _ := qs.GetOK("role")
+	if err := o.bindRole(qRole, qhkRole, route.Formats); err != nil {
+		res = append(res, err)
+	}
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindIsBlocked binds and validates parameter IsBlocked from query.
+func (o *GetAdminUsersParams) bindIsBlocked(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("isBlocked", "query", "bool", raw)
+	}
+	o.IsBlocked = &value
+
 	return nil
 }
 
@@ -153,6 +194,38 @@ func (o *GetAdminUsersParams) bindOffset(rawData []string, hasKey bool, formats 
 func (o *GetAdminUsersParams) validateOffset(formats strfmt.Registry) error {
 
 	if err := validate.MinimumInt("offset", "query", *o.Offset, 0, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// bindRole binds and validates parameter Role from query.
+func (o *GetAdminUsersParams) bindRole(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+	o.Role = &raw
+
+	if err := o.validateRole(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateRole carries on validations for parameter Role
+func (o *GetAdminUsersParams) validateRole(formats strfmt.Registry) error {
+
+	if err := validate.EnumCase("role", "query", *o.Role, []interface{}{"serviceManager", "admin", "noAccess"}, true); err != nil {
 		return err
 	}
 

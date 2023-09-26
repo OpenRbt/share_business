@@ -36,8 +36,7 @@ type AdminUser struct {
 	OrganizationID *strfmt.UUID `json:"organizationId,omitempty"`
 
 	// role
-	// Enum: [systemManager admin]
-	Role string `json:"role,omitempty"`
+	Role AdminUserRole `json:"role,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -59,8 +58,7 @@ func (m *AdminUser) UnmarshalJSON(data []byte) error {
 		OrganizationID *strfmt.UUID `json:"organizationId,omitempty"`
 
 		// role
-		// Enum: [systemManager admin]
-		Role string `json:"role,omitempty"`
+		Role AdminUserRole `json:"role,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -123,50 +121,52 @@ func (m *AdminUser) validateOrganizationID(formats strfmt.Registry) error {
 	return nil
 }
 
-var adminUserTypeRolePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["systemManager","admin"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		adminUserTypeRolePropEnum = append(adminUserTypeRolePropEnum, v)
-	}
-}
-
-const (
-
-	// AdminUserRoleSystemManager captures enum value "systemManager"
-	AdminUserRoleSystemManager string = "systemManager"
-
-	// AdminUserRoleAdmin captures enum value "admin"
-	AdminUserRoleAdmin string = "admin"
-)
-
-// prop value enum
-func (m *AdminUser) validateRoleEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, adminUserTypeRolePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (m *AdminUser) validateRole(formats strfmt.Registry) error {
 	if swag.IsZero(m.Role) { // not required
 		return nil
 	}
 
-	// value enum
-	if err := m.validateRoleEnum("role", "body", m.Role); err != nil {
+	if err := m.Role.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("role")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("role")
+		}
 		return err
 	}
 
 	return nil
 }
 
-// ContextValidate validates this admin user based on context it is used
+// ContextValidate validate this admin user based on the context it is used
 func (m *AdminUser) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateRole(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *AdminUser) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Role) { // not required
+		return nil
+	}
+
+	if err := m.Role.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("role")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("role")
+		}
+		return err
+	}
+
 	return nil
 }
 

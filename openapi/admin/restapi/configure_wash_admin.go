@@ -65,6 +65,11 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 			return organizations.AssignUserToOrganizationNotImplemented()
 		})
 	}
+	if api.UsersBlockAdminUserHandler == nil {
+		api.UsersBlockAdminUserHandler = users.BlockAdminUserHandlerFunc(func(params users.BlockAdminUserParams, principal *app.AdminAuth) users.BlockAdminUserResponder {
+			return users.BlockAdminUserNotImplemented()
+		})
+	}
 	if api.ApplicationsCreateAdminApplicationHandler == nil {
 		api.ApplicationsCreateAdminApplicationHandler = applications.CreateAdminApplicationHandlerFunc(func(params applications.CreateAdminApplicationParams) applications.CreateAdminApplicationResponder {
 			return applications.CreateAdminApplicationNotImplemented()
@@ -85,11 +90,6 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 			return wash_servers.CreateWashServerNotImplemented()
 		})
 	}
-	if api.UsersDeleteAdminUserHandler == nil {
-		api.UsersDeleteAdminUserHandler = users.DeleteAdminUserHandlerFunc(func(params users.DeleteAdminUserParams, principal *app.AdminAuth) users.DeleteAdminUserResponder {
-			return users.DeleteAdminUserNotImplemented()
-		})
-	}
 	if api.OrganizationsDeleteOrganizationHandler == nil {
 		api.OrganizationsDeleteOrganizationHandler = organizations.DeleteOrganizationHandlerFunc(func(params organizations.DeleteOrganizationParams, principal *app.AdminAuth) organizations.DeleteOrganizationResponder {
 			return organizations.DeleteOrganizationNotImplemented()
@@ -103,6 +103,11 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 	if api.WashServersDeleteWashServerHandler == nil {
 		api.WashServersDeleteWashServerHandler = wash_servers.DeleteWashServerHandlerFunc(func(params wash_servers.DeleteWashServerParams, principal *app.AdminAuth) wash_servers.DeleteWashServerResponder {
 			return wash_servers.DeleteWashServerNotImplemented()
+		})
+	}
+	if api.ApplicationsGetAdminApplicationByIDHandler == nil {
+		api.ApplicationsGetAdminApplicationByIDHandler = applications.GetAdminApplicationByIDHandlerFunc(func(params applications.GetAdminApplicationByIDParams, principal *app.AdminAuth) applications.GetAdminApplicationByIDResponder {
+			return applications.GetAdminApplicationByIDNotImplemented()
 		})
 	}
 	if api.ApplicationsGetAdminApplicationsHandler == nil {

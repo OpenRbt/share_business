@@ -11,8 +11,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (s *adminService) Get(ctx context.Context, pagination entities.Pagination) ([]entities.AdminUser, error) {
-	usersFromDB, err := s.adminRepo.Get(ctx, conversions.PaginationToDB(pagination))
+func (s *adminService) Get(ctx context.Context, filter entities.AdminUserFilter) ([]entities.AdminUser, error) {
+	usersFromDB, err := s.adminRepo.Get(ctx, conversions.AdminUserFilterToDB(filter))
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (s *adminService) GetApplications(ctx context.Context, filter entities.Admi
 	return conversions.AdminApplicationsFromDb(appsFromDB), nil
 }
 
-func (s *adminService) Delete(ctx context.Context, id string) error {
+func (s *adminService) Block(ctx context.Context, id string) error {
 	_, err := s.adminRepo.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
@@ -85,23 +85,18 @@ func (s *adminService) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	return s.adminRepo.Delete(ctx, id)
+	return s.adminRepo.Block(ctx, id)
 }
 
 func (s *adminService) CreateApplication(ctx context.Context, ent entities.AdminApplicationCreation) (entities.AdminApplication, error) {
-	_, err := s.adminRepo.GetById(ctx, ent.User.ID)
-	if err != nil && !errors.Is(err, dbmodels.ErrNotFound) {
-		return entities.AdminApplication{}, err
-	}
-
-	if err == nil {
-		return entities.AdminApplication{}, fmt.Errorf("admin already exists: %w", entities.ErrForbidden)
-	}
-
 	dbApp := conversions.AdminApplicationCreationToDB(ent)
 
 	app, err := s.adminRepo.CreateApplication(ctx, dbApp)
 	if err != nil {
+		if errors.Is(err, dbmodels.ErrAlreadyExists) {
+			err = fmt.Errorf(err.Error()+": %w", entities.ErrBadRequest)
+		}
+
 		return entities.AdminApplication{}, err
 	}
 
@@ -125,8 +120,8 @@ func (s *adminService) ReviewApplication(ctx context.Context, id uuid.UUID, ent 
 	return nil
 }
 
-func (s *adminService) GetApplicationByUser(ctx context.Context, id string) (entities.AdminApplication, error) {
-	app, err := s.adminRepo.GetApplicationByUser(ctx, id)
+func (s *adminService) GetApplicationByID(ctx context.Context, id uuid.UUID) (entities.AdminApplication, error) {
+	app, err := s.adminRepo.GetApplicationByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			err = entities.ErrNotFound

@@ -13,9 +13,8 @@ func AdminUserFromDb(dbUser dbmodels.AdminUser) entities.AdminUser {
 		ID:             dbUser.ID,
 		Name:           dbUser.Name,
 		Email:          dbUser.Email,
-		Role:           RoleSelectionApp(string(dbUser.Role)),
+		Role:           RoleSelectionApp(dbUser.Role),
 		OrganizationID: dbUser.OrganizationID,
-		Deleted:        dbUser.Deleted,
 	}
 }
 
@@ -32,7 +31,7 @@ func AdminUsersFromDb(dbUsers []dbmodels.AdminUser) []entities.AdminUser {
 func AdminUserToRest(user entities.AdminUser) models.AdminUser {
 	mod := models.AdminUser{
 		ID:   user.ID,
-		Role: string(user.Role),
+		Role: models.AdminUserRole(user.Role),
 	}
 
 	if user.Email != nil {
@@ -86,30 +85,66 @@ func AdminUserRoleUpdateToDB(e entities.AdminUserRoleUpdate) dbmodels.AdminUserR
 	}
 }
 
-func AdminUserRoleUpdateFromRest(id string, role string) entities.AdminUserRoleUpdate {
+func AdminUserRoleUpdateFromRest(id string, role models.AdminUserRole) entities.AdminUserRoleUpdate {
 	return entities.AdminUserRoleUpdate{
 		ID:   id,
 		Role: RoleSelectionRest(role),
 	}
 }
 
-func RoleSelectionRest(role string) entities.Role {
+func AdminUserFilterFromRest(limit, offset int64, role *string, isBlocked *bool) entities.AdminUserFilter {
+	filter := entities.AdminUserFilter{
+		Pagination: PaginationFromRest(limit, offset),
+		IsBlocked:  isBlocked,
+	}
+
+	if role == nil {
+		return filter
+	}
+
+	r := RoleSelectionRest(models.AdminUserRole(*role))
+	filter.Role = &r
+
+	return filter
+}
+
+func AdminUserFilterToDB(filter entities.AdminUserFilter) dbmodels.AdminUserFilter {
+	dbFilter := dbmodels.AdminUserFilter{
+		Pagination: PaginationToDB(filter.Pagination),
+		IsBlocked:  filter.IsBlocked,
+	}
+
+	if filter.Role == nil {
+		return dbFilter
+	}
+
+	r := RoleSelectionDB(*filter.Role)
+	dbFilter.Role = &r
+
+	return dbFilter
+}
+
+func RoleSelectionRest(role models.AdminUserRole) entities.Role {
 	switch role {
 	case models.AdminUserRoleAdmin:
 		return entities.AdminRole
 	case models.AdminUserRoleSystemManager:
 		return entities.SystemManagerRole
+	case models.AdminUserRoleNoAccess:
+		return entities.NoAccessRole
 	default:
 		panic("Unknown rest role, restRole - " + role)
 	}
 }
 
-func RoleSelectionApp(role string) entities.Role {
+func RoleSelectionApp(role dbmodels.Role) entities.Role {
 	switch role {
-	case string(dbmodels.AdminRole):
+	case dbmodels.AdminRole:
 		return entities.AdminRole
-	case string(dbmodels.SystemManagerRole):
+	case dbmodels.SystemManagerRole:
 		return entities.SystemManagerRole
+	case dbmodels.NoAccessRole:
+		return entities.NoAccessRole
 	default:
 		panic("Unknown db role, dbRole - " + role)
 	}
@@ -121,6 +156,8 @@ func RoleSelectionDB(appRole entities.Role) dbmodels.Role {
 		return dbmodels.AdminRole
 	case entities.SystemManagerRole:
 		return dbmodels.SystemManagerRole
+	case entities.NoAccessRole:
+		return dbmodels.NoAccessRole
 	default:
 		panic("Unknown app role, appRole - " + appRole)
 	}

@@ -13,40 +13,40 @@ import (
 	"washbonus/internal/app"
 )
 
-// DeleteAdminUserHandlerFunc turns a function with the right signature into a delete admin user handler
-type DeleteAdminUserHandlerFunc func(DeleteAdminUserParams, *app.AdminAuth) DeleteAdminUserResponder
+// BlockAdminUserHandlerFunc turns a function with the right signature into a block admin user handler
+type BlockAdminUserHandlerFunc func(BlockAdminUserParams, *app.AdminAuth) BlockAdminUserResponder
 
 // Handle executing the request and returning a response
-func (fn DeleteAdminUserHandlerFunc) Handle(params DeleteAdminUserParams, principal *app.AdminAuth) DeleteAdminUserResponder {
+func (fn BlockAdminUserHandlerFunc) Handle(params BlockAdminUserParams, principal *app.AdminAuth) BlockAdminUserResponder {
 	return fn(params, principal)
 }
 
-// DeleteAdminUserHandler interface for that can handle valid delete admin user params
-type DeleteAdminUserHandler interface {
-	Handle(DeleteAdminUserParams, *app.AdminAuth) DeleteAdminUserResponder
+// BlockAdminUserHandler interface for that can handle valid block admin user params
+type BlockAdminUserHandler interface {
+	Handle(BlockAdminUserParams, *app.AdminAuth) BlockAdminUserResponder
 }
 
-// NewDeleteAdminUser creates a new http.Handler for the delete admin user operation
-func NewDeleteAdminUser(ctx *middleware.Context, handler DeleteAdminUserHandler) *DeleteAdminUser {
-	return &DeleteAdminUser{Context: ctx, Handler: handler}
+// NewBlockAdminUser creates a new http.Handler for the block admin user operation
+func NewBlockAdminUser(ctx *middleware.Context, handler BlockAdminUserHandler) *BlockAdminUser {
+	return &BlockAdminUser{Context: ctx, Handler: handler}
 }
 
 /*
-	DeleteAdminUser swagger:route DELETE /users/{userId} users deleteAdminUser
+	BlockAdminUser swagger:route DELETE /users/{userId} users blockAdminUser
 
-DeleteAdminUser delete admin user API
+BlockAdminUser block admin user API
 */
-type DeleteAdminUser struct {
+type BlockAdminUser struct {
 	Context *middleware.Context
-	Handler DeleteAdminUserHandler
+	Handler BlockAdminUserHandler
 }
 
-func (o *DeleteAdminUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *BlockAdminUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		*r = *rCtx
 	}
-	var Params = NewDeleteAdminUserParams()
+	var Params = NewBlockAdminUserParams()
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {
 		o.Context.Respond(rw, r, route.Produces, route, err)

@@ -436,6 +436,12 @@ func init() {
           },
           {
             "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/adminUserRole"
+          },
+          {
+            "$ref": "#/parameters/isBlocked"
           }
         ],
         "responses": {
@@ -533,6 +539,32 @@ func init() {
       }
     },
     "/users/applications/{id}": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "operationId": "getAdminApplicationById",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminApplication"
+            }
+          },
+          "default": {
+            "$ref": "#/responses/GenericError"
+          }
+        }
+      },
       "post": {
         "tags": [
           "applications"
@@ -595,7 +627,7 @@ func init() {
         "tags": [
           "users"
         ],
-        "operationId": "deleteAdminUser",
+        "operationId": "blockAdminUser",
         "parameters": [
           {
             "type": "string",
@@ -638,11 +670,7 @@ func init() {
               "type": "object",
               "properties": {
                 "role": {
-                  "type": "string",
-                  "enum": [
-                    "systemManager",
-                    "admin"
-                  ]
+                  "$ref": "#/definitions/AdminUserRole"
                 }
               }
             }
@@ -873,12 +901,18 @@ func init() {
           "format": "uuid",
           "x-nullable": true
         },
-        "status": {
-          "type": "string",
-          "enum": [
-            "accept",
-            "reject"
+        "role": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/AdminUserRole"
+            },
+            {
+              "x-nullable": true
+            }
           ]
+        },
+        "status": {
+          "$ref": "#/definitions/ApplicationStatusEnum"
         }
       }
     },
@@ -902,13 +936,17 @@ func init() {
           "x-nullable": true
         },
         "role": {
-          "type": "string",
-          "enum": [
-            "systemManager",
-            "admin"
-          ]
+          "$ref": "#/definitions/AdminUserRole"
         }
       }
+    },
+    "AdminUserRole": {
+      "type": "string",
+      "enum": [
+        "systemManager",
+        "admin",
+        "noAccess"
+      ]
     },
     "ApplicationStatusEnum": {
       "type": "string",
@@ -1146,6 +1184,21 @@ func init() {
     }
   },
   "parameters": {
+    "adminUserRole": {
+      "enum": [
+        "serviceManager",
+        "admin",
+        "noAccess"
+      ],
+      "type": "string",
+      "name": "role",
+      "in": "query"
+    },
+    "isBlocked": {
+      "type": "boolean",
+      "name": "isBlocked",
+      "in": "query"
+    },
     "limit": {
       "type": "integer",
       "format": "int64",
@@ -1679,6 +1732,21 @@ func init() {
             "description": "Maximum number of records to return",
             "name": "limit",
             "in": "query"
+          },
+          {
+            "enum": [
+              "serviceManager",
+              "admin",
+              "noAccess"
+            ],
+            "type": "string",
+            "name": "role",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "name": "isBlocked",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1797,6 +1865,35 @@ func init() {
       }
     },
     "/users/applications/{id}": {
+      "get": {
+        "tags": [
+          "applications"
+        ],
+        "operationId": "getAdminApplicationById",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AdminApplication"
+            }
+          },
+          "default": {
+            "description": "Generic error response",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "applications"
@@ -1865,7 +1962,7 @@ func init() {
         "tags": [
           "users"
         ],
-        "operationId": "deleteAdminUser",
+        "operationId": "blockAdminUser",
         "parameters": [
           {
             "type": "string",
@@ -1911,11 +2008,7 @@ func init() {
               "type": "object",
               "properties": {
                 "role": {
-                  "type": "string",
-                  "enum": [
-                    "systemManager",
-                    "admin"
-                  ]
+                  "$ref": "#/definitions/AdminUserRole"
                 }
               }
             }
@@ -2176,12 +2269,18 @@ func init() {
           "format": "uuid",
           "x-nullable": true
         },
-        "status": {
-          "type": "string",
-          "enum": [
-            "accept",
-            "reject"
+        "role": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/AdminUserRole"
+            },
+            {
+              "x-nullable": true
+            }
           ]
+        },
+        "status": {
+          "$ref": "#/definitions/ApplicationStatusEnum"
         }
       }
     },
@@ -2205,13 +2304,17 @@ func init() {
           "x-nullable": true
         },
         "role": {
-          "type": "string",
-          "enum": [
-            "systemManager",
-            "admin"
-          ]
+          "$ref": "#/definitions/AdminUserRole"
         }
       }
+    },
+    "AdminUserRole": {
+      "type": "string",
+      "enum": [
+        "systemManager",
+        "admin",
+        "noAccess"
+      ]
     },
     "ApplicationStatusEnum": {
       "type": "string",
@@ -2455,6 +2558,21 @@ func init() {
     }
   },
   "parameters": {
+    "adminUserRole": {
+      "enum": [
+        "serviceManager",
+        "admin",
+        "noAccess"
+      ],
+      "type": "string",
+      "name": "role",
+      "in": "query"
+    },
+    "isBlocked": {
+      "type": "boolean",
+      "name": "isBlocked",
+      "in": "query"
+    },
     "limit": {
       "minimum": 0,
       "type": "integer",

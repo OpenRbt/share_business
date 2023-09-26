@@ -29,9 +29,9 @@ func (ctrl *adminController) GetById(ctx context.Context, auth app.AdminAuth, us
 	return entities.AdminUser{}, entities.ErrForbidden
 }
 
-func (ctrl *adminController) Get(ctx context.Context, auth app.AdminAuth, pagination entities.Pagination) ([]entities.AdminUser, error) {
+func (ctrl *adminController) Get(ctx context.Context, auth app.AdminAuth, filter entities.AdminUserFilter) ([]entities.AdminUser, error) {
 	if app.IsSystemManager(auth.User) {
-		return ctrl.adminSvc.Get(ctx, pagination)
+		return ctrl.adminSvc.Get(ctx, filter)
 	}
 
 	return nil, entities.ErrForbidden
@@ -45,9 +45,9 @@ func (ctrl *adminController) UpdateRole(ctx context.Context, auth app.AdminAuth,
 	return entities.ErrForbidden
 }
 
-func (ctrl *adminController) Delete(ctx context.Context, auth app.AdminAuth, id string) error {
+func (ctrl *adminController) Block(ctx context.Context, auth app.AdminAuth, id string) error {
 	if app.IsSystemManager(auth.User) {
-		return ctrl.adminSvc.Delete(ctx, id)
+		return ctrl.adminSvc.Block(ctx, id)
 	}
 
 	return entities.ErrForbidden
@@ -71,4 +71,12 @@ func (ctrl *adminController) ReviewApplication(ctx context.Context, auth app.Adm
 	}
 
 	return entities.ErrForbidden
+}
+
+func (ctrl *adminController) GetApplicationByID(ctx context.Context, auth app.AdminAuth, id uuid.UUID) (entities.AdminApplication, error) {
+	if app.IsSystemManager(auth.User) {
+		return ctrl.adminSvc.GetApplicationByID(ctx, id)
+	}
+
+	return entities.AdminApplication{}, entities.ErrForbidden
 }

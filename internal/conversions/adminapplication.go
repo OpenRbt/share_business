@@ -1,6 +1,7 @@
 package conversions
 
 import (
+	"fmt"
 	"washbonus/internal/dal/dbmodels"
 	"washbonus/internal/entities"
 	"washbonus/openapi/admin/models"
@@ -74,32 +75,75 @@ func AdminApplicationCreationFromRest(m models.AdminApplicationCreation) entitie
 	}
 }
 
+func adminRoleFromRest(role models.AdminUserRole) (*entities.Role, error) {
+	if role == models.AdminUserRoleNoAccess {
+		return nil, entities.ErrInvalidRole
+	}
+	r := RoleSelectionRest(role)
+	return &r, nil
+}
+
+func adminStatusFromRest(status models.ApplicationStatusEnum, role *models.AdminUserRole, orgID *strfmt.UUID) (entities.ApplicationStatus, error) {
+	if status != models.ApplicationStatusEnumAccepted && status != models.ApplicationStatusEnumRejected {
+		return "", fmt.Errorf("Unknown status - %s: %w", status, entities.ErrBadRequest)
+	}
+
+	if status == models.ApplicationStatusEnumRejected {
+		return entities.Rejected, nil
+	}
+
+	if orgID == nil && (role == nil || *role != models.AdminUserRoleSystemManager) {
+		return "", entities.ErrOrganizationIDRequired
+	}
+
+	return entities.Accepted, nil
+}
+
 func AdminApplicationReviewToDB(app entities.AdminApplicationReview) dbmodels.AdminApplicationReview {
+	if app.Role == nil {
+		return dbmodels.AdminApplicationReview{
+			Status:         ApplicationStatusToDB(app.Status),
+			OrganizationID: app.OrganizationID,
+		}
+	}
+
+	r := RoleSelectionDB(*app.Role)
 	return dbmodels.AdminApplicationReview{
 		Status:         ApplicationStatusToDB(app.Status),
 		OrganizationID: app.OrganizationID,
+		Role:           &r,
 	}
 }
 
-func AdminApplicationReviewFromRest(m models.AdminApplicationReview) entities.AdminApplicationReview {
-	var status entities.ApplicationStatus
-	switch m.Status {
-	case "accept":
-		status = entities.Accepted
-	case "reject":
-		status = entities.Rejected
+func AdminApplicationReviewFromRest(m models.AdminApplicationReview) (entities.AdminApplicationReview, error) {
+	status, err := adminStatusFromRest(m.Status, m.Role, m.OrganizationID)
+	if err != nil {
+		return entities.AdminApplicationReview{}, err
 	}
 
 	var orgID *uuid.UUID
 	if m.OrganizationID != nil {
-		parsedOrgID := uuid.FromStringOrNil(m.OrganizationID.String())
+		parsedOrgID, err := uuid.FromString(m.OrganizationID.String())
+		if err != nil {
+			return entities.AdminApplicationReview{}, fmt.Errorf("Wrong Organization ID: %w", entities.ErrBadRequest)
+		}
+
 		orgID = &parsedOrgID
+	}
+
+	var role *entities.Role
+	if m.Role != nil {
+		role, err = adminRoleFromRest(*m.Role)
+		if err != nil {
+			return entities.AdminApplicationReview{}, err
+		}
 	}
 
 	return entities.AdminApplicationReview{
 		Status:         status,
 		OrganizationID: orgID,
-	}
+		Role:           role,
+	}, nil
 }
 
 func AdminApplicationFilterToDB(filter entities.AdminApplicationFilter) dbmodels.AdminApplicationFilter {

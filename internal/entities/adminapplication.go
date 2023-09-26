@@ -30,6 +30,7 @@ type (
 	AdminApplicationReview struct {
 		Status         ApplicationStatus
 		OrganizationID *uuid.UUID
+		Role           *Role
 	}
 
 	AdminApplicationFilter struct {

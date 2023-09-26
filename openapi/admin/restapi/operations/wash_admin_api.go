@@ -55,6 +55,9 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		OrganizationsAssignUserToOrganizationHandler: organizations.AssignUserToOrganizationHandlerFunc(func(params organizations.AssignUserToOrganizationParams, principal *app.AdminAuth) organizations.AssignUserToOrganizationResponder {
 			return organizations.AssignUserToOrganizationNotImplemented()
 		}),
+		UsersBlockAdminUserHandler: users.BlockAdminUserHandlerFunc(func(params users.BlockAdminUserParams, principal *app.AdminAuth) users.BlockAdminUserResponder {
+			return users.BlockAdminUserNotImplemented()
+		}),
 		ApplicationsCreateAdminApplicationHandler: applications.CreateAdminApplicationHandlerFunc(func(params applications.CreateAdminApplicationParams) applications.CreateAdminApplicationResponder {
 			return applications.CreateAdminApplicationNotImplemented()
 		}),
@@ -67,9 +70,6 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		WashServersCreateWashServerHandler: wash_servers.CreateWashServerHandlerFunc(func(params wash_servers.CreateWashServerParams, principal *app.AdminAuth) wash_servers.CreateWashServerResponder {
 			return wash_servers.CreateWashServerNotImplemented()
 		}),
-		UsersDeleteAdminUserHandler: users.DeleteAdminUserHandlerFunc(func(params users.DeleteAdminUserParams, principal *app.AdminAuth) users.DeleteAdminUserResponder {
-			return users.DeleteAdminUserNotImplemented()
-		}),
 		OrganizationsDeleteOrganizationHandler: organizations.DeleteOrganizationHandlerFunc(func(params organizations.DeleteOrganizationParams, principal *app.AdminAuth) organizations.DeleteOrganizationResponder {
 			return organizations.DeleteOrganizationNotImplemented()
 		}),
@@ -78,6 +78,9 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		}),
 		WashServersDeleteWashServerHandler: wash_servers.DeleteWashServerHandlerFunc(func(params wash_servers.DeleteWashServerParams, principal *app.AdminAuth) wash_servers.DeleteWashServerResponder {
 			return wash_servers.DeleteWashServerNotImplemented()
+		}),
+		ApplicationsGetAdminApplicationByIDHandler: applications.GetAdminApplicationByIDHandlerFunc(func(params applications.GetAdminApplicationByIDParams, principal *app.AdminAuth) applications.GetAdminApplicationByIDResponder {
+			return applications.GetAdminApplicationByIDNotImplemented()
 		}),
 		ApplicationsGetAdminApplicationsHandler: applications.GetAdminApplicationsHandlerFunc(func(params applications.GetAdminApplicationsParams, principal *app.AdminAuth) applications.GetAdminApplicationsResponder {
 			return applications.GetAdminApplicationsNotImplemented()
@@ -178,6 +181,8 @@ type WashAdminAPI struct {
 	WashServersAssignServerToGroupHandler wash_servers.AssignServerToGroupHandler
 	// OrganizationsAssignUserToOrganizationHandler sets the operation handler for the assign user to organization operation
 	OrganizationsAssignUserToOrganizationHandler organizations.AssignUserToOrganizationHandler
+	// UsersBlockAdminUserHandler sets the operation handler for the block admin user operation
+	UsersBlockAdminUserHandler users.BlockAdminUserHandler
 	// ApplicationsCreateAdminApplicationHandler sets the operation handler for the create admin application operation
 	ApplicationsCreateAdminApplicationHandler applications.CreateAdminApplicationHandler
 	// OrganizationsCreateOrganizationHandler sets the operation handler for the create organization operation
@@ -186,14 +191,14 @@ type WashAdminAPI struct {
 	ServerGroupsCreateServerGroupHandler server_groups.CreateServerGroupHandler
 	// WashServersCreateWashServerHandler sets the operation handler for the create wash server operation
 	WashServersCreateWashServerHandler wash_servers.CreateWashServerHandler
-	// UsersDeleteAdminUserHandler sets the operation handler for the delete admin user operation
-	UsersDeleteAdminUserHandler users.DeleteAdminUserHandler
 	// OrganizationsDeleteOrganizationHandler sets the operation handler for the delete organization operation
 	OrganizationsDeleteOrganizationHandler organizations.DeleteOrganizationHandler
 	// ServerGroupsDeleteServerGroupHandler sets the operation handler for the delete server group operation
 	ServerGroupsDeleteServerGroupHandler server_groups.DeleteServerGroupHandler
 	// WashServersDeleteWashServerHandler sets the operation handler for the delete wash server operation
 	WashServersDeleteWashServerHandler wash_servers.DeleteWashServerHandler
+	// ApplicationsGetAdminApplicationByIDHandler sets the operation handler for the get admin application by Id operation
+	ApplicationsGetAdminApplicationByIDHandler applications.GetAdminApplicationByIDHandler
 	// ApplicationsGetAdminApplicationsHandler sets the operation handler for the get admin applications operation
 	ApplicationsGetAdminApplicationsHandler applications.GetAdminApplicationsHandler
 	// UsersGetAdminUserByIDHandler sets the operation handler for the get admin user by Id operation
@@ -311,6 +316,9 @@ func (o *WashAdminAPI) Validate() error {
 	if o.OrganizationsAssignUserToOrganizationHandler == nil {
 		unregistered = append(unregistered, "organizations.AssignUserToOrganizationHandler")
 	}
+	if o.UsersBlockAdminUserHandler == nil {
+		unregistered = append(unregistered, "users.BlockAdminUserHandler")
+	}
 	if o.ApplicationsCreateAdminApplicationHandler == nil {
 		unregistered = append(unregistered, "applications.CreateAdminApplicationHandler")
 	}
@@ -323,9 +331,6 @@ func (o *WashAdminAPI) Validate() error {
 	if o.WashServersCreateWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_servers.CreateWashServerHandler")
 	}
-	if o.UsersDeleteAdminUserHandler == nil {
-		unregistered = append(unregistered, "users.DeleteAdminUserHandler")
-	}
 	if o.OrganizationsDeleteOrganizationHandler == nil {
 		unregistered = append(unregistered, "organizations.DeleteOrganizationHandler")
 	}
@@ -334,6 +339,9 @@ func (o *WashAdminAPI) Validate() error {
 	}
 	if o.WashServersDeleteWashServerHandler == nil {
 		unregistered = append(unregistered, "wash_servers.DeleteWashServerHandler")
+	}
+	if o.ApplicationsGetAdminApplicationByIDHandler == nil {
+		unregistered = append(unregistered, "applications.GetAdminApplicationByIDHandler")
 	}
 	if o.ApplicationsGetAdminApplicationsHandler == nil {
 		unregistered = append(unregistered, "applications.GetAdminApplicationsHandler")
@@ -487,6 +495,10 @@ func (o *WashAdminAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/organizations/{organizationId}/users/{userId}"] = organizations.NewAssignUserToOrganization(o.context, o.OrganizationsAssignUserToOrganizationHandler)
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/users/{userId}"] = users.NewBlockAdminUser(o.context, o.UsersBlockAdminUserHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
@@ -506,10 +518,6 @@ func (o *WashAdminAPI) initHandlerCache() {
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/users/{userId}"] = users.NewDeleteAdminUser(o.context, o.UsersDeleteAdminUserHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
 	o.handlers["DELETE"]["/organizations/{organizationId}"] = organizations.NewDeleteOrganization(o.context, o.OrganizationsDeleteOrganizationHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
@@ -519,6 +527,10 @@ func (o *WashAdminAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/wash-servers/{serverId}"] = wash_servers.NewDeleteWashServer(o.context, o.WashServersDeleteWashServerHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/users/applications/{id}"] = applications.NewGetAdminApplicationByID(o.context, o.ApplicationsGetAdminApplicationByIDHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

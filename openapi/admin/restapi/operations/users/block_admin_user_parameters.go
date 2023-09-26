@@ -13,19 +13,19 @@ import (
 	"github.com/go-openapi/strfmt"
 )
 
-// NewDeleteAdminUserParams creates a new DeleteAdminUserParams object
+// NewBlockAdminUserParams creates a new BlockAdminUserParams object
 //
 // There are no default values defined in the spec.
-func NewDeleteAdminUserParams() DeleteAdminUserParams {
+func NewBlockAdminUserParams() BlockAdminUserParams {
 
-	return DeleteAdminUserParams{}
+	return BlockAdminUserParams{}
 }
 
-// DeleteAdminUserParams contains all the bound params for the delete admin user operation
+// BlockAdminUserParams contains all the bound params for the block admin user operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters deleteAdminUser
-type DeleteAdminUserParams struct {
+// swagger:parameters blockAdminUser
+type BlockAdminUserParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -40,8 +40,8 @@ type DeleteAdminUserParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewDeleteAdminUserParams() beforehand.
-func (o *DeleteAdminUserParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewBlockAdminUserParams() beforehand.
+func (o *BlockAdminUserParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
@@ -57,7 +57,7 @@ func (o *DeleteAdminUserParams) BindRequest(r *http.Request, route *middleware.M
 }
 
 // bindUserID binds and validates parameter UserID from path.
-func (o *DeleteAdminUserParams) bindUserID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *BlockAdminUserParams) bindUserID(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]

@@ -28,6 +28,7 @@ type (
 	AdminApplicationReview struct {
 		Status         ApplicationStatus `db:"status"`
 		OrganizationID *uuid.UUID        `db:"organization_id"`
+		Role           *Role             `db:"role"`
 	}
 
 	AdminApplicationFilter struct {

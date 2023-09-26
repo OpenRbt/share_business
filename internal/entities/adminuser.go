@@ -9,7 +9,6 @@ type (
 		Name           *string
 		Role           Role
 		OrganizationID *uuid.UUID
-		Deleted        bool
 	}
 
 	AdminUserCreation struct {
@@ -29,6 +28,12 @@ type (
 		ID   string
 		Role Role
 	}
+
+	AdminUserFilter struct {
+		Pagination
+		Role      *Role
+		IsBlocked *bool
+	}
 )
 
 type Role string
@@ -36,4 +41,5 @@ type Role string
 const (
 	SystemManagerRole Role = "systemManager"
 	AdminRole         Role = "admin"
+	NoAccessRole      Role = "noAccess"
 )

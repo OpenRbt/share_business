@@ -1,6 +1,9 @@
 package entities
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	ErrNotFound        = errors.New("not found")
@@ -19,6 +22,9 @@ var (
 	ErrWashServerNotFound       = errors.New("wash server with specified key not exists")
 	ErrEmptyWashServerKey       = errors.New("wash server key must be not empty")
 	ErrWashServerKeyAlreadyUsed = errors.New("wash server key already in use")
+
+	ErrOrganizationIDRequired = fmt.Errorf("OrganizationID required: %w", ErrBadRequest)
+	ErrInvalidRole            = fmt.Errorf("Role should be one of [serviceManager, admin]: %w", ErrBadRequest)
 )
 
 type ErrorResponse struct {

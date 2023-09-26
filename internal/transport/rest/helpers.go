@@ -30,15 +30,8 @@ func setAPIError(l *zap.SugaredLogger, op string, err error, responder interface
 		return
 	}
 
-	var baseErr error
-	for knownErr, _ := range errorMapping {
-		if errors.Is(err, knownErr) {
-			baseErr = knownErr
-			break
-		}
-	}
+	statusCode, exists := getStatusCodeForError(err)
 
-	statusCode, exists := errorMapping[baseErr]
 	msg := err.Error()
 	if !exists {
 		statusCode = http.StatusInternalServerError
@@ -49,6 +42,16 @@ func setAPIError(l *zap.SugaredLogger, op string, err error, responder interface
 
 	r.SetPayload(&models.Error{Code: swag.Int32(int32(statusCode)), Message: swag.String(msg)})
 	r.SetStatusCode(statusCode)
+}
+
+func getStatusCodeForError(err error) (int, bool) {
+	for knownErr, code := range errorMapping {
+		if errors.Is(err, knownErr) {
+			return code, true
+		}
+	}
+	code, exists := errorMapping[err]
+	return code, exists
 }
 
 func splitCommaSeparatedStr(commaSeparated string) (result []string) {

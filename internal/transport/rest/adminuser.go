@@ -16,9 +16,10 @@ func (svc *service) initAdminUserHandlers(api *operations.WashAdminAPI) {
 	api.UsersGetAdminUserByIDHandler = users.GetAdminUserByIDHandlerFunc(svc.getAdminUserByID)
 	api.UsersUpdateAdminUserRoleHandler = users.UpdateAdminUserRoleHandlerFunc(svc.updateAdminUserRole)
 	api.UsersGetAdminUsersHandler = users.GetAdminUsersHandlerFunc(svc.getAdminUsers)
-	api.UsersDeleteAdminUserHandler = users.DeleteAdminUserHandlerFunc(svc.deleteAdminUser)
+	api.UsersBlockAdminUserHandler = users.BlockAdminUserHandlerFunc(svc.blockAdminUser)
 
 	api.ApplicationsGetAdminApplicationsHandler = applications.GetAdminApplicationsHandlerFunc(svc.getAdminApplications)
+	api.ApplicationsGetAdminApplicationByIDHandler = applications.GetAdminApplicationByIDHandlerFunc(svc.getAdminApplicationByID)
 	api.ApplicationsCreateAdminApplicationHandler = applications.CreateAdminApplicationHandlerFunc(svc.createAdminApplication)
 	api.ApplicationsReviewAdminApplicationHandler = applications.ReviewAdminApplicationHandlerFunc(svc.reviewAdminApplication)
 }
@@ -27,8 +28,8 @@ func (svc *service) getAdminUsers(params users.GetAdminUsersParams, auth *app.Ad
 	op := "Get admin users:"
 	resp := users.NewGetAdminUsersDefault(500)
 
-	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
-	res, err := svc.adminCtrl.Get(params.HTTPRequest.Context(), *auth, pagination)
+	filter := conversions.AdminUserFilterFromRest(*params.Limit, *params.Offset, params.Role, params.IsBlocked)
+	res, err := svc.adminCtrl.Get(params.HTTPRequest.Context(), *auth, filter)
 	if err != nil {
 		setAPIError(svc.l, op, err, resp)
 		return resp
@@ -66,18 +67,18 @@ func (svc *service) updateAdminUserRole(params users.UpdateAdminUserRoleParams, 
 	return users.NewUpdateAdminUserRoleNoContent()
 }
 
-func (svc *service) deleteAdminUser(params users.DeleteAdminUserParams, auth *app.AdminAuth) users.DeleteAdminUserResponder {
-	op := "Delete admin user:"
-	resp := users.NewDeleteAdminUserDefault(500)
+func (svc *service) blockAdminUser(params users.BlockAdminUserParams, auth *app.AdminAuth) users.BlockAdminUserResponder {
+	op := "Block admin user:"
+	resp := users.NewBlockAdminUserDefault(500)
 	ctx := createCtxWithUserID(params.HTTPRequest, auth)
 
-	err := svc.adminCtrl.Delete(ctx, *auth, params.UserID)
+	err := svc.adminCtrl.Block(ctx, *auth, params.UserID)
 	if err != nil {
 		setAPIError(svc.l, op, err, resp)
 		return resp
 	}
 
-	return users.NewDeleteAdminUserNoContent()
+	return users.NewBlockAdminUserNoContent()
 }
 
 func (svc *service) getAdminApplications(params applications.GetAdminApplicationsParams, auth *app.AdminAuth) applications.GetAdminApplicationsResponder {
@@ -120,11 +121,37 @@ func (svc *service) reviewAdminApplication(params applications.ReviewAdminApplic
 		return resp
 	}
 
-	err = svc.adminCtrl.ReviewApplication(ctx, *auth, id, conversions.AdminApplicationReviewFromRest(*params.Body))
+	review, err := conversions.AdminApplicationReviewFromRest(*params.Body)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
+	}
+
+	err = svc.adminCtrl.ReviewApplication(ctx, *auth, id, review)
 	if err != nil {
 		setAPIError(svc.l, op, err, resp)
 		return resp
 	}
 
 	return applications.NewReviewAdminApplicationNoContent()
+}
+
+func (svc *service) getAdminApplicationByID(params applications.GetAdminApplicationByIDParams, auth *app.AdminAuth) applications.GetAdminApplicationByIDResponder {
+	const op = "Get admin application by ID:"
+	resp := applications.NewGetAdminApplicationByIDDefault(500)
+
+	id, err := uuid.FromString(params.ID.String())
+	if err != nil {
+		setAPIError(svc.l, op, fmt.Errorf("Wrong Application ID: %w", entities.ErrBadRequest), resp)
+		return resp
+	}
+
+	res, err := svc.adminCtrl.GetApplicationByID(params.HTTPRequest.Context(), *auth, id)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
+	}
+
+	payload := conversions.AdminApplicationToRest(res)
+	return applications.NewGetAdminApplicationByIDOK().WithPayload(&payload)
 }
