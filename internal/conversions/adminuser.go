@@ -9,12 +9,23 @@ import (
 )
 
 func AdminUserFromDb(dbUser dbmodels.AdminUser) entities.AdminUser {
+	var org *entities.AdminOrganization
+	if dbUser.OrganizationID != nil {
+		org = &entities.AdminOrganization{
+			ID:          *dbUser.OrganizationID,
+			Name:        *dbUser.OrganizationName,
+			DisplayName: *dbUser.OrganizationDisplayName,
+			Description: *dbUser.OrganizationDescription,
+			Deleted:     *dbUser.OrganizationDeleted,
+		}
+	}
+
 	return entities.AdminUser{
-		ID:             dbUser.ID,
-		Name:           dbUser.Name,
-		Email:          dbUser.Email,
-		Role:           RoleSelectionApp(dbUser.Role),
-		OrganizationID: dbUser.OrganizationID,
+		ID:           dbUser.ID,
+		Name:         dbUser.Name,
+		Email:        dbUser.Email,
+		Role:         RoleSelectionApp(dbUser.Role),
+		Organization: org,
 	}
 }
 
@@ -42,9 +53,15 @@ func AdminUserToRest(user entities.AdminUser) models.AdminUser {
 		mod.Name = *user.Name
 	}
 
-	if user.OrganizationID != nil {
-		orgId := user.OrganizationID.String()
-		mod.OrganizationID = (*strfmt.UUID)(&orgId)
+	if user.Organization != nil {
+		orgId := user.Organization.ID.String()
+		mod.Organization = &models.AdminUserOrganization{
+			ID:          strfmt.UUID(orgId),
+			Name:        user.Organization.Name,
+			DisplayName: user.Organization.DisplayName,
+			Description: user.Organization.Description,
+			Deleted:     user.Organization.Deleted,
+		}
 	}
 
 	return mod
@@ -85,27 +102,36 @@ func AdminUserRoleUpdateToDB(e entities.AdminUserRoleUpdate) dbmodels.AdminUserR
 	}
 }
 
-func AdminUserRoleUpdateFromRest(id string, role models.AdminUserRole) entities.AdminUserRoleUpdate {
+func AdminUserRoleUpdateFromRest(id string, role models.AdminUserRole) (entities.AdminUserRoleUpdate, error) {
+	r, err := RoleSelectionRest(role)
+	if err != nil {
+		return entities.AdminUserRoleUpdate{}, err
+	}
+
 	return entities.AdminUserRoleUpdate{
 		ID:   id,
-		Role: RoleSelectionRest(role),
-	}
+		Role: r,
+	}, nil
 }
 
-func AdminUserFilterFromRest(limit, offset int64, role *string, isBlocked *bool) entities.AdminUserFilter {
+func AdminUserFilterFromRest(limit, offset int64, role *string, isBlocked *bool) (entities.AdminUserFilter, error) {
 	filter := entities.AdminUserFilter{
 		Pagination: PaginationFromRest(limit, offset),
 		IsBlocked:  isBlocked,
 	}
 
 	if role == nil {
-		return filter
+		return filter, nil
 	}
 
-	r := RoleSelectionRest(models.AdminUserRole(*role))
+	r, err := RoleSelectionRest(models.AdminUserRole(*role))
+	if err != nil {
+		return entities.AdminUserFilter{}, err
+	}
+
 	filter.Role = &r
 
-	return filter
+	return filter, nil
 }
 
 func AdminUserFilterToDB(filter entities.AdminUserFilter) dbmodels.AdminUserFilter {
@@ -124,17 +150,22 @@ func AdminUserFilterToDB(filter entities.AdminUserFilter) dbmodels.AdminUserFilt
 	return dbFilter
 }
 
-func RoleSelectionRest(role models.AdminUserRole) entities.Role {
+func RoleSelectionRest(role models.AdminUserRole) (entities.Role, error) {
+	var entRole entities.Role
+	var err error
+
 	switch role {
 	case models.AdminUserRoleAdmin:
-		return entities.AdminRole
+		entRole = entities.AdminRole
 	case models.AdminUserRoleSystemManager:
-		return entities.SystemManagerRole
+		entRole = entities.SystemManagerRole
 	case models.AdminUserRoleNoAccess:
-		return entities.NoAccessRole
+		entRole = entities.NoAccessRole
 	default:
-		panic("Unknown rest role, restRole - " + role)
+		err = entities.ErrInvalidRole
 	}
+
+	return entRole, err
 }
 
 func RoleSelectionApp(role dbmodels.Role) entities.Role {

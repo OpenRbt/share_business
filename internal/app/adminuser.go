@@ -58,7 +58,7 @@ func IsAdmin(admin entities.AdminUser) bool {
 }
 
 func IsAdminManageOrganization(user entities.AdminUser, organizationID uuid.UUID) bool {
-	return IsAdmin(user) && user.OrganizationID != nil && *user.OrganizationID == organizationID
+	return IsAdmin(user) && user.Organization != nil && user.Organization.ID == organizationID
 }
 
 func IsAdminHasNoAccess(admin entities.AdminUser) bool {

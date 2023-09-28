@@ -107,8 +107,8 @@ func (ctrl *washServerController) GetWashServers(ctx context.Context, auth app.A
 		return ctrl.washServerSvc.GetWashServers(ctx, filter)
 	}
 
-	if app.IsAdmin(auth.User) && auth.User.OrganizationID != nil {
-		filter.OrganizationID = auth.User.OrganizationID
+	if app.IsAdmin(auth.User) && auth.User.Organization != nil {
+		filter.OrganizationID = &auth.User.Organization.ID
 		return ctrl.washServerSvc.GetWashServers(ctx, filter)
 	}
 

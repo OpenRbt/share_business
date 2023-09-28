@@ -207,6 +207,11 @@ func (r *repo) Delete(ctx context.Context, id uuid.UUID) error {
 		return fmt.Errorf(op, err)
 	}
 
+	err = blockOrganizationAdmins(ctx, tx, id)
+	if err != nil {
+		return fmt.Errorf(op, err)
+	}
+
 	_, err = tx.
 		Update("organizations").
 		Where("NOT deleted AND NOT is_default AND id = ?", id).
@@ -304,6 +309,19 @@ func deleteOrganizationWallets(ctx context.Context, tx *dbr.Tx, id uuid.UUID) er
 		ExecContext(ctx)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func blockOrganizationAdmins(ctx context.Context, tx *dbr.Tx, id uuid.UUID) error {
+	_, err := tx.Update("admin_users").
+		Set("role", dbmodels.NoAccessRole).
+		Where("organization_id = ?", id).
+		ExecContext(ctx)
+
+	if err != nil {
+		return fmt.Errorf("failed to block organization users: %w", err)
 	}
 
 	return nil

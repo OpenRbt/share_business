@@ -28,7 +28,12 @@ func (svc *service) getAdminUsers(params users.GetAdminUsersParams, auth *app.Ad
 	op := "Get admin users:"
 	resp := users.NewGetAdminUsersDefault(500)
 
-	filter := conversions.AdminUserFilterFromRest(*params.Limit, *params.Offset, params.Role, params.IsBlocked)
+	filter, err := conversions.AdminUserFilterFromRest(*params.Limit, *params.Offset, params.Role, params.IsBlocked)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
+	}
+
 	res, err := svc.adminCtrl.Get(params.HTTPRequest.Context(), *auth, filter)
 	if err != nil {
 		setAPIError(svc.l, op, err, resp)
@@ -58,7 +63,13 @@ func (svc *service) updateAdminUserRole(params users.UpdateAdminUserRoleParams, 
 	resp := users.NewUpdateAdminUserRoleDefault(500)
 	ctx := createCtxWithUserID(params.HTTPRequest, auth)
 
-	err := svc.adminCtrl.UpdateRole(ctx, *auth, conversions.AdminUserRoleUpdateFromRest(params.UserID, params.Body.Role))
+	updateRole, err := conversions.AdminUserRoleUpdateFromRest(params.UserID, params.Body.Role)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
+	}
+
+	err = svc.adminCtrl.UpdateRole(ctx, *auth, updateRole)
 	if err != nil {
 		setAPIError(svc.l, op, err, resp)
 		return resp

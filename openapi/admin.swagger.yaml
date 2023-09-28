@@ -536,7 +536,7 @@ parameters:
     name: role
     in: query
     type: string
-    enum: [serviceManager, admin, noAccess]
+    enum: [systemManager, admin, noAccess]
   
   isBlocked:
     name: isBlocked
@@ -580,9 +580,20 @@ definitions:
         format: email
       role:
         $ref: "#/definitions/AdminUserRole"
-      organizationId:
-        type: string
-        format: uuid
+      organization:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+          name:
+            type: string
+          description:
+            type: string
+          displayName:
+            type: string
+          deleted:
+            type: boolean
         x-nullable: true
 
   WashServer:

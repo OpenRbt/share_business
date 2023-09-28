@@ -930,9 +930,26 @@ func init() {
         "name": {
           "type": "string"
         },
-        "organizationId": {
-          "type": "string",
-          "format": "uuid",
+        "organization": {
+          "type": "object",
+          "properties": {
+            "deleted": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
           "x-nullable": true
         },
         "role": {
@@ -1186,7 +1203,7 @@ func init() {
   "parameters": {
     "adminUserRole": {
       "enum": [
-        "serviceManager",
+        "systemManager",
         "admin",
         "noAccess"
       ],
@@ -1735,7 +1752,7 @@ func init() {
           },
           {
             "enum": [
-              "serviceManager",
+              "systemManager",
               "admin",
               "noAccess"
             ],
@@ -2298,15 +2315,54 @@ func init() {
         "name": {
           "type": "string"
         },
-        "organizationId": {
-          "type": "string",
-          "format": "uuid",
+        "organization": {
+          "type": "object",
+          "properties": {
+            "deleted": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            },
+            "displayName": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
           "x-nullable": true
         },
         "role": {
           "$ref": "#/definitions/AdminUserRole"
         }
       }
+    },
+    "AdminUserOrganization": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "x-nullable": true
     },
     "AdminUserRole": {
       "type": "string",
@@ -2560,7 +2616,7 @@ func init() {
   "parameters": {
     "adminUserRole": {
       "enum": [
-        "serviceManager",
+        "systemManager",
         "admin",
         "noAccess"
       ],

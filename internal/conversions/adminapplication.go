@@ -79,8 +79,8 @@ func adminRoleFromRest(role models.AdminUserRole) (*entities.Role, error) {
 	if role == models.AdminUserRoleNoAccess {
 		return nil, entities.ErrInvalidRole
 	}
-	r := RoleSelectionRest(role)
-	return &r, nil
+	r, err := RoleSelectionRest(role)
+	return &r, err
 }
 
 func adminStatusFromRest(status models.ApplicationStatusEnum, role *models.AdminUserRole, orgID *strfmt.UUID) (entities.ApplicationStatus, error) {

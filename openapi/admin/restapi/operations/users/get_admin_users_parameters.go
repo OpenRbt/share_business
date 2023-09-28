@@ -225,7 +225,7 @@ func (o *GetAdminUsersParams) bindRole(rawData []string, hasKey bool, formats st
 // validateRole carries on validations for parameter Role
 func (o *GetAdminUsersParams) validateRole(formats strfmt.Registry) error {
 
-	if err := validate.EnumCase("role", "query", *o.Role, []interface{}{"serviceManager", "admin", "noAccess"}, true); err != nil {
+	if err := validate.EnumCase("role", "query", *o.Role, []interface{}{"systemManager", "admin", "noAccess"}, true); err != nil {
 		return err
 	}
 

@@ -17,14 +17,26 @@ const (
 	applicationResource = dbmodels.AdminApplicationsResource
 )
 
+var adminUserColumns = []string{"u.id",
+	"u.email",
+	"u.name",
+	"u.role",
+	"o.id as organization_id",
+	"o.name as organization_name",
+	"o.display_name as organization_display_name",
+	"o.description as organization_description",
+	"o.deleted as organization_deleted",
+}
+
 func (r *adminUserRepo) GetById(ctx context.Context, userID string) (dbmodels.AdminUser, error) {
 	const op = "failed to get admin by ID: %w"
 
 	var dbUser dbmodels.AdminUser
 	err := r.db.NewSession(nil).
-		Select("*").
-		From("admin_users").
-		Where("id = ?", userID).
+		Select(adminUserColumns...).
+		From(dbr.I("admin_users").As("u")).
+		LeftJoin(dbr.I("organizations").As("o"), "u.organization_id = o.id").
+		Where("u.id = ?", userID).
 		LoadOneContext(ctx, &dbUser)
 
 	if err == nil {
@@ -43,18 +55,19 @@ func (r *adminUserRepo) Get(ctx context.Context, filter dbmodels.AdminUserFilter
 
 	var dbUsers []dbmodels.AdminUser
 	query := r.db.NewSession(nil).
-		Select("*").
-		From("admin_users")
+		Select(adminUserColumns...).
+		From(dbr.I("admin_users").As("u")).
+		LeftJoin(dbr.I("organizations").As("o"), "u.organization_id = o.id")
 
 	if filter.Role != nil {
-		query = query.Where("role = ?", filter.Role)
+		query = query.Where("u.role = ?", filter.Role)
 	}
 
 	if filter.IsBlocked != nil {
 		if *filter.IsBlocked {
-			query = query.Where("role = ?", dbmodels.NoAccessRole)
+			query = query.Where("u.role = ?", dbmodels.NoAccessRole)
 		} else {
-			query = query.Where("role != ?", dbmodels.NoAccessRole)
+			query = query.Where("u.role != ?", dbmodels.NoAccessRole)
 		}
 	}
 

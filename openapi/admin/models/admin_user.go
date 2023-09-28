@@ -31,9 +31,8 @@ type AdminUser struct {
 	// name
 	Name string `json:"name,omitempty"`
 
-	// organization Id
-	// Format: uuid
-	OrganizationID *strfmt.UUID `json:"organizationId,omitempty"`
+	// organization
+	Organization *AdminUserOrganization `json:"organization,omitempty"`
 
 	// role
 	Role AdminUserRole `json:"role,omitempty"`
@@ -53,9 +52,8 @@ func (m *AdminUser) UnmarshalJSON(data []byte) error {
 		// name
 		Name string `json:"name,omitempty"`
 
-		// organization Id
-		// Format: uuid
-		OrganizationID *strfmt.UUID `json:"organizationId,omitempty"`
+		// organization
+		Organization *AdminUserOrganization `json:"organization,omitempty"`
 
 		// role
 		Role AdminUserRole `json:"role,omitempty"`
@@ -70,7 +68,7 @@ func (m *AdminUser) UnmarshalJSON(data []byte) error {
 	m.Email = props.Email
 	m.ID = props.ID
 	m.Name = props.Name
-	m.OrganizationID = props.OrganizationID
+	m.Organization = props.Organization
 	m.Role = props.Role
 	return nil
 }
@@ -83,7 +81,7 @@ func (m *AdminUser) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateOrganizationID(formats); err != nil {
+	if err := m.validateOrganization(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -109,13 +107,20 @@ func (m *AdminUser) validateEmail(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *AdminUser) validateOrganizationID(formats strfmt.Registry) error {
-	if swag.IsZero(m.OrganizationID) { // not required
+func (m *AdminUser) validateOrganization(formats strfmt.Registry) error {
+	if swag.IsZero(m.Organization) { // not required
 		return nil
 	}
 
-	if err := validate.FormatOf("organizationId", "body", "uuid", m.OrganizationID.String(), formats); err != nil {
-		return err
+	if m.Organization != nil {
+		if err := m.Organization.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("organization")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("organization")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -142,6 +147,10 @@ func (m *AdminUser) validateRole(formats strfmt.Registry) error {
 func (m *AdminUser) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateOrganization(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateRole(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -149,6 +158,27 @@ func (m *AdminUser) ContextValidate(ctx context.Context, formats strfmt.Registry
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *AdminUser) contextValidateOrganization(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Organization != nil {
+
+		if swag.IsZero(m.Organization) { // not required
+			return nil
+		}
+
+		if err := m.Organization.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("organization")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("organization")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -181,6 +211,112 @@ func (m *AdminUser) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *AdminUser) UnmarshalBinary(b []byte) error {
 	var res AdminUser
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*m = res
+	return nil
+}
+
+// AdminUserOrganization admin user organization
+//
+// swagger:model AdminUserOrganization
+type AdminUserOrganization struct {
+
+	// deleted
+	Deleted bool `json:"deleted,omitempty"`
+
+	// description
+	Description string `json:"description,omitempty"`
+
+	// display name
+	DisplayName string `json:"displayName,omitempty"`
+
+	// id
+	// Format: uuid
+	ID strfmt.UUID `json:"id,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+}
+
+// UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
+func (m *AdminUserOrganization) UnmarshalJSON(data []byte) error {
+	var props struct {
+
+		// deleted
+		Deleted bool `json:"deleted,omitempty"`
+
+		// description
+		Description string `json:"description,omitempty"`
+
+		// display name
+		DisplayName string `json:"displayName,omitempty"`
+
+		// id
+		// Format: uuid
+		ID strfmt.UUID `json:"id,omitempty"`
+
+		// name
+		Name string `json:"name,omitempty"`
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&props); err != nil {
+		return err
+	}
+
+	m.Deleted = props.Deleted
+	m.Description = props.Description
+	m.DisplayName = props.DisplayName
+	m.ID = props.ID
+	m.Name = props.Name
+	return nil
+}
+
+// Validate validates this admin user organization
+func (m *AdminUserOrganization) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *AdminUserOrganization) validateID(formats strfmt.Registry) error {
+	if swag.IsZero(m.ID) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("organization"+"."+"id", "body", "uuid", m.ID.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ContextValidate validates this admin user organization based on context it is used
+func (m *AdminUserOrganization) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (m *AdminUserOrganization) MarshalBinary() ([]byte, error) {
+	if m == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(m)
+}
+
+// UnmarshalBinary interface implementation
+func (m *AdminUserOrganization) UnmarshalBinary(b []byte) error {
+	var res AdminUserOrganization
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

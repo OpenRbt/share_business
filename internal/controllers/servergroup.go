@@ -28,12 +28,12 @@ func (ctrl *serverGroupController) Get(ctx context.Context, auth app.AdminAuth, 
 		return ctrl.serverGroupSvc.Get(ctx, filter)
 	}
 
-	if app.IsAdmin(auth.User) && auth.User.OrganizationID != nil {
-		if filter.OrganizationID != nil && *filter.OrganizationID != *auth.User.OrganizationID {
+	if app.IsAdmin(auth.User) && auth.User.Organization != nil {
+		if filter.OrganizationID != nil && *filter.OrganizationID != auth.User.Organization.ID {
 			return nil, entities.ErrForbidden
 		}
 
-		filter.OrganizationID = auth.User.OrganizationID
+		filter.OrganizationID = &auth.User.Organization.ID
 		return ctrl.serverGroupSvc.Get(ctx, filter)
 	}
 
