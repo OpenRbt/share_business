@@ -1,0 +1,789 @@
+swagger: "2.0"
+info:
+  description: "Admin service for self-service car washes"
+  title: wash-admin
+  version: 1.0.0
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+basePath: /admin
+securityDefinitions:
+  authKey:
+    description: Session token inside Authorization header.
+    type: apiKey
+    in: header
+    name: Authorization
+security:
+  - authKey: [ ]
+
+paths:
+  /users:
+    get:
+      tags:     
+        - users
+      operationId: getAdminUsers
+      parameters:
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/adminUserRole'
+        - $ref: '#/parameters/isBlocked'
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/AdminUser"
+        default: {$ref: '#/responses/GenericError'}
+
+  /users/{userId}:
+    get:
+      tags:     
+        - users
+      operationId: getAdminUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminUser"
+        default: {$ref: '#/responses/GenericError'}
+    patch:
+      tags:     
+        - users
+      security:
+        - authKey: []
+      operationId: updateAdminUserRole
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              role:
+                $ref: "#/definitions/AdminUserRole"
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+    delete:
+      tags:     
+        - users
+      operationId: blockAdminUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+  /wash-servers/{serverId}:
+    get:
+      tags:     
+        - washServers
+      security:
+        - authKey: []
+      operationId: getWashServerById
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/WashServer"
+        default: {$ref: '#/responses/GenericError'}
+    patch:
+      tags:     
+        - washServers
+      security:
+        - authKey: []
+      operationId: updateWashServer
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/WashServerUpdate"
+      responses:
+        200:
+          description: Success update
+          schema:
+            $ref: "#/definitions/WashServer"
+        default: {$ref: '#/responses/GenericError'}
+    delete:
+      tags:     
+        - washServers
+      security:
+        - authKey: []
+      operationId: deleteWashServer
+      parameters:
+        - name: serverId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+  /wash-servers/:
+    get:
+      tags:     
+        - washServers
+      security:
+        - authKey: []
+      operationId: getWashServers
+      parameters:
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - name: organizationId
+          in: query
+          type: string
+          format: uuid
+        - name: groupId
+          in: query
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/WashServer"
+        default: {$ref: '#/responses/GenericError'}
+    post:
+      tags:     
+        - washServers
+      security:
+        - authKey: []
+      operationId: createWashServer
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/WashServerCreation"
+      responses:
+        200:
+          description: Success creation
+          schema:
+            $ref: "#/definitions/WashServer"
+        default: {$ref: '#/responses/GenericError'}
+
+  /organizations:
+    get:
+      tags:     
+        - organizations
+      operationId: getOrganizations
+      parameters:
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - name: ids
+          in: query
+          type: array
+          items: 
+            type: string
+            format: uuid
+          collectionFormat: csv
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/Organization"
+        default: {$ref: '#/responses/GenericError'}
+    post:
+      tags:     
+        - organizations
+      operationId: createOrganization
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/OrganizationCreation"
+      responses:
+        200:
+          description: Successfull created
+          schema:
+            $ref: "#/definitions/Organization"
+        default: {$ref: '#/responses/GenericError'}
+
+  /organizations/{organizationId}:
+    get:
+      tags:     
+        - organizations
+      operationId: getOrganizationById
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Organization"
+        default: {$ref: '#/responses/GenericError'}
+    patch:
+      tags:     
+        - organizations
+      operationId: updateOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/OrganizationUpdate"
+      responses:
+        200:
+          description: Successfull updated
+          schema:
+            $ref: "#/definitions/Organization"
+        default: {$ref: '#/responses/GenericError'}
+    delete:
+      tags:     
+        - organizations
+      operationId: deleteOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+  /organizations/{organizationId}/users/{userId}:
+    post:
+      tags:     
+        - organizations
+      operationId: assignUserToOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: userId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+    delete:
+      tags:     
+        - organizations
+      operationId: removeUserFromOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: userId
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+  /server-groups:
+    get:
+      tags:     
+        - serverGroups
+      operationId: getServerGroups
+      parameters:
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - name: organizationId
+          in: query
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items: 
+              $ref: "#/definitions/ServerGroup"
+        default: {$ref: '#/responses/GenericError'}
+    post:
+      tags:     
+        - serverGroups
+      operationId: createServerGroup
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/ServerGroupCreation"
+      responses:
+        200:
+          description: Successfull created
+          schema:
+            $ref: "#/definitions/ServerGroup"
+        default: {$ref: '#/responses/GenericError'}
+
+  /server-groups/{groupId}:
+    get:
+      tags:     
+        - serverGroups
+      operationId: getServerGroupById
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/ServerGroup"
+        default: {$ref: '#/responses/GenericError'}
+    patch:
+      tags:     
+        - serverGroups
+      operationId: updateServerGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/ServerGroupUpdate"
+      responses:
+        200:
+          description: Successfull updated
+          schema:
+            $ref: "#/definitions/ServerGroup"
+        default: {$ref: '#/responses/GenericError'}
+    delete:
+      tags:     
+        - serverGroups
+      operationId: deleteServerGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+    
+  /server-groups/{groupId}/wash-servers/{serverId}:
+    post:
+      tags:     
+        - washServers
+        - serverGroup
+      operationId: assignServerToGroup
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          type: string
+          format: uuid
+        - name: serverId
+          in: path
+          required: true
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+  /users/applications:
+    get:
+      tags:     
+        - applications
+      operationId: getAdminApplications
+      parameters:
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - name: status
+          in: query
+          type: string
+          enum: [accepted, rejected, pending]
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              applications:
+                type: array
+                items:
+                  $ref: "#/definitions/AdminApplication"
+        default: {$ref: '#/responses/GenericError'}
+    post:
+      tags:     
+        - applications
+      operationId: createAdminApplication
+      security: []
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            application:
+              $ref: "#/definitions/AdminApplicationCreation"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/AdminApplication"
+        default: {$ref: '#/responses/GenericError'}
+
+  /users/applications/{id}:
+    get:
+      tags:     
+        - applications
+      operationId: getAdminApplicationById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AdminApplication'
+        default: {$ref: '#/responses/GenericError'}
+    post:
+      tags:     
+        - applications
+      operationId: reviewAdminApplication
+      parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+        format: uuid
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/AdminApplicationReview'
+      responses:
+        204:
+          description: OK
+        default: {$ref: '#/responses/GenericError'}
+
+parameters:
+  offset:
+    name: offset
+    in: query
+    description: Number of records to skip for pagination
+    required: false
+    type: integer
+    format: int64
+    default: 0
+    minimum: 0
+
+  limit:
+    name: limit
+    in: query
+    description: Maximum number of records to return
+    required: false
+    type: integer
+    format: int64
+    default: 100
+    minimum: 0
+
+  adminUserRole:
+    name: role
+    in: query
+    type: string
+    enum: [systemManager, admin, noAccess]
+  
+  isBlocked:
+    name: isBlocked
+    in: query
+    type: boolean
+
+responses:
+  GenericError:
+    description: Generic error response
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        description: Either same as HTTP Status Code OR >= 600.
+        type: integer
+        format: int32
+      message:
+        type: string
+
+  AdminUserRole:
+    type: string
+    enum: [systemManager, admin, noAccess]
+
+  AdminUser:
+    type: object
+    description: "Admin user profile"
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+        format: email
+      role:
+        $ref: "#/definitions/AdminUserRole"
+      organization:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uuid
+          name:
+            type: string
+          description:
+            type: string
+          displayName:
+            type: string
+          deleted:
+            type: boolean
+        x-nullable: true
+
+  WashServer:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      serviceKey:
+        type: string
+      createdBy:
+        type: string
+      groupId:
+        type: string
+        format: uuid
+      organizationId:
+        type: string
+        format: uuid
+
+  WashServerCreation:
+    required: ["name", "description"]
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      groupId:
+        type: string
+        format: uuid
+        x-nullable: true
+    
+  WashServerUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+        x-nullable: true
+      description:
+        type: string
+        x-nullable: true
+
+  Organization:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+      displayName:
+        type: string
+      isDefault:
+        type: boolean
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
+
+  OrganizationCreation:
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      displayName:
+        type: string
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+        x-nullable: true
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
+        x-nullable: true
+    required:
+      - name
+      - description
+
+  OrganizationUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+        x-nullable: true
+      description:
+        type: string
+        x-nullable: true
+      displayName:
+        type: string
+        x-nullable: true
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+        x-nullable: true
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
+        x-nullable: true
+
+  ServerGroup:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      description:
+        type: string
+      organizationId:
+        type: string
+        format: uuid
+      isDefault:
+        type: boolean
+
+  ServerGroupCreation:
+    required: ["name", "description", "organizationId"]
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      organizationId:
+        type: string
+        format: uuid
+
+  ServerGroupUpdate:
+    type: object
+    properties:
+      name:
+        type: string
+        x-nullable: true
+      description:
+        type: string
+        x-nullable: true
+  
+  FirebaseUser:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+        format: email
+
+  ApplicationStatusEnum:
+    type: string
+    enum: [accepted, rejected, pending]
+  
+  AdminApplication:
+    type: object
+    required: [id, user, status]
+    properties:
+      id:
+        type: string
+        format: uuid
+      user:
+        $ref: '#/definitions/FirebaseUser'
+      status:
+        $ref: '#/definitions/ApplicationStatusEnum'
+
+  AdminApplicationCreation:
+    type: object
+    required: [user]
+    properties:
+      user:
+        $ref: '#/definitions/FirebaseUser'
+
+  AdminApplicationReview:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/ApplicationStatusEnum'
+      organizationId:
+        type: string
+        format: uuid
+        x-nullable: true
+      role:
+        allOf:
+          - $ref: "#/definitions/AdminUserRole"
+          - x-nullable: true

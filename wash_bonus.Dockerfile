@@ -10,14 +10,10 @@ RUN apk update --no-cache && apk add --no-cache tzdata
 
 WORKDIR /build
 
-COPY cmd/wash_bonus/go.mod .
-COPY cmd/wash_bonus/go.sum .
+COPY . .
 
 RUN go mod download
-
-COPY cmd/wash_bonus/ .
-
-RUN go build -ldflags="-s -w" -o /app/wash_bonus .
+RUN go build -ldflags="-s -w" -o /app/washbonus ./cmd/washbonus
 
 FROM alpine
 
@@ -28,11 +24,10 @@ RUN apk update --no-cache && apk add --no-cache ca-certificates
 
 WORKDIR /app
 
-COPY environment/certs/ /app/certs/
 COPY environment/firebase /app/firebase
 
-COPY cmd/wash_bonus/migrations /app/migrations
-COPY --from=builder /app/wash_bonus /app/wash_bonus
+COPY internal/migrations /app/internal/migrations
+COPY --from=builder /app/washbonus /app/washbonus
 
 EXPOSE 8080
-CMD ["/app/wash_bonus"]
+CMD ["/app/washbonus"]
