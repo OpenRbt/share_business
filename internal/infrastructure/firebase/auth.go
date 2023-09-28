@@ -49,7 +49,7 @@ func (svc *FirebaseService) BonusAuth(bearer string) (*app.Auth, error) {
 		}
 	}
 
-	if user.Email == nil {
+	if user.Email == nil || *user.Name != fbUser.DisplayName {
 		err := svc.userSvc.UpdateUser(ctx, entities.UserUpdate{
 			ID:    fbUser.UID,
 			Email: fbUser.Email,
@@ -99,7 +99,7 @@ func (svc *FirebaseService) AdminAuth(bearer string) (*app.AdminAuth, error) {
 		return nil, ErrUnauthorized
 	}
 
-	if user.Email == nil {
+	if user.Email == nil || *user.Email == "" || *user.Name != fbUser.DisplayName {
 		err := svc.adminSvc.Update(ctx, entities.AdminUserUpdate{
 			ID:    fbUser.UID,
 			Email: &fbUser.Email,

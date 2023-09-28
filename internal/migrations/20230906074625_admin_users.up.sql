@@ -19,10 +19,9 @@ ALTER TABLE wash_servers
     DROP CONSTRAINT wash_servers_users_id_fk;
 
 INSERT INTO admin_users (id, name, email, role)
-    SELECT DISTINCT ON (u.id) u.id, u.name, u.email, 'system_manager'::ADMIN_ROLE_ENUM
+    SELECT DISTINCT ON (u.id) u.id, COALESCE(u.name, ''), COALESCE(u.email, ''), 'system_manager'::ADMIN_ROLE_ENUM
     FROM wash_servers w
     JOIN users u ON w.created_by = u.id;
-
 
 ALTER TABLE wash_servers
     ADD CONSTRAINT wash_servers_admin_users_id_fk FOREIGN KEY (created_by) REFERENCES admin_users(id);

@@ -8,7 +8,7 @@ update users as u set u.balance = (select sum(w.balance) from wallets as w where
 
 drop table wallets;
 alter table wash_servers drop column group_id;
-alter table session_money_reports drop column organization_id;
+alter table session_money_report drop column organization_id;
 alter table balance_events drop column wallet_id;
 drop table server_groups;
 drop table organizations;
