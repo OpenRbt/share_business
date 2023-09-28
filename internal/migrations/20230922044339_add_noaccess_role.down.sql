@@ -1,0 +1,14 @@
+ALTER TABLE admin_users
+    CREATE COLUMN deleted BOOLEAN false;
+
+CREATE TYPE NEW_ADMIN_ROLE_ENUM AS ENUM ('system_manager', 'admin');
+
+ALTER TABLE admin_users ADD COLUMN new_role NEW_ADMIN_ROLE_ENUM;
+UPDATE admin_users SET new_role = 'admin'::NEW_ADMIN_ROLE_ENUM;
+
+ALTER TABLE admin_users DROP COLUMN role;
+ALTER TABLE admin_users RENAME COLUMN new_role TO role;
+
+DROP TYPE ADMIN_ROLE_ENUM;
+
+ALTER TYPE NEW_ADMIN_ROLE_ENUM RENAME TO ADMIN_ROLE_ENUM;

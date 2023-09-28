@@ -15,7 +15,7 @@ import (
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"washBonus/rabbit-intapi/models"
+	"washbonus/rabbit-intapi/models"
 )
 
 // NewCreateUserParams creates a new CreateUserParams object,

@@ -2,10 +2,10 @@ package rabbit
 
 import (
 	"context"
-	"washBonus/internal/entity"
-	"washBonus/internal/entity/vo"
-	"washBonus/internal/infrastructure/rabbit/entity/session"
-	rabbitVo "washBonus/internal/infrastructure/rabbit/entity/vo"
+	"washbonus/internal/entities"
+	"washbonus/internal/entities/vo"
+	"washbonus/internal/infrastructure/rabbit/entities/session"
+	rabbitVo "washbonus/internal/infrastructure/rabbit/entities/vo"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
@@ -41,7 +41,7 @@ func (s *rabbitService) ConfirmBonuses(ctx context.Context, sessionID uuid.UUID,
 	}
 
 	if session.User == nil {
-		return entity.ErrSessionNoUser
+		return entities.ErrSessionNoUser
 	}
 
 	return s.sessionSvc.ConfirmBonuses(ctx, amount, sessionID)
@@ -54,7 +54,7 @@ func (s *rabbitService) DiscardBonuses(ctx context.Context, sessionID uuid.UUID,
 	}
 
 	if session.User == nil {
-		return entity.ErrSessionNoUser
+		return entities.ErrSessionNoUser
 	}
 
 	return s.sessionSvc.DiscardBonuses(ctx, amount, sessionID)
@@ -67,16 +67,16 @@ func (s *rabbitService) RewardBonuses(ctx context.Context, payload []byte, sessi
 	}
 
 	if session.User == nil {
-		return entity.ErrSessionNoUser
+		return entities.ErrSessionNoUser
 	}
 
 	if err := s.sessionSvc.LogRewardBonuses(ctx, sessionID, payload, messageUUID); err != nil {
-		return entity.ErrMessageDuplicate
+		return entities.ErrMessageDuplicate
 	}
 
 	return s.walletSvc.ChargeBonusesByUserAndOrganization(ctx, amount, session.User.ID, session.WashServer.OrganizationID)
 }
 
-func (s *rabbitService) SaveMoneyReport(ctx context.Context, report entity.MoneyReport) error {
+func (s *rabbitService) SaveMoneyReport(ctx context.Context, report entities.MoneyReport) error {
 	return s.sessionSvc.SaveMoneyReport(ctx, report)
 }

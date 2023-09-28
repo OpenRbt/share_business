@@ -1,4 +1,4 @@
-module washBonus
+module washbonus
 
 go 1.18
 

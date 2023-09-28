@@ -1,7 +1,7 @@
 package user
 
 import (
-	"washBonus/internal/app"
+	"washbonus/internal/app"
 
 	"go.uber.org/zap"
 )

@@ -1,9 +1,9 @@
 package app
 
 import (
-	dalEntity "washBonus/internal/entity"
-	"washBonus/internal/infrastructure/rabbit/entity/session"
-	"washBonus/internal/infrastructure/rabbit/entity/vo"
+	dalEntity "washbonus/internal/entities"
+	"washbonus/internal/infrastructure/rabbit/entities/session"
+	"washbonus/internal/infrastructure/rabbit/entities/vo"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"

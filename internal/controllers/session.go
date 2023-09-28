@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"context"
-	"washBonus/internal/app"
-	"washBonus/internal/conversions"
-	"washBonus/internal/entity"
-	"washBonus/internal/infrastructure/rabbit"
-	rabbitVo "washBonus/internal/infrastructure/rabbit/entity/vo"
+	"washbonus/internal/app"
+	"washbonus/internal/conversions"
+	"washbonus/internal/entities"
+	"washbonus/internal/infrastructure/rabbit"
+	rabbitVo "washbonus/internal/infrastructure/rabbit/entities/vo"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
@@ -31,7 +31,7 @@ func NewSessionController(l *zap.SugaredLogger, sessionSvc app.SessionService, u
 	}
 }
 
-func (ctrl *sessionController) GetSession(ctx context.Context, auth app.Auth, sessionID uuid.UUID) (entity.Session, error) {
+func (ctrl *sessionController) GetSession(ctx context.Context, auth app.Auth, sessionID uuid.UUID) (entities.Session, error) {
 	session, err := ctrl.sessionSvc.Get(ctx, sessionID, &auth.User.ID)
 	if err != nil {
 		return session, err
@@ -53,7 +53,7 @@ func (ctrl *sessionController) ChargeBonuses(ctx context.Context, auth app.Auth,
 	}
 
 	if session.User == nil || session.Finished {
-		return entity.ErrForbidden
+		return entities.ErrForbidden
 	}
 
 	err = ctrl.sessionSvc.ChargeBonuses(ctx, amount, sessionID, auth.User.ID)
@@ -77,7 +77,7 @@ func (ctrl *sessionController) AssignUserToSession(ctx context.Context, auth app
 	}
 
 	if (session.User != nil && session.User.ID != auth.User.ID) || session.Finished {
-		return entity.ErrForbidden
+		return entities.ErrForbidden
 	}
 
 	err = ctrl.sessionSvc.SetSessionUser(ctx, sessionID, auth.User.ID)

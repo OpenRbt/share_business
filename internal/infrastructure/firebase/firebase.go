@@ -4,30 +4,26 @@ import (
 	"context"
 	"path/filepath"
 	"time"
-	"washBonus/internal/app"
+	"washbonus/internal/app"
+	"washbonus/internal/config"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
 	"google.golang.org/api/option"
 )
 
-type UID string
-
-const authTimeout = time.Second
-
-type Service interface {
-	Auth(token string) (*app.Auth, error)
-}
+const authTimeout = time.Second * 15
 
 type FirebaseService struct {
 	app  *firebase.App
 	auth *auth.Client
 
-	userSvc app.UserService
+	userSvc  app.UserService
+	adminSvc app.AdminService
 }
 
-func New(keyfileLocation string, userSvc app.UserService) Service {
-	keyFilePath, err := filepath.Abs(keyfileLocation)
+func New(cfg config.FirebaseConfig, userSvc app.UserService, adminSvc app.AdminService) (*FirebaseService, error) {
+	keyFilePath, err := filepath.Abs(cfg.FirebaseKeyFilePath)
 	if err != nil {
 		panic("Unable to load service key")
 	}
@@ -47,6 +43,7 @@ func New(keyfileLocation string, userSvc app.UserService) Service {
 		app:  app,
 		auth: auth,
 
-		userSvc: userSvc,
-	}
+		userSvc:  userSvc,
+		adminSvc: adminSvc,
+	}, nil
 }

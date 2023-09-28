@@ -1,17 +1,17 @@
 package rest
 
 import (
-	"errors"
-	"washBonus/internal/app"
-	"washBonus/internal/conversions"
-	"washBonus/internal/entity"
-	"washBonus/openapi/restapi/operations"
-	"washBonus/openapi/restapi/operations/organizations"
+	"fmt"
+	"washbonus/internal/app"
+	conv "washbonus/internal/conversions"
+	"washbonus/internal/entities"
+	"washbonus/openapi/admin/restapi/operations"
+	"washbonus/openapi/admin/restapi/operations/organizations"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-func (svc *service) initOrganizationsHandlers(api *operations.WashBonusAPI) {
+func (svc *service) initOrganizationsHandlers(api *operations.WashAdminAPI) {
 	api.OrganizationsGetOrganizationsHandler = organizations.GetOrganizationsHandlerFunc(svc.getOrganizations)
 	api.OrganizationsGetOrganizationByIDHandler = organizations.GetOrganizationByIDHandlerFunc(svc.getOrganizationByID)
 	api.OrganizationsCreateOrganizationHandler = organizations.CreateOrganizationHandlerFunc(svc.createOrganization)
@@ -20,195 +20,139 @@ func (svc *service) initOrganizationsHandlers(api *operations.WashBonusAPI) {
 
 	api.OrganizationsAssignUserToOrganizationHandler = organizations.AssignUserToOrganizationHandlerFunc(svc.assignOrganizationManager)
 	api.OrganizationsRemoveUserFromOrganizationHandler = organizations.RemoveUserFromOrganizationHandlerFunc(svc.removeOrganizationManager)
-
-	api.OrganizationsGetSettingsForOrganizationHandler = organizations.GetSettingsForOrganizationHandlerFunc(svc.getSettingsForOrganization)
-	api.OrganizationsUpdateSettingForOrganizationHandler = organizations.UpdateSettingForOrganizationHandlerFunc(svc.updateSettingsForOrganization)
 }
 
-func (svc *service) getOrganizations(params organizations.GetOrganizationsParams, auth *app.Auth) organizations.GetOrganizationsResponder {
-	pagination := conversions.PaginationFromRest(*params.Limit, *params.Offset)
+func (svc *service) getOrganizations(params organizations.GetOrganizationsParams, auth *app.AdminAuth) organizations.GetOrganizationsResponder {
+	op := "Get organizations:"
+	resp := organizations.NewGetOrganizationsDefault(500)
 
-	filter, err := conversions.OrganizationFilterFromRest(pagination, *params.IsManagedByMe, params.Ids)
+	pagination := conv.PaginationFromRest(*params.Limit, *params.Offset)
+	filter, err := conv.OrganizationFilterFromRest(pagination, params.Ids)
 	if err != nil {
-		svc.l.Errorln(err)
-		return organizations.NewGetOrganizationsBadRequest()
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
 
 	res, err := svc.orgCtrl.Get(params.HTTPRequest.Context(), *auth, filter)
-
-	switch {
-	case err == nil:
-		return organizations.NewGetOrganizationsOK().WithPayload(conversions.OrganizationsToRest(res))
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewGetOrganizationsForbidden()
-	default:
-		svc.l.Errorln("Get organizations:", err)
-		return organizations.NewGetOrganizationsInternalServerError()
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
+
+	return organizations.NewGetOrganizationsOK().WithPayload(conv.OrganizationsToRest(res))
 }
 
-func (svc *service) getOrganizationByID(params organizations.GetOrganizationByIDParams, auth *app.Auth) organizations.GetOrganizationByIDResponder {
+func (svc *service) getOrganizationByID(params organizations.GetOrganizationByIDParams, auth *app.AdminAuth) organizations.GetOrganizationByIDResponder {
+	op := "Get organization by ID:"
+	resp := organizations.NewGetOrganizationByIDDefault(500)
+
 	id, err := uuid.FromString(params.OrganizationID.String())
 	if err != nil {
-		return organizations.NewGetOrganizationByIDBadRequest()
+		setAPIError(svc.l, op, fmt.Errorf("Wrong organization ID: %w", entities.ErrBadRequest), resp)
+		return resp
 	}
 
 	res, err := svc.orgCtrl.GetById(params.HTTPRequest.Context(), *auth, id)
-
-	switch {
-	case err == nil:
-		return organizations.NewGetOrganizationByIDOK().WithPayload(conversions.OrganizationToRest(res))
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewGetOrganizationByIDForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewGetOrganizationByIDNotFound()
-	default:
-		svc.l.Errorln("Get organization:", err)
-		return organizations.NewGetOrganizationByIDInternalServerError()
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
+
+	return organizations.NewGetOrganizationByIDOK().WithPayload(conv.OrganizationToRest(res))
 }
 
-func (svc *service) createOrganization(params organizations.CreateOrganizationParams, auth *app.Auth) organizations.CreateOrganizationResponder {
-	orgCreation := conversions.OrganizationCreationFromRest(*params.Body)
+func (svc *service) createOrganization(params organizations.CreateOrganizationParams, auth *app.AdminAuth) organizations.CreateOrganizationResponder {
+	op := "Create organization:"
+	resp := organizations.NewCreateOrganizationDefault(500)
+	ctx := createCtxWithUserID(params.HTTPRequest, auth)
 
-	org, err := svc.orgCtrl.Create(params.HTTPRequest.Context(), *auth, orgCreation)
-
-	switch {
-	case err == nil:
-		return organizations.NewCreateOrganizationOK().WithPayload(conversions.OrganizationToRest(org))
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewCreateOrganizationForbidden()
-	default:
-		svc.l.Errorln("Create organization:", err)
-		return organizations.NewCreateOrganizationInternalServerError()
+	orgCreation := conv.OrganizationCreationFromRest(*params.Body)
+	org, err := svc.orgCtrl.Create(ctx, *auth, orgCreation)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
+
+	return organizations.NewCreateOrganizationOK().WithPayload(conv.OrganizationToRest(org))
 }
 
-func (svc *service) updateOrganization(params organizations.UpdateOrganizationParams, auth *app.Auth) organizations.UpdateOrganizationResponder {
+func (svc *service) updateOrganization(params organizations.UpdateOrganizationParams, auth *app.AdminAuth) organizations.UpdateOrganizationResponder {
+	op := "Update organization:"
+	resp := organizations.NewUpdateOrganizationDefault(500)
+	ctx := createCtxWithUserID(params.HTTPRequest, auth)
+
 	id, err := uuid.FromString(params.OrganizationID.String())
 	if err != nil {
-		return organizations.NewUpdateOrganizationBadRequest()
+		setAPIError(svc.l, op, fmt.Errorf("Wrong organization ID: %w", entities.ErrBadRequest), resp)
+		return resp
 	}
 
-	orgUpdate := conversions.OrganizationUpdateFromRest(*params.Body)
-	updatedOrg, err := svc.orgCtrl.Update(params.HTTPRequest.Context(), *auth, id, orgUpdate)
-
-	switch {
-	case err == nil:
-		return organizations.NewUpdateOrganizationOK().WithPayload(conversions.OrganizationToRest(updatedOrg))
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewUpdateOrganizationForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewUpdateOrganizationNotFound()
-	default:
-		svc.l.Errorln("Update organization:", err)
-		return organizations.NewUpdateOrganizationInternalServerError()
+	orgUpdate := conv.OrganizationUpdateFromRest(*params.Body)
+	updatedOrg, err := svc.orgCtrl.Update(ctx, *auth, id, orgUpdate)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
+
+	return organizations.NewUpdateOrganizationOK().WithPayload(conv.OrganizationToRest(updatedOrg))
 }
 
-func (svc *service) deleteOrganization(params organizations.DeleteOrganizationParams, auth *app.Auth) organizations.DeleteOrganizationResponder {
+func (svc *service) deleteOrganization(params organizations.DeleteOrganizationParams, auth *app.AdminAuth) organizations.DeleteOrganizationResponder {
+	op := "Delete organization:"
+	resp := organizations.NewDeleteOrganizationDefault(500)
+	ctx := createCtxWithUserID(params.HTTPRequest, auth)
+
 	id, err := uuid.FromString(params.OrganizationID.String())
 	if err != nil {
-		return organizations.NewDeleteOrganizationBadRequest()
+		setAPIError(svc.l, op, fmt.Errorf("Wrong organization ID: %w", entities.ErrBadRequest), resp)
+		return resp
 	}
 
-	err = svc.orgCtrl.Delete(params.HTTPRequest.Context(), *auth, id)
-
-	switch {
-	case err == nil:
-		return organizations.NewDeleteOrganizationNoContent()
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewDeleteOrganizationForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewDeleteOrganizationNotFound()
-	default:
-		svc.l.Errorln("Delete organization:", err)
-		return organizations.NewDeleteOrganizationInternalServerError()
+	err = svc.orgCtrl.Delete(ctx, *auth, id)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
+
+	return organizations.NewDeleteOrganizationNoContent()
 }
 
-func (svc *service) assignOrganizationManager(params organizations.AssignUserToOrganizationParams, auth *app.Auth) organizations.AssignUserToOrganizationResponder {
+func (svc *service) assignOrganizationManager(params organizations.AssignUserToOrganizationParams, auth *app.AdminAuth) organizations.AssignUserToOrganizationResponder {
+	op := "Assign organization manager:"
+	resp := organizations.NewAssignUserToOrganizationDefault(500)
+	ctx := createCtxWithUserID(params.HTTPRequest, auth)
+
 	id, err := uuid.FromString(params.OrganizationID.String())
 	if err != nil {
-		return organizations.NewAssignUserToOrganizationBadRequest()
+		setAPIError(svc.l, op, fmt.Errorf("Wrong organization ID: %w", entities.ErrBadRequest), resp)
+		return resp
 	}
 
-	err = svc.orgCtrl.AssignManager(params.HTTPRequest.Context(), *auth, id, params.UserID)
-
-	switch {
-	case err == nil:
-		return organizations.NewAssignUserToOrganizationNoContent()
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewAssignUserToOrganizationForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewAssignUserToOrganizationNotFound()
-	default:
-		svc.l.Errorln("Assign user to organization:", err)
-		return organizations.NewAssignUserToOrganizationInternalServerError()
+	err = svc.orgCtrl.AssignManager(ctx, *auth, id, params.UserID)
+	if err != nil {
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
+
+	return organizations.NewAssignUserToOrganizationNoContent()
 }
 
-func (svc *service) removeOrganizationManager(params organizations.RemoveUserFromOrganizationParams, auth *app.Auth) organizations.RemoveUserFromOrganizationResponder {
+func (svc *service) removeOrganizationManager(params organizations.RemoveUserFromOrganizationParams, auth *app.AdminAuth) organizations.RemoveUserFromOrganizationResponder {
+	op := "Remove organization manager:"
+	resp := organizations.NewRemoveUserFromOrganizationDefault(500)
+	ctx := createCtxWithUserID(params.HTTPRequest, auth)
+
 	id, err := uuid.FromString(params.OrganizationID.String())
 	if err != nil {
-		return organizations.NewRemoveUserFromOrganizationBadRequest()
+		setAPIError(svc.l, op, fmt.Errorf("Wrong organization ID: %w", entities.ErrBadRequest), resp)
+		return resp
 	}
 
-	err = svc.orgCtrl.RemoveManager(params.HTTPRequest.Context(), *auth, id, params.UserID)
-
-	switch {
-	case err == nil:
-		return organizations.NewRemoveUserFromOrganizationNoContent()
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewRemoveUserFromOrganizationForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewRemoveUserFromOrganizationNotFound()
-	default:
-		svc.l.Errorln("Remove user from organization:", err)
-		return organizations.NewRemoveUserFromOrganizationInternalServerError()
-	}
-}
-
-func (svc *service) getSettingsForOrganization(params organizations.GetSettingsForOrganizationParams, auth *app.Auth) organizations.GetSettingsForOrganizationResponder {
-	id, err := uuid.FromString(params.ID.String())
+	err = svc.orgCtrl.RemoveManager(ctx, *auth, id, params.UserID)
 	if err != nil {
-		return organizations.NewGetSettingsForOrganizationBadRequest()
+		setAPIError(svc.l, op, err, resp)
+		return resp
 	}
 
-	settings, err := svc.orgCtrl.GetSettingsForOrganization(params.HTTPRequest.Context(), *auth, id)
-
-	switch {
-	case err == nil:
-		payload := conversions.OrganizationSettingsToRest(settings)
-		return organizations.NewGetSettingsForOrganizationOK().WithPayload(&payload)
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewGetSettingsForOrganizationForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewGetSettingsForOrganizationNotFound()
-	default:
-		svc.l.Errorln("Get organization settings:", err)
-		return organizations.NewGetSettingsForOrganizationInternalServerError()
-	}
-}
-
-func (svc *service) updateSettingsForOrganization(params organizations.UpdateSettingForOrganizationParams, auth *app.Auth) organizations.UpdateSettingForOrganizationResponder {
-	id, err := uuid.FromString(params.ID.String())
-	if err != nil {
-		return organizations.NewUpdateSettingForOrganizationBadRequest()
-	}
-
-	settings, err := svc.orgCtrl.UpdateSettingsForOrganization(params.HTTPRequest.Context(), *auth, id, conversions.OrganizationSettingsUpdateFromRest(*params.Body))
-
-	switch {
-	case err == nil:
-		payload := conversions.OrganizationSettingsToRest(settings)
-		return organizations.NewUpdateSettingForOrganizationOK().WithPayload(&payload)
-	case errors.Is(err, entity.ErrAccessDenied):
-		return organizations.NewUpdateSettingForOrganizationForbidden()
-	case errors.Is(err, entity.ErrNotFound):
-		return organizations.NewUpdateSettingForOrganizationNotFound()
-	default:
-		svc.l.Errorln("Update organization settings:", err)
-		return organizations.NewUpdateSettingForOrganizationInternalServerError()
-	}
+	return organizations.NewRemoveUserFromOrganizationNoContent()
 }
