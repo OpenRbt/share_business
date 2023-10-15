@@ -230,5 +230,5 @@ func (r *repo) AssignToServerGroup(ctx context.Context, serverID uuid.UUID, grou
 		return fmt.Errorf(op, err)
 	}
 
-	return err
+	return tx.Commit()
 }
