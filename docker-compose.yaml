@@ -44,16 +44,16 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
 
-  postgres:
+  sbp_db:
     image: postgres:14.5
     container_name: wash_sbp_postgresql
     restart: always
     environment:
-      POSTGRES_USER: sbp_admin
-      POSTGRES_PASSWORD: sbp_admin_password
-      POSTGRES_DB: sbp_admin
+      POSTGRES_USER: sbp
+      POSTGRES_PASSWORD: sbp_password
+      POSTGRES_DB: sbp
     volumes:
-      - sbp_postgres_data:/var/lib/postgresql/data
+      - sbp_db_data:/var/lib/postgresql/data
     ports:
       - "54327:5432"
 
@@ -76,5 +76,5 @@ volumes:
     driver: local
   wash_bonus_postgresql:
     driver: local
-  sbp_postgres_data:
+  sbp_db_data:
     driver: local
