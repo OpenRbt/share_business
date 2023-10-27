@@ -44,10 +44,36 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
 
+  postgres:
+    image: postgres:14.5
+    container_name: wash_sbp_postgresql
+    environment:
+      POSTGRES_USER: sbp_admin
+      POSTGRES_PASSWORD: sbp_admin_password
+      POSTGRES_DB: postgres
+    volumes:
+      - sbp_postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "54327:5432"
+
+  sbp_client:
+    build:
+      context: ../sbp
+      dockerfile: Dockerfile
+    image: sbp_client
+    container_name: sbp_client
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+
 volumes:
   rabbitmq-data:
     driver: local
   rabbitmq-logs:
     driver: local
   wash_bonus_postgresql:
+    driver: local
+  sbp_postgres_data:
     driver: local
