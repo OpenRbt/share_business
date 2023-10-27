@@ -47,6 +47,7 @@ services:
   postgres:
     image: postgres:14.5
     container_name: wash_sbp_postgresql
+    restart: always
     environment:
       POSTGRES_USER: sbp_admin
       POSTGRES_PASSWORD: sbp_admin_password
@@ -63,6 +64,7 @@ services:
       dockerfile: Dockerfile
     image: sbp_client
     container_name: sbp_client
+    restart: always
     volumes:
       - .:/app
     ports:
