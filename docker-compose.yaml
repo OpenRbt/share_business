@@ -46,7 +46,7 @@ services:
 
   sbp_db:
     image: postgres:14.5
-    container_name: wash_sbp_postgresql
+    container_name: sbp_postgresql
     restart: always
     environment:
       POSTGRES_USER: sbp
