@@ -1,6 +1,8 @@
 package dbmodels
 
-import uuid "github.com/satori/go.uuid"
+import (
+	uuid "github.com/satori/go.uuid"
+)
 
 type (
 	Organization struct {
@@ -9,9 +11,11 @@ type (
 		DisplayName                   string    `db:"display_name"`
 		Description                   string    `db:"description"`
 		IsDefault                     bool      `db:"is_default"`
-		ReportsProcessingDelayMinutes int64     `db:"processing_delay"`
+		ProcessingDelayMinutes        string    `db:"processing_delay"`
 		BonusPercentage               int64     `db:"bonus_percentage"`
 		Deleted                       bool      `db:"deleted"`
+		Version                       int       `db:"version"`
+		ReportsProcessingDelayMinutes int64
 	}
 
 	OrganizationCreation struct {

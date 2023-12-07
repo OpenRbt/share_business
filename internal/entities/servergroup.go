@@ -11,6 +11,7 @@ type ServerGroup struct {
 	OrganizationID uuid.UUID
 	IsDefault      bool
 	Deleted        bool
+	Version        int
 }
 
 type ServerGroupCreation struct {

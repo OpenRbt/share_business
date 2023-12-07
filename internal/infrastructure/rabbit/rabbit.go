@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"washbonus/internal/app"
 	"washbonus/internal/config"
-	"washbonus/internal/infrastructure/rabbit/entities/vo"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 	"washbonus/rabbit-intapi/client"
 
 	"github.com/go-openapi/runtime"
@@ -18,27 +18,37 @@ import (
 )
 
 type RabbitService interface {
-	SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error)
+	SendMessage(msg interface{}, service rabbitEntities.Service, routingKey rabbitEntities.RoutingKey, messageType rabbitEntities.MessageType) (err error)
 	CreateRabbitUser(userID, userKey string) error
 	DeleteRabbitUser(ctx context.Context, userID string) error
 }
 
 type Service struct {
-	l    *zap.SugaredLogger
-	conn *amqp.Connection
+	l         *zap.SugaredLogger
+	conn      *amqp.Connection
+	rabbitSvc app.RabbitService
 
-	washBonusPub    *rabbitmq.Publisher
-	washBonusSvcSub *rabbitmq.Consumer
-	rabbitSvc       app.RabbitService
+	orgSvc   app.OrganizationService
+	groupSvc app.ServerGroupService
+	adminSvc app.AdminService
+
+	washBonusPub *rabbitmq.Publisher
+	washBonusSub *rabbitmq.Consumer
+
+	adminsPub *rabbitmq.Publisher
 
 	intApi     *client.RabbitIntAPI
 	intApiAuth runtime.ClientAuthInfoWriter
 }
 
-func New(l *zap.SugaredLogger, cfg config.RabbitMQConfig, rabbitSvc app.RabbitService) (svc *Service, err error) {
-	svc = &Service{
+func New(l *zap.SugaredLogger, cfg config.RabbitMQConfig, rabbitSvc app.RabbitService, services app.Services) (*Service, error) {
+	svc := &Service{
 		l:         l,
 		rabbitSvc: rabbitSvc,
+
+		orgSvc:   services.Org,
+		groupSvc: services.Group,
+		adminSvc: services.Admin,
 	}
 
 	connString := fmt.Sprintf("amqp://%s:%s@%s:%s/", cfg.User, cfg.Password, cfg.Url, cfg.Port)
@@ -65,33 +75,31 @@ func New(l *zap.SugaredLogger, cfg config.RabbitMQConfig, rabbitSvc app.RabbitSe
 		rabbitmq.WithConnectionOptionsLogging,
 		rabbitmq.WithConnectionOptionsConfig(rabbitConf),
 	)
-
 	if err != nil {
-		return
+		return svc, err
 	}
 
-	svc.washBonusPub, err = rabbitmq.NewPublisher(conn,
-		rabbitmq.WithPublisherOptionsLogging,
-		rabbitmq.WithPublisherOptionsExchangeDeclare,
-		rabbitmq.WithPublisherOptionsExchangeName(string(vo.WashBonusService)),
-		rabbitmq.WithPublisherOptionsExchangeKind("direct"),
-		rabbitmq.WithPublisherOptionsExchangeDurable,
-	)
+	svc.washBonusPub, err = setupPublisher(conn, string(rabbitEntities.WashBonusService), "direct")
 	if err != nil {
-		return
+		return svc, err
 	}
 
-	svc.washBonusSvcSub, err = rabbitmq.NewConsumer(conn,
+	svc.washBonusSub, err = rabbitmq.NewConsumer(conn,
 		svc.ProcessMessage,
-		string(vo.WashBonusRoutingKey),
+		string(rabbitEntities.WashBonusRoutingKey),
 		rabbitmq.WithConsumerOptionsExchangeDeclare,
-		rabbitmq.WithConsumerOptionsExchangeName(string(vo.WashBonusService)),
+		rabbitmq.WithConsumerOptionsExchangeName(string(rabbitEntities.WashBonusService)),
 		rabbitmq.WithConsumerOptionsExchangeKind("direct"),
-		rabbitmq.WithConsumerOptionsRoutingKey(string(vo.WashBonusRoutingKey)),
+		rabbitmq.WithConsumerOptionsRoutingKey(string(rabbitEntities.WashBonusRoutingKey)),
 		rabbitmq.WithConsumerOptionsExchangeDurable,
 	)
 	if err != nil {
-		return
+		return svc, err
+	}
+
+	svc.adminsPub, err = setupPublisher(conn, string(rabbitEntities.AdminsExchange), "fanout")
+	if err != nil {
+		return svc, err
 	}
 
 	intClient := client.New(httptransport.New(cfg.Url+":15672", "", []string{"http"}), strfmt.Default)
@@ -100,5 +108,15 @@ func New(l *zap.SugaredLogger, cfg config.RabbitMQConfig, rabbitSvc app.RabbitSe
 	svc.intApi = intClient
 	svc.intApiAuth = intAuth
 
-	return
+	return svc, nil
+}
+
+func setupPublisher(conn *rabbitmq.Conn, exchangeName, exchangeKind string) (*rabbitmq.Publisher, error) {
+	return rabbitmq.NewPublisher(conn,
+		rabbitmq.WithPublisherOptionsLogging,
+		rabbitmq.WithPublisherOptionsExchangeDeclare,
+		rabbitmq.WithPublisherOptionsExchangeName(exchangeName),
+		rabbitmq.WithPublisherOptionsExchangeKind(exchangeKind),
+		rabbitmq.WithPublisherOptionsExchangeDurable,
+	)
 }

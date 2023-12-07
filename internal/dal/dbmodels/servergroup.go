@@ -9,6 +9,7 @@ type ServerGroup struct {
 	OrganizationID uuid.UUID `db:"organization_id"`
 	IsDefault      bool      `db:"is_default"`
 	Deleted        bool      `db:"deleted"`
+	Version        int       `db:"version"`
 }
 
 type ServerGroupCreation struct {

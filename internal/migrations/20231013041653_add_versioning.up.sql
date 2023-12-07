@@ -1,0 +1,8 @@
+ALTER TABLE organizations
+    ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE server_groups
+    ADD COLUMN version INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE admin_users
+    ADD COLUMN version INTEGER NOT NULL DEFAULT 0;

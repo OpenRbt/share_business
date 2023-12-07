@@ -20,7 +20,8 @@ type (
 	}
 
 	OrganizationService interface {
-		Get(ctx Ctx, userID string, filter entities.OrganizationFilter) ([]entities.Organization, error)
+		Get(ctx Ctx, filter entities.OrganizationFilter) ([]entities.Organization, error)
+		GetAll(ctx Ctx, pagination entities.Pagination) ([]entities.Organization, error)
 		GetById(ctx Ctx, id uuid.UUID) (entities.Organization, error)
 		Create(ctx Ctx, ent entities.OrganizationCreation) (entities.Organization, error)
 		Update(ctx Ctx, id uuid.UUID, ent entities.OrganizationUpdate) (entities.Organization, error)
@@ -28,10 +29,15 @@ type (
 
 		AssignManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, organizationID uuid.UUID, userID string) error
+
+		GetDefaultGroupByOrganizationId(ctx Ctx, id uuid.UUID) (entities.ServerGroup, error)
+		GetAdminUsersByOrganizationID(ctx Ctx, id uuid.UUID) ([]entities.AdminUser, error)
+		GetDeletedByID(ctx Ctx, id uuid.UUID) (entities.Organization, error)
 	}
 
 	OrganizationRepo interface {
-		Get(ctx Ctx, userID string, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error)
+		Get(ctx Ctx, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error)
+		GetAll(ctx Ctx, pagination dbmodels.Pagination) ([]dbmodels.Organization, error)
 		GetById(ctx Ctx, id uuid.UUID) (dbmodels.Organization, error)
 		Create(ctx Ctx, model dbmodels.OrganizationCreation) (dbmodels.Organization, error)
 		Update(ctx Ctx, id uuid.UUID, model dbmodels.OrganizationUpdate) (dbmodels.Organization, error)
@@ -39,5 +45,9 @@ type (
 
 		AssignManager(ctx Ctx, organizationID uuid.UUID, userID string) error
 		RemoveManager(ctx Ctx, organizationID uuid.UUID, userID string) error
+
+		GetDefaultGroupByOrganizationId(ctx Ctx, id uuid.UUID) (dbmodels.ServerGroup, error)
+		GetAdminUsersByOrganizationID(ctx Ctx, id uuid.UUID) ([]dbmodels.AdminUser, error)
+		GetDeletedByID(ctx Ctx, id uuid.UUID) (dbmodels.Organization, error)
 	}
 )

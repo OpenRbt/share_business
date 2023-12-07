@@ -38,6 +38,24 @@ func (r *serverGroupRepo) Get(ctx context.Context, filter dbmodels.ServerGroupFi
 	return groups, nil
 }
 
+func (r *serverGroupRepo) GetAll(ctx context.Context, pagination dbmodels.Pagination) ([]dbmodels.ServerGroup, error) {
+	op := "failed to get all server groups: %w"
+	var groups []dbmodels.ServerGroup
+
+	_, err := r.db.NewSession(nil).
+		Select("*").
+		From("server_groups").
+		OrderBy("name").
+		Limit(uint64(pagination.Limit)).
+		Offset(uint64(pagination.Offset)).
+		LoadContext(ctx, &groups)
+	if err != nil {
+		return nil, fmt.Errorf(op, err)
+	}
+
+	return groups, nil
+}
+
 func (r *serverGroupRepo) GetById(ctx context.Context, id uuid.UUID) (dbmodels.ServerGroup, error) {
 	op := "failed to get server group by ID: %w"
 
@@ -86,7 +104,7 @@ func (r *serverGroupRepo) Create(ctx context.Context, model dbmodels.ServerGroup
 	err = tx.InsertInto("server_groups").
 		Columns("name", "description", "organization_id", "is_default").
 		Record(model).
-		Returning("id", "name", "description", "organization_id", "is_default", "deleted").
+		Returning("id", "name", "description", "organization_id", "is_default", "deleted", "version").
 		LoadContext(ctx, &group)
 
 	if err != nil {
@@ -117,6 +135,7 @@ func (r *serverGroupRepo) Update(ctx context.Context, id uuid.UUID, model dbmode
 
 	res, err := tx.Update("server_groups").
 		SetMap(updateMap).
+		Set("version", dbr.Expr("version + 1")).
 		Where("NOT deleted AND id = ?", id).
 		ExecContext(ctx)
 
@@ -177,6 +196,7 @@ func (r *serverGroupRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err = tx.Update("server_groups").
 		Where("NOT deleted AND NOT is_default AND id = ? ", id).
 		Set("deleted", true).
+		Set("version", dbr.Expr("version + 1")).
 		ExecContext(ctx)
 
 	if err != nil {
@@ -189,4 +209,24 @@ func (r *serverGroupRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return tx.Commit()
+}
+
+func (r *serverGroupRepo) GetDeletedById(ctx context.Context, id uuid.UUID) (dbmodels.ServerGroup, error) {
+	op := "failed to get deleted server group by ID: %w"
+
+	var group dbmodels.ServerGroup
+	err := r.db.NewSession(nil).
+		Select("*").
+		From("server_groups").
+		Where("id = ?", id).
+		LoadOneContext(ctx, &group)
+
+	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			err = dbmodels.ErrNotFound
+		}
+		return dbmodels.ServerGroup{}, fmt.Errorf(op, err)
+	}
+
+	return group, nil
 }
