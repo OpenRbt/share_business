@@ -17,10 +17,12 @@ const (
 	applicationResource = dbmodels.AdminApplicationsResource
 )
 
-var adminUserColumns = []string{"u.id",
+var adminUserColumns = []string{
+	"u.id",
 	"u.email",
 	"u.name",
 	"u.role",
+	"u.version",
 	"o.id as organization_id",
 	"o.name as organization_name",
 	"o.display_name as organization_display_name",
@@ -82,6 +84,25 @@ func (r *adminUserRepo) Get(ctx context.Context, filter dbmodels.AdminUserFilter
 	return dbUsers, nil
 }
 
+func (r *adminUserRepo) GetAll(ctx context.Context, pagination dbmodels.Pagination) ([]dbmodels.AdminUser, error) {
+	const op = "failed to get admins: %w"
+
+	var dbUsers []dbmodels.AdminUser
+	_, err := r.db.NewSession(nil).
+		Select(adminUserColumns...).
+		From(dbr.I("admin_users").As("u")).
+		LeftJoin(dbr.I("organizations").As("o"), "u.organization_id = o.id").
+		OrderBy("u.name").
+		Limit(uint64(pagination.Limit)).
+		Offset(uint64(pagination.Offset)).
+		LoadContext(ctx, &dbUsers)
+	if err != nil {
+		return nil, fmt.Errorf(op, err)
+	}
+
+	return dbUsers, nil
+}
+
 func (r *adminUserRepo) Create(ctx context.Context, ent dbmodels.AdminUserCreation) (dbmodels.AdminUser, error) {
 	const op = "failed to create admin: %w"
 
@@ -95,7 +116,7 @@ func (r *adminUserRepo) Create(ctx context.Context, ent dbmodels.AdminUserCreati
 	err = tx.InsertInto("admin_users").
 		Columns("id", "email", "name", "organization_id").
 		Record(ent).
-		Returning("id", "name", "email", "role", "organization_id").
+		Returning("id", "name", "email", "role", "organization_id", "version").
 		LoadContext(ctx, &dbUser)
 
 	if err != nil {
@@ -122,6 +143,7 @@ func (r *adminUserRepo) UpdateRole(ctx context.Context, updateUser dbmodels.Admi
 	_, err = tx.Update("admin_users").
 		Where("id = ?", updateUser.ID).
 		Set("role", updateUser.Role).
+		Set("version", dbr.Expr("version + 1")).
 		ExecContext(ctx)
 
 	if err != nil {
@@ -144,6 +166,7 @@ func (r *adminUserRepo) Update(ctx context.Context, userModel dbmodels.AdminUser
 		Where("id = ?", userModel.ID).
 		Set("email", userModel.Email).
 		Set("name", userModel.Name).
+		Set("version", dbr.Expr("version + 1")).
 		ExecContext(ctx)
 
 	if err != nil {
@@ -165,6 +188,7 @@ func (r *adminUserRepo) Block(ctx context.Context, id string) error {
 	_, err = tx.Update("admin_users").
 		Where("id = ?", id).
 		Set("role", dbmodels.NoAccessRole).
+		Set("version", dbr.Expr("version + 1")).
 		ExecContext(ctx)
 	if err != nil {
 		return fmt.Errorf(op, err)

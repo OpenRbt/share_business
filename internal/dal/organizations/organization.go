@@ -12,11 +12,11 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-var OrgColumns = []string{"id", "name", "display_name", "description", "is_default", "FLOOR(EXTRACT(EPOCH FROM processing_delay) / 60) AS processing_delay", "bonus_percentage", "deleted"}
+var OrgColumns = []string{"id", "name", "display_name", "description", "is_default", "processing_delay", "bonus_percentage", "deleted", "version"}
 
 const resource = dbmodels.OrganizationsResource
 
-func (r *repo) Get(ctx context.Context, userID string, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error) {
+func (r *repo) Get(ctx context.Context, filter dbmodels.OrganizationFilter) ([]dbmodels.Organization, error) {
 	var orgs []dbmodels.Organization
 
 	query := r.db.NewSession(nil).
@@ -37,6 +37,27 @@ func (r *repo) Get(ctx context.Context, userID string, filter dbmodels.Organizat
 		return nil, fmt.Errorf("failed to load organizations: %w", err)
 	}
 
+	dal.ConvertProcessingDelays(orgs)
+
+	return orgs, nil
+}
+
+func (r *repo) GetAll(ctx context.Context, pagination dbmodels.Pagination) ([]dbmodels.Organization, error) {
+	var orgs []dbmodels.Organization
+
+	_, err := r.db.NewSession(nil).
+		Select(OrgColumns...).
+		From("organizations").
+		OrderBy("name").
+		Limit(uint64(pagination.Limit)).
+		Offset(uint64(pagination.Offset)).
+		LoadContext(ctx, &orgs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load organizations: %w", err)
+	}
+
+	dal.ConvertProcessingDelays(orgs)
+
 	return orgs, nil
 }
 
@@ -47,6 +68,29 @@ func (r *repo) GetById(ctx context.Context, id uuid.UUID) (dbmodels.Organization
 		From("organizations").
 		Where("id = ? AND NOT deleted", id).
 		LoadOneContext(ctx, &org)
+
+	dal.ConvertProcessingDelay(&org)
+
+	if err == nil {
+		return org, nil
+	}
+
+	if errors.Is(err, dbr.ErrNotFound) {
+		return dbmodels.Organization{}, dbmodels.ErrNotFound
+	}
+
+	return dbmodels.Organization{}, fmt.Errorf("failed to load organization: %w", err)
+}
+
+func (r *repo) GetDeletedByID(ctx context.Context, id uuid.UUID) (dbmodels.Organization, error) {
+	var org dbmodels.Organization
+	err := r.db.NewSession(nil).
+		Select(OrgColumns...).
+		From("organizations").
+		Where("id = ?", id).
+		LoadOneContext(ctx, &org)
+
+	dal.ConvertProcessingDelay(&org)
 
 	if err == nil {
 		return org, nil
@@ -81,12 +125,12 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 		values = append(values, model.BonusPercentage)
 	}
 
-	var id uuid.UUID
+	var org dbmodels.Organization
 	err = tx.InsertInto("organizations").
 		Columns(columns...).
 		Values(values...).
-		Returning("id").
-		LoadContext(ctx, &id)
+		Returning(OrgColumns...).
+		LoadContext(ctx, &org)
 
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
@@ -96,26 +140,18 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
 
+	dal.ConvertProcessingDelay(&org)
+
 	_, err = tx.InsertInto("server_groups").
 		Columns("organization_id", "name", "description", "is_default").
-		Values(id, "Default", "Default server group", true).
+		Values(org.ID, "Default", fmt.Sprintf("Default server group for organization %s", org.DisplayName), true).
 		ExecContext(ctx)
 
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
 
-	var org dbmodels.Organization
-	err = tx.Select(OrgColumns...).
-		From("organizations").
-		Where("id = ?", id).
-		LoadOneContext(ctx, &org)
-
-	if err != nil {
-		return dbmodels.Organization{}, fmt.Errorf(op, err)
-	}
-
-	err = dal.WriteAuditLog(ctx, tx, resource, id.String(), "create", model)
+	err = dal.WriteAuditLog(ctx, tx, resource, org.ID.String(), "create", model)
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
@@ -143,6 +179,7 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 
 	res, err := tx.Update("organizations").
 		SetMap(updateMap).
+		Set("version", dbr.Expr("version + 1")).
 		Where("NOT deleted AND id = ?", id).
 		ExecContext(ctx)
 
@@ -171,6 +208,8 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
+
+	dal.ConvertProcessingDelay(&org)
 
 	err = dal.WriteAuditLog(ctx, tx, resource, id.String(), "update", model)
 	if err != nil {
@@ -216,6 +255,7 @@ func (r *repo) Delete(ctx context.Context, id uuid.UUID) error {
 		Update("organizations").
 		Where("NOT deleted AND NOT is_default AND id = ?", id).
 		Set("deleted", true).
+		Set("version", dbr.Expr("version + 1")).
 		ExecContext(ctx)
 
 	if err != nil {
@@ -267,6 +307,7 @@ func deleteDefaultServerGroup(ctx context.Context, tx *dbr.Tx, orgID uuid.UUID) 
 
 	_, err = tx.Update("server_groups").
 		Set("deleted", true).
+		Set("version", dbr.Expr("version + 1")).
 		Where("is_default AND organization_id = ?", orgID).
 		ExecContext(ctx)
 
@@ -317,6 +358,7 @@ func deleteOrganizationWallets(ctx context.Context, tx *dbr.Tx, id uuid.UUID) er
 func blockOrganizationAdmins(ctx context.Context, tx *dbr.Tx, id uuid.UUID) error {
 	_, err := tx.Update("admin_users").
 		Set("role", dbmodels.NoAccessRole).
+		Set("version", dbr.Expr("version + 1")).
 		Where("organization_id = ?", id).
 		ExecContext(ctx)
 
@@ -342,6 +384,7 @@ func (r *repo) AssignManager(ctx context.Context, organizationID uuid.UUID, user
 
 	res, err := tx.Update("admin_users").
 		Set("organization_id", orgIDSubquery).
+		Set("version", dbr.Expr("version + 1")).
 		Where("id = ?", userID).
 		ExecContext(ctx)
 	if err != nil {
@@ -375,6 +418,7 @@ func (r *repo) RemoveManager(ctx context.Context, organizationID uuid.UUID, user
 
 	res, err := tx.Update("admin_users").
 		Set("organization_id", nil).
+		Set("version", dbr.Expr("version + 1")).
 		Where("organization_id = ? AND id = ?", organizationID, userID).
 		ExecContext(ctx)
 
@@ -396,4 +440,41 @@ func (r *repo) RemoveManager(ctx context.Context, organizationID uuid.UUID, user
 	}
 
 	return tx.Commit()
+}
+
+func (r *repo) GetDefaultGroupByOrganizationId(ctx context.Context, id uuid.UUID) (dbmodels.ServerGroup, error) {
+	op := "failed to get default server group by organization ID: %w"
+
+	var group dbmodels.ServerGroup
+	err := r.db.NewSession(nil).
+		Select("*").
+		From("server_groups").
+		Where("organization_id = ?", id).
+		LoadOneContext(ctx, &group)
+
+	if err != nil {
+		if errors.Is(err, dbr.ErrNotFound) {
+			err = dbmodels.ErrNotFound
+		}
+		return dbmodels.ServerGroup{}, fmt.Errorf(op, err)
+	}
+
+	return group, nil
+}
+
+func (r *repo) GetAdminUsersByOrganizationID(ctx context.Context, id uuid.UUID) ([]dbmodels.AdminUser, error) {
+	const op = "failed to get admins by organization ID: %w"
+
+	var dbUsers []dbmodels.AdminUser
+	_, err := r.db.NewSession(nil).
+		Select("*").
+		From("admin_users").
+		Where("organization_id = ?", id).
+		LoadContext(ctx, &dbUsers)
+
+	if err != nil {
+		return nil, fmt.Errorf(op, err)
+	}
+
+	return dbUsers, nil
 }

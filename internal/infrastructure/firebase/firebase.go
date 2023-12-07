@@ -6,6 +6,7 @@ import (
 	"time"
 	"washbonus/internal/app"
 	"washbonus/internal/config"
+	"washbonus/internal/infrastructure/rabbit"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
@@ -18,11 +19,12 @@ type FirebaseService struct {
 	app  *firebase.App
 	auth *auth.Client
 
-	userSvc  app.UserService
-	adminSvc app.AdminService
+	userSvc   app.UserService
+	adminSvc  app.AdminService
+	rabbitSvc rabbit.RabbitService
 }
 
-func New(cfg config.FirebaseConfig, userSvc app.UserService, adminSvc app.AdminService) (*FirebaseService, error) {
+func New(cfg config.FirebaseConfig, userSvc app.UserService, adminSvc app.AdminService, rabbitSvc rabbit.RabbitService) (*FirebaseService, error) {
 	keyFilePath, err := filepath.Abs(cfg.FirebaseKeyFilePath)
 	if err != nil {
 		panic("Unable to load service key")
@@ -43,7 +45,8 @@ func New(cfg config.FirebaseConfig, userSvc app.UserService, adminSvc app.AdminS
 		app:  app,
 		auth: auth,
 
-		userSvc:  userSvc,
-		adminSvc: adminSvc,
+		userSvc:   userSvc,
+		adminSvc:  adminSvc,
+		rabbitSvc: rabbitSvc,
 	}, nil
 }

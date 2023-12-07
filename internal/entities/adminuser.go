@@ -5,10 +5,11 @@ import uuid "github.com/satori/go.uuid"
 type (
 	AdminUser struct {
 		ID           string
-		Email        *string
-		Name         *string
+		Email        string
+		Name         string
 		Role         Role
 		Organization *AdminOrganization
+		Version      int
 	}
 
 	AdminUserCreation struct {

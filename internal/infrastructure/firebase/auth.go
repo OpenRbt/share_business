@@ -5,7 +5,9 @@ import (
 	"errors"
 	"strings"
 	"washbonus/internal/app"
+	"washbonus/internal/conversions"
 	"washbonus/internal/entities"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 
 	opErrors "github.com/go-openapi/errors"
 )
@@ -99,13 +101,19 @@ func (svc *FirebaseService) AdminAuth(bearer string) (*app.AdminAuth, error) {
 		return nil, ErrUnauthorized
 	}
 
-	if user.Email == nil || *user.Email == "" || *user.Name != fbUser.DisplayName {
+	if user.Email == "" || user.Name != fbUser.DisplayName {
 		err := svc.adminSvc.Update(ctx, entities.AdminUserUpdate{
 			ID:    fbUser.UID,
 			Email: &fbUser.Email,
 			Name:  &fbUser.DisplayName,
 		})
 
+		if err != nil {
+			return nil, err
+		}
+
+		rabbitUser := conversions.AdminUserToRabbit(user)
+		err = svc.rabbitSvc.SendMessage(rabbitUser, rabbitEntities.AdminsExchange, rabbitEntities.WashBonusRoutingKey, rabbitEntities.AdminUserMessageType)
 		if err != nil {
 			return nil, err
 		}

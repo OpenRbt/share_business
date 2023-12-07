@@ -23,6 +23,7 @@ type (
 	AdminService interface {
 		GetById(ctx Ctx, userID string) (entities.AdminUser, error)
 		Get(ctx Ctx, filter entities.AdminUserFilter) ([]entities.AdminUser, error)
+		GetAll(ctx Ctx, pagination entities.Pagination) ([]entities.AdminUser, error)
 		Create(ctx Ctx, userCreation entities.AdminUserCreation) (entities.AdminUser, error)
 		UpdateRole(ctx Ctx, userRole entities.AdminUserRoleUpdate) error
 		Update(ctx Ctx, userModel entities.AdminUserUpdate) error
@@ -37,6 +38,7 @@ type (
 	AdminRepo interface {
 		GetById(ctx Ctx, userID string) (dbmodels.AdminUser, error)
 		Get(ctx Ctx, filter dbmodels.AdminUserFilter) ([]dbmodels.AdminUser, error)
+		GetAll(ctx Ctx, pagination dbmodels.Pagination) ([]dbmodels.AdminUser, error)
 		Create(ctx Ctx, userCreation dbmodels.AdminUserCreation) (dbmodels.AdminUser, error)
 		UpdateRole(ctx Ctx, userUpdate dbmodels.AdminUserRoleUpdate) error
 		Update(ctx Ctx, userModel dbmodels.AdminUserUpdate) error

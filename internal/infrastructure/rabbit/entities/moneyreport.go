@@ -1,4 +1,4 @@
-package session
+package rabbitEntities
 
 type MoneyReport struct {
 	StationID    int    `json:"station_id,omitempty"`

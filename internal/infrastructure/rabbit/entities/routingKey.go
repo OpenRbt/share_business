@@ -1,4 +1,4 @@
-package vo
+package rabbitEntities
 
 type RoutingKey string
 

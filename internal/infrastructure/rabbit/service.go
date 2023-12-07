@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 	"washbonus/internal/conversions"
-	"washbonus/internal/infrastructure/rabbit/entities/session"
-	"washbonus/internal/infrastructure/rabbit/entities/vo"
+	"washbonus/internal/entities"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 	"washbonus/rabbit-intapi/client/operations"
 	"washbonus/rabbit-intapi/models"
 
@@ -16,18 +17,21 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 )
 
-func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
-	// TODO: use context with timeout
-	ctx := context.Background()
+const MessageProcessingTimeout = time.Second * 15
 
-	switch vo.MessageType(d.Type) {
-	case vo.SessionRequestMessageType:
-		var msg session.RequestSessions
+func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action) {
+	ctx, cancel := context.WithTimeout(context.Background(), MessageProcessingTimeout)
+	defer cancel()
+
+	switch rabbitEntities.MessageType(d.Type) {
+	case rabbitEntities.SessionRequestMessageType:
+		var msg rabbitEntities.RequestSessions
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
 		}
+
 		serverID, err := uuid.FromString(d.UserId)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -36,7 +40,7 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 
 		pool, err := svc.rabbitSvc.CreatePool(ctx, serverID, msg.PostID, msg.NewSessionsAmount)
 
-		eventErr := svc.SendMessage(pool, vo.WashBonusService, vo.RoutingKey(serverID.String()), vo.SessionCreatedMessageType)
+		eventErr := svc.SendMessage(pool, rabbitEntities.WashBonusService, rabbitEntities.RoutingKey(serverID.String()), rabbitEntities.SessionCreatedMessageType)
 		if eventErr != nil {
 			svc.l.Errorw("failed to send server event", "session pool creation", "target server", serverID.String(), "error", eventErr)
 		}
@@ -45,8 +49,8 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.SessionStateMessageType:
-		var msg session.StateChange
+	case rabbitEntities.SessionStateMessageType:
+		var msg rabbitEntities.ChangeSessionState
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -64,8 +68,8 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.SessionBonusConfirmMessageType:
-		var msg session.BonusChargeConfirm
+	case rabbitEntities.SessionBonusConfirmMessageType:
+		var msg rabbitEntities.BonusChargeConfirm
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -89,8 +93,8 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.SessionBonusDiscardMessageType:
-		var msg session.BonusChargeDiscard
+	case rabbitEntities.SessionBonusDiscardMessageType:
+		var msg rabbitEntities.BonusChargeDiscard
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -114,8 +118,8 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.SessionBonusRewardMessageType:
-		var msg session.BonusReward
+	case rabbitEntities.SessionBonusRewardMessageType:
+		var msg rabbitEntities.BonusReward
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -145,8 +149,8 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
-	case vo.SessionMoneyReportMessageType:
-		var msg session.MoneyReport
+	case rabbitEntities.SessionMoneyReportMessageType:
+		var msg rabbitEntities.MoneyReport
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
@@ -160,6 +164,25 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
+
+	case rabbitEntities.RequestAdminDataMessageType:
+		replyQueue := d.ReplyTo
+
+		err := svc.sendOrganizations(ctx, replyQueue)
+		if err != nil {
+			return rabbitmq.NackDiscard
+		}
+
+		err = svc.sendGroups(ctx, replyQueue)
+		if err != nil {
+			return rabbitmq.NackDiscard
+		}
+
+		err = svc.sendAdminUsers(ctx, replyQueue)
+		if err != nil {
+			return rabbitmq.NackDiscard
+		}
+
 	default:
 		action = rabbitmq.NackDiscard
 	}
@@ -167,23 +190,119 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 	return
 }
 
-func (svc *Service) SendMessage(msg interface{}, service vo.Service, routingKey vo.RoutingKey, messageType vo.MessageType) (err error) {
+func (svc *Service) sendOrganizations(ctx context.Context, key string) error {
+	offset := int64(0)
+
+	for {
+		orgs, err := svc.orgSvc.GetAll(ctx, entities.Pagination{
+			Offset: offset,
+			Limit:  25,
+		})
+		if err != nil {
+			return err
+		}
+
+		if len(orgs) == 0 {
+			break
+		}
+
+		rabbitOrgs := conversions.OrganizationsToRabbit(orgs)
+		for _, org := range rabbitOrgs {
+			err := svc.SendMessage(org, rabbitEntities.AdminsExchange, rabbitEntities.RoutingKey(key), rabbitEntities.OrganizationMessageType)
+			if err != nil {
+				svc.l.Errorf("unable to send organization with id - %s to external services: %w", org.ID, err)
+			}
+		}
+
+		offset += 25
+	}
+
+	return nil
+}
+
+func (svc *Service) sendGroups(ctx context.Context, key string) error {
+	offset := int64(0)
+
+	for {
+		groups, err := svc.groupSvc.GetAll(ctx, entities.Pagination{
+			Offset: offset,
+			Limit:  25,
+		})
+		if err != nil {
+			return err
+		}
+
+		if len(groups) == 0 {
+			break
+		}
+
+		rabbitGroups := conversions.ServerGroupsToRabbit(groups)
+		for _, group := range rabbitGroups {
+			err := svc.SendMessage(group, rabbitEntities.AdminsExchange, rabbitEntities.RoutingKey(key), rabbitEntities.ServerGroupMessageType)
+			if err != nil {
+				svc.l.Errorf("unable to send group with id - %s to external services: %w", group.ID, err)
+			}
+		}
+
+		offset += 25
+	}
+
+	return nil
+}
+
+func (svc *Service) sendAdminUsers(ctx context.Context, key string) error {
+	offset := int64(0)
+
+	for {
+		admins, err := svc.adminSvc.GetAll(ctx, entities.Pagination{
+			Offset: offset,
+			Limit:  25,
+		})
+		if err != nil {
+			return err
+		}
+
+		if len(admins) == 0 {
+			break
+		}
+
+		rabbitAdmins := conversions.AdminUsersToRabbit(admins)
+		for _, admin := range rabbitAdmins {
+			err := svc.SendMessage(admin, rabbitEntities.AdminsExchange, rabbitEntities.RoutingKey(key), rabbitEntities.AdminUserMessageType)
+			if err != nil {
+				svc.l.Errorf("unable to send admin user with id - %s to external services: %w", admin.ID, err)
+			}
+		}
+
+		offset += 25
+	}
+
+	return nil
+}
+
+func (svc *Service) SendMessage(msg interface{}, service rabbitEntities.Service, routingKey rabbitEntities.RoutingKey, messageType rabbitEntities.MessageType) (err error) {
 	jsonMsg, err := json.Marshal(msg)
 	if err != nil {
 		return
 	}
 
+	var publisher *rabbitmq.Publisher
+
 	switch service {
-	case vo.WashBonusService:
-		return svc.washBonusPub.Publish(
-			jsonMsg,
-			[]string{string(routingKey)},
-			rabbitmq.WithPublishOptionsType(string(messageType)),
-			rabbitmq.WithPublishOptionsExchange(string(service)),
-		)
+	case rabbitEntities.WashBonusService:
+		publisher = svc.washBonusPub
+	case rabbitEntities.AdminsExchange:
+		publisher = svc.adminsPub
 	default:
 		return errors.New("unknown Service")
 	}
+
+	return publisher.Publish(
+		jsonMsg,
+		[]string{string(routingKey)},
+		rabbitmq.WithPublishOptionsType(string(messageType)),
+		rabbitmq.WithPublishOptionsExchange(string(service)),
+	)
 }
 
 func (s *Service) CreateRabbitUser(userID, userKey string) error {

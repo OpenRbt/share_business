@@ -3,6 +3,7 @@ package conversions
 import (
 	"washbonus/internal/dal/dbmodels"
 	"washbonus/internal/entities"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 	"washbonus/openapi/admin/models"
 
 	"github.com/go-openapi/strfmt"
@@ -17,6 +18,7 @@ func ServerGroupFromDB(group dbmodels.ServerGroup) entities.ServerGroup {
 		OrganizationID: group.OrganizationID,
 		IsDefault:      group.IsDefault,
 		Deleted:        group.Deleted,
+		Version:        group.Version,
 	}
 }
 
@@ -101,4 +103,26 @@ func ServerGroupFilterToDB(filter entities.ServerGroupFilter) dbmodels.ServerGro
 		Pagination:     PaginationToDB(filter.Pagination),
 		OrganizationID: filter.OrganizationID,
 	}
+}
+
+func ServerGroupToRabbit(group entities.ServerGroup) rabbitEntities.ServerGroup {
+	return rabbitEntities.ServerGroup{
+		ID:             group.ID.String(),
+		Name:           group.Name,
+		Description:    group.Description,
+		OrganizationID: group.OrganizationID.String(),
+		IsDefault:      group.IsDefault,
+		Deleted:        group.Deleted,
+		Version:        group.Version,
+	}
+}
+
+func ServerGroupsToRabbit(groups []entities.ServerGroup) []rabbitEntities.ServerGroup {
+	res := make([]rabbitEntities.ServerGroup, len(groups))
+
+	for i, value := range groups {
+		res[i] = ServerGroupToRabbit(value)
+	}
+
+	return res
 }

@@ -6,7 +6,7 @@ import (
 	"washbonus/internal/conversions"
 	"washbonus/internal/entities"
 	"washbonus/internal/infrastructure/rabbit"
-	rabbitVo "washbonus/internal/infrastructure/rabbit/entities/vo"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
@@ -62,7 +62,7 @@ func (ctrl *sessionController) ChargeBonuses(ctx context.Context, auth app.Auth,
 	}
 
 	washServerID := session.WashServer.ID.String()
-	eventErr := ctrl.rabbitSvc.SendMessage(conversions.SessionBonusCharge(sessionID, amount, session.Post), rabbitVo.WashBonusService, rabbitVo.RoutingKey(washServerID), rabbitVo.SessionBonusChargeMessageType)
+	eventErr := ctrl.rabbitSvc.SendMessage(conversions.SessionBonusCharge(sessionID, amount, session.Post), rabbitEntities.WashBonusService, rabbitEntities.RoutingKey(washServerID), rabbitEntities.SessionBonusChargeMessageType)
 	if eventErr != nil {
 		ctrl.logger.Errorw("failed to send charge bonuses event", "session", sessionID.String(), "amount", amount.String(), "error", eventErr)
 	}
@@ -86,7 +86,7 @@ func (ctrl *sessionController) AssignUserToSession(ctx context.Context, auth app
 	}
 
 	washServerID := session.WashServer.ID.String()
-	eventErr := ctrl.rabbitSvc.SendMessage(conversions.SessionUserAssign(sessionID, auth.User.ID, session.Post), rabbitVo.WashBonusService, rabbitVo.RoutingKey(washServerID), rabbitVo.SessionUserMessageType)
+	eventErr := ctrl.rabbitSvc.SendMessage(conversions.SessionUserAssign(sessionID, auth.User.ID, session.Post), rabbitEntities.WashBonusService, rabbitEntities.RoutingKey(washServerID), rabbitEntities.SessionUserMessageType)
 	if eventErr != nil {
 		ctrl.logger.Errorw("failed to send server event", "session pool creation", "target server", washServerID, "error", eventErr)
 	}

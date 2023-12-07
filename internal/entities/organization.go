@@ -14,6 +14,7 @@ type (
 		ReportsProcessingDelayMinutes int64
 		BonusPercentage               int64
 		Deleted                       bool
+		Version                       int
 	}
 
 	OrganizationCreation struct {

@@ -1,4 +1,4 @@
-package vo
+package rabbitEntities
 
 type MessageType string
 
@@ -16,4 +16,9 @@ const (
 	SessionBonusRewardMessageType  MessageType = "bonus_service/session/bonus/reward"
 	SessionMoneyReportMessageType  MessageType = "bonus_service/session/money-report"
 	WashServerDeletionMessageType  MessageType = "bonus_service/wash_server/delete"
+
+	AdminUserMessageType        MessageType = "admin_service/admin_user"
+	OrganizationMessageType     MessageType = "admin_service/organization"
+	ServerGroupMessageType      MessageType = "admin_service/server_group"
+	RequestAdminDataMessageType MessageType = "admin_service/data"
 )

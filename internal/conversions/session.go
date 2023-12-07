@@ -3,7 +3,7 @@ package conversions
 import (
 	"washbonus/internal/dal/dbmodels"
 	"washbonus/internal/entities"
-	"washbonus/internal/infrastructure/rabbit/entities/session"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 	"washbonus/openapi/bonus/models"
 
 	"github.com/go-openapi/strfmt"
@@ -30,8 +30,8 @@ func SessionFromDB(db dbmodels.Session) entities.Session {
 	}
 }
 
-func SessionToRabbit(e entities.Session) session.NewSession {
-	return session.NewSession{
+func SessionToRabbit(e entities.Session) rabbitEntities.NewSession {
+	return rabbitEntities.NewSession{
 		ID:     e.ID.String(),
 		PostID: e.Post,
 	}
@@ -52,16 +52,16 @@ func SessionToRest(e entities.Session) *models.Session {
 	}
 }
 
-func SessionUserAssign(sessionID uuid.UUID, userID string, post int64) session.UserAssign {
-	return session.UserAssign{
+func SessionUserAssign(sessionID uuid.UUID, userID string, post int64) rabbitEntities.AssignUserToSession {
+	return rabbitEntities.AssignUserToSession{
 		SessionID: sessionID.String(),
 		UserID:    userID,
 		Post:      post,
 	}
 }
 
-func SessionBonusCharge(sessionID uuid.UUID, amount decimal.Decimal, post int64) session.BonusCharge {
-	return session.BonusCharge{
+func SessionBonusCharge(sessionID uuid.UUID, amount decimal.Decimal, post int64) rabbitEntities.BonusCharge {
+	return rabbitEntities.BonusCharge{
 		SessionID: sessionID.String(),
 		Amount:    amount.IntPart(),
 		Post:      post,

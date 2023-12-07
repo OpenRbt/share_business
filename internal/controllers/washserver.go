@@ -5,7 +5,7 @@ import (
 	"washbonus/internal/app"
 	"washbonus/internal/entities"
 	"washbonus/internal/infrastructure/rabbit"
-	"washbonus/internal/infrastructure/rabbit/entities/vo"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
@@ -94,7 +94,7 @@ func (ctrl *washServerController) DeleteWashServer(ctx context.Context, auth app
 		return err
 	}
 
-	err = ctrl.rabbitSvc.SendMessage(nil, vo.WashBonusService, vo.RoutingKey(id.String()), vo.WashServerDeletionMessageType)
+	err = ctrl.rabbitSvc.SendMessage(nil, rabbitEntities.WashBonusService, rabbitEntities.RoutingKey(id.String()), rabbitEntities.WashServerDeletionMessageType)
 	if err != nil {
 		return err
 	}

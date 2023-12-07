@@ -41,7 +41,7 @@ func main() {
 	services := setupServices(l, repos)
 
 	rabbitMQ := setupRabbit(l, cfg, services)
-	firebase := setupFirebase(l, cfg, services)
+	firebase := setupFirebase(l, cfg, services, rabbitMQ)
 	scheduler := schedule.New(l, services.Session)
 	runSchedulerTasks(scheduler, cfg.SchedulerConfig)
 
@@ -133,7 +133,7 @@ func setupServices(l *zap.SugaredLogger, repos app.Repositories) app.Services {
 func setupRabbit(l *zap.SugaredLogger, cfg *config.Config, services app.Services) *rabbitMQ.Service {
 	rabbitSvc := rabbit.New(l, services.Session, services.User, services.Wash, services.Wallet)
 
-	rabbitMQ, err := rabbitMQ.New(l, cfg.RabbitMQConfig, rabbitSvc)
+	rabbitMQ, err := rabbitMQ.New(l, cfg.RabbitMQConfig, rabbitSvc, services)
 	if err != nil {
 		l.Fatalln("failed to init rabbit: ", err)
 	}
@@ -142,8 +142,8 @@ func setupRabbit(l *zap.SugaredLogger, cfg *config.Config, services app.Services
 	return rabbitMQ
 }
 
-func setupFirebase(l *zap.SugaredLogger, cfg *config.Config, services app.Services) *firebase.FirebaseService {
-	firebase, err := firebase.New(cfg.FirebaseConfig, services.User, services.Admin)
+func setupFirebase(l *zap.SugaredLogger, cfg *config.Config, services app.Services, rabitMQ *rabbitMQ.Service) *firebase.FirebaseService {
+	firebase, err := firebase.New(cfg.FirebaseConfig, services.User, services.Admin, rabitMQ)
 	if err != nil {
 		l.Fatalln("failed to init firebase: ", err)
 	}
@@ -153,9 +153,9 @@ func setupFirebase(l *zap.SugaredLogger, cfg *config.Config, services app.Servic
 
 func setupControllers(l *zap.SugaredLogger, services app.Services, rabbit rabbitMQ.RabbitService) app.Controllers {
 	return app.Controllers{
-		Admin:   ctrls.NewAdminUserController(l, services.Admin),
-		Org:     ctrls.NewOrganizationController(l, services.Org),
-		Group:   ctrls.NewServerGroupController(l, services.Group, services.Org),
+		Admin:   ctrls.NewAdminUserController(l, services.Admin, rabbit),
+		Org:     ctrls.NewOrganizationController(l, services.Org, services.Group, services.Admin, rabbit),
+		Group:   ctrls.NewServerGroupController(l, services.Group, services.Org, rabbit),
 		Wash:    ctrls.NewWashServerController(l, services.Wash, services.Group, services.Org, rabbit),
 		User:    ctrls.NewUserController(l, services.User, services.Session),
 		Session: ctrls.NewSessionController(l, services.Session, services.User, services.Wash, rabbit),
