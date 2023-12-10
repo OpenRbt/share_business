@@ -112,8 +112,8 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 	}
 	defer tx.RollbackUnlessCommitted()
 
-	columns := []string{"name", "display_name", "description"}
-	values := []interface{}{model.Name, model.DisplayName, model.Description}
+	columns := []string{"name", "display_name", "description", "cost_per_day"}
+	values := []interface{}{model.Name, model.DisplayName, model.Description, model.CostPerDay}
 
 	if model.ReportsProcessingDelayMinutes != nil {
 		columns = append(columns, "processing_delay")

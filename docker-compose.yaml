@@ -44,30 +44,30 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
       - rabbitmq-logs:/var/log/rabbitmq
 
-  sbp_db:
-    image: postgres:14.5
-    container_name: sbp_postgresql
-    restart: always
-    environment:
-      POSTGRES_USER: sbp
-      POSTGRES_PASSWORD: sbp_password
-      POSTGRES_DB: sbp
-    volumes:
-      - sbp_db_data:/var/lib/postgresql/data
-    ports:
-      - "54327:5432"
+  # sbp_db:
+  #   image: postgres:14.5
+  #   container_name: sbp_postgresql
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: sbp
+  #     POSTGRES_PASSWORD: sbp_password
+  #     POSTGRES_DB: sbp
+  #   volumes:
+  #     - sbp_db_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "54327:5432"
 
-  sbp_client:
-    build:
-      context: ../sbp
-      dockerfile: Dockerfile
-    image: sbp_client
-    container_name: sbp_client
-    restart: always
-    volumes:
-      - .:/app
-    ports:
-      - "8092:8080"
+  # sbp_client:
+  #   build:
+  #     context: ../sbp
+  #     dockerfile: Dockerfile
+  #   image: sbp_client
+  #   container_name: sbp_client
+  #   restart: always
+  #   volumes:
+  #     - .:/app
+  #   ports:
+  #     - "8092:8080"
 
 volumes:
   rabbitmq-data:

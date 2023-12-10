@@ -33,6 +33,8 @@ type ServerGroupCreation struct {
 	// Required: true
 	// Format: uuid
 	OrganizationID *strfmt.UUID `json:"organizationId"`
+
+	CostPerDay     *int64 `json:"costPerDay,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON

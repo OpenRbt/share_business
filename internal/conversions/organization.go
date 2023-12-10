@@ -22,6 +22,7 @@ func OrganizationFromDB(org dbmodels.Organization) entities.Organization {
 		BonusPercentage:               org.BonusPercentage,
 		Deleted:                       org.Deleted,
 		Version:                       org.Version,
+		CostPerDay:                    org.CostPerDay,
 	}
 }
 
@@ -34,6 +35,7 @@ func OrganizationToRest(e entities.Organization) *models.Organization {
 		IsDefault:                     e.IsDefault,
 		ReportsProcessingDelayMinutes: &e.ReportsProcessingDelayMinutes,
 		BonusPercentage:               &e.BonusPercentage,
+		CostPerDay:                    e.CostPerDay,
 	}
 }
 
@@ -64,6 +66,7 @@ func OrganizationUpdateToDb(e entities.OrganizationUpdate) dbmodels.Organization
 		DisplayName:                   e.DisplayName,
 		ReportsProcessingDelayMinutes: e.ReportsProcessingDelayMinutes,
 		BonusPercentage:               e.BonusPercentage,
+		CostPerDay:                    e.CostPerDay,
 	}
 }
 
@@ -74,6 +77,7 @@ func OrganizationUpdateFromRest(model models.OrganizationUpdate) entities.Organi
 		Description:                   model.Description,
 		ReportsProcessingDelayMinutes: model.ReportsProcessingDelayMinutes,
 		BonusPercentage:               model.BonusPercentage,
+		CostPerDay:                    model.CostPerDay,
 	}
 }
 
@@ -83,6 +87,7 @@ func OrganizationCreationToDb(e entities.OrganizationCreation) dbmodels.Organiza
 		DisplayName:     e.DisplayName,
 		Description:     e.Description,
 		BonusPercentage: e.BonusPercentage,
+		CostPerDay:      e.CostPerDay,
 	}
 
 	if e.ReportsProcessingDelayMinutes != nil {
@@ -100,6 +105,7 @@ func OrganizationCreationFromRest(model models.OrganizationCreation) entities.Or
 		Description:                   *model.Description,
 		ReportsProcessingDelayMinutes: model.ReportsProcessingDelayMinutes,
 		BonusPercentage:               model.BonusPercentage,
+		CostPerDay:                    model.CostPerDay,
 	}
 }
 
@@ -135,6 +141,7 @@ func OrganizationToRabbit(org entities.Organization) rabbitEntities.Organization
 		Description: org.Description,
 		Deleted:     org.Deleted,
 		Version:     org.Version,
+		CostPerDay:  org.CostPerDay,
 	}
 }
 

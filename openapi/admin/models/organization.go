@@ -45,6 +45,8 @@ type Organization struct {
 	// reports processing delay minutes
 	// Minimum: 0
 	ReportsProcessingDelayMinutes *int64 `json:"reportsProcessingDelayMinutes,omitempty"`
+
+	CostPerDay int64     `json:"costPerDay,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON

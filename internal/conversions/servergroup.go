@@ -19,6 +19,7 @@ func ServerGroupFromDB(group dbmodels.ServerGroup) entities.ServerGroup {
 		IsDefault:      group.IsDefault,
 		Deleted:        group.Deleted,
 		Version:        group.Version,
+		CostPerDay:     group.CostPerDay,
 	}
 }
 
@@ -29,6 +30,7 @@ func ServerGroupToRest(group entities.ServerGroup) *models.ServerGroup {
 		Description:    group.Description,
 		OrganizationID: strfmt.UUID(group.OrganizationID.String()),
 		IsDefault:      group.IsDefault,
+		CostPerDay:     group.CostPerDay,
 	}
 }
 
@@ -57,6 +59,7 @@ func ServerGroupUpdateToDb(groupUpdate entities.ServerGroupUpdate) dbmodels.Serv
 	return dbmodels.ServerGroupUpdate{
 		Name:        groupUpdate.Name,
 		Description: groupUpdate.Description,
+		CostPerDay:  groupUpdate.CostPerDay,
 	}
 }
 
@@ -64,6 +67,7 @@ func ServerGroupUpdateFromRest(groupUpdate models.ServerGroupUpdate) entities.Se
 	return entities.ServerGroupUpdate{
 		Name:        groupUpdate.Name,
 		Description: groupUpdate.Description,
+		CostPerDay:  groupUpdate.CostPerDay,
 	}
 }
 
@@ -72,6 +76,7 @@ func ServerGroupCreationToDb(groupCreation entities.ServerGroupCreation) dbmodel
 		Name:           groupCreation.Name,
 		Description:    groupCreation.Description,
 		OrganizationID: groupCreation.OrganizationID,
+		CostPerDay:     groupCreation.CostPerDay,
 	}
 }
 
@@ -80,6 +85,7 @@ func ServerGroupCreationFromRest(model models.ServerGroupCreation) entities.Serv
 		Name:           *model.Name,
 		Description:    *model.Description,
 		OrganizationID: uuid.FromStringOrNil((*model.OrganizationID).String()),
+		CostPerDay:     *model.CostPerDay,
 	}
 }
 
@@ -114,6 +120,7 @@ func ServerGroupToRabbit(group entities.ServerGroup) rabbitEntities.ServerGroup 
 		IsDefault:      group.IsDefault,
 		Deleted:        group.Deleted,
 		Version:        group.Version,
+		CostPerDay:     group.CostPerDay,
 	}
 }
 

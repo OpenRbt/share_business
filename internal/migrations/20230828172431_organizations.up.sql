@@ -4,7 +4,8 @@ create table organizations
     name        text not null,
     description text null,
     is_default  boolean default false not null,
-    deleted     boolean default false not null
+    deleted     boolean default false not null,
+    cost_per_day numeric(10, 2) default 0 not null
 );
 
 do $$
@@ -32,7 +33,8 @@ begin
         name            text not null,
         description     text null,
         is_default      boolean default false not null,
-        deleted         boolean default false not null
+        deleted         boolean default false not null,
+        cost_per_day numeric(10, 2) default 0 not null
     );
 
     insert into server_groups (organization_id, name, description, is_default)

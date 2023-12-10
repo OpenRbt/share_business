@@ -24,6 +24,8 @@ type ServerGroupUpdate struct {
 
 	// name
 	Name *string `json:"name,omitempty"`
+
+	CostPerDay     int64 `json:"costPerDay,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON

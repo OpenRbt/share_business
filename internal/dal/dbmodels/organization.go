@@ -16,6 +16,7 @@ type (
 		Deleted                       bool      `db:"deleted"`
 		Version                       int       `db:"version"`
 		ReportsProcessingDelayMinutes int64
+		CostPerDay                    int64 `db:"cost_per_day"`
 	}
 
 	OrganizationCreation struct {
@@ -24,6 +25,7 @@ type (
 		Description                   string  `db:"description"`
 		ReportsProcessingDelayMinutes *string `db:"processing_delay"`
 		BonusPercentage               *int64  `db:"bonus_percentage"`
+		CostPerDay                    int64   `db:"cost_per_day"`
 	}
 
 	OrganizationUpdate struct {
@@ -32,6 +34,7 @@ type (
 		Description                   *string `db:"description"`
 		ReportsProcessingDelayMinutes *int64  `db:"processing_delay"`
 		BonusPercentage               *int64  `db:"bonus_percentage"`
+		CostPerDay                    int64   `db:"cost_per_day"`
 	}
 
 	OrganizationFilter struct {

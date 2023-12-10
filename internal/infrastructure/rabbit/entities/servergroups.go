@@ -8,4 +8,5 @@ type ServerGroup struct {
 	IsDefault      bool   `json:"isDefault"`
 	Deleted        bool   `json:"deleted"`
 	Version        int    `json:"version"`
+	CostPerDay     int64  `json:"costPerDay"`
 }

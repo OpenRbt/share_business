@@ -15,6 +15,7 @@ type (
 		BonusPercentage               int64
 		Deleted                       bool
 		Version                       int
+		CostPerDay                    int64
 	}
 
 	OrganizationCreation struct {
@@ -23,6 +24,7 @@ type (
 		Description                   string
 		ReportsProcessingDelayMinutes *int64
 		BonusPercentage               *int64
+		CostPerDay                    int64
 	}
 
 	OrganizationUpdate struct {
@@ -31,6 +33,7 @@ type (
 		Description                   *string
 		ReportsProcessingDelayMinutes *int64
 		BonusPercentage               *int64
+		CostPerDay                    int64
 	}
 
 	OrganizationFilter struct {

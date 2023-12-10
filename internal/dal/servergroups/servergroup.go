@@ -102,9 +102,9 @@ func (r *serverGroupRepo) Create(ctx context.Context, model dbmodels.ServerGroup
 
 	var group dbmodels.ServerGroup
 	err = tx.InsertInto("server_groups").
-		Columns("name", "description", "organization_id", "is_default").
+		Columns("name", "description", "organization_id", "is_default", "cost_per_day").
 		Record(model).
-		Returning("id", "name", "description", "organization_id", "is_default", "deleted", "version").
+		Returning("id", "name", "description", "organization_id", "is_default", "deleted", "version", "cost_per_day").
 		LoadContext(ctx, &group)
 
 	if err != nil {
