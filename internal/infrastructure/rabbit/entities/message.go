@@ -21,4 +21,5 @@ const (
 	OrganizationMessageType     MessageType = "admin_service/organization"
 	ServerGroupMessageType      MessageType = "admin_service/server_group"
 	RequestAdminDataMessageType MessageType = "admin_service/data"
+	CreateUserType              MessageType = "admin_service/create_user"
 )

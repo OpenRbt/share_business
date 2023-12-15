@@ -164,6 +164,18 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			action = rabbitmq.NackDiscard
 			return
 		}
+	case rabbitEntities.CreateUserType:
+		var msg rabbitEntities.CreateUser
+		err := json.Unmarshal(d.Body, &msg)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
+		err = svc.createRabbitUser(msg.ID, msg.ServiceKey, msg.Exchange)
+		if err != nil {
+			action = rabbitmq.NackDiscard
+			return
+		}
 
 	case rabbitEntities.RequestAdminDataMessageType:
 		replyQueue := d.ReplyTo
@@ -306,6 +318,10 @@ func (svc *Service) SendMessage(msg interface{}, service rabbitEntities.Service,
 }
 
 func (s *Service) CreateRabbitUser(userID, userKey string) error {
+	return s.createRabbitUser(userID, userKey, "wash_bonus_service")
+}
+
+func (s *Service) createRabbitUser(userID, userKey, exchange string) error {
 	ctx := context.TODO()
 
 	tags := ""
@@ -327,8 +343,8 @@ func (s *Service) CreateRabbitUser(userID, userKey string) error {
 	_, _, err = s.intApi.Operations.SetUserPerms(&operations.SetUserPermsParams{
 		Body: &models.ManagePermissions{
 			Configure: fmt.Sprintf("%s.*", userID),
-			Read:      fmt.Sprintf("(wash_bonus_service)|(%s).*", userID),
-			Write:     fmt.Sprintf("(wash_bonus_service)|(%s).*", userID),
+			Read:      fmt.Sprintf("(%s)|(%s).*", exchange, userID),
+			Write:     fmt.Sprintf("(%s)|(%s).*", exchange, userID),
 		},
 		UserID:     userID,
 		Vhost:      vhost,
