@@ -165,13 +165,13 @@ func (svc *Service) ProcessMessage(d rabbitmq.Delivery) (action rabbitmq.Action)
 			return
 		}
 	case rabbitEntities.CreateUserType:
-		var msg rabbitEntities.CreateUser
+		var msg rabbitEntities.UserCreation
 		err := json.Unmarshal(d.Body, &msg)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
 		}
-		err = svc.createRabbitUser(msg.ID, msg.ServiceKey, msg.Exchange)
+		err = svc.createRabbitUser(ctx, msg.ID, msg.ServiceKey, msg.Exchange, msg.ReadExchange, msg.WriteExchange)
 		if err != nil {
 			action = rabbitmq.NackDiscard
 			return
@@ -317,13 +317,11 @@ func (svc *Service) SendMessage(msg interface{}, service rabbitEntities.Service,
 	)
 }
 
-func (s *Service) CreateRabbitUser(userID, userKey string) error {
-	return s.createRabbitUser(userID, userKey, "wash_bonus_service")
+func (s *Service) CreateRabbitUser(ctx context.Context, userID, userKey string) error {
+	return s.createRabbitUser(ctx, userID, userKey, "wash_bonus_service", "", "")
 }
 
-func (s *Service) createRabbitUser(userID, userKey, exchange string) error {
-	ctx := context.TODO()
-
+func (s *Service) createRabbitUser(ctx context.Context, userID, userKey, exchange, readExchange, writeExchange string) error {
 	tags := ""
 	vhost := "/"
 
@@ -340,12 +338,22 @@ func (s *Service) createRabbitUser(userID, userKey, exchange string) error {
 		return err
 	}
 
+	permissions := &models.ManagePermissions{
+		Configure: fmt.Sprintf("%s.*", userID),
+	}
+
+	if exchange != "" {
+		permission := fmt.Sprintf("(%s)|(%s).*", exchange, userID)
+
+		permissions.Read = permission
+		permissions.Write = permission
+	} else {
+		permissions.Read = fmt.Sprintf("(%s)|(%s).*", readExchange, userID)
+		permissions.Write = fmt.Sprintf("(%s)|(%s).*", writeExchange, userID)
+	}
+
 	_, _, err = s.intApi.Operations.SetUserPerms(&operations.SetUserPermsParams{
-		Body: &models.ManagePermissions{
-			Configure: fmt.Sprintf("%s.*", userID),
-			Read:      fmt.Sprintf("(%s)|(%s).*", exchange, userID),
-			Write:     fmt.Sprintf("(%s)|(%s).*", exchange, userID),
-		},
+		Body:       permissions,
 		UserID:     userID,
 		Vhost:      vhost,
 		Context:    ctx,

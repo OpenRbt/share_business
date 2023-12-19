@@ -19,7 +19,7 @@ import (
 
 type RabbitService interface {
 	SendMessage(msg interface{}, service rabbitEntities.Service, routingKey rabbitEntities.RoutingKey, messageType rabbitEntities.MessageType) (err error)
-	CreateRabbitUser(userID, userKey string) error
+	CreateRabbitUser(ctx context.Context, userID, userKey string) error
 	DeleteRabbitUser(ctx context.Context, userID string) error
 }
 
