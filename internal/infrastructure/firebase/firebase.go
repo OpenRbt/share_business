@@ -3,6 +3,7 @@ package firebase
 import (
 	"context"
 	"path/filepath"
+	"sync"
 	"time"
 	"washbonus/internal/app"
 	"washbonus/internal/config"
@@ -15,6 +16,11 @@ import (
 
 const authTimeout = time.Second * 15
 
+type UserCache struct {
+	sync.RWMutex
+	Cache map[string]*app.AdminAuth
+}
+
 type FirebaseService struct {
 	app  *firebase.App
 	auth *auth.Client
@@ -22,6 +28,8 @@ type FirebaseService struct {
 	userSvc   app.UserService
 	adminSvc  app.AdminService
 	rabbitSvc rabbit.RabbitService
+
+	adminCache *UserCache
 }
 
 func New(cfg config.FirebaseConfig, userSvc app.UserService, adminSvc app.AdminService, rabbitSvc rabbit.RabbitService) (*FirebaseService, error) {
@@ -31,22 +39,24 @@ func New(cfg config.FirebaseConfig, userSvc app.UserService, adminSvc app.AdminS
 	}
 	opt := option.WithCredentialsFile(keyFilePath)
 
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+	fbApp, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		panic("Failed to load Firebase")
 	}
 
-	auth, err := app.Auth(context.Background())
+	auth, err := fbApp.Auth(context.Background())
 	if err != nil {
 		panic("Failed to load Firebase auth")
 	}
 
 	return &FirebaseService{
-		app:  app,
+		app:  fbApp,
 		auth: auth,
 
 		userSvc:   userSvc,
 		adminSvc:  adminSvc,
 		rabbitSvc: rabbitSvc,
+
+		adminCache: &UserCache{Cache: make(map[string]*app.AdminAuth)},
 	}, nil
 }
