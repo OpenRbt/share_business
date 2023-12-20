@@ -28,44 +28,29 @@ func (svc *FirebaseService) BonusAuth(bearer string) (*app.Auth, error) {
 		return nil, ErrUnauthorized
 	}
 
-	fbUser, err := svc.auth.GetUser(ctx, token.UID)
-	if err != nil {
-		return nil, ErrUnauthorized
-	}
-
-	user, err := svc.userSvc.GetById(ctx, fbUser.UID)
-	if err != nil {
-		if errors.Is(err, entities.ErrNotFound) {
-			userCreation := entities.UserCreation{
-				ID:    fbUser.UID,
-				Email: fbUser.Email,
-				Name:  fbUser.DisplayName,
-			}
-
-			user, err = svc.userSvc.Create(ctx, userCreation)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, err
+	user, err := svc.userSvc.GetById(ctx, token.UID)
+	if errors.Is(err, entities.ErrNotFound) {
+		fbUser, err := svc.auth.GetUser(ctx, token.UID)
+		if err != nil {
+			return nil, ErrUnauthorized
 		}
-	}
 
-	if user.Email == nil || *user.Name != fbUser.DisplayName {
-		err := svc.userSvc.UpdateUser(ctx, entities.UserUpdate{
+		userCreation := entities.UserCreation{
 			ID:    fbUser.UID,
 			Email: fbUser.Email,
 			Name:  fbUser.DisplayName,
-		})
-		if err != nil {
-			return nil, err
 		}
+
+		user, err = svc.userSvc.Create(ctx, userCreation)
+		if err != nil {
+			return nil, ErrUnauthorized
+		}
+	} else if err != nil {
+		return nil, ErrUnauthorized
 	}
 
 	return &app.Auth{
-		User:         user,
-		Disabled:     fbUser.Disabled,
-		UserMetadata: (*app.AuthUserMeta)(fbUser.UserMetadata),
+		User: user,
 	}, nil
 }
 
@@ -76,6 +61,13 @@ func (svc *FirebaseService) AdminAuth(bearer string) (*app.AdminAuth, error) {
 	jwtToken := strings.TrimSpace(strings.Replace(bearer, "Bearer", "", 1))
 	if jwtToken == "" {
 		return nil, ErrUnauthorized
+	}
+
+	svc.adminCache.RLock()
+	cachedAuth, found := svc.adminCache.Cache[jwtToken]
+	svc.adminCache.RUnlock()
+	if found {
+		return cachedAuth, nil
 	}
 
 	token, err := svc.auth.VerifyIDToken(context.Background(), jwtToken)
@@ -119,9 +111,15 @@ func (svc *FirebaseService) AdminAuth(bearer string) (*app.AdminAuth, error) {
 		}
 	}
 
-	return &app.AdminAuth{
+	authData := &app.AdminAuth{
 		User:         user,
 		Disabled:     fbUser.Disabled,
 		UserMetadata: (*app.AuthUserMeta)(fbUser.UserMetadata),
-	}, nil
+	}
+
+	svc.adminCache.Lock()
+	svc.adminCache.Cache[jwtToken] = authData
+	svc.adminCache.Unlock()
+
+	return authData, nil
 }
