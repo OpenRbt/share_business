@@ -33,6 +33,11 @@ type ServerGroupCreation struct {
 	// Required: true
 	// Format: uuid
 	OrganizationID *strfmt.UUID `json:"organizationId"`
+
+	// utc offset
+	// Maximum: 840
+	// Minimum: -720
+	UtcOffset *int32 `json:"utcOffset,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -51,6 +56,11 @@ func (m *ServerGroupCreation) UnmarshalJSON(data []byte) error {
 		// Required: true
 		// Format: uuid
 		OrganizationID *strfmt.UUID `json:"organizationId"`
+
+		// utc offset
+		// Maximum: 840
+		// Minimum: -720
+		UtcOffset *int32 `json:"utcOffset,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -62,6 +72,7 @@ func (m *ServerGroupCreation) UnmarshalJSON(data []byte) error {
 	m.Description = props.Description
 	m.Name = props.Name
 	m.OrganizationID = props.OrganizationID
+	m.UtcOffset = props.UtcOffset
 	return nil
 }
 
@@ -78,6 +89,10 @@ func (m *ServerGroupCreation) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateOrganizationID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUtcOffset(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -112,6 +127,22 @@ func (m *ServerGroupCreation) validateOrganizationID(formats strfmt.Registry) er
 	}
 
 	if err := validate.FormatOf("organizationId", "body", "uuid", m.OrganizationID.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ServerGroupCreation) validateUtcOffset(formats strfmt.Registry) error {
+	if swag.IsZero(m.UtcOffset) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("utcOffset", "body", int64(*m.UtcOffset), -720, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumInt("utcOffset", "body", int64(*m.UtcOffset), 840, false); err != nil {
 		return err
 	}
 

@@ -6,23 +6,26 @@ import (
 
 type ServerGroup struct {
 	ID             uuid.UUID
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
-	OrganizationID uuid.UUID
+	UTCOffset      int32
 	IsDefault      bool
 	Deleted        bool
 	Version        int
 }
 
 type ServerGroupCreation struct {
+	OrganizationID uuid.UUID
 	Name           string
 	Description    string
-	OrganizationID uuid.UUID
+	UTCOffset      *int32
 }
 
 type ServerGroupUpdate struct {
 	Name        *string
 	Description *string
+	UTCOffset   *int32
 }
 
 type ServerGroupFilter struct {

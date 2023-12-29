@@ -178,8 +178,8 @@ func (s *organizationService) GetAdminUsersByOrganizationID(ctx context.Context,
 	return conversions.AdminUsersFromDb(users), nil
 }
 
-func (s *organizationService) GetDeletedByID(ctx context.Context, id uuid.UUID) (entities.Organization, error) {
-	org, err := s.organizationRepo.GetDeletedByID(ctx, id)
+func (s *organizationService) GetAnyByID(ctx context.Context, id uuid.UUID) (entities.Organization, error) {
+	org, err := s.organizationRepo.GetAnyByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			err = entities.ErrNotFound

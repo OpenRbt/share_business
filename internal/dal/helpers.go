@@ -41,6 +41,10 @@ func ConstructUpdateMap(model interface{}) map[string]interface{} {
 			if pointer != nil {
 				updateMap[dbTag] = *pointer
 			}
+		} else if pointer, ok := fieldValue.(*int32); ok {
+			if pointer != nil {
+				updateMap[dbTag] = *pointer
+			}
 		}
 	}
 	return updateMap

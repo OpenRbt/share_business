@@ -1030,6 +1030,12 @@ func init() {
         },
         "reportsProcessingDelayMinutes": {
           "type": "integer"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -1055,6 +1061,13 @@ func init() {
         },
         "reportsProcessingDelayMinutes": {
           "type": "integer",
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }
@@ -1082,6 +1095,13 @@ func init() {
         "reportsProcessingDelayMinutes": {
           "type": "integer",
           "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
@@ -1104,6 +1124,12 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -1123,6 +1149,13 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
@@ -1135,6 +1168,13 @@ func init() {
         },
         "name": {
           "type": "string",
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }
@@ -2439,6 +2479,12 @@ func init() {
         "reportsProcessingDelayMinutes": {
           "type": "integer",
           "minimum": 0
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -2466,6 +2512,13 @@ func init() {
         "reportsProcessingDelayMinutes": {
           "type": "integer",
           "minimum": 0,
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }
@@ -2495,6 +2548,13 @@ func init() {
           "type": "integer",
           "minimum": 0,
           "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
@@ -2517,6 +2577,12 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -2536,6 +2602,13 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
@@ -2548,6 +2621,13 @@ func init() {
         },
         "name": {
           "type": "string",
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }

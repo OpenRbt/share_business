@@ -20,7 +20,7 @@ type (
 		Get(ctx Ctx, filter entities.ServerGroupFilter) ([]entities.ServerGroup, error)
 		GetAll(ctx Ctx, pagination entities.Pagination) ([]entities.ServerGroup, error)
 		GetById(ctx Ctx, id uuid.UUID) (entities.ServerGroup, error)
-		GetDeletedById(ctx Ctx, id uuid.UUID) (entities.ServerGroup, error)
+		GetAnyById(ctx Ctx, id uuid.UUID) (entities.ServerGroup, error)
 		Create(ctx Ctx, ent entities.ServerGroupCreation) (entities.ServerGroup, error)
 		Update(ctx Ctx, id uuid.UUID, ent entities.ServerGroupUpdate) (entities.ServerGroup, error)
 		Delete(ctx Ctx, id uuid.UUID) error
@@ -30,7 +30,7 @@ type (
 		Get(ctx Ctx, filter dbmodels.ServerGroupFilter) ([]dbmodels.ServerGroup, error)
 		GetAll(ctx Ctx, pagination dbmodels.Pagination) ([]dbmodels.ServerGroup, error)
 		GetById(ctx Ctx, id uuid.UUID) (dbmodels.ServerGroup, error)
-		GetDeletedById(ctx Ctx, id uuid.UUID) (dbmodels.ServerGroup, error)
+		GetAnyById(ctx Ctx, id uuid.UUID) (dbmodels.ServerGroup, error)
 		Create(ctx Ctx, model dbmodels.ServerGroupCreation) (dbmodels.ServerGroup, error)
 		Update(ctx Ctx, id uuid.UUID, model dbmodels.ServerGroupUpdate) (dbmodels.ServerGroup, error)
 		Delete(ctx Ctx, id uuid.UUID) error

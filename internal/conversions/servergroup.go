@@ -13,9 +13,10 @@ import (
 func ServerGroupFromDB(group dbmodels.ServerGroup) entities.ServerGroup {
 	return entities.ServerGroup{
 		ID:             group.ID,
+		OrganizationID: group.OrganizationID,
 		Name:           group.Name,
 		Description:    group.Description,
-		OrganizationID: group.OrganizationID,
+		UTCOffset:      group.UTCOffset,
 		IsDefault:      group.IsDefault,
 		Deleted:        group.Deleted,
 		Version:        group.Version,
@@ -25,9 +26,10 @@ func ServerGroupFromDB(group dbmodels.ServerGroup) entities.ServerGroup {
 func ServerGroupToRest(group entities.ServerGroup) *models.ServerGroup {
 	return &models.ServerGroup{
 		ID:             strfmt.UUID(group.ID.String()),
+		OrganizationID: strfmt.UUID(group.OrganizationID.String()),
 		Name:           group.Name,
 		Description:    group.Description,
-		OrganizationID: strfmt.UUID(group.OrganizationID.String()),
+		UtcOffset:      &group.UTCOffset,
 		IsDefault:      group.IsDefault,
 	}
 }
@@ -57,6 +59,7 @@ func ServerGroupUpdateToDb(groupUpdate entities.ServerGroupUpdate) dbmodels.Serv
 	return dbmodels.ServerGroupUpdate{
 		Name:        groupUpdate.Name,
 		Description: groupUpdate.Description,
+		UTCOffset:   groupUpdate.UTCOffset,
 	}
 }
 
@@ -64,22 +67,25 @@ func ServerGroupUpdateFromRest(groupUpdate models.ServerGroupUpdate) entities.Se
 	return entities.ServerGroupUpdate{
 		Name:        groupUpdate.Name,
 		Description: groupUpdate.Description,
+		UTCOffset:   groupUpdate.UtcOffset,
 	}
 }
 
 func ServerGroupCreationToDb(groupCreation entities.ServerGroupCreation) dbmodels.ServerGroupCreation {
 	return dbmodels.ServerGroupCreation{
+		OrganizationID: groupCreation.OrganizationID,
 		Name:           groupCreation.Name,
 		Description:    groupCreation.Description,
-		OrganizationID: groupCreation.OrganizationID,
+		UTCOffset:      groupCreation.UTCOffset,
 	}
 }
 
 func ServerGroupCreationFromRest(model models.ServerGroupCreation) entities.ServerGroupCreation {
 	return entities.ServerGroupCreation{
+		OrganizationID: uuid.FromStringOrNil((*model.OrganizationID).String()),
 		Name:           *model.Name,
 		Description:    *model.Description,
-		OrganizationID: uuid.FromStringOrNil((*model.OrganizationID).String()),
+		UTCOffset:      model.UtcOffset,
 	}
 }
 
@@ -108,9 +114,10 @@ func ServerGroupFilterToDB(filter entities.ServerGroupFilter) dbmodels.ServerGro
 func ServerGroupToRabbit(group entities.ServerGroup) rabbitEntities.ServerGroup {
 	return rabbitEntities.ServerGroup{
 		ID:             group.ID.String(),
+		OrganizationID: group.OrganizationID.String(),
 		Name:           group.Name,
 		Description:    group.Description,
-		OrganizationID: group.OrganizationID.String(),
+		UTCOffset:      group.UTCOffset,
 		IsDefault:      group.IsDefault,
 		Deleted:        group.Deleted,
 		Version:        group.Version,

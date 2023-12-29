@@ -10,6 +10,7 @@ type (
 		Name                          string    `db:"name"`
 		DisplayName                   string    `db:"display_name"`
 		Description                   string    `db:"description"`
+		UTCOffset                     int32     `db:"utc_offset"`
 		IsDefault                     bool      `db:"is_default"`
 		ProcessingDelayMinutes        string    `db:"processing_delay"`
 		BonusPercentage               int64     `db:"bonus_percentage"`
@@ -22,6 +23,7 @@ type (
 		Name                          string  `db:"name"`
 		DisplayName                   string  `db:"display_name"`
 		Description                   string  `db:"description"`
+		UTCOffset                     *int32  `db:"utc_offset"`
 		ReportsProcessingDelayMinutes *string `db:"processing_delay"`
 		BonusPercentage               *int64  `db:"bonus_percentage"`
 	}
@@ -30,6 +32,7 @@ type (
 		Name                          *string `db:"name"`
 		DisplayName                   *string `db:"display_name"`
 		Description                   *string `db:"description"`
+		UTCOffset                     *int32  `db:"utc_offset"`
 		ReportsProcessingDelayMinutes *int64  `db:"processing_delay"`
 		BonusPercentage               *int64  `db:"bonus_percentage"`
 	}
