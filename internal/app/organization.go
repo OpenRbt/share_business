@@ -32,7 +32,7 @@ type (
 
 		GetDefaultGroupByOrganizationId(ctx Ctx, id uuid.UUID) (entities.ServerGroup, error)
 		GetAdminUsersByOrganizationID(ctx Ctx, id uuid.UUID) ([]entities.AdminUser, error)
-		GetDeletedByID(ctx Ctx, id uuid.UUID) (entities.Organization, error)
+		GetAnyByID(ctx Ctx, id uuid.UUID) (entities.Organization, error)
 	}
 
 	OrganizationRepo interface {
@@ -48,6 +48,6 @@ type (
 
 		GetDefaultGroupByOrganizationId(ctx Ctx, id uuid.UUID) (dbmodels.ServerGroup, error)
 		GetAdminUsersByOrganizationID(ctx Ctx, id uuid.UUID) ([]dbmodels.AdminUser, error)
-		GetDeletedByID(ctx Ctx, id uuid.UUID) (dbmodels.Organization, error)
+		GetAnyByID(ctx Ctx, id uuid.UUID) (dbmodels.Organization, error)
 	}
 )

@@ -106,7 +106,7 @@ func (ctrl *organizationController) Delete(ctx context.Context, auth app.AdminAu
 }
 
 func (ctrl *organizationController) sendOrganizationToServices(ctx context.Context, orgID uuid.UUID) error {
-	org, err := ctrl.orgSvc.GetDeletedByID(ctx, orgID)
+	org, err := ctrl.orgSvc.GetAnyByID(ctx, orgID)
 	if err != nil {
 		return err
 	}

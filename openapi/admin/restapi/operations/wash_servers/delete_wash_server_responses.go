@@ -17,8 +17,7 @@ import (
 // DeleteWashServerNoContentCode is the HTTP code returned for type DeleteWashServerNoContent
 const DeleteWashServerNoContentCode int = 204
 
-/*
-DeleteWashServerNoContent OK
+/*DeleteWashServerNoContent OK
 
 swagger:response deleteWashServerNoContent
 */
@@ -41,8 +40,7 @@ func (o *DeleteWashServerNoContent) WriteResponse(rw http.ResponseWriter, produc
 
 func (o *DeleteWashServerNoContent) DeleteWashServerResponder() {}
 
-/*
-DeleteWashServerDefault Generic error response
+/*DeleteWashServerDefault Generic error response
 
 swagger:response deleteWashServerDefault
 */

@@ -31,10 +31,10 @@ func NewAssignUserToOrganization(ctx *middleware.Context, handler AssignUserToOr
 	return &AssignUserToOrganization{Context: ctx, Handler: handler}
 }
 
-/*
-	AssignUserToOrganization swagger:route POST /organizations/{organizationId}/users/{userId} organizations assignUserToOrganization
+/* AssignUserToOrganization swagger:route POST /organizations/{organizationId}/users/{userId} organizations assignUserToOrganization
 
 AssignUserToOrganization assign user to organization API
+
 */
 type AssignUserToOrganization struct {
 	Context *middleware.Context

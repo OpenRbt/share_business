@@ -31,10 +31,10 @@ func NewDeleteOrganization(ctx *middleware.Context, handler DeleteOrganizationHa
 	return &DeleteOrganization{Context: ctx, Handler: handler}
 }
 
-/*
-	DeleteOrganization swagger:route DELETE /organizations/{organizationId} organizations deleteOrganization
+/* DeleteOrganization swagger:route DELETE /organizations/{organizationId} organizations deleteOrganization
 
 DeleteOrganization delete organization API
+
 */
 type DeleteOrganization struct {
 	Context *middleware.Context

@@ -31,10 +31,10 @@ func NewUpdateServerGroup(ctx *middleware.Context, handler UpdateServerGroupHand
 	return &UpdateServerGroup{Context: ctx, Handler: handler}
 }
 
-/*
-	UpdateServerGroup swagger:route PATCH /server-groups/{groupId} serverGroups updateServerGroup
+/* UpdateServerGroup swagger:route PATCH /server-groups/{groupId} serverGroups updateServerGroup
 
 UpdateServerGroup update server group API
+
 */
 type UpdateServerGroup struct {
 	Context *middleware.Context

@@ -31,10 +31,10 @@ func NewReviewAdminApplication(ctx *middleware.Context, handler ReviewAdminAppli
 	return &ReviewAdminApplication{Context: ctx, Handler: handler}
 }
 
-/*
-	ReviewAdminApplication swagger:route POST /users/applications/{id} applications reviewAdminApplication
+/* ReviewAdminApplication swagger:route POST /users/applications/{id} applications reviewAdminApplication
 
 ReviewAdminApplication review admin application API
+
 */
 type ReviewAdminApplication struct {
 	Context *middleware.Context

@@ -93,8 +93,8 @@ func (s *serverGroupService) Delete(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-func (s *serverGroupService) GetDeletedById(ctx context.Context, id uuid.UUID) (entities.ServerGroup, error) {
-	group, err := s.groupRepo.GetDeletedById(ctx, id)
+func (s *serverGroupService) GetAnyById(ctx context.Context, id uuid.UUID) (entities.ServerGroup, error) {
+	group, err := s.groupRepo.GetAnyById(ctx, id)
 	if err != nil {
 		if errors.Is(err, dbmodels.ErrNotFound) {
 			return entities.ServerGroup{}, entities.ErrNotFound

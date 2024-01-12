@@ -1030,6 +1030,12 @@ func init() {
         },
         "reportsProcessingDelayMinutes": {
           "type": "integer"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -1055,6 +1061,13 @@ func init() {
         },
         "reportsProcessingDelayMinutes": {
           "type": "integer",
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }
@@ -1082,12 +1095,23 @@ func init() {
         "reportsProcessingDelayMinutes": {
           "type": "integer",
           "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
     "ServerGroup": {
       "type": "object",
       "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100
+        },
         "description": {
           "type": "string"
         },
@@ -1104,6 +1128,15 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer"
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -1114,6 +1147,11 @@ func init() {
         "organizationId"
       ],
       "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "x-nullable": true
+        },
         "description": {
           "type": "string"
         },
@@ -1123,18 +1161,45 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
     "ServerGroupUpdate": {
       "type": "object",
       "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "x-nullable": true
+        },
         "description": {
           "type": "string",
           "x-nullable": true
         },
         "name": {
           "type": "string",
+          "x-nullable": true
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }
@@ -2439,6 +2504,12 @@ func init() {
         "reportsProcessingDelayMinutes": {
           "type": "integer",
           "minimum": 0
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -2466,6 +2537,13 @@ func init() {
         "reportsProcessingDelayMinutes": {
           "type": "integer",
           "minimum": 0,
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }
@@ -2495,12 +2573,24 @@ func init() {
           "type": "integer",
           "minimum": 0,
           "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
     "ServerGroup": {
       "type": "object",
       "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 0
+        },
         "description": {
           "type": "string"
         },
@@ -2517,6 +2607,16 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720
         }
       }
     },
@@ -2527,6 +2627,12 @@ func init() {
         "organizationId"
       ],
       "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 0,
+          "x-nullable": true
+        },
         "description": {
           "type": "string"
         },
@@ -2536,18 +2642,48 @@ func init() {
         "organizationId": {
           "type": "string",
           "format": "uuid"
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
+          "x-nullable": true
         }
       }
     },
     "ServerGroupUpdate": {
       "type": "object",
       "properties": {
+        "bonusPercentage": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 0,
+          "x-nullable": true
+        },
         "description": {
           "type": "string",
           "x-nullable": true
         },
         "name": {
           "type": "string",
+          "x-nullable": true
+        },
+        "reportsProcessingDelayMinutes": {
+          "type": "integer",
+          "minimum": 0,
+          "x-nullable": true
+        },
+        "utcOffset": {
+          "type": "integer",
+          "format": "int32",
+          "maximum": 840,
+          "minimum": -720,
           "x-nullable": true
         }
       }

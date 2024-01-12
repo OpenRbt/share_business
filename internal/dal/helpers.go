@@ -2,11 +2,8 @@ package dal
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"reflect"
-	"strconv"
-	"strings"
 	"washbonus/internal/dal/dbmodels"
 
 	"github.com/gocraft/dbr/v2"
@@ -38,6 +35,10 @@ func ConstructUpdateMap(model interface{}) map[string]interface{} {
 				updateMap[dbTag] = *pointer
 			}
 		} else if pointer, ok := fieldValue.(*int64); ok {
+			if pointer != nil {
+				updateMap[dbTag] = *pointer
+			}
+		} else if pointer, ok := fieldValue.(*int32); ok {
 			if pointer != nil {
 				updateMap[dbTag] = *pointer
 			}
@@ -82,43 +83,4 @@ func WriteAuditLog(ctx context.Context, tx *dbr.Tx, resource dbmodels.ResourceTy
 	}
 
 	return nil
-}
-
-func ConvertProcessingDelay(org *dbmodels.Organization) {
-	dur, err := parseHHMMSS(org.ProcessingDelayMinutes)
-	if err != nil {
-		panic(fmt.Sprintf("Wrong processing delay in DB for organization with ID %s", org.ID))
-	}
-
-	org.ReportsProcessingDelayMinutes = dur
-}
-
-func ConvertProcessingDelays(orgs []dbmodels.Organization) {
-	for i, org := range orgs {
-		dur, err := parseHHMMSS(org.ProcessingDelayMinutes)
-		if err != nil {
-			panic(fmt.Sprintf("Wrong processing delay in DB for organization with ID %s", org.ID))
-		}
-
-		orgs[i].ReportsProcessingDelayMinutes = dur
-	}
-}
-
-func parseHHMMSS(durationStr string) (int64, error) {
-	parts := strings.Split(durationStr, ":")
-	if len(parts) != 3 {
-		return 0, errors.New("invalid duration format")
-	}
-
-	hours, err := strconv.ParseInt(parts[0], 10, 64)
-	if err != nil {
-		return 0, err
-	}
-
-	minutes, err := strconv.ParseInt(parts[1], 10, 64)
-	if err != nil {
-		return 0, err
-	}
-
-	return hours*60 + minutes, nil
 }

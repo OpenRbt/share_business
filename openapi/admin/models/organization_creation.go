@@ -40,6 +40,11 @@ type OrganizationCreation struct {
 	// reports processing delay minutes
 	// Minimum: 0
 	ReportsProcessingDelayMinutes *int64 `json:"reportsProcessingDelayMinutes,omitempty"`
+
+	// utc offset
+	// Maximum: 840
+	// Minimum: -720
+	UtcOffset *int32 `json:"utcOffset,omitempty"`
 }
 
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
@@ -65,6 +70,11 @@ func (m *OrganizationCreation) UnmarshalJSON(data []byte) error {
 		// reports processing delay minutes
 		// Minimum: 0
 		ReportsProcessingDelayMinutes *int64 `json:"reportsProcessingDelayMinutes,omitempty"`
+
+		// utc offset
+		// Maximum: 840
+		// Minimum: -720
+		UtcOffset *int32 `json:"utcOffset,omitempty"`
 	}
 
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -78,6 +88,7 @@ func (m *OrganizationCreation) UnmarshalJSON(data []byte) error {
 	m.DisplayName = props.DisplayName
 	m.Name = props.Name
 	m.ReportsProcessingDelayMinutes = props.ReportsProcessingDelayMinutes
+	m.UtcOffset = props.UtcOffset
 	return nil
 }
 
@@ -98,6 +109,10 @@ func (m *OrganizationCreation) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateReportsProcessingDelayMinutes(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUtcOffset(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -147,6 +162,22 @@ func (m *OrganizationCreation) validateReportsProcessingDelayMinutes(formats str
 	}
 
 	if err := validate.MinimumInt("reportsProcessingDelayMinutes", "body", *m.ReportsProcessingDelayMinutes, 0, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OrganizationCreation) validateUtcOffset(formats strfmt.Registry) error {
+	if swag.IsZero(m.UtcOffset) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("utcOffset", "body", int64(*m.UtcOffset), -720, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumInt("utcOffset", "body", int64(*m.UtcOffset), 840, false); err != nil {
 		return err
 	}
 

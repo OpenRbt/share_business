@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"washbonus/internal/dal"
 	"washbonus/internal/dal/dbmodels"
+	"washbonus/internal/dal/servergroups"
 
 	"github.com/gocraft/dbr/v2"
 	"github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 )
 
-var OrgColumns = []string{"id", "name", "display_name", "description", "is_default", "processing_delay", "bonus_percentage", "deleted", "version"}
+var OrgColumns = []string{"id", "name", "display_name", "description", "utc_offset", "is_default", "processing_delay", "bonus_percentage", "deleted", "version"}
 
 const resource = dbmodels.OrganizationsResource
 
@@ -37,8 +38,6 @@ func (r *repo) Get(ctx context.Context, filter dbmodels.OrganizationFilter) ([]d
 		return nil, fmt.Errorf("failed to load organizations: %w", err)
 	}
 
-	dal.ConvertProcessingDelays(orgs)
-
 	return orgs, nil
 }
 
@@ -56,8 +55,6 @@ func (r *repo) GetAll(ctx context.Context, pagination dbmodels.Pagination) ([]db
 		return nil, fmt.Errorf("failed to load organizations: %w", err)
 	}
 
-	dal.ConvertProcessingDelays(orgs)
-
 	return orgs, nil
 }
 
@@ -68,8 +65,6 @@ func (r *repo) GetById(ctx context.Context, id uuid.UUID) (dbmodels.Organization
 		From("organizations").
 		Where("id = ? AND NOT deleted", id).
 		LoadOneContext(ctx, &org)
-
-	dal.ConvertProcessingDelay(&org)
 
 	if err == nil {
 		return org, nil
@@ -82,15 +77,13 @@ func (r *repo) GetById(ctx context.Context, id uuid.UUID) (dbmodels.Organization
 	return dbmodels.Organization{}, fmt.Errorf("failed to load organization: %w", err)
 }
 
-func (r *repo) GetDeletedByID(ctx context.Context, id uuid.UUID) (dbmodels.Organization, error) {
+func (r *repo) GetAnyByID(ctx context.Context, id uuid.UUID) (dbmodels.Organization, error) {
 	var org dbmodels.Organization
 	err := r.db.NewSession(nil).
 		Select(OrgColumns...).
 		From("organizations").
 		Where("id = ?", id).
 		LoadOneContext(ctx, &org)
-
-	dal.ConvertProcessingDelay(&org)
 
 	if err == nil {
 		return org, nil
@@ -125,6 +118,11 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 		values = append(values, model.BonusPercentage)
 	}
 
+	if model.UTCOffset != nil {
+		columns = append(columns, "utc_offset")
+		values = append(values, model.UTCOffset)
+	}
+
 	var org dbmodels.Organization
 	err = tx.InsertInto("organizations").
 		Columns(columns...).
@@ -139,8 +137,6 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
-
-	dal.ConvertProcessingDelay(&org)
 
 	_, err = tx.InsertInto("server_groups").
 		Columns("organization_id", "name", "description", "is_default").
@@ -171,10 +167,6 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 	updateMap := dal.ConstructUpdateMap(model)
 	if len(updateMap) == 0 {
 		return dbmodels.Organization{}, dbmodels.ErrBadRequest
-	}
-
-	if model.ReportsProcessingDelayMinutes != nil {
-		updateMap["processing_delay"] = fmt.Sprintf("%d minutes", *model.ReportsProcessingDelayMinutes)
 	}
 
 	res, err := tx.Update("organizations").
@@ -208,8 +200,6 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
-
-	dal.ConvertProcessingDelay(&org)
 
 	err = dal.WriteAuditLog(ctx, tx, resource, id.String(), "update", model)
 	if err != nil {
@@ -447,11 +437,11 @@ func (r *repo) GetDefaultGroupByOrganizationId(ctx context.Context, id uuid.UUID
 
 	var group dbmodels.ServerGroup
 	err := r.db.NewSession(nil).
-		Select("*").
-		From("server_groups").
-		Where("organization_id = ?", id).
+		Select(servergroups.GroupColumns).
+		From(dbr.I("server_groups").As("gr")).
+		LeftJoin(dbr.I("organizations").As("org"), "gr.organization_id = org.id").
+		Where("gr.organization_id = ?", id).
 		LoadOneContext(ctx, &group)
-
 	if err != nil {
 		if errors.Is(err, dbr.ErrNotFound) {
 			err = dbmodels.ErrNotFound

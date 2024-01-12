@@ -17,8 +17,7 @@ import (
 // GetSessionByIDOKCode is the HTTP code returned for type GetSessionByIDOK
 const GetSessionByIDOKCode int = 200
 
-/*
-GetSessionByIDOK OK
+/*GetSessionByIDOK OK
 
 swagger:response getSessionByIdOK
 */
@@ -61,8 +60,7 @@ func (o *GetSessionByIDOK) WriteResponse(rw http.ResponseWriter, producer runtim
 
 func (o *GetSessionByIDOK) GetSessionByIDResponder() {}
 
-/*
-GetSessionByIDDefault Generic error response
+/*GetSessionByIDDefault Generic error response
 
 swagger:response getSessionByIdDefault
 */

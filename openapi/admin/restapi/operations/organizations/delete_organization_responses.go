@@ -17,8 +17,7 @@ import (
 // DeleteOrganizationNoContentCode is the HTTP code returned for type DeleteOrganizationNoContent
 const DeleteOrganizationNoContentCode int = 204
 
-/*
-DeleteOrganizationNoContent OK
+/*DeleteOrganizationNoContent OK
 
 swagger:response deleteOrganizationNoContent
 */
@@ -41,8 +40,7 @@ func (o *DeleteOrganizationNoContent) WriteResponse(rw http.ResponseWriter, prod
 
 func (o *DeleteOrganizationNoContent) DeleteOrganizationResponder() {}
 
-/*
-DeleteOrganizationDefault Generic error response
+/*DeleteOrganizationDefault Generic error response
 
 swagger:response deleteOrganizationDefault
 */

@@ -31,10 +31,10 @@ func NewCreateServerGroup(ctx *middleware.Context, handler CreateServerGroupHand
 	return &CreateServerGroup{Context: ctx, Handler: handler}
 }
 
-/*
-	CreateServerGroup swagger:route POST /server-groups serverGroups createServerGroup
+/* CreateServerGroup swagger:route POST /server-groups serverGroups createServerGroup
 
 CreateServerGroup create server group API
+
 */
 type CreateServerGroup struct {
 	Context *middleware.Context

@@ -17,8 +17,7 @@ import (
 // GetWashServerByIDOKCode is the HTTP code returned for type GetWashServerByIDOK
 const GetWashServerByIDOKCode int = 200
 
-/*
-GetWashServerByIDOK OK
+/*GetWashServerByIDOK OK
 
 swagger:response getWashServerByIdOK
 */
@@ -61,8 +60,7 @@ func (o *GetWashServerByIDOK) WriteResponse(rw http.ResponseWriter, producer run
 
 func (o *GetWashServerByIDOK) GetWashServerByIDResponder() {}
 
-/*
-GetWashServerByIDDefault Generic error response
+/*GetWashServerByIDDefault Generic error response
 
 swagger:response getWashServerByIdDefault
 */

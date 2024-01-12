@@ -108,7 +108,7 @@ func (ctrl *serverGroupController) Delete(ctx context.Context, auth app.AdminAut
 }
 
 func (ctrl *serverGroupController) sendServerGroupToServices(ctx context.Context, id uuid.UUID) error {
-	server, err := ctrl.serverGroupSvc.GetDeletedById(ctx, id)
+	server, err := ctrl.serverGroupSvc.GetAnyById(ctx, id)
 	if err != nil {
 		return err
 	}

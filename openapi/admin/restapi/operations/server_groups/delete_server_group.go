@@ -31,10 +31,10 @@ func NewDeleteServerGroup(ctx *middleware.Context, handler DeleteServerGroupHand
 	return &DeleteServerGroup{Context: ctx, Handler: handler}
 }
 
-/*
-	DeleteServerGroup swagger:route DELETE /server-groups/{groupId} serverGroups deleteServerGroup
+/* DeleteServerGroup swagger:route DELETE /server-groups/{groupId} serverGroups deleteServerGroup
 
 DeleteServerGroup delete server group API
+
 */
 type DeleteServerGroup struct {
 	Context *middleware.Context

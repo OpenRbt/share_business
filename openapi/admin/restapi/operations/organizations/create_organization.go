@@ -31,10 +31,10 @@ func NewCreateOrganization(ctx *middleware.Context, handler CreateOrganizationHa
 	return &CreateOrganization{Context: ctx, Handler: handler}
 }
 
-/*
-	CreateOrganization swagger:route POST /organizations organizations createOrganization
+/* CreateOrganization swagger:route POST /organizations organizations createOrganization
 
 CreateOrganization create organization API
+
 */
 type CreateOrganization struct {
 	Context *middleware.Context

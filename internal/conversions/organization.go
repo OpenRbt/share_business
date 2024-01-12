@@ -17,6 +17,7 @@ func OrganizationFromDB(org dbmodels.Organization) entities.Organization {
 		Name:                          org.Name,
 		DisplayName:                   org.DisplayName,
 		Description:                   org.Description,
+		UTCOffset:                     org.UTCOffset,
 		IsDefault:                     org.IsDefault,
 		ReportsProcessingDelayMinutes: org.ReportsProcessingDelayMinutes,
 		BonusPercentage:               org.BonusPercentage,
@@ -31,6 +32,7 @@ func OrganizationToRest(e entities.Organization) *models.Organization {
 		Name:                          e.Name,
 		DisplayName:                   e.DisplayName,
 		Description:                   e.Description,
+		UtcOffset:                     &e.UTCOffset,
 		IsDefault:                     e.IsDefault,
 		ReportsProcessingDelayMinutes: &e.ReportsProcessingDelayMinutes,
 		BonusPercentage:               &e.BonusPercentage,
@@ -62,6 +64,7 @@ func OrganizationUpdateToDb(e entities.OrganizationUpdate) dbmodels.Organization
 		Name:                          e.Name,
 		Description:                   e.Description,
 		DisplayName:                   e.DisplayName,
+		UTCOffset:                     e.UTCOffset,
 		ReportsProcessingDelayMinutes: e.ReportsProcessingDelayMinutes,
 		BonusPercentage:               e.BonusPercentage,
 	}
@@ -72,25 +75,21 @@ func OrganizationUpdateFromRest(model models.OrganizationUpdate) entities.Organi
 		Name:                          model.Name,
 		DisplayName:                   model.DisplayName,
 		Description:                   model.Description,
+		UTCOffset:                     model.UtcOffset,
 		ReportsProcessingDelayMinutes: model.ReportsProcessingDelayMinutes,
 		BonusPercentage:               model.BonusPercentage,
 	}
 }
 
 func OrganizationCreationToDb(e entities.OrganizationCreation) dbmodels.OrganizationCreation {
-	mod := dbmodels.OrganizationCreation{
-		Name:            e.Name,
-		DisplayName:     e.DisplayName,
-		Description:     e.Description,
-		BonusPercentage: e.BonusPercentage,
+	return dbmodels.OrganizationCreation{
+		Name:                          e.Name,
+		DisplayName:                   e.DisplayName,
+		UTCOffset:                     e.UTCOffset,
+		Description:                   e.Description,
+		ReportsProcessingDelayMinutes: e.ReportsProcessingDelayMinutes,
+		BonusPercentage:               e.BonusPercentage,
 	}
-
-	if e.ReportsProcessingDelayMinutes != nil {
-		processingDelayMinutes := fmt.Sprintf("%d minutes", *e.ReportsProcessingDelayMinutes)
-		mod.ReportsProcessingDelayMinutes = &processingDelayMinutes
-	}
-
-	return mod
 }
 
 func OrganizationCreationFromRest(model models.OrganizationCreation) entities.OrganizationCreation {
@@ -98,6 +97,7 @@ func OrganizationCreationFromRest(model models.OrganizationCreation) entities.Or
 		Name:                          *model.Name,
 		DisplayName:                   model.DisplayName,
 		Description:                   *model.Description,
+		UTCOffset:                     model.UtcOffset,
 		ReportsProcessingDelayMinutes: model.ReportsProcessingDelayMinutes,
 		BonusPercentage:               model.BonusPercentage,
 	}
@@ -133,6 +133,7 @@ func OrganizationToRabbit(org entities.Organization) rabbitEntities.Organization
 		Name:        org.Name,
 		DisplayName: org.DisplayName,
 		Description: org.Description,
+		UTCOffset:   org.UTCOffset,
 		Deleted:     org.Deleted,
 		Version:     org.Version,
 	}
@@ -140,7 +141,6 @@ func OrganizationToRabbit(org entities.Organization) rabbitEntities.Organization
 
 func OrganizationsToRabbit(orgs []entities.Organization) []rabbitEntities.Organization {
 	res := make([]rabbitEntities.Organization, len(orgs))
-
 	for i, value := range orgs {
 		res[i] = OrganizationToRabbit(value)
 	}
