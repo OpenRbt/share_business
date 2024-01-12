@@ -12,7 +12,7 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-var OrgColumns = []string{"org.id", "org.name", "org.display_name", "org.description", "org.is_default", "FLOOR(EXTRACT(EPOCH FROM org.processing_delay) / 60) AS processing_delay", "org.bonus_percentage", "org.deleted"}
+var OrgColumns = []string{"org.id", "org.name", "org.display_name", "org.description", "org.is_default", "org.processing_delay", "org.bonus_percentage", "org.deleted"}
 
 func (r *repo) CreateSession(ctx context.Context, serverID uuid.UUID, postID int64) (dbmodels.Session, error) {
 	op := "failed to create session: %w"
@@ -201,19 +201,27 @@ func (r *repo) ProcessAndChargeMoneyReports(ctx context.Context, lastId int64) (
 func getUnprocessedReports(ctx context.Context, tx *dbr.Tx, lastId int64) ([]dbmodels.UserMoneyReport, error) {
 	var dbReports []dbmodels.UserMoneyReport
 	_, err := tx.SelectBySql(`
-			SELECT r.id, r.station_id, r.banknotes, r.cars_total, r.coins, r.electronical, r.service, r.bonuses, r.session_id, r.organization_id, r.processed, r.uuid, "s".user,
-				COALESCE((r.banknotes + r.coins + r.electronical) * (o.bonus_percentage / 100.0), 0) as pending_bonuses
-			FROM session_money_report r
+		SELECT 
+			r.id, r.station_id, r.banknotes, r.cars_total, r.coins, r.electronical, r.service, r.bonuses, r.session_id, r.organization_id, r.processed, r.uuid, s.user,
+			COALESCE(
+				(r.banknotes + r.coins + r.electronical) * (COALESCE(sg.bonus_percentage, o.bonus_percentage) / 100.0), 0
+			) as pending_bonuses
+		FROM 
+			session_money_report r
 			LEFT JOIN sessions s ON r.session_id = s.id
-			JOIN organizations o ON r.organization_id = o.id
-			WHERE r.processed = FALSE 
-				AND r.session_id IS NOT NULL
-				AND  s.user IS NOT NULL
-				AND r.id > ?
-				AND r.ctime < CURRENT_TIMESTAMP - o.processing_delay
-			ORDER BY r.id
-			LIMIT 100
-		`, lastId).
+			JOIN wash_servers w ON s.wash_server = w.id
+			JOIN server_groups sg ON w.group_id = sg.id
+			JOIN organizations o ON sg.organization_id = o.id OR r.organization_id = o.id
+		WHERE 
+			r.processed = FALSE 
+			AND r.session_id IS NOT NULL
+			AND s.user IS NOT NULL
+			AND r.id > ?
+			AND r.ctime < CURRENT_TIMESTAMP - make_interval(mins => COALESCE(sg.processing_delay, o.processing_delay))
+		ORDER BY 
+			r.id
+		LIMIT 100
+	`, lastId).
 		LoadContext(ctx, &dbReports)
 
 	if err != nil {
@@ -264,10 +272,12 @@ func (r *repo) GetUserPendingBalanceByOrganization(ctx context.Context, userID s
 	var pendingBalance decimal.Decimal
 
 	_, err := session.SelectBySql(`
-			SELECT COALESCE(SUM((r.banknotes + r.coins + r.electronical) * (o.bonus_percentage / 100.0)), 0) as pending_balance
+			SELECT COALESCE(SUM((r.banknotes + r.coins + r.electronical) * (COALESCE(sg.bonus_percentage, o.bonus_percentage) / 100.0)), 0) as pending_balance
 			FROM session_money_report r
 			LEFT JOIN sessions s on r.session_id = s.id
-			JOIN organizations o ON r.organization_id = o.id
+			JOIN wash_servers w ON s.wash_server = w.id
+			JOIN server_groups sg ON w.group_id = sg.id
+			JOIN organizations o ON sg.organization_id = o.id OR r.organization_id = o.id
 			WHERE r.processed = FALSE 
 				AND r.session_id is NOT NULL 
 				AND s.user = ?
@@ -289,12 +299,14 @@ func (r *repo) GetUserPendingBalances(ctx context.Context, userID string) ([]dbm
 	var pendingBalances []dbmodels.UserPendingBalance
 
 	_, err := session.SelectBySql(`
-			SELECT r.organization_id, COALESCE(SUM((r.banknotes + r.coins + r.electronical) * (o.bonus_percentage / 100.0)), 0) as pending_balance
+			SELECT r.organization_id, COALESCE(SUM((r.banknotes + r.coins + r.electronical) * (COALESCE(sg.bonus_percentage, o.bonus_percentage) / 100.0)), 0) as pending_balance
 			FROM session_money_report r
-			LEFT JOIN sessions s on r.session_id = s.id
-			JOIN organizations o ON r.organization_id = o.id
+			LEFT JOIN sessions s ON r.session_id = s.id
+			JOIN wash_servers w ON s.wash_server = w.id
+			JOIN server_groups sg ON w.group_id = sg.id
+			JOIN organizations o ON sg.organization_id = o.id OR r.organization_id = o.id
 			WHERE r.processed = FALSE 
-				AND r.session_id is NOT NULL 
+				AND r.session_id IS NOT NULL 
 				AND s.user = ?
 			GROUP BY r.organization_id
 		`, userID).

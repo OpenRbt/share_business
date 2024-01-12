@@ -82,20 +82,14 @@ func OrganizationUpdateFromRest(model models.OrganizationUpdate) entities.Organi
 }
 
 func OrganizationCreationToDb(e entities.OrganizationCreation) dbmodels.OrganizationCreation {
-	mod := dbmodels.OrganizationCreation{
-		Name:            e.Name,
-		DisplayName:     e.DisplayName,
-		UTCOffset:       e.UTCOffset,
-		Description:     e.Description,
-		BonusPercentage: e.BonusPercentage,
+	return dbmodels.OrganizationCreation{
+		Name:                          e.Name,
+		DisplayName:                   e.DisplayName,
+		UTCOffset:                     e.UTCOffset,
+		Description:                   e.Description,
+		ReportsProcessingDelayMinutes: e.ReportsProcessingDelayMinutes,
+		BonusPercentage:               e.BonusPercentage,
 	}
-
-	if e.ReportsProcessingDelayMinutes != nil {
-		processingDelayMinutes := fmt.Sprintf("%d minutes", *e.ReportsProcessingDelayMinutes)
-		mod.ReportsProcessingDelayMinutes = &processingDelayMinutes
-	}
-
-	return mod
 }
 
 func OrganizationCreationFromRest(model models.OrganizationCreation) entities.OrganizationCreation {

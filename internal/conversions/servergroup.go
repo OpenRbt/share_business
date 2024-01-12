@@ -12,25 +12,29 @@ import (
 
 func ServerGroupFromDB(group dbmodels.ServerGroup) entities.ServerGroup {
 	return entities.ServerGroup{
-		ID:             group.ID,
-		OrganizationID: group.OrganizationID,
-		Name:           group.Name,
-		Description:    group.Description,
-		UTCOffset:      group.UTCOffset,
-		IsDefault:      group.IsDefault,
-		Deleted:        group.Deleted,
-		Version:        group.Version,
+		ID:                            group.ID,
+		OrganizationID:                group.OrganizationID,
+		Name:                          group.Name,
+		Description:                   group.Description,
+		ReportsProcessingDelayMinutes: group.ReportsProcessingDelayMinutes,
+		BonusPercentage:               group.BonusPercentage,
+		UTCOffset:                     group.UTCOffset,
+		IsDefault:                     group.IsDefault,
+		Deleted:                       group.Deleted,
+		Version:                       group.Version,
 	}
 }
 
 func ServerGroupToRest(group entities.ServerGroup) *models.ServerGroup {
 	return &models.ServerGroup{
-		ID:             strfmt.UUID(group.ID.String()),
-		OrganizationID: strfmt.UUID(group.OrganizationID.String()),
-		Name:           group.Name,
-		Description:    group.Description,
-		UtcOffset:      &group.UTCOffset,
-		IsDefault:      group.IsDefault,
+		ID:                            strfmt.UUID(group.ID.String()),
+		OrganizationID:                strfmt.UUID(group.OrganizationID.String()),
+		Name:                          group.Name,
+		Description:                   group.Description,
+		UtcOffset:                     &group.UTCOffset,
+		IsDefault:                     group.IsDefault,
+		ReportsProcessingDelayMinutes: &group.ReportsProcessingDelayMinutes,
+		BonusPercentage:               &group.BonusPercentage,
 	}
 }
 
@@ -57,35 +61,43 @@ func ServerGroupsToRest(groups []entities.ServerGroup) []*models.ServerGroup {
 
 func ServerGroupUpdateToDb(groupUpdate entities.ServerGroupUpdate) dbmodels.ServerGroupUpdate {
 	return dbmodels.ServerGroupUpdate{
-		Name:        groupUpdate.Name,
-		Description: groupUpdate.Description,
-		UTCOffset:   groupUpdate.UTCOffset,
+		Name:                          groupUpdate.Name,
+		Description:                   groupUpdate.Description,
+		UTCOffset:                     groupUpdate.UTCOffset,
+		ReportsProcessingDelayMinutes: groupUpdate.ReportsProcessingDelayMinutes,
+		BonusPercentage:               groupUpdate.BonusPercentage,
 	}
 }
 
 func ServerGroupUpdateFromRest(groupUpdate models.ServerGroupUpdate) entities.ServerGroupUpdate {
 	return entities.ServerGroupUpdate{
-		Name:        groupUpdate.Name,
-		Description: groupUpdate.Description,
-		UTCOffset:   groupUpdate.UtcOffset,
+		Name:                          groupUpdate.Name,
+		Description:                   groupUpdate.Description,
+		UTCOffset:                     groupUpdate.UtcOffset,
+		ReportsProcessingDelayMinutes: groupUpdate.ReportsProcessingDelayMinutes,
+		BonusPercentage:               groupUpdate.BonusPercentage,
 	}
 }
 
 func ServerGroupCreationToDb(groupCreation entities.ServerGroupCreation) dbmodels.ServerGroupCreation {
 	return dbmodels.ServerGroupCreation{
-		OrganizationID: groupCreation.OrganizationID,
-		Name:           groupCreation.Name,
-		Description:    groupCreation.Description,
-		UTCOffset:      groupCreation.UTCOffset,
+		OrganizationID:                groupCreation.OrganizationID,
+		Name:                          groupCreation.Name,
+		Description:                   groupCreation.Description,
+		UTCOffset:                     groupCreation.UTCOffset,
+		ReportsProcessingDelayMinutes: groupCreation.ReportsProcessingDelayMinutes,
+		BonusPercentage:               groupCreation.BonusPercentage,
 	}
 }
 
 func ServerGroupCreationFromRest(model models.ServerGroupCreation) entities.ServerGroupCreation {
 	return entities.ServerGroupCreation{
-		OrganizationID: uuid.FromStringOrNil((*model.OrganizationID).String()),
-		Name:           *model.Name,
-		Description:    *model.Description,
-		UTCOffset:      model.UtcOffset,
+		OrganizationID:                uuid.FromStringOrNil((*model.OrganizationID).String()),
+		Name:                          *model.Name,
+		Description:                   *model.Description,
+		UTCOffset:                     model.UtcOffset,
+		ReportsProcessingDelayMinutes: model.ReportsProcessingDelayMinutes,
+		BonusPercentage:               model.BonusPercentage,
 	}
 }
 

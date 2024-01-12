@@ -13,7 +13,7 @@ import (
 
 const resource = dbmodels.ServerGroupsResource
 
-const GroupColumns = "gr.id, gr.organization_id, gr.name, gr.description, COALESCE(gr.utc_offset, org.utc_offset) AS utc_offset, gr.is_default, gr.deleted, gr.version"
+const GroupColumns = "gr.id, gr.organization_id, gr.name, gr.description, COALESCE(gr.processing_delay, org.processing_delay) AS processing_delay, COALESCE(gr.bonus_percentage, org.bonus_percentage) AS bonus_percentage, COALESCE(gr.utc_offset, org.utc_offset) AS utc_offset, gr.is_default, gr.deleted, gr.version"
 
 func (r *serverGroupRepo) Get(ctx context.Context, filter dbmodels.ServerGroupFilter) ([]dbmodels.ServerGroup, error) {
 	op := "failed to get server groups: %w"

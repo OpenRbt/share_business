@@ -31,10 +31,10 @@ func NewGetOrganizations(ctx *middleware.Context, handler GetOrganizationsHandle
 	return &GetOrganizations{Context: ctx, Handler: handler}
 }
 
-/*
-	GetOrganizations swagger:route GET /organizations organizations getOrganizations
+/* GetOrganizations swagger:route GET /organizations organizations getOrganizations
 
 GetOrganizations get organizations API
+
 */
 type GetOrganizations struct {
 	Context *middleware.Context

@@ -17,8 +17,7 @@ import (
 // AssignUserToOrganizationNoContentCode is the HTTP code returned for type AssignUserToOrganizationNoContent
 const AssignUserToOrganizationNoContentCode int = 204
 
-/*
-AssignUserToOrganizationNoContent OK
+/*AssignUserToOrganizationNoContent OK
 
 swagger:response assignUserToOrganizationNoContent
 */
@@ -41,8 +40,7 @@ func (o *AssignUserToOrganizationNoContent) WriteResponse(rw http.ResponseWriter
 
 func (o *AssignUserToOrganizationNoContent) AssignUserToOrganizationResponder() {}
 
-/*
-AssignUserToOrganizationDefault Generic error response
+/*AssignUserToOrganizationDefault Generic error response
 
 swagger:response assignUserToOrganizationDefault
 */

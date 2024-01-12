@@ -17,8 +17,7 @@ import (
 // UpdateServerGroupOKCode is the HTTP code returned for type UpdateServerGroupOK
 const UpdateServerGroupOKCode int = 200
 
-/*
-UpdateServerGroupOK Successfull updated
+/*UpdateServerGroupOK Successfull updated
 
 swagger:response updateServerGroupOK
 */
@@ -61,8 +60,7 @@ func (o *UpdateServerGroupOK) WriteResponse(rw http.ResponseWriter, producer run
 
 func (o *UpdateServerGroupOK) UpdateServerGroupResponder() {}
 
-/*
-UpdateServerGroupDefault Generic error response
+/*UpdateServerGroupDefault Generic error response
 
 swagger:response updateServerGroupDefault
 */

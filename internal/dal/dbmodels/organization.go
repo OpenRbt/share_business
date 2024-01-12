@@ -12,20 +12,19 @@ type (
 		Description                   string    `db:"description"`
 		UTCOffset                     int32     `db:"utc_offset"`
 		IsDefault                     bool      `db:"is_default"`
-		ProcessingDelayMinutes        string    `db:"processing_delay"`
+		ReportsProcessingDelayMinutes int64     `db:"processing_delay"`
 		BonusPercentage               int64     `db:"bonus_percentage"`
 		Deleted                       bool      `db:"deleted"`
 		Version                       int       `db:"version"`
-		ReportsProcessingDelayMinutes int64
 	}
 
 	OrganizationCreation struct {
-		Name                          string  `db:"name"`
-		DisplayName                   string  `db:"display_name"`
-		Description                   string  `db:"description"`
-		UTCOffset                     *int32  `db:"utc_offset"`
-		ReportsProcessingDelayMinutes *string `db:"processing_delay"`
-		BonusPercentage               *int64  `db:"bonus_percentage"`
+		Name                          string `db:"name"`
+		DisplayName                   string `db:"display_name"`
+		Description                   string `db:"description"`
+		UTCOffset                     *int32 `db:"utc_offset"`
+		ReportsProcessingDelayMinutes *int64 `db:"processing_delay"`
+		BonusPercentage               *int64 `db:"bonus_percentage"`
 	}
 
 	OrganizationUpdate struct {

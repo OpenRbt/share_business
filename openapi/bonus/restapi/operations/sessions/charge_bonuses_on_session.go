@@ -31,10 +31,10 @@ func NewChargeBonusesOnSession(ctx *middleware.Context, handler ChargeBonusesOnS
 	return &ChargeBonusesOnSession{Context: ctx, Handler: handler}
 }
 
-/*
-	ChargeBonusesOnSession swagger:route POST /sessions/{sessionId}/bonuses sessions chargeBonusesOnSession
+/* ChargeBonusesOnSession swagger:route POST /sessions/{sessionId}/bonuses sessions chargeBonusesOnSession
 
 ChargeBonusesOnSession charge bonuses on session API
+
 */
 type ChargeBonusesOnSession struct {
 	Context *middleware.Context

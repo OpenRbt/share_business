@@ -17,8 +17,7 @@ import (
 // GetWashServersOKCode is the HTTP code returned for type GetWashServersOK
 const GetWashServersOKCode int = 200
 
-/*
-GetWashServersOK OK
+/*GetWashServersOK OK
 
 swagger:response getWashServersOK
 */
@@ -64,8 +63,7 @@ func (o *GetWashServersOK) WriteResponse(rw http.ResponseWriter, producer runtim
 
 func (o *GetWashServersOK) GetWashServersResponder() {}
 
-/*
-GetWashServersDefault Generic error response
+/*GetWashServersDefault Generic error response
 
 swagger:response getWashServersDefault
 */

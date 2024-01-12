@@ -740,6 +740,13 @@ definitions:
         maximum: 840
       isDefault:
         type: boolean
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
 
   ServerGroupCreation:
     required: ["name", "description", "organizationId"]
@@ -757,6 +764,15 @@ definitions:
         minimum: -720
         maximum: 840
         x-nullable: true
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+        x-nullable: true
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
+        x-nullable: true
 
   ServerGroupUpdate:
     type: object
@@ -772,6 +788,15 @@ definitions:
         format: int32
         minimum: -720
         maximum: 840
+        x-nullable: true
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+        x-nullable: true
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
         x-nullable: true
   
   FirebaseUser:

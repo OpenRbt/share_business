@@ -31,10 +31,10 @@ func NewGetAdminApplicationByID(ctx *middleware.Context, handler GetAdminApplica
 	return &GetAdminApplicationByID{Context: ctx, Handler: handler}
 }
 
-/*
-	GetAdminApplicationByID swagger:route GET /users/applications/{id} applications getAdminApplicationById
+/* GetAdminApplicationByID swagger:route GET /users/applications/{id} applications getAdminApplicationById
 
 GetAdminApplicationByID get admin application by Id API
+
 */
 type GetAdminApplicationByID struct {
 	Context *middleware.Context

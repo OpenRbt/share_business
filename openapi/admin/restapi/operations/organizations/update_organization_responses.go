@@ -17,8 +17,7 @@ import (
 // UpdateOrganizationOKCode is the HTTP code returned for type UpdateOrganizationOK
 const UpdateOrganizationOKCode int = 200
 
-/*
-UpdateOrganizationOK Successfull updated
+/*UpdateOrganizationOK Successfull updated
 
 swagger:response updateOrganizationOK
 */
@@ -61,8 +60,7 @@ func (o *UpdateOrganizationOK) WriteResponse(rw http.ResponseWriter, producer ru
 
 func (o *UpdateOrganizationOK) UpdateOrganizationResponder() {}
 
-/*
-UpdateOrganizationDefault Generic error response
+/*UpdateOrganizationDefault Generic error response
 
 swagger:response updateOrganizationDefault
 */

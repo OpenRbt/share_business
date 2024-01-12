@@ -17,8 +17,7 @@ import (
 // ReviewAdminApplicationNoContentCode is the HTTP code returned for type ReviewAdminApplicationNoContent
 const ReviewAdminApplicationNoContentCode int = 204
 
-/*
-ReviewAdminApplicationNoContent OK
+/*ReviewAdminApplicationNoContent OK
 
 swagger:response reviewAdminApplicationNoContent
 */
@@ -41,8 +40,7 @@ func (o *ReviewAdminApplicationNoContent) WriteResponse(rw http.ResponseWriter, 
 
 func (o *ReviewAdminApplicationNoContent) ReviewAdminApplicationResponder() {}
 
-/*
-ReviewAdminApplicationDefault Generic error response
+/*ReviewAdminApplicationDefault Generic error response
 
 swagger:response reviewAdminApplicationDefault
 */
