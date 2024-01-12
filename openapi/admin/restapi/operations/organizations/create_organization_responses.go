@@ -17,8 +17,7 @@ import (
 // CreateOrganizationOKCode is the HTTP code returned for type CreateOrganizationOK
 const CreateOrganizationOKCode int = 200
 
-/*
-CreateOrganizationOK Successfull created
+/*CreateOrganizationOK Successfull created
 
 swagger:response createOrganizationOK
 */
@@ -61,8 +60,7 @@ func (o *CreateOrganizationOK) WriteResponse(rw http.ResponseWriter, producer ru
 
 func (o *CreateOrganizationOK) CreateOrganizationResponder() {}
 
-/*
-CreateOrganizationDefault Generic error response
+/*CreateOrganizationDefault Generic error response
 
 swagger:response createOrganizationDefault
 */

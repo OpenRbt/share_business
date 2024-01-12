@@ -17,8 +17,7 @@ import (
 // AssignUserToSessionNoContentCode is the HTTP code returned for type AssignUserToSessionNoContent
 const AssignUserToSessionNoContentCode int = 204
 
-/*
-AssignUserToSessionNoContent OK
+/*AssignUserToSessionNoContent OK
 
 swagger:response assignUserToSessionNoContent
 */
@@ -41,8 +40,7 @@ func (o *AssignUserToSessionNoContent) WriteResponse(rw http.ResponseWriter, pro
 
 func (o *AssignUserToSessionNoContent) AssignUserToSessionResponder() {}
 
-/*
-AssignUserToSessionDefault Generic error response
+/*AssignUserToSessionDefault Generic error response
 
 swagger:response assignUserToSessionDefault
 */

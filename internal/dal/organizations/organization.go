@@ -38,8 +38,6 @@ func (r *repo) Get(ctx context.Context, filter dbmodels.OrganizationFilter) ([]d
 		return nil, fmt.Errorf("failed to load organizations: %w", err)
 	}
 
-	dal.ConvertProcessingDelays(orgs)
-
 	return orgs, nil
 }
 
@@ -56,8 +54,6 @@ func (r *repo) GetAll(ctx context.Context, pagination dbmodels.Pagination) ([]db
 	if err != nil {
 		return nil, fmt.Errorf("failed to load organizations: %w", err)
 	}
-
-	dal.ConvertProcessingDelays(orgs)
 
 	return orgs, nil
 }
@@ -78,8 +74,6 @@ func (r *repo) GetById(ctx context.Context, id uuid.UUID) (dbmodels.Organization
 		return dbmodels.Organization{}, dbmodels.ErrNotFound
 	}
 
-	dal.ConvertProcessingDelay(&org)
-
 	return dbmodels.Organization{}, fmt.Errorf("failed to load organization: %w", err)
 }
 
@@ -98,8 +92,6 @@ func (r *repo) GetAnyByID(ctx context.Context, id uuid.UUID) (dbmodels.Organizat
 	if errors.Is(err, dbr.ErrNotFound) {
 		return dbmodels.Organization{}, dbmodels.ErrNotFound
 	}
-
-	dal.ConvertProcessingDelay(&org)
 
 	return dbmodels.Organization{}, fmt.Errorf("failed to load organization: %w", err)
 }
@@ -146,8 +138,6 @@ func (r *repo) Create(ctx context.Context, model dbmodels.OrganizationCreation) 
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
 
-	dal.ConvertProcessingDelay(&org)
-
 	_, err = tx.InsertInto("server_groups").
 		Columns("organization_id", "name", "description", "is_default").
 		Values(org.ID, "Default", fmt.Sprintf("Default server group for organization %s", org.DisplayName), true).
@@ -177,10 +167,6 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 	updateMap := dal.ConstructUpdateMap(model)
 	if len(updateMap) == 0 {
 		return dbmodels.Organization{}, dbmodels.ErrBadRequest
-	}
-
-	if model.ReportsProcessingDelayMinutes != nil {
-		updateMap["processing_delay"] = fmt.Sprintf("%d minutes", *model.ReportsProcessingDelayMinutes)
 	}
 
 	res, err := tx.Update("organizations").
@@ -214,8 +200,6 @@ func (r *repo) Update(ctx context.Context, id uuid.UUID, model dbmodels.Organiza
 	if err != nil {
 		return dbmodels.Organization{}, fmt.Errorf(op, err)
 	}
-
-	dal.ConvertProcessingDelay(&org)
 
 	err = dal.WriteAuditLog(ctx, tx, resource, id.String(), "update", model)
 	if err != nil {

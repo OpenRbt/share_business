@@ -38,10 +38,10 @@ func NewUpdateAdminUserRole(ctx *middleware.Context, handler UpdateAdminUserRole
 	return &UpdateAdminUserRole{Context: ctx, Handler: handler}
 }
 
-/*
-	UpdateAdminUserRole swagger:route PATCH /users/{userId} users updateAdminUserRole
+/* UpdateAdminUserRole swagger:route PATCH /users/{userId} users updateAdminUserRole
 
 UpdateAdminUserRole update admin user role API
+
 */
 type UpdateAdminUserRole struct {
 	Context *middleware.Context
@@ -126,8 +126,6 @@ func (o *UpdateAdminUserRoleBody) validateRole(formats strfmt.Registry) error {
 	if err := o.Role.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
 			return ve.ValidateName("body" + "." + "role")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("body" + "." + "role")
 		}
 		return err
 	}
@@ -151,15 +149,9 @@ func (o *UpdateAdminUserRoleBody) ContextValidate(ctx context.Context, formats s
 
 func (o *UpdateAdminUserRoleBody) contextValidateRole(ctx context.Context, formats strfmt.Registry) error {
 
-	if swag.IsZero(o.Role) { // not required
-		return nil
-	}
-
 	if err := o.Role.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
 			return ve.ValidateName("body" + "." + "role")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("body" + "." + "role")
 		}
 		return err
 	}

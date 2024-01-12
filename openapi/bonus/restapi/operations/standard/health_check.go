@@ -36,10 +36,10 @@ func NewHealthCheck(ctx *middleware.Context, handler HealthCheckHandler) *Health
 	return &HealthCheck{Context: ctx, Handler: handler}
 }
 
-/*
-	HealthCheck swagger:route GET /healthCheck Standard healthCheck
+/* HealthCheck swagger:route GET /healthCheck Standard healthCheck
 
 HealthCheck health check API
+
 */
 type HealthCheck struct {
 	Context *middleware.Context

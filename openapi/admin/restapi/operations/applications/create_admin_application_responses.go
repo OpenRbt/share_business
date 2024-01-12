@@ -17,8 +17,7 @@ import (
 // CreateAdminApplicationOKCode is the HTTP code returned for type CreateAdminApplicationOK
 const CreateAdminApplicationOKCode int = 200
 
-/*
-CreateAdminApplicationOK OK
+/*CreateAdminApplicationOK OK
 
 swagger:response createAdminApplicationOK
 */
@@ -61,8 +60,7 @@ func (o *CreateAdminApplicationOK) WriteResponse(rw http.ResponseWriter, produce
 
 func (o *CreateAdminApplicationOK) CreateAdminApplicationResponder() {}
 
-/*
-CreateAdminApplicationDefault Generic error response
+/*CreateAdminApplicationDefault Generic error response
 
 swagger:response createAdminApplicationDefault
 */

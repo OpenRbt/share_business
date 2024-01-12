@@ -31,10 +31,10 @@ func NewGetOrganizationByID(ctx *middleware.Context, handler GetOrganizationByID
 	return &GetOrganizationByID{Context: ctx, Handler: handler}
 }
 
-/*
-	GetOrganizationByID swagger:route GET /organizations/{organizationId} organizations getOrganizationById
+/* GetOrganizationByID swagger:route GET /organizations/{organizationId} organizations getOrganizationById
 
 GetOrganizationByID get organization by Id API
+
 */
 type GetOrganizationByID struct {
 	Context *middleware.Context

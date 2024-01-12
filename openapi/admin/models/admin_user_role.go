@@ -20,12 +20,8 @@ import (
 type AdminUserRole string
 
 func NewAdminUserRole(value AdminUserRole) *AdminUserRole {
-	return &value
-}
-
-// Pointer returns a pointer to a freshly-allocated AdminUserRole.
-func (m AdminUserRole) Pointer() *AdminUserRole {
-	return &m
+	v := value
+	return &v
 }
 
 const (

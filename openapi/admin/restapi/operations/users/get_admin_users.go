@@ -31,10 +31,10 @@ func NewGetAdminUsers(ctx *middleware.Context, handler GetAdminUsersHandler) *Ge
 	return &GetAdminUsers{Context: ctx, Handler: handler}
 }
 
-/*
-	GetAdminUsers swagger:route GET /users users getAdminUsers
+/* GetAdminUsers swagger:route GET /users users getAdminUsers
 
 GetAdminUsers get admin users API
+
 */
 type GetAdminUsers struct {
 	Context *middleware.Context

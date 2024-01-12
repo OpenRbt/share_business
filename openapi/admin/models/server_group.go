@@ -21,6 +21,11 @@ import (
 // swagger:model ServerGroup
 type ServerGroup struct {
 
+	// bonus percentage
+	// Maximum: 100
+	// Minimum: 0
+	BonusPercentage *int64 `json:"bonusPercentage,omitempty"`
+
 	// description
 	Description string `json:"description,omitempty"`
 
@@ -38,6 +43,10 @@ type ServerGroup struct {
 	// Format: uuid
 	OrganizationID strfmt.UUID `json:"organizationId,omitempty"`
 
+	// reports processing delay minutes
+	// Minimum: 0
+	ReportsProcessingDelayMinutes *int64 `json:"reportsProcessingDelayMinutes,omitempty"`
+
 	// utc offset
 	// Maximum: 840
 	// Minimum: -720
@@ -47,6 +56,11 @@ type ServerGroup struct {
 // UnmarshalJSON unmarshals this object while disallowing additional properties from JSON
 func (m *ServerGroup) UnmarshalJSON(data []byte) error {
 	var props struct {
+
+		// bonus percentage
+		// Maximum: 100
+		// Minimum: 0
+		BonusPercentage *int64 `json:"bonusPercentage,omitempty"`
 
 		// description
 		Description string `json:"description,omitempty"`
@@ -65,6 +79,10 @@ func (m *ServerGroup) UnmarshalJSON(data []byte) error {
 		// Format: uuid
 		OrganizationID strfmt.UUID `json:"organizationId,omitempty"`
 
+		// reports processing delay minutes
+		// Minimum: 0
+		ReportsProcessingDelayMinutes *int64 `json:"reportsProcessingDelayMinutes,omitempty"`
+
 		// utc offset
 		// Maximum: 840
 		// Minimum: -720
@@ -77,11 +95,13 @@ func (m *ServerGroup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	m.BonusPercentage = props.BonusPercentage
 	m.Description = props.Description
 	m.ID = props.ID
 	m.IsDefault = props.IsDefault
 	m.Name = props.Name
 	m.OrganizationID = props.OrganizationID
+	m.ReportsProcessingDelayMinutes = props.ReportsProcessingDelayMinutes
 	m.UtcOffset = props.UtcOffset
 	return nil
 }
@@ -90,11 +110,19 @@ func (m *ServerGroup) UnmarshalJSON(data []byte) error {
 func (m *ServerGroup) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateBonusPercentage(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateID(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateOrganizationID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateReportsProcessingDelayMinutes(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -105,6 +133,22 @@ func (m *ServerGroup) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *ServerGroup) validateBonusPercentage(formats strfmt.Registry) error {
+	if swag.IsZero(m.BonusPercentage) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("bonusPercentage", "body", *m.BonusPercentage, 0, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumInt("bonusPercentage", "body", *m.BonusPercentage, 100, false); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -126,6 +170,18 @@ func (m *ServerGroup) validateOrganizationID(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("organizationId", "body", "uuid", m.OrganizationID.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ServerGroup) validateReportsProcessingDelayMinutes(formats strfmt.Registry) error {
+	if swag.IsZero(m.ReportsProcessingDelayMinutes) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("reportsProcessingDelayMinutes", "body", *m.ReportsProcessingDelayMinutes, 0, false); err != nil {
 		return err
 	}
 
