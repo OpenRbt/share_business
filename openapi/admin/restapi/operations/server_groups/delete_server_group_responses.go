@@ -17,8 +17,7 @@ import (
 // DeleteServerGroupNoContentCode is the HTTP code returned for type DeleteServerGroupNoContent
 const DeleteServerGroupNoContentCode int = 204
 
-/*
-DeleteServerGroupNoContent OK
+/*DeleteServerGroupNoContent OK
 
 swagger:response deleteServerGroupNoContent
 */
@@ -41,8 +40,7 @@ func (o *DeleteServerGroupNoContent) WriteResponse(rw http.ResponseWriter, produ
 
 func (o *DeleteServerGroupNoContent) DeleteServerGroupResponder() {}
 
-/*
-DeleteServerGroupDefault Generic error response
+/*DeleteServerGroupDefault Generic error response
 
 swagger:response deleteServerGroupDefault
 */

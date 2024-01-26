@@ -18,6 +18,19 @@ type errorSetter interface {
 	SetStatusCode(code int)
 }
 
+func errorStatusCode(err error) int {
+	switch err {
+	case entities.ErrBadRequest:
+		return http.StatusBadRequest
+	case entities.ErrForbidden:
+		return http.StatusForbidden
+	case entities.ErrNotFound:
+		return http.StatusNotFound
+	}
+
+	return http.StatusInternalServerError
+}
+
 var errorMapping = map[error]int{
 	entities.ErrBadRequest: http.StatusBadRequest,
 	entities.ErrForbidden:  http.StatusForbidden,

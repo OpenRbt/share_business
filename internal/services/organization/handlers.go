@@ -11,8 +11,17 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func (s *organizationService) Get(ctx context.Context, userID string, filter entities.OrganizationFilter) ([]entities.Organization, error) {
-	orgs, err := s.organizationRepo.Get(ctx, userID, conversions.OrganizationFilterToDB(filter))
+func (s *organizationService) Get(ctx context.Context, filter entities.OrganizationFilter) ([]entities.Organization, error) {
+	orgs, err := s.organizationRepo.Get(ctx, conversions.OrganizationFilterToDB(filter))
+	if err != nil {
+		return nil, err
+	}
+
+	return conversions.OrganizationsFromDB(orgs), nil
+}
+
+func (s *organizationService) GetAll(ctx context.Context, pagination entities.Pagination) ([]entities.Organization, error) {
+	orgs, err := s.organizationRepo.GetAll(ctx, conversions.PaginationToDB(pagination))
 	if err != nil {
 		return nil, err
 	}
@@ -112,12 +121,7 @@ func (s *organizationService) AssignManager(ctx context.Context, organizationID 
 		return entities.ErrBadRequest
 	}
 
-	err = s.organizationRepo.AssignManager(ctx, organizationID, userID)
-	if errors.Is(err, dbmodels.ErrAlreadyExists) {
-		return entities.ErrBadRequest
-	}
-
-	return err
+	return s.organizationRepo.AssignManager(ctx, organizationID, userID)
 }
 
 func (s *organizationService) RemoveManager(ctx context.Context, organizationID uuid.UUID, userID string) error {
@@ -150,4 +154,38 @@ func (s *organizationService) RemoveManager(ctx context.Context, organizationID 
 	}
 
 	return err
+}
+
+func (s *organizationService) GetDefaultGroupByOrganizationId(ctx context.Context, id uuid.UUID) (entities.ServerGroup, error) {
+	group, err := s.organizationRepo.GetDefaultGroupByOrganizationId(ctx, id)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			err = entities.ErrNotFound
+		}
+
+		return entities.ServerGroup{}, err
+	}
+
+	return conversions.ServerGroupFromDB(group), nil
+}
+
+func (s *organizationService) GetAdminUsersByOrganizationID(ctx context.Context, id uuid.UUID) ([]entities.AdminUser, error) {
+	users, err := s.organizationRepo.GetAdminUsersByOrganizationID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return conversions.AdminUsersFromDb(users), nil
+}
+
+func (s *organizationService) GetAnyByID(ctx context.Context, id uuid.UUID) (entities.Organization, error) {
+	org, err := s.organizationRepo.GetAnyByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			err = entities.ErrNotFound
+		}
+		return entities.Organization{}, err
+	}
+
+	return conversions.OrganizationFromDB(org), nil
 }

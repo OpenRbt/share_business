@@ -10,16 +10,19 @@ type (
 		Name                          string
 		DisplayName                   string
 		Description                   string
+		UTCOffset                     int32
 		IsDefault                     bool
 		ReportsProcessingDelayMinutes int64
 		BonusPercentage               int64
 		Deleted                       bool
+		Version                       int
 	}
 
 	OrganizationCreation struct {
 		Name                          string
 		DisplayName                   string
 		Description                   string
+		UTCOffset                     *int32
 		ReportsProcessingDelayMinutes *int64
 		BonusPercentage               *int64
 	}
@@ -28,6 +31,7 @@ type (
 		Name                          *string
 		DisplayName                   *string
 		Description                   *string
+		UTCOffset                     *int32
 		ReportsProcessingDelayMinutes *int64
 		BonusPercentage               *int64
 	}

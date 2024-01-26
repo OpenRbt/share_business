@@ -648,6 +648,11 @@ definitions:
         type: string
       description:
         type: string
+      utcOffset:
+        type: integer
+        format: int32
+        minimum: -720
+        maximum: 840
       displayName:
         type: string
       isDefault:
@@ -668,6 +673,12 @@ definitions:
         type: string
       displayName:
         type: string
+      utcOffset:
+        type: integer
+        format: int32
+        minimum: -720
+        maximum: 840
+        x-nullable: true
       reportsProcessingDelayMinutes:
         type: integer
         minimum: 0
@@ -693,6 +704,12 @@ definitions:
       displayName:
         type: string
         x-nullable: true
+      utcOffset:
+        type: integer
+        format: int32
+        minimum: -720
+        maximum: 840
+        x-nullable: true
       reportsProcessingDelayMinutes:
         type: integer
         minimum: 0
@@ -709,26 +726,53 @@ definitions:
       id:
         type: string
         format: uuid
+      organizationId:
+        type: string
+        format: uuid
       name:
         type: string
       description:
         type: string
-      organizationId:
-        type: string
-        format: uuid
+      utcOffset:
+        type: integer
+        format: int32
+        minimum: -720
+        maximum: 840
       isDefault:
         type: boolean
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
 
   ServerGroupCreation:
     required: ["name", "description", "organizationId"]
     properties:
+      organizationId:
+        type: string
+        format: uuid
       name:
         type: string
       description:
         type: string
-      organizationId:
-        type: string
-        format: uuid
+      utcOffset:
+        type: integer
+        format: int32
+        minimum: -720
+        maximum: 840
+        x-nullable: true
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+        x-nullable: true
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
+        x-nullable: true
 
   ServerGroupUpdate:
     type: object
@@ -738,6 +782,21 @@ definitions:
         x-nullable: true
       description:
         type: string
+        x-nullable: true
+      utcOffset:
+        type: integer
+        format: int32
+        minimum: -720
+        maximum: 840
+        x-nullable: true
+      reportsProcessingDelayMinutes:
+        type: integer
+        minimum: 0
+        x-nullable: true
+      bonusPercentage:
+        type: integer
+        minimum: 0
+        maximum: 100
         x-nullable: true
   
   FirebaseUser:

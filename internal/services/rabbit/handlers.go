@@ -4,15 +4,14 @@ import (
 	"context"
 	"washbonus/internal/entities"
 	"washbonus/internal/entities/vo"
-	"washbonus/internal/infrastructure/rabbit/entities/session"
-	rabbitVo "washbonus/internal/infrastructure/rabbit/entities/vo"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 )
 
-func (s *rabbitService) CreatePool(ctx context.Context, serverID uuid.UUID, postId int64, amount int64) (session.PostSessions, error) {
-	sessions := session.PostSessions{
+func (s *rabbitService) CreatePool(ctx context.Context, serverID uuid.UUID, postId int64, amount int64) (rabbitEntities.PostSessions, error) {
+	sessions := rabbitEntities.PostSessions{
 		NewSessions: make([]string, amount),
 		PostID:      postId,
 	}
@@ -30,7 +29,7 @@ func (s *rabbitService) CreatePool(ctx context.Context, serverID uuid.UUID, post
 	return sessions, nil
 }
 
-func (s *rabbitService) UpdateState(ctx context.Context, sessionID uuid.UUID, state rabbitVo.SessionState) error {
+func (s *rabbitService) UpdateState(ctx context.Context, sessionID uuid.UUID, state rabbitEntities.SessionState) error {
 	return s.sessionSvc.UpdateSessionState(ctx, sessionID, vo.SessionState(state))
 }
 

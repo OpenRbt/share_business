@@ -1,4 +1,4 @@
-package session
+package rabbitEntities
 
 type BonusCharge struct {
 	SessionID string `json:"session_id,omitempty"`

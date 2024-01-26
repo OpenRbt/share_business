@@ -3,12 +3,12 @@ package conversions
 import (
 	"washbonus/internal/dal/dbmodels"
 	"washbonus/internal/entities"
-	"washbonus/internal/infrastructure/rabbit/entities/session"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 
 	uuid "github.com/satori/go.uuid"
 )
 
-func MoneyReportFromRabbit(r session.MoneyReport) (e entities.MoneyReport, err error) {
+func MoneyReportFromRabbit(r rabbitEntities.MoneyReport) (e entities.MoneyReport, err error) {
 	sessionID, err := uuid.FromString(r.SessionID)
 	if err != nil {
 		return

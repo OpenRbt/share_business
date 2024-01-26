@@ -20,6 +20,15 @@ func (s *adminService) Get(ctx context.Context, filter entities.AdminUserFilter)
 	return conversions.AdminUsersFromDb(usersFromDB), nil
 }
 
+func (s *adminService) GetAll(ctx context.Context, pagination entities.Pagination) ([]entities.AdminUser, error) {
+	usersFromDB, err := s.adminRepo.GetAll(ctx, conversions.PaginationToDB(pagination))
+	if err != nil {
+		return nil, err
+	}
+
+	return conversions.AdminUsersFromDb(usersFromDB), nil
+}
+
 func (s *adminService) GetById(ctx context.Context, userID string) (entities.AdminUser, error) {
 	userFromDB, err := s.adminRepo.GetById(ctx, userID)
 	if err != nil {

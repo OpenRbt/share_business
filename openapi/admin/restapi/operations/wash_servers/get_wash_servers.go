@@ -31,10 +31,10 @@ func NewGetWashServers(ctx *middleware.Context, handler GetWashServersHandler) *
 	return &GetWashServers{Context: ctx, Handler: handler}
 }
 
-/*
-	GetWashServers swagger:route GET /wash-servers/ washServers getWashServers
+/* GetWashServers swagger:route GET /wash-servers/ washServers getWashServers
 
 GetWashServers get wash servers API
+
 */
 type GetWashServers struct {
 	Context *middleware.Context

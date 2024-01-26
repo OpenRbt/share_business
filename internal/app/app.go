@@ -12,9 +12,7 @@ type (
 
 type (
 	Auth struct {
-		User         entities.User
-		UserMetadata *AuthUserMeta
-		Disabled     bool
+		User entities.User
 	}
 
 	AdminAuth struct {

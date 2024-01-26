@@ -19,6 +19,15 @@ func (s *serverGroupService) Get(ctx context.Context, filter entities.ServerGrou
 	return conversions.ServerGroupsFromDB(groups), nil
 }
 
+func (s *serverGroupService) GetAll(ctx context.Context, pagination entities.Pagination) ([]entities.ServerGroup, error) {
+	groups, err := s.groupRepo.GetAll(ctx, conversions.PaginationToDB(pagination))
+	if err != nil {
+		return nil, err
+	}
+
+	return conversions.ServerGroupsFromDB(groups), nil
+}
+
 func (s *serverGroupService) GetById(ctx context.Context, id uuid.UUID) (entities.ServerGroup, error) {
 	group, err := s.groupRepo.GetById(ctx, id)
 	if err != nil {
@@ -82,4 +91,16 @@ func (s *serverGroupService) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return err
+}
+
+func (s *serverGroupService) GetAnyById(ctx context.Context, id uuid.UUID) (entities.ServerGroup, error) {
+	group, err := s.groupRepo.GetAnyById(ctx, id)
+	if err != nil {
+		if errors.Is(err, dbmodels.ErrNotFound) {
+			return entities.ServerGroup{}, entities.ErrNotFound
+		}
+		return entities.ServerGroup{}, err
+	}
+
+	return conversions.ServerGroupFromDB(group), nil
 }

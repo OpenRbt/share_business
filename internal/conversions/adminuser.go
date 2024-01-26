@@ -3,6 +3,7 @@ package conversions
 import (
 	"washbonus/internal/dal/dbmodels"
 	"washbonus/internal/entities"
+	rabbitEntities "washbonus/internal/infrastructure/rabbit/entities"
 	"washbonus/openapi/admin/models"
 
 	"github.com/go-openapi/strfmt"
@@ -26,6 +27,7 @@ func AdminUserFromDb(dbUser dbmodels.AdminUser) entities.AdminUser {
 		Email:        dbUser.Email,
 		Role:         RoleSelectionApp(dbUser.Role),
 		Organization: org,
+		Version:      dbUser.Version,
 	}
 }
 
@@ -41,16 +43,10 @@ func AdminUsersFromDb(dbUsers []dbmodels.AdminUser) []entities.AdminUser {
 
 func AdminUserToRest(user entities.AdminUser) models.AdminUser {
 	mod := models.AdminUser{
-		ID:   user.ID,
-		Role: models.AdminUserRole(user.Role),
-	}
-
-	if user.Email != nil {
-		mod.Email = strfmt.Email(*user.Email)
-	}
-
-	if user.Name != nil {
-		mod.Name = *user.Name
+		ID:    user.ID,
+		Role:  models.AdminUserRole(user.Role),
+		Name:  user.Name,
+		Email: strfmt.Email(user.Email),
 	}
 
 	if user.Organization != nil {
@@ -148,6 +144,33 @@ func AdminUserFilterToDB(filter entities.AdminUserFilter) dbmodels.AdminUserFilt
 	dbFilter.Role = &r
 
 	return dbFilter
+}
+
+func AdminUserToRabbit(user entities.AdminUser) rabbitEntities.AdminUser {
+	ent := rabbitEntities.AdminUser{
+		ID:      user.ID,
+		Name:    user.Name,
+		Email:   user.Email,
+		Role:    string(RoleSelectionDB(user.Role)),
+		Version: user.Version,
+	}
+
+	if user.Organization != nil {
+		orgID := user.Organization.ID.String()
+		ent.OrganizationID = &orgID
+	}
+
+	return ent
+}
+
+func AdminUsersToRabbit(users []entities.AdminUser) []rabbitEntities.AdminUser {
+	res := make([]rabbitEntities.AdminUser, len(users))
+
+	for idx, user := range users {
+		res[idx] = AdminUserToRabbit(user)
+	}
+
+	return res
 }
 
 func RoleSelectionRest(role models.AdminUserRole) (entities.Role, error) {
