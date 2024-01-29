@@ -108,7 +108,7 @@ func (r *serverGroupRepo) Create(ctx context.Context, model dbmodels.ServerGroup
 
 	var groupID uuid.UUID
 	err = tx.InsertInto("server_groups").
-		Columns("name", "description", "utc_offset", "organization_id", "is_default").
+		Columns("organization_id", "name", "description", "utc_offset", "processing_delay", "bonus_percentage", "is_default").
 		Record(model).
 		Returning("id").
 		LoadContext(ctx, &groupID)
