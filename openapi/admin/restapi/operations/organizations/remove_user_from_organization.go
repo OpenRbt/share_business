@@ -31,10 +31,10 @@ func NewRemoveUserFromOrganization(ctx *middleware.Context, handler RemoveUserFr
 	return &RemoveUserFromOrganization{Context: ctx, Handler: handler}
 }
 
-/* RemoveUserFromOrganization swagger:route DELETE /organizations/{organizationId}/users/{userId} organizations removeUserFromOrganization
+/*
+	RemoveUserFromOrganization swagger:route DELETE /organizations/{organizationId}/users/{userId} organizations removeUserFromOrganization
 
 RemoveUserFromOrganization remove user from organization API
-
 */
 type RemoveUserFromOrganization struct {
 	Context *middleware.Context

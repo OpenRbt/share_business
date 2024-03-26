@@ -17,7 +17,8 @@ import (
 // GetAdminUserByIDOKCode is the HTTP code returned for type GetAdminUserByIDOK
 const GetAdminUserByIDOKCode int = 200
 
-/*GetAdminUserByIDOK OK
+/*
+GetAdminUserByIDOK OK
 
 swagger:response getAdminUserByIdOK
 */
@@ -60,7 +61,8 @@ func (o *GetAdminUserByIDOK) WriteResponse(rw http.ResponseWriter, producer runt
 
 func (o *GetAdminUserByIDOK) GetAdminUserByIDResponder() {}
 
-/*GetAdminUserByIDDefault Generic error response
+/*
+GetAdminUserByIDDefault Generic error response
 
 swagger:response getAdminUserByIdDefault
 */

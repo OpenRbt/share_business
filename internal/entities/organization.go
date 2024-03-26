@@ -5,6 +5,12 @@ import (
 )
 
 type (
+	SimleOrganization struct {
+		ID      uuid.UUID
+		Name    string
+		Deleted bool
+	}
+
 	Organization struct {
 		ID                            uuid.UUID
 		Name                          string

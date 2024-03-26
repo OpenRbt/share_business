@@ -31,10 +31,10 @@ func NewAssignUserToSession(ctx *middleware.Context, handler AssignUserToSession
 	return &AssignUserToSession{Context: ctx, Handler: handler}
 }
 
-/* AssignUserToSession swagger:route POST /sessions/{sessionId}/assign-user sessions assignUserToSession
+/*
+	AssignUserToSession swagger:route POST /sessions/{sessionId}/assign-user sessions assignUserToSession
 
 AssignUserToSession assign user to session API
-
 */
 type AssignUserToSession struct {
 	Context *middleware.Context

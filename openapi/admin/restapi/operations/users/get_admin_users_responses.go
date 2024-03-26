@@ -17,7 +17,8 @@ import (
 // GetAdminUsersOKCode is the HTTP code returned for type GetAdminUsersOK
 const GetAdminUsersOKCode int = 200
 
-/*GetAdminUsersOK OK
+/*
+GetAdminUsersOK OK
 
 swagger:response getAdminUsersOK
 */
@@ -63,7 +64,8 @@ func (o *GetAdminUsersOK) WriteResponse(rw http.ResponseWriter, producer runtime
 
 func (o *GetAdminUsersOK) GetAdminUsersResponder() {}
 
-/*GetAdminUsersDefault Generic error response
+/*
+GetAdminUsersDefault Generic error response
 
 swagger:response getAdminUsersDefault
 */

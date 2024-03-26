@@ -17,7 +17,8 @@ import (
 // GetWalletsOKCode is the HTTP code returned for type GetWalletsOK
 const GetWalletsOKCode int = 200
 
-/*GetWalletsOK OK
+/*
+GetWalletsOK OK
 
 swagger:response getWalletsOK
 */
@@ -63,7 +64,8 @@ func (o *GetWalletsOK) WriteResponse(rw http.ResponseWriter, producer runtime.Pr
 
 func (o *GetWalletsOK) GetWalletsResponder() {}
 
-/*GetWalletsDefault Generic error response
+/*
+GetWalletsDefault Generic error response
 
 swagger:response getWalletsDefault
 */

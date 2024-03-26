@@ -17,7 +17,8 @@ import (
 // GetOrganizationByIDOKCode is the HTTP code returned for type GetOrganizationByIDOK
 const GetOrganizationByIDOKCode int = 200
 
-/*GetOrganizationByIDOK OK
+/*
+GetOrganizationByIDOK OK
 
 swagger:response getOrganizationByIdOK
 */
@@ -60,7 +61,8 @@ func (o *GetOrganizationByIDOK) WriteResponse(rw http.ResponseWriter, producer r
 
 func (o *GetOrganizationByIDOK) GetOrganizationByIDResponder() {}
 
-/*GetOrganizationByIDDefault Generic error response
+/*
+GetOrganizationByIDDefault Generic error response
 
 swagger:response getOrganizationByIdDefault
 */

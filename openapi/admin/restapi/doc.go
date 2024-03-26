@@ -2,18 +2,18 @@
 
 // Package restapi wash-admin
 //
-//  Admin service for self-service car washes
-//  Schemes:
-//    http
-//  Host: localhost
-//  BasePath: /admin
-//  Version: 1.0.0
+//	Admin service for self-service car washes
+//	Schemes:
+//	  http
+//	Host: localhost
+//	BasePath: /admin
+//	Version: 1.0.0
 //
-//  Consumes:
-//    - application/json
+//	Consumes:
+//	  - application/json
 //
-//  Produces:
-//    - application/json
+//	Produces:
+//	  - application/json
 //
 // swagger:meta
 package restapi

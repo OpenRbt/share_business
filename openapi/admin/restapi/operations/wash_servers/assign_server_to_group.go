@@ -31,10 +31,10 @@ func NewAssignServerToGroup(ctx *middleware.Context, handler AssignServerToGroup
 	return &AssignServerToGroup{Context: ctx, Handler: handler}
 }
 
-/* AssignServerToGroup swagger:route POST /server-groups/{groupId}/wash-servers/{serverId} washServers serverGroup assignServerToGroup
+/*
+	AssignServerToGroup swagger:route POST /server-groups/{groupId}/wash-servers/{serverId} washServers serverGroup assignServerToGroup
 
 AssignServerToGroup assign server to group API
-
 */
 type AssignServerToGroup struct {
 	Context *middleware.Context
