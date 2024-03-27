@@ -31,10 +31,10 @@ func NewGetWallets(ctx *middleware.Context, handler GetWalletsHandler) *GetWalle
 	return &GetWallets{Context: ctx, Handler: handler}
 }
 
-/* GetWallets swagger:route GET /wallets wallets getWallets
+/*
+	GetWallets swagger:route GET /wallets wallets getWallets
 
 GetWallets get wallets API
-
 */
 type GetWallets struct {
 	Context *middleware.Context

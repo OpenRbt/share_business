@@ -17,7 +17,8 @@ import (
 // CreateWashServerOKCode is the HTTP code returned for type CreateWashServerOK
 const CreateWashServerOKCode int = 200
 
-/*CreateWashServerOK Success creation
+/*
+CreateWashServerOK Success creation
 
 swagger:response createWashServerOK
 */
@@ -60,7 +61,8 @@ func (o *CreateWashServerOK) WriteResponse(rw http.ResponseWriter, producer runt
 
 func (o *CreateWashServerOK) CreateWashServerResponder() {}
 
-/*CreateWashServerDefault Generic error response
+/*
+CreateWashServerDefault Generic error response
 
 swagger:response createWashServerDefault
 */

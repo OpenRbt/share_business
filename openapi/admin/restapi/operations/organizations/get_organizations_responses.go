@@ -17,7 +17,8 @@ import (
 // GetOrganizationsOKCode is the HTTP code returned for type GetOrganizationsOK
 const GetOrganizationsOKCode int = 200
 
-/*GetOrganizationsOK OK
+/*
+GetOrganizationsOK OK
 
 swagger:response getOrganizationsOK
 */
@@ -63,7 +64,8 @@ func (o *GetOrganizationsOK) WriteResponse(rw http.ResponseWriter, producer runt
 
 func (o *GetOrganizationsOK) GetOrganizationsResponder() {}
 
-/*GetOrganizationsDefault Generic error response
+/*
+GetOrganizationsDefault Generic error response
 
 swagger:response getOrganizationsDefault
 */

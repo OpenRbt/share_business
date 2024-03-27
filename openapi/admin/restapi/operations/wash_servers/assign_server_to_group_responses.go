@@ -17,7 +17,8 @@ import (
 // AssignServerToGroupNoContentCode is the HTTP code returned for type AssignServerToGroupNoContent
 const AssignServerToGroupNoContentCode int = 204
 
-/*AssignServerToGroupNoContent OK
+/*
+AssignServerToGroupNoContent OK
 
 swagger:response assignServerToGroupNoContent
 */
@@ -40,7 +41,8 @@ func (o *AssignServerToGroupNoContent) WriteResponse(rw http.ResponseWriter, pro
 
 func (o *AssignServerToGroupNoContent) AssignServerToGroupResponder() {}
 
-/*AssignServerToGroupDefault Generic error response
+/*
+AssignServerToGroupDefault Generic error response
 
 swagger:response assignServerToGroupDefault
 */

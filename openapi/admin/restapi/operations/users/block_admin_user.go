@@ -31,10 +31,10 @@ func NewBlockAdminUser(ctx *middleware.Context, handler BlockAdminUserHandler) *
 	return &BlockAdminUser{Context: ctx, Handler: handler}
 }
 
-/* BlockAdminUser swagger:route DELETE /users/{userId} users blockAdminUser
+/*
+	BlockAdminUser swagger:route DELETE /users/{userId} users blockAdminUser
 
 BlockAdminUser block admin user API
-
 */
 type BlockAdminUser struct {
 	Context *middleware.Context

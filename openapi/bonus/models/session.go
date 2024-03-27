@@ -79,6 +79,8 @@ func (m *Session) validateWashServer(formats strfmt.Registry) error {
 		if err := m.WashServer.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("washServer")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("washServer")
 			}
 			return err
 		}
@@ -104,9 +106,16 @@ func (m *Session) ContextValidate(ctx context.Context, formats strfmt.Registry) 
 func (m *Session) contextValidateWashServer(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.WashServer != nil {
+
+		if swag.IsZero(m.WashServer) { // not required
+			return nil
+		}
+
 		if err := m.WashServer.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("washServer")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("washServer")
 			}
 			return err
 		}
