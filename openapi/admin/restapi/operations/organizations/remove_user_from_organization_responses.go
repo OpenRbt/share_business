@@ -17,7 +17,8 @@ import (
 // RemoveUserFromOrganizationNoContentCode is the HTTP code returned for type RemoveUserFromOrganizationNoContent
 const RemoveUserFromOrganizationNoContentCode int = 204
 
-/*RemoveUserFromOrganizationNoContent OK
+/*
+RemoveUserFromOrganizationNoContent OK
 
 swagger:response removeUserFromOrganizationNoContent
 */
@@ -40,7 +41,8 @@ func (o *RemoveUserFromOrganizationNoContent) WriteResponse(rw http.ResponseWrit
 
 func (o *RemoveUserFromOrganizationNoContent) RemoveUserFromOrganizationResponder() {}
 
-/*RemoveUserFromOrganizationDefault Generic error response
+/*
+RemoveUserFromOrganizationDefault Generic error response
 
 swagger:response removeUserFromOrganizationDefault
 */

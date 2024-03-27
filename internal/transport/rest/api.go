@@ -40,6 +40,7 @@ type service struct {
 	orgCtrl         app.OrganizationController
 	serverGroupCtrl app.ServerGroupController
 	walletCtrl      app.WalletController
+	bonusReportCtrl app.BonusReportController
 }
 
 func NewServer(l *zap.SugaredLogger, cfg *config.Config, firebase app.FirebaseService, ctrls app.Controllers) (*bonus.Server, error) {
@@ -54,6 +55,7 @@ func NewServer(l *zap.SugaredLogger, cfg *config.Config, firebase app.FirebaseSe
 		orgCtrl:         ctrls.Org,
 		serverGroupCtrl: ctrls.Group,
 		walletCtrl:      ctrls.Wallet,
+		bonusReportCtrl: ctrls.BonusReport,
 	}
 
 	// Load Bonus Swagger Definition
@@ -82,6 +84,7 @@ func NewServer(l *zap.SugaredLogger, cfg *config.Config, firebase app.FirebaseSe
 	svc.initAdminUserHandlers(adminAPI)
 	svc.initOrganizationsHandlers(adminAPI)
 	svc.initServerGroupHandlers(adminAPI)
+	svc.initBonusReportHandlers(adminAPI)
 	svc.initSessionHandlers(bonusAPI)
 	svc.initWalletHandlers(bonusAPI)
 	svc.initWashServerHandlers(adminAPI)

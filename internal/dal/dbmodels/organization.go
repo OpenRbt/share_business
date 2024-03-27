@@ -5,6 +5,12 @@ import (
 )
 
 type (
+	SimleOrganization struct {
+		ID      uuid.UUID `db:"org_id"`
+		Name    string    `db:"org_name"`
+		Deleted bool      `db:"org_deleted"`
+	}
+
 	Organization struct {
 		ID                            uuid.UUID `db:"id"`
 		Name                          string    `db:"name"`

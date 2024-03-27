@@ -17,7 +17,8 @@ import (
 // GetServerGroupsOKCode is the HTTP code returned for type GetServerGroupsOK
 const GetServerGroupsOKCode int = 200
 
-/*GetServerGroupsOK OK
+/*
+GetServerGroupsOK OK
 
 swagger:response getServerGroupsOK
 */
@@ -63,7 +64,8 @@ func (o *GetServerGroupsOK) WriteResponse(rw http.ResponseWriter, producer runti
 
 func (o *GetServerGroupsOK) GetServerGroupsResponder() {}
 
-/*GetServerGroupsDefault Generic error response
+/*
+GetServerGroupsDefault Generic error response
 
 swagger:response getServerGroupsDefault
 */

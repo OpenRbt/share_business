@@ -510,6 +510,35 @@ paths:
         204:
           description: OK
         default: {$ref: '#/responses/GenericError'}
+  
+  /reports/bonus:
+    get:
+      tags:     
+        - reports
+      operationId: getBonusReports
+      security:
+        - authKey: [ ]
+      parameters:
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/pageSize'
+        - name: operation
+          type: string
+          in: query
+          enum: [deposit, withdrawal]
+          required: false
+        - name: organizationId
+          in: query
+          type: string
+          format: uuid
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ReportPage'
+        403: {$ref: '#/responses/GenericError'}
+        404: {$ref: '#/responses/GenericError'}
+        default: {$ref: '#/responses/GenericError'}
 
 parameters:
   offset:
@@ -531,6 +560,21 @@ parameters:
     format: int64
     default: 100
     minimum: 0
+  
+  page:
+    name: page
+    in: query
+    type: integer
+    default: 1
+    minimum: 1
+  
+  pageSize:
+    name: pageSize
+    in: query
+    type: integer
+    default: 10
+    maximum: 100
+    minimum: 1
 
   adminUserRole:
     name: role
@@ -637,6 +681,21 @@ definitions:
       description:
         type: string
         x-nullable: true
+
+  SimpleOrganization:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      name:
+        type: string
+      deleted:
+        type: boolean
+    required:
+      - id
+      - name
+      - deleted
 
   Organization:
     type: object
@@ -846,3 +905,60 @@ definitions:
         allOf:
           - $ref: "#/definitions/AdminUserRole"
           - x-nullable: true
+
+  BalanceOperationType:
+    type: string
+    enum: ["deposit", "withdrawal"]
+
+  Report:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      date:
+        type: string
+        format: date-time
+      amount:
+        type: integer
+        format: int64
+      operation:
+        $ref: '#/definitions/BalanceOperationType'
+      userId:
+        type: string
+      organization:
+        $ref: '#/definitions/SimpleOrganization'
+    required:
+      - id
+      - date
+      - amount
+      - operation
+      - userId
+      - organization
+
+  ReportPage:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/Report"
+      page:
+        type: integer
+        minimum: 1
+      pageSize:
+        type: integer
+        maximum: 100
+        minimum: 1
+      totalPages:
+        type: integer
+        minimum: 0
+      totalItems:
+        type: integer
+        minimum: 0
+    required:
+      - items
+      - page
+      - pageSize
+      - totalPages
+      - totalItems

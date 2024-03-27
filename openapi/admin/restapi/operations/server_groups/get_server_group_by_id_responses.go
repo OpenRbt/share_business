@@ -17,7 +17,8 @@ import (
 // GetServerGroupByIDOKCode is the HTTP code returned for type GetServerGroupByIDOK
 const GetServerGroupByIDOKCode int = 200
 
-/*GetServerGroupByIDOK OK
+/*
+GetServerGroupByIDOK OK
 
 swagger:response getServerGroupByIdOK
 */
@@ -60,7 +61,8 @@ func (o *GetServerGroupByIDOK) WriteResponse(rw http.ResponseWriter, producer ru
 
 func (o *GetServerGroupByIDOK) GetServerGroupByIDResponder() {}
 
-/*GetServerGroupByIDDefault Generic error response
+/*
+GetServerGroupByIDDefault Generic error response
 
 swagger:response getServerGroupByIdDefault
 */

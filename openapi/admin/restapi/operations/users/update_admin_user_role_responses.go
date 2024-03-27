@@ -17,7 +17,8 @@ import (
 // UpdateAdminUserRoleNoContentCode is the HTTP code returned for type UpdateAdminUserRoleNoContent
 const UpdateAdminUserRoleNoContentCode int = 204
 
-/*UpdateAdminUserRoleNoContent OK
+/*
+UpdateAdminUserRoleNoContent OK
 
 swagger:response updateAdminUserRoleNoContent
 */
@@ -40,7 +41,8 @@ func (o *UpdateAdminUserRoleNoContent) WriteResponse(rw http.ResponseWriter, pro
 
 func (o *UpdateAdminUserRoleNoContent) UpdateAdminUserRoleResponder() {}
 
-/*UpdateAdminUserRoleDefault Generic error response
+/*
+UpdateAdminUserRoleDefault Generic error response
 
 swagger:response updateAdminUserRoleDefault
 */

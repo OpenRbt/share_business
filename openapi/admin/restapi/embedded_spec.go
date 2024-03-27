@@ -245,6 +245,59 @@ func init() {
         }
       }
     },
+    "/reports/bonus": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "reports"
+        ],
+        "operationId": "getBonusReports",
+        "parameters": [
+          {
+            "$ref": "#/parameters/page"
+          },
+          {
+            "$ref": "#/parameters/pageSize"
+          },
+          {
+            "enum": [
+              "deposit",
+              "withdrawal"
+            ],
+            "type": "string",
+            "name": "operation",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ReportPage"
+            }
+          },
+          "403": {
+            "$ref": "#/responses/GenericError"
+          },
+          "404": {
+            "$ref": "#/responses/GenericError"
+          },
+          "default": {
+            "$ref": "#/responses/GenericError"
+          }
+        }
+      }
+    },
     "/server-groups": {
       "get": {
         "tags": [
@@ -973,6 +1026,13 @@ func init() {
         "pending"
       ]
     },
+    "BalanceOperationType": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdrawal"
+      ]
+    },
     "Error": {
       "type": "object",
       "required": [
@@ -1105,6 +1165,73 @@ func init() {
         }
       }
     },
+    "Report": {
+      "type": "object",
+      "required": [
+        "id",
+        "date",
+        "amount",
+        "operation",
+        "userId",
+        "organization"
+      ],
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation": {
+          "$ref": "#/definitions/BalanceOperationType"
+        },
+        "organization": {
+          "$ref": "#/definitions/SimpleOrganization"
+        },
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "ReportPage": {
+      "type": "object",
+      "required": [
+        "items",
+        "page",
+        "pageSize",
+        "totalPages",
+        "totalItems"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Report"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pageSize": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 1
+        },
+        "totalItems": {
+          "type": "integer"
+        },
+        "totalPages": {
+          "type": "integer"
+        }
+      }
+    },
     "ServerGroup": {
       "type": "object",
       "properties": {
@@ -1204,6 +1331,26 @@ func init() {
         }
       }
     },
+    "SimpleOrganization": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "WashServer": {
       "type": "object",
       "properties": {
@@ -1295,6 +1442,21 @@ func init() {
       "default": 0,
       "description": "Number of records to skip for pagination",
       "name": "offset",
+      "in": "query"
+    },
+    "page": {
+      "minimum": 1,
+      "type": "integer",
+      "default": 1,
+      "name": "page",
+      "in": "query"
+    },
+    "pageSize": {
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+      "default": 10,
+      "name": "pageSize",
       "in": "query"
     }
   },
@@ -1571,6 +1733,77 @@ func init() {
         "responses": {
           "204": {
             "description": "OK"
+          },
+          "default": {
+            "description": "Generic error response",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/reports/bonus": {
+      "get": {
+        "security": [
+          {
+            "authKey": []
+          }
+        ],
+        "tags": [
+          "reports"
+        ],
+        "operationId": "getBonusReports",
+        "parameters": [
+          {
+            "minimum": 1,
+            "type": "integer",
+            "default": 1,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 10,
+            "name": "pageSize",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "deposit",
+              "withdrawal"
+            ],
+            "type": "string",
+            "name": "operation",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "uuid",
+            "name": "organizationId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ReportPage"
+            }
+          },
+          "403": {
+            "description": "Generic error response",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Generic error response",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "default": {
             "description": "Generic error response",
@@ -2445,6 +2678,13 @@ func init() {
         "pending"
       ]
     },
+    "BalanceOperationType": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdrawal"
+      ]
+    },
     "Error": {
       "type": "object",
       "required": [
@@ -2583,6 +2823,75 @@ func init() {
         }
       }
     },
+    "Report": {
+      "type": "object",
+      "required": [
+        "id",
+        "date",
+        "amount",
+        "operation",
+        "userId",
+        "organization"
+      ],
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operation": {
+          "$ref": "#/definitions/BalanceOperationType"
+        },
+        "organization": {
+          "$ref": "#/definitions/SimpleOrganization"
+        },
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "ReportPage": {
+      "type": "object",
+      "required": [
+        "items",
+        "page",
+        "pageSize",
+        "totalPages",
+        "totalItems"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Report"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pageSize": {
+          "type": "integer",
+          "maximum": 100,
+          "minimum": 1
+        },
+        "totalItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalPages": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "ServerGroup": {
       "type": "object",
       "properties": {
@@ -2688,6 +2997,26 @@ func init() {
         }
       }
     },
+    "SimpleOrganization": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "deleted"
+      ],
+      "properties": {
+        "deleted": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "WashServer": {
       "type": "object",
       "properties": {
@@ -2781,6 +3110,21 @@ func init() {
       "default": 0,
       "description": "Number of records to skip for pagination",
       "name": "offset",
+      "in": "query"
+    },
+    "page": {
+      "minimum": 1,
+      "type": "integer",
+      "default": 1,
+      "name": "page",
+      "in": "query"
+    },
+    "pageSize": {
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+      "default": 10,
+      "name": "pageSize",
       "in": "query"
     }
   },

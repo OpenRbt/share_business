@@ -6,6 +6,7 @@ import (
 	"washbonus/internal/config"
 	ctrls "washbonus/internal/controllers"
 	adminRepo "washbonus/internal/dal/adminusers"
+	bonusReport "washbonus/internal/dal/bonusreport"
 	orgRepo "washbonus/internal/dal/organizations"
 	groupRepo "washbonus/internal/dal/servergroups"
 	sessionRepo "washbonus/internal/dal/sessions"
@@ -15,6 +16,7 @@ import (
 	"washbonus/internal/infrastructure/firebase"
 	rabbitMQ "washbonus/internal/infrastructure/rabbit"
 	"washbonus/internal/services/adminuser"
+	"washbonus/internal/services/bonusreport"
 	"washbonus/internal/services/organization"
 	"washbonus/internal/services/rabbit"
 	"washbonus/internal/services/schedule"
@@ -108,25 +110,27 @@ func setupDatabase(cfg *config.Config, l *zap.SugaredLogger) *dbr.Connection {
 
 func setupRepositories(l *zap.SugaredLogger, dbConn *dbr.Connection) app.Repositories {
 	return app.Repositories{
-		Admin:   adminRepo.NewRepo(l, dbConn),
-		Org:     orgRepo.NewRepo(l, dbConn),
-		Group:   groupRepo.NewRepo(l, dbConn),
-		Wash:    washRepo.NewRepo(l, dbConn),
-		User:    userRepo.NewRepo(l, dbConn),
-		Session: sessionRepo.NewRepo(l, dbConn),
-		Wallet:  walletRepo.NewRepo(l, dbConn),
+		Admin:       adminRepo.NewRepo(l, dbConn),
+		Org:         orgRepo.NewRepo(l, dbConn),
+		Group:       groupRepo.NewRepo(l, dbConn),
+		Wash:        washRepo.NewRepo(l, dbConn),
+		User:        userRepo.NewRepo(l, dbConn),
+		Session:     sessionRepo.NewRepo(l, dbConn),
+		Wallet:      walletRepo.NewRepo(l, dbConn),
+		BonusReport: bonusReport.NewRepo(l, dbConn),
 	}
 }
 
 func setupServices(l *zap.SugaredLogger, repos app.Repositories) app.Services {
 	return app.Services{
-		Admin:   adminuser.New(l, repos.Admin, repos.Org),
-		Org:     organization.New(l, repos.Org, repos.Admin),
-		Group:   servergroup.New(l, repos.Group, repos.Org),
-		Wash:    washserver.New(l, repos.Wash, repos.Group),
-		User:    user.New(l, repos.User, repos.Org),
-		Session: session.New(l, repos.User, repos.Session, repos.Wash, repos.Wallet),
-		Wallet:  wallet.New(l, repos.Wallet, repos.Org),
+		Admin:       adminuser.New(l, repos.Admin, repos.Org),
+		Org:         organization.New(l, repos.Org, repos.Admin),
+		Group:       servergroup.New(l, repos.Group, repos.Org),
+		Wash:        washserver.New(l, repos.Wash, repos.Group),
+		User:        user.New(l, repos.User, repos.Org),
+		Session:     session.New(l, repos.User, repos.Session, repos.Wash, repos.Wallet),
+		Wallet:      wallet.New(l, repos.Wallet, repos.Org),
+		BonusReport: bonusreport.New(l, repos.BonusReport),
 	}
 }
 
@@ -153,13 +157,14 @@ func setupFirebase(l *zap.SugaredLogger, cfg *config.Config, services app.Servic
 
 func setupControllers(l *zap.SugaredLogger, services app.Services, rabbit rabbitMQ.RabbitService) app.Controllers {
 	return app.Controllers{
-		Admin:   ctrls.NewAdminUserController(l, services.Admin, rabbit),
-		Org:     ctrls.NewOrganizationController(l, services.Org, services.Group, services.Admin, rabbit),
-		Group:   ctrls.NewServerGroupController(l, services.Group, services.Org, rabbit),
-		Wash:    ctrls.NewWashServerController(l, services.Wash, services.Group, services.Org, rabbit),
-		User:    ctrls.NewUserController(l, services.User, services.Session),
-		Session: ctrls.NewSessionController(l, services.Session, services.User, services.Wash, rabbit),
-		Wallet:  ctrls.NewWalletController(l, services.Wallet, services.Session),
+		Admin:       ctrls.NewAdminUserController(l, services.Admin, rabbit),
+		Org:         ctrls.NewOrganizationController(l, services.Org, services.Group, services.Admin, rabbit),
+		Group:       ctrls.NewServerGroupController(l, services.Group, services.Org, rabbit),
+		Wash:        ctrls.NewWashServerController(l, services.Wash, services.Group, services.Org, rabbit),
+		User:        ctrls.NewUserController(l, services.User, services.Session),
+		Session:     ctrls.NewSessionController(l, services.Session, services.User, services.Wash, rabbit),
+		Wallet:      ctrls.NewWalletController(l, services.Wallet, services.Session),
+		BonusReport: ctrls.NewBonusReportController(l, services.BonusReport, services.Org),
 	}
 }
 

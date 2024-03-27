@@ -22,6 +22,7 @@ import (
 	"washbonus/internal/app"
 	"washbonus/openapi/admin/restapi/operations/applications"
 	"washbonus/openapi/admin/restapi/operations/organizations"
+	"washbonus/openapi/admin/restapi/operations/reports"
 	"washbonus/openapi/admin/restapi/operations/server_groups"
 	"washbonus/openapi/admin/restapi/operations/users"
 	"washbonus/openapi/admin/restapi/operations/wash_servers"
@@ -90,6 +91,9 @@ func NewWashAdminAPI(spec *loads.Document) *WashAdminAPI {
 		}),
 		UsersGetAdminUsersHandler: users.GetAdminUsersHandlerFunc(func(params users.GetAdminUsersParams, principal *app.AdminAuth) users.GetAdminUsersResponder {
 			return users.GetAdminUsersNotImplemented()
+		}),
+		ReportsGetBonusReportsHandler: reports.GetBonusReportsHandlerFunc(func(params reports.GetBonusReportsParams, principal *app.AdminAuth) reports.GetBonusReportsResponder {
+			return reports.GetBonusReportsNotImplemented()
 		}),
 		OrganizationsGetOrganizationByIDHandler: organizations.GetOrganizationByIDHandlerFunc(func(params organizations.GetOrganizationByIDParams, principal *app.AdminAuth) organizations.GetOrganizationByIDResponder {
 			return organizations.GetOrganizationByIDNotImplemented()
@@ -205,6 +209,8 @@ type WashAdminAPI struct {
 	UsersGetAdminUserByIDHandler users.GetAdminUserByIDHandler
 	// UsersGetAdminUsersHandler sets the operation handler for the get admin users operation
 	UsersGetAdminUsersHandler users.GetAdminUsersHandler
+	// ReportsGetBonusReportsHandler sets the operation handler for the get bonus reports operation
+	ReportsGetBonusReportsHandler reports.GetBonusReportsHandler
 	// OrganizationsGetOrganizationByIDHandler sets the operation handler for the get organization by Id operation
 	OrganizationsGetOrganizationByIDHandler organizations.GetOrganizationByIDHandler
 	// OrganizationsGetOrganizationsHandler sets the operation handler for the get organizations operation
@@ -351,6 +357,9 @@ func (o *WashAdminAPI) Validate() error {
 	}
 	if o.UsersGetAdminUsersHandler == nil {
 		unregistered = append(unregistered, "users.GetAdminUsersHandler")
+	}
+	if o.ReportsGetBonusReportsHandler == nil {
+		unregistered = append(unregistered, "reports.GetBonusReportsHandler")
 	}
 	if o.OrganizationsGetOrganizationByIDHandler == nil {
 		unregistered = append(unregistered, "organizations.GetOrganizationByIDHandler")
@@ -546,6 +555,10 @@ func (o *WashAdminAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/reports/bonus"] = reports.NewGetBonusReports(o.context, o.ReportsGetBonusReportsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/organizations/{organizationId}"] = organizations.NewGetOrganizationByID(o.context, o.OrganizationsGetOrganizationByIDHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -632,6 +645,6 @@ func (o *WashAdminAPI) AddMiddlewareFor(method, path string, builder middleware.
 	}
 	o.Init()
 	if h, ok := o.handlers[um][path]; ok {
-		o.handlers[method][path] = builder(h)
+		o.handlers[um][path] = builder(h)
 	}
 }

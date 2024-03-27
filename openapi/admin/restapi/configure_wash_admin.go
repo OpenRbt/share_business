@@ -13,6 +13,7 @@ import (
 	"washbonus/openapi/admin/restapi/operations"
 	"washbonus/openapi/admin/restapi/operations/applications"
 	"washbonus/openapi/admin/restapi/operations/organizations"
+	"washbonus/openapi/admin/restapi/operations/reports"
 	"washbonus/openapi/admin/restapi/operations/server_groups"
 	"washbonus/openapi/admin/restapi/operations/users"
 	"washbonus/openapi/admin/restapi/operations/wash_servers"
@@ -123,6 +124,11 @@ func configureAPI(api *operations.WashAdminAPI) http.Handler {
 	if api.UsersGetAdminUsersHandler == nil {
 		api.UsersGetAdminUsersHandler = users.GetAdminUsersHandlerFunc(func(params users.GetAdminUsersParams, principal *app.AdminAuth) users.GetAdminUsersResponder {
 			return users.GetAdminUsersNotImplemented()
+		})
+	}
+	if api.ReportsGetBonusReportsHandler == nil {
+		api.ReportsGetBonusReportsHandler = reports.GetBonusReportsHandlerFunc(func(params reports.GetBonusReportsParams, principal *app.AdminAuth) reports.GetBonusReportsResponder {
+			return reports.GetBonusReportsNotImplemented()
 		})
 	}
 	if api.OrganizationsGetOrganizationByIDHandler == nil {

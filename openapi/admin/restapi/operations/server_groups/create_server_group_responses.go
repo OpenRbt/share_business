@@ -17,7 +17,8 @@ import (
 // CreateServerGroupOKCode is the HTTP code returned for type CreateServerGroupOK
 const CreateServerGroupOKCode int = 200
 
-/*CreateServerGroupOK Successfull created
+/*
+CreateServerGroupOK Successfull created
 
 swagger:response createServerGroupOK
 */
@@ -60,7 +61,8 @@ func (o *CreateServerGroupOK) WriteResponse(rw http.ResponseWriter, producer run
 
 func (o *CreateServerGroupOK) CreateServerGroupResponder() {}
 
-/*CreateServerGroupDefault Generic error response
+/*
+CreateServerGroupDefault Generic error response
 
 swagger:response createServerGroupDefault
 */

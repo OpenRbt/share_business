@@ -31,10 +31,10 @@ func NewGetWalletByOrganizationID(ctx *middleware.Context, handler GetWalletByOr
 	return &GetWalletByOrganizationID{Context: ctx, Handler: handler}
 }
 
-/* GetWalletByOrganizationID swagger:route GET /wallets/by-organization/{id} wallets getWalletByOrganizationId
+/*
+	GetWalletByOrganizationID swagger:route GET /wallets/by-organization/{id} wallets getWalletByOrganizationId
 
 GetWalletByOrganizationID get wallet by organization Id API
-
 */
 type GetWalletByOrganizationID struct {
 	Context *middleware.Context

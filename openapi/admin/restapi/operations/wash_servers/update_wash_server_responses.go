@@ -17,7 +17,8 @@ import (
 // UpdateWashServerOKCode is the HTTP code returned for type UpdateWashServerOK
 const UpdateWashServerOKCode int = 200
 
-/*UpdateWashServerOK Success update
+/*
+UpdateWashServerOK Success update
 
 swagger:response updateWashServerOK
 */
@@ -60,7 +61,8 @@ func (o *UpdateWashServerOK) WriteResponse(rw http.ResponseWriter, producer runt
 
 func (o *UpdateWashServerOK) UpdateWashServerResponder() {}
 
-/*UpdateWashServerDefault Generic error response
+/*
+UpdateWashServerDefault Generic error response
 
 swagger:response updateWashServerDefault
 */

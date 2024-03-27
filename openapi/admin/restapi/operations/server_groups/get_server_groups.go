@@ -31,10 +31,10 @@ func NewGetServerGroups(ctx *middleware.Context, handler GetServerGroupsHandler)
 	return &GetServerGroups{Context: ctx, Handler: handler}
 }
 
-/* GetServerGroups swagger:route GET /server-groups serverGroups getServerGroups
+/*
+	GetServerGroups swagger:route GET /server-groups serverGroups getServerGroups
 
 GetServerGroups get server groups API
-
 */
 type GetServerGroups struct {
 	Context *middleware.Context

@@ -20,8 +20,12 @@ import (
 type ApplicationStatusEnum string
 
 func NewApplicationStatusEnum(value ApplicationStatusEnum) *ApplicationStatusEnum {
-	v := value
-	return &v
+	return &value
+}
+
+// Pointer returns a pointer to a freshly-allocated ApplicationStatusEnum.
+func (m ApplicationStatusEnum) Pointer() *ApplicationStatusEnum {
+	return &m
 }
 
 const (

@@ -17,7 +17,8 @@ import (
 // ChargeBonusesOnSessionOKCode is the HTTP code returned for type ChargeBonusesOnSessionOK
 const ChargeBonusesOnSessionOKCode int = 200
 
-/*ChargeBonusesOnSessionOK OK
+/*
+ChargeBonusesOnSessionOK OK
 
 swagger:response chargeBonusesOnSessionOK
 */
@@ -60,7 +61,8 @@ func (o *ChargeBonusesOnSessionOK) WriteResponse(rw http.ResponseWriter, produce
 
 func (o *ChargeBonusesOnSessionOK) ChargeBonusesOnSessionResponder() {}
 
-/*ChargeBonusesOnSessionDefault Generic error response
+/*
+ChargeBonusesOnSessionDefault Generic error response
 
 swagger:response chargeBonusesOnSessionDefault
 */

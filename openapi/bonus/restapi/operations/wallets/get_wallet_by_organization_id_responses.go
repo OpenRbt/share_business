@@ -17,7 +17,8 @@ import (
 // GetWalletByOrganizationIDOKCode is the HTTP code returned for type GetWalletByOrganizationIDOK
 const GetWalletByOrganizationIDOKCode int = 200
 
-/*GetWalletByOrganizationIDOK OK
+/*
+GetWalletByOrganizationIDOK OK
 
 swagger:response getWalletByOrganizationIdOK
 */
@@ -60,7 +61,8 @@ func (o *GetWalletByOrganizationIDOK) WriteResponse(rw http.ResponseWriter, prod
 
 func (o *GetWalletByOrganizationIDOK) GetWalletByOrganizationIDResponder() {}
 
-/*GetWalletByOrganizationIDDefault Generic error response
+/*
+GetWalletByOrganizationIDDefault Generic error response
 
 swagger:response getWalletByOrganizationIdDefault
 */

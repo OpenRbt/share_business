@@ -31,10 +31,10 @@ func NewGetSessionByID(ctx *middleware.Context, handler GetSessionByIDHandler) *
 	return &GetSessionByID{Context: ctx, Handler: handler}
 }
 
-/* GetSessionByID swagger:route GET /sessions/{sessionId} sessions getSessionById
+/*
+	GetSessionByID swagger:route GET /sessions/{sessionId} sessions getSessionById
 
 GetSessionByID get session by Id API
-
 */
 type GetSessionByID struct {
 	Context *middleware.Context

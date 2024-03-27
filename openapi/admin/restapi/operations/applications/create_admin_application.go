@@ -37,10 +37,10 @@ func NewCreateAdminApplication(ctx *middleware.Context, handler CreateAdminAppli
 	return &CreateAdminApplication{Context: ctx, Handler: handler}
 }
 
-/* CreateAdminApplication swagger:route POST /users/applications applications createAdminApplication
+/*
+	CreateAdminApplication swagger:route POST /users/applications applications createAdminApplication
 
 CreateAdminApplication create admin application API
-
 */
 type CreateAdminApplication struct {
 	Context *middleware.Context
@@ -113,6 +113,8 @@ func (o *CreateAdminApplicationBody) validateApplication(formats strfmt.Registry
 		if err := o.Application.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "application")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "application")
 			}
 			return err
 		}
@@ -138,9 +140,16 @@ func (o *CreateAdminApplicationBody) ContextValidate(ctx context.Context, format
 func (o *CreateAdminApplicationBody) contextValidateApplication(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.Application != nil {
+
+		if swag.IsZero(o.Application) { // not required
+			return nil
+		}
+
 		if err := o.Application.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("body" + "." + "application")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "application")
 			}
 			return err
 		}

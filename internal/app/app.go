@@ -44,10 +44,11 @@ type App struct {
 }
 
 type Repositories struct {
-	Admin AdminRepo
-	Org   OrganizationRepo
-	Group ServerGroupRepo
-	Wash  WashServerRepo
+	Admin       AdminRepo
+	Org         OrganizationRepo
+	Group       ServerGroupRepo
+	Wash        WashServerRepo
+	BonusReport BonusReportRepo
 
 	User    UserRepo
 	Session SessionRepo
@@ -55,10 +56,11 @@ type Repositories struct {
 }
 
 type Services struct {
-	Admin AdminService
-	Org   OrganizationService
-	Group ServerGroupService
-	Wash  WashServerService
+	Admin       AdminService
+	Org         OrganizationService
+	Group       ServerGroupService
+	Wash        WashServerService
+	BonusReport BonusReportService
 
 	User    UserService
 	Session SessionService
@@ -66,10 +68,11 @@ type Services struct {
 }
 
 type Controllers struct {
-	Admin AdminController
-	Org   OrganizationController
-	Group ServerGroupController
-	Wash  WashServerController
+	Admin       AdminController
+	Org         OrganizationController
+	Group       ServerGroupController
+	Wash        WashServerController
+	BonusReport BonusReportController
 
 	User    UserController
 	Session SessionController

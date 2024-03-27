@@ -17,7 +17,8 @@ import (
 // BlockAdminUserNoContentCode is the HTTP code returned for type BlockAdminUserNoContent
 const BlockAdminUserNoContentCode int = 204
 
-/*BlockAdminUserNoContent OK
+/*
+BlockAdminUserNoContent OK
 
 swagger:response blockAdminUserNoContent
 */
@@ -40,7 +41,8 @@ func (o *BlockAdminUserNoContent) WriteResponse(rw http.ResponseWriter, producer
 
 func (o *BlockAdminUserNoContent) BlockAdminUserResponder() {}
 
-/*BlockAdminUserDefault Generic error response
+/*
+BlockAdminUserDefault Generic error response
 
 swagger:response blockAdminUserDefault
 */

@@ -31,10 +31,10 @@ func NewUpdateOrganization(ctx *middleware.Context, handler UpdateOrganizationHa
 	return &UpdateOrganization{Context: ctx, Handler: handler}
 }
 
-/* UpdateOrganization swagger:route PATCH /organizations/{organizationId} organizations updateOrganization
+/*
+	UpdateOrganization swagger:route PATCH /organizations/{organizationId} organizations updateOrganization
 
 UpdateOrganization update organization API
-
 */
 type UpdateOrganization struct {
 	Context *middleware.Context
